@@ -24,31 +24,6 @@ const findFiles = (folder) => {
 	});
 };
 
-test("Build application.a", (t) => {
-	const destPath = "./test/tmp/build/application.a/dest";
-	const expectedPath = "./test/expected/build/application.a/dest";
-
-	return builder.build({
-		tree: applicationATree,
-		destPath,
-		excludedTasks: ["generateAppPreload", "generateStandaloneAppBundle", "generateVersionInfo"]
-	}).then(() => {
-		return findFiles(expectedPath);
-	}).then((expectedFiles) => {
-		console.log(expectedFiles);
-		// Check for all directories and files
-		assert.directoryDeepEqual(destPath, expectedPath);
-		console.log("after assert");
-		// Check for all file contents
-		expectedFiles.forEach((expectedFile) => {
-			const relativeFile = path.relative(expectedPath, expectedFile);
-			const destFile = path.join(destPath, relativeFile);
-			assert.fileEqual(destFile, expectedFile);
-		});
-		t.pass();
-	});
-});
-
 test("Build application.a [dev mode]", (t) => {
 	const destPath = "./test/tmp/build/application.a/dest-dev";
 	const expectedPath = "./test/expected/build/application.a/dest-dev";
@@ -56,7 +31,7 @@ test("Build application.a [dev mode]", (t) => {
 	return builder.build({
 		tree: applicationATree,
 		destPath,
-		dev: true
+		basic: true
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
@@ -79,8 +54,7 @@ test("Build library.d with copyright from .library file", (t) => {
 
 	return builder.build({
 		tree: libraryDTree,
-		destPath,
-		excludedTasks: ["generateLibraryPreload"]
+		destPath
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
@@ -103,8 +77,7 @@ test("Build library.e with copyright from settings of ui5.yaml", (t) => {
 
 	return builder.build({
 		tree: libraryETree,
-		destPath,
-		excludedTasks: ["generateLibraryPreload"]
+		destPath
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
