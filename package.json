@@ -82,6 +82,8 @@
 		"url": "git@github.com:SAP/ui5-builder.git"
 	},
 	"dependencies": {
+		"@ui5/fs": "SAP/ui5-fs",
+		"@ui5/logger": "SAP/ui5-logger",
 		"archiver": "^2.1.0",
 		"escope": "^3.6.0",
 		"esprima": "^2.7.2",
@@ -91,11 +93,10 @@
 		"less-openui5": "^0.5.1",
 		"pretty-data": "^0.40.0",
 		"pretty-hrtime": "^1.0.3",
+		"recast": "^0.14.7",
 		"replacestream": "^4.0.3",
 		"uglify-es": "^3.2.2",
-		"xml2js": "^0.4.17",
-		"@ui5/fs": "SAP/ui5-fs",
-		"@ui5/logger": "SAP/ui5-logger"
+		"xml2js": "^0.4.17"
 	},
 	"devDependencies": {
 		"adm-zip": "^0.4.7",
