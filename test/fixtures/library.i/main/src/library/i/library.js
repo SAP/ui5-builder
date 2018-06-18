@@ -2,7 +2,7 @@
  * ${copyright}
  */
 sap.ui.define([
-	'sap/ui/core/Core',
+	'sap/ui/core/Core'
 ], function(Core) {
 
 	"use strict";
@@ -13,10 +13,10 @@ sap.ui.define([
 		dependencies : ["sap.ui.core"],
 		types: [
 			"library.i.ButtonType",
-			"library.i.DialogType",
+			"library.i.DialogType"
 		],
 		interfaces: [
-			"library.i.IContent",
+			"library.i.IContent"
 		],
 		controls: [
 			"library.i.Button",

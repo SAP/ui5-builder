@@ -42,7 +42,7 @@ test("integration: build library.d with library preload", async (t) => {
 		assert.directoryDeepEqual(destPath, expectedPath);
 
 		// Check for all file contents
-		t.deepEqual(expectedFiles.length, 4, "4 files are expected");
+		t.deepEqual(expectedFiles.length, 5, "5 files are expected");
 		expectedFiles.forEach((expectedFile) => {
 			const relativeFile = path.relative(expectedPath, expectedFile);
 			const destFile = path.join(destPath, relativeFile);
@@ -95,7 +95,7 @@ test("integration: build sap.ui.core with library preload", async (t) => {
 		assert.directoryDeepEqual(destPath, expectedPath);
 
 		// Check for all file contents
-		t.deepEqual(expectedFiles.length, 9, "9 files are expected");
+		t.deepEqual(expectedFiles.length, 10, "10 files are expected");
 		expectedFiles.forEach((expectedFile) => {
 			const relativeFile = path.relative(expectedPath, expectedFile);
 			const destFile = path.join(destPath, relativeFile);

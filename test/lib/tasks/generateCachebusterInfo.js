@@ -9,6 +9,7 @@ const assert = chai.assert;
 const ui5Builder = require("../../../");
 const builder = ui5Builder.builder;
 const applicationGPath = path.join(__dirname, "..", "..", "fixtures", "application.g");
+const libraryCore = path.join(__dirname, "..", "..", "fixtures", "sap.ui.core-evo");
 
 const recursive = require("recursive-readdir");
 
@@ -23,6 +24,20 @@ const findFiles = (folder) => {
 		});
 	});
 };
+
+function cloneProjectTree(tree) {
+	const clone = JSON.parse(JSON.stringify(tree));
+
+	function increaseDepth(node) {
+		node._level++;
+		if (Array.isArray(node.dependencies)) {
+			node.dependencies.forEach(increaseDepth);
+		}
+	}
+
+	increaseDepth(clone);
+	return clone;
+}
 
 test("integration: Build application.g with manifestBundler", (t) => {
 	const destPath = path.join("test", "tmp", "build", "application.g", "cachebuster");
@@ -90,11 +105,37 @@ test("integration: Build application.g with manifestBundler and cachebuster usin
 	});
 });
 
+const coreLibraryTree = {
+	"id": "sap.ui.core-evo",
+	"version": "1.0.0",
+	"path": libraryCore,
+	"dependencies": [],
+	"_level": 0,
+	"specVersion": "0.1",
+	"type": "library",
+	"metadata": {
+		"name": "sap.ui.core",
+		"copyright": "Some fancy copyright"
+	},
+	"resources": {
+		"configuration": {
+			"paths": {
+				"src": "main/src"
+			}
+		},
+		"pathMappings": {
+			"/resources/": "main/src"
+		}
+	}
+};
+
 const applicationGTree = {
 	"id": "application.g",
 	"version": "1.0.0",
 	"path": applicationGPath,
-	"dependencies": [],
+	"dependencies": [
+		cloneProjectTree(coreLibraryTree)
+	],
 	"builder": {},
 	"_level": 0,
 	"specVersion": "0.1",
@@ -120,7 +161,9 @@ const applicationGTreeWithCachebusterHash = {
 	"id": "application.g",
 	"version": "1.0.0",
 	"path": applicationGPath,
-	"dependencies": [],
+	"dependencies": [
+		cloneProjectTree(coreLibraryTree)
+	],
 	"builder": {
 		"cachebuster": {
 			"signatureType": "hash"
