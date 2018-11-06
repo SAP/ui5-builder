@@ -1,6 +1,6 @@
 {
 	"name": "@ui5/builder",
-	"version": "0.2.1",
+	"version": "0.2.4",
 	"description": "UI5 Build and Development Tooling - Builder",
 	"author": "SAP SE (https://www.sap.com)",
 	"license": "Apache-2.0",
@@ -32,7 +32,7 @@
 		"version": "git-chglog --next-tag v$npm_package_version -o CHANGELOG.md && git add CHANGELOG.md",
 		"postversion": "git push --follow-tags",
 		"release-note": "git-chglog -c .chglog/release-config.yml v$npm_package_version",
-		"report-coveralls": "nyc report --reporter=text-lcov | coveralls"
+		"report-coveralls": "nyc report --reporter=text-lcov | COVERALLS_PARALLEL=true coveralls"
 	},
 	"files": [
 		"index.js",
@@ -95,14 +95,14 @@
 	"dependencies": {
 		"@ui5/fs": "^0.2.0",
 		"@ui5/logger": "^0.2.0",
-		"archiver": "^2.1.0",
+		"archiver": "^3.0.0",
 		"escodegen": "^1.11.0",
 		"escope": "^3.6.0",
 		"esprima": "^2.7.2",
 		"estraverse": "^4.2.0",
 		"globby": "^7.1.1",
 		"graceful-fs": "^4.1.11",
-		"less-openui5": "^0.5.4",
+		"less-openui5": "^0.6.0",
 		"pretty-data": "^0.40.0",
 		"pretty-hrtime": "^1.0.3",
 		"replacestream": "^4.0.3",
@@ -117,11 +117,11 @@
 		"chai-fs": "^2.0.0",
 		"coveralls": "^3.0.1",
 		"cross-env": "^5.1.1",
-		"docdash": "^0.4.0",
+		"docdash": "^1.0.0",
 		"eslint": "^5.0.1",
-		"eslint-config-google": "^0.9.1",
+		"eslint-config-google": "^0.10.0",
 		"jsdoc": "^3.5.5",
-		"nyc": "^12.0.2",
+		"nyc": "^13.0.1",
 		"opn-cli": "^3.1.0",
 		"recursive-readdir": "^2.1.1",
 		"rimraf": "^2.6.2",
