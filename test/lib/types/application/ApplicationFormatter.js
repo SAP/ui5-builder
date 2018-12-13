@@ -179,7 +179,7 @@ test("ApplicationFormatter#validate: not existing directory webapp for c3", asyn
 	const myProject = Object.assign({}, applicationBTree);
 	const applicationFormatter = new ApplicationFormatter();
 	return applicationFormatter.validate(myProject).catch((error) => {
-		assert.ok(error.message && error.message.startsWith("Could not find application directory " +
+		t.true(error.message && error.message.startsWith("Could not find application directory " +
 			"of project application.b: "));
 		t.pass();
 	});
