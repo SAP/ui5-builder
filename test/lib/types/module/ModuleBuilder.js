@@ -58,7 +58,7 @@ const applicationBTree = {
 	}
 };
 
-test("ModuleBuilder instantation", (t) => {
+test("ModuleBuilder instantiation", (t) => {
 	const appBuilder = new ModuleFormatter({parentLogger: groupLogger, project: applicationBTree});
 	t.truthy(appBuilder);
 });

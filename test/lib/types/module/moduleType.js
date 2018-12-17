@@ -14,8 +14,13 @@ test("moduleType#format: Project is undefined", async (t) => {
 });
 
 test("moduleType#build: Project is undefined", async (t) => {
-	return moduleType.build({parentLogger: groupLogger, project: null}).catch((error) => {
-		t.is(error.message, "Project is undefined");
+	const oProject = {
+		metadata: {
+			name: "myproject"
+		}
+	};
+	return moduleType.build({parentLogger: groupLogger, project: oProject, tasks: []}).then((oResult) => {
+		t.falsy(oResult, "result is not there");
 		t.pass();
 	});
 });
