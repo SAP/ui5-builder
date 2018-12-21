@@ -24,13 +24,15 @@ const findFiles = (folder) => {
 	});
 };
 
-test("Build library.d with library preload", (t) => {
+test("Build library.d with library preload", async (t) => {
+	t.plan(2);
+
 	const destPath = "./test/tmp/build/library.d/preload";
 	const expectedPath = "./test/expected/build/library.d/preload";
 	const excludedTasks = ["*"];
 	const includedTasks = ["generateLibraryPreload"];
 
-	return builder.build({
+	return t.notThrows(builder.build({
 		tree: libraryDTree,
 		destPath,
 		excludedTasks,
@@ -46,9 +48,9 @@ test("Build library.d with library preload", (t) => {
 			const relativeFile = path.relative(expectedPath, expectedFile);
 			const destFile = path.join(destPath, relativeFile);
 			assert.fileEqual(destFile, expectedFile);
-			t.pass();
 		});
-	});
+		t.pass();
+	}));
 });
 
 const libraryDTree = {
@@ -77,13 +79,15 @@ const libraryDTree = {
 	}
 };
 
-test("Build sap.ui.core with library preload", (t) => {
+test("Build sap.ui.core with library preload", async (t) => {
+	t.plan(2);
+
 	const destPath = "./test/tmp/build/sap.ui.core/preload";
 	const expectedPath = "./test/expected/build/sap.ui.core/preload";
 	const excludedTasks = ["*"];
 	const includedTasks = ["generateLibraryPreload"];
 
-	return builder.build({
+	return t.notThrows(builder.build({
 		tree: sapUiCoreTree,
 		destPath,
 		excludedTasks,
@@ -99,9 +103,9 @@ test("Build sap.ui.core with library preload", (t) => {
 			const relativeFile = path.relative(expectedPath, expectedFile);
 			const destFile = path.join(destPath, relativeFile);
 			assert.fileEqual(destFile, expectedFile);
-			t.pass();
 		});
-	});
+		t.pass();
+	}));
 });
 
 const sapUiCoreTree = {
