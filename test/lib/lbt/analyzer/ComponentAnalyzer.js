@@ -19,7 +19,63 @@ function createMockPool(relPath, manifest) {
 	};
 }
 
-test("routing with routes as array", (t) => {
+test("routing with empty config, routes, targets", async (t) => {
+	const mockManifest = {
+		"sap.ui5": {
+			routing: {
+				config: {},
+				routes: [],
+				targets: {}
+			}
+		}
+	};
+
+	const mockPool = createMockPool("test/", mockManifest);
+
+	const mockInfo = {
+		deps: [],
+		addDependency(name) {
+			this.deps.push(name);
+		}
+	};
+
+	const subject = new ComponentAnalyzer(mockPool);
+	await subject.analyze({name: path.join("test", "Component.js")}, mockInfo);
+
+	t.deepEqual(mockInfo.deps, [
+		"sap/ui/core/routing/Router.js"
+	], "dependencies should be correct");
+});
+
+test("routing with empty config, targets", async (t) => {
+	const mockManifest = {
+		"sap.ui5": {
+			routing: {
+				config: {},
+				targets: {}
+			}
+		}
+	};
+
+	const mockPool = createMockPool("test/", mockManifest);
+
+	const mockInfo = {
+		deps: [],
+		addDependency(name) {
+			this.deps.push(name);
+		}
+	};
+
+	const subject = new ComponentAnalyzer(mockPool);
+	await subject.analyze({name: path.join("test", "Component.js")}, mockInfo);
+
+	t.deepEqual(mockInfo.deps, [
+		"sap/ui/core/routing/Targets.js",
+		"sap/ui/core/routing/Views.js"
+	], "dependencies should be correct");
+});
+
+test("routing with routes as array", async (t) => {
 	const mockManifest = {
 		"sap.ui5": {
 			routing: {
@@ -43,17 +99,23 @@ test("routing with routes as array", (t) => {
 	const mockPool = createMockPool("test/", mockManifest);
 
 	const mockInfo = {
+		deps: [],
 		addDependency(name) {
-			t.is(name, "test/view/App.view.xml");
+			this.deps.push(name);
 		}
 	};
 
 	const subject = new ComponentAnalyzer(mockPool);
-	return subject.analyze({name: path.join("test", "Component.js")}, mockInfo);
+	await subject.analyze({name: path.join("test", "Component.js")}, mockInfo);
+
+	t.deepEqual(mockInfo.deps, [
+		"sap/ui/core/routing/Router.js",
+		"test/view/App.view.xml"
+	], "dependencies should be correct");
 });
 
 
-test("routing with routes as object", (t) => {
+test("routing with routes as object", async (t) => {
 	const mockManifest = {
 		"sap.ui5": {
 			routing: {
@@ -76,16 +138,22 @@ test("routing with routes as object", (t) => {
 	const mockPool = createMockPool("test/", mockManifest);
 
 	const mockInfo = {
+		deps: [],
 		addDependency(name) {
-			t.is(name, "test/view/App.view.xml");
+			this.deps.push(name);
 		}
 	};
 
 	const subject = new ComponentAnalyzer(mockPool);
-	return subject.analyze({name: path.join("test", "Component.js")}, mockInfo);
+	await subject.analyze({name: path.join("test", "Component.js")}, mockInfo);
+
+	t.deepEqual(mockInfo.deps, [
+		"sap/ui/core/routing/Router.js",
+		"test/view/App.view.xml"
+	], "dependencies should be correct");
 });
 
-test("routing with route with multiple targets", (t) => {
+test("routing with route with multiple targets", async (t) => {
 	const mockManifest = {
 		"sap.ui5": {
 			routing: {
@@ -116,15 +184,16 @@ test("routing with route with multiple targets", (t) => {
 	};
 
 	const subject = new ComponentAnalyzer(mockPool);
-	return subject.analyze({name: path.join("test", "Component.js")}, mockInfo).then( () => {
-		t.deepEqual(mockInfo.deps, [
-			"test/view/Master.view.xml",
-			"test/view/Detail.view.xml"
-		], "dependencies should be correct");
-	});
+	await subject.analyze({name: path.join("test", "Component.js")}, mockInfo);
+
+	t.deepEqual(mockInfo.deps, [
+		"sap/ui/core/routing/Router.js",
+		"test/view/Master.view.xml",
+		"test/view/Detail.view.xml"
+	], "dependencies should be correct");
 });
 
-test("routing with targets with local config", (t) => {
+test("routing with targets with local config", async (t) => {
 	const mockManifest = {
 		"sap.ui5": {
 			routing: {
@@ -164,12 +233,13 @@ test("routing with targets with local config", (t) => {
 	};
 
 	const subject = new ComponentAnalyzer(mockPool);
-	return subject.analyze({name: path.join("test", "Component.js")}, mockInfo).then( () => {
-		t.deepEqual(mockInfo.deps, [
-			"test/view/Master.view.js",
-			"test/subview/Detail.view.xml"
-		], "dependencies should be correct");
-	});
+	await subject.analyze({name: path.join("test", "Component.js")}, mockInfo);
+
+	t.deepEqual(mockInfo.deps, [
+		"sap/ui/core/routing/Router.js",
+		"test/view/Master.view.js",
+		"test/subview/Detail.view.xml"
+	], "dependencies should be correct");
 });
 
 test("rootView with object", (t) => {
