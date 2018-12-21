@@ -23,6 +23,7 @@ test("dominator tree", async (t) => {
 
 
 test("cyclic dependencies", async (t) => {
+	t.plan(2);
 	const pool = {
 		async getModuleInfo(name) {
 			const info = new ModuleInfo(name);
@@ -35,7 +36,6 @@ test("cyclic dependencies", async (t) => {
 		}
 	};
 	const roots = ["myroot", "mydep", "third"];
-	await topologicalSort(pool, roots).catch((err) => {
-		t.is(err.message, "failed to resolve cyclic dependencies: mydep,third");
-	});
+	const error = await t.throws(topologicalSort(pool, roots));
+	t.deepEqual(error.message, "failed to resolve cyclic dependencies: mydep,third");
 });

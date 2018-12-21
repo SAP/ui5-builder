@@ -14,12 +14,21 @@ function createMockPool(dependency) {
 	};
 }
 
+function checkNZero(t, oResult) {
+	t.falsy(oResult.n0.dominators);
+	t.falsy(oResult.n0.name);
+	t.deepEqual(oResult.n0.pred, new Set());
+	t.deepEqual(oResult.n0.succ, new Set());
+	t.false(oResult.n0.visited);
+}
+
 test("dependency graph", async (t) => {
 	const pool = createMockPool("mydep");
 	const roots = [{
 		name: "myroot"
 	}];
 	const oResult = await dependencyGraph(pool, roots);
+	checkNZero(t, oResult);
 	t.deepEqual(Array.from(oResult.nodes.keys()), ["", "myroot", "mydep"]);
 
 	const empty = oResult.nodes.get("");
@@ -41,6 +50,7 @@ test("dependency with visited nodes", async (t) => {
 		name: "mydep"
 	}];
 	const oResult = await dependencyGraph(pool, roots);
+	checkNZero(t, oResult);
 	t.deepEqual(Array.from(oResult.nodes.keys()), ["", "myroot", "mydep"]);
 
 	const empty = oResult.nodes.get("");
@@ -63,6 +73,7 @@ test("dependency graph with invalid pool", async (t) => {
 	}];
 
 	const oResult = await dependencyGraph(pool, roots);
+	checkNZero(t, oResult);
 	t.deepEqual(Array.from(oResult.nodes.keys()), ["", "myroot"]);
 
 	const empty = oResult.nodes.get("");

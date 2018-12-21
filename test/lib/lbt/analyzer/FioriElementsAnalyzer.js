@@ -11,7 +11,6 @@ test("Component.js", async (t) => {
 });
 
 test("Manifest", async (t) => {
-	t.plan(3);
 	const manifest = {
 		"sap.fe": {
 			"entitySets": [{
@@ -24,40 +23,34 @@ test("Manifest", async (t) => {
 		}
 	};
 
-	const code = "sap.ui.define([\"a\", \"sap/fe/core/TemplateAssembler\"], " +
-		"function(a, TemplateAssembler){" +
-		"   return TemplateAssembler.getTemplateComponent(getMethods,\n" +
-		"		\"sap.fe.templates.Page.Component\", {\n" +
-		"			metadata: {\n" +
-		"				properties: {\n" +
-		"					\"templateName\": {\n" +
-		"						\"type\": \"string\",\n" +
-		"						\"defaultValue\": \"sap.fe.templates.Page.view.Page\"\n" +
-		"					}\n" +
-		"				},\n" +
-		"				\"manifest\": \"json\"\n" +
-		"			}\n" +
-		"		});" +
-		"});";
+	const code = `sap.ui.define(["a", "sap/fe/core/TemplateAssembler"], function(a, TemplateAssembler){   
+		return TemplateAssembler.getTemplateComponent(getMethods,
+		"sap.fe.templates.Page.Component", {
+			metadata: {
+				properties: {
+					"templateName": {
+						"type": "string",
+						"defaultValue": "sap.fe.templates.Page.view.Page"
+					}
+				},
+				"manifest": "json"
+			}
+		});});`;
 	const mockPool = {async findResource(name) {
 		return {
 			buffer: () => name.endsWith(".json") ? JSON.stringify(manifest): code
 		};
 	}};
 
-	let iCounter = 0;
+	const aDependencies = [];
 	const mockInfo = {
 		addDependency(name) {
-			if (iCounter++ === 0) {
-				t.is(name, "sap/fe/templates/MyTmpl/Component.js");
-			} else {
-				t.is(name, "sap/fe/templates/Page/view/Page.view.xml");
-			}
+			aDependencies.push(name);
 		}
 	};
 
 	const subject = new FioriElementsAnalyzer(mockPool);
 	const name = "MyComponent.js";
-	const oResult = await subject.analyze({name}, mockInfo);
-	t.deepEqual(oResult, mockInfo);
+	await subject.analyze({name}, mockInfo);
+	t.deepEqual(aDependencies, ["sap/fe/templates/MyTmpl/Component.js", "sap/fe/templates/Page/view/Page.view.xml"]);
 });

@@ -5,14 +5,13 @@ const XMLTemplateAnalyzer = require("../../../../lib/lbt/analyzer/XMLTemplateAna
 test("analyzeView", async (t) => {
 	t.plan(3);
 
-	const xml = "<mvc:View xmlns:mvc=\"sap.ui.core.mvc\" xmlns:m=\"sap.m\" xmlns:l=\"sap.ui.layout\" " +
-		"controllerName=\"myController\">" +
-		"<l:HorizontalLayout id=\"layout\">" +
-		"<m:Button text=\"Button 1\" id=\"button1\" />" +
-		"<m:Button text=\"Button 2\" id=\"button2\" />" +
-		"<m:Button text=\"Button 3\" id=\"button3\" />" +
-		"</l:HorizontalLayout>" +
-		"</mvc:View>";
+	const xml = `<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns:m="sap.m" xmlns:l="sap.ui.layout" controllerName="myController">
+		<l:HorizontalLayout id="layout">
+		<m:Button text="Button 1" id="button1" />
+		<m:Button text="Button 2" id="button2" />
+		<m:Button text="Button 3" id="button3" />
+		</l:HorizontalLayout>
+		</mvc:View>`;
 	const mockPool = {async findResource(name) {
 		return {
 			buffer: () => name.endsWith(".xml") ? JSON.stringify(xml): "test"
@@ -46,15 +45,15 @@ test("analyzeFragment", async (t) => {
 	t.plan(3);
 
 
-	const xml = "<HBox xmlns:m=\"sap.m\" xmlns:l=\"sap.ui.layout\" controllerName=\"myController\">" +
-		"<items>" +
-		"<l:HorizontalLayout id=\"layout\">" +
-		"<m:Button text=\"Button 1\" id=\"button1\" />" +
-		"<m:Button text=\"Button 2\" id=\"button2\" />" +
-		"<m:Button text=\"Button 3\" id=\"button3\" />" +
-		"</l:HorizontalLayout>" +
-		"</items>" +
-		"</HBox>";
+	const xml = `<HBox xmlns:m="sap.m" xmlns:l="sap.ui.layout" controllerName="myController">
+		<items>
+		<l:HorizontalLayout id="layout">
+		<m:Button text="Button 1" id="button1" />
+		<m:Button text="Button 2" id="button2" />
+		<m:Button text="Button 3" id="button3" />
+		</l:HorizontalLayout>
+		</items>
+		</HBox>`;
 	const mockPool = {async findResource(name) {
 		return {
 			buffer: () => name.endsWith(".xml") ? JSON.stringify(xml): "test"

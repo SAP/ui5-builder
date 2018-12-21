@@ -15,6 +15,9 @@ function createMockPool(dependency) {
 	};
 }
 
+/**
+ * Dominator Tree is currently not being used there the tests are simplistic
+ */
 test("dominator tree", async (t) => {
 	const pool = createMockPool("mydep");
 	const roots = [{
