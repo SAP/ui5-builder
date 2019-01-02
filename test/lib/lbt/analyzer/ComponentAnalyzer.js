@@ -75,6 +75,42 @@ test("routing with empty config, targets", async (t) => {
 	], "dependencies should be correct");
 });
 
+test("routing with targets but no routes", async (t) => {
+	const mockManifest = {
+		"sap.ui5": {
+			routing: {
+				config: {
+					viewPath: "test.view",
+					viewType: "XML"
+				},
+				targets: {
+					test: {
+						viewName: "App"
+					}
+				}
+			}
+		}
+	};
+
+	const mockPool = createMockPool("test/", mockManifest);
+
+	const mockInfo = {
+		deps: [],
+		addDependency(name) {
+			this.deps.push(name);
+		}
+	};
+
+	const subject = new ComponentAnalyzer(mockPool);
+	await subject.analyze({name: path.join("test", "Component.js")}, mockInfo);
+
+	t.deepEqual(mockInfo.deps, [
+		"sap/ui/core/routing/Targets.js",
+		"sap/ui/core/routing/Views.js",
+		"test/view/App.view.xml"
+	], "dependencies should be correct");
+});
+
 test("routing with routes as array", async (t) => {
 	const mockManifest = {
 		"sap.ui5": {
