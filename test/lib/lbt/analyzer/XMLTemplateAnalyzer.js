@@ -1,16 +1,15 @@
 const {test} = require("ava");
 const XMLTemplateAnalyzer = require("../../../../lib/lbt/analyzer/XMLTemplateAnalyzer");
+const ModuleInfo = require("../../../../lib/lbt/resources/ModuleInfo");
 
-
-test("analyzeView", async (t) => {
-	t.plan(3);
-
-	const xml = `<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns:m="sap.m" xmlns:l="sap.ui.layout" controllerName="myController">
-		<l:HorizontalLayout id="layout">
-		<m:Button text="Button 1" id="button1" />
-		<m:Button text="Button 2" id="button2" />
-		<m:Button text="Button 3" id="button3" />
-		</l:HorizontalLayout>
+test("Analysis of an xml view", async (t) => {
+	const xml = `<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns:m="sap.m" xmlns:l="sap.ui.layout" 
+		controllerName="myController">
+			<l:HorizontalLayout id="layout">
+				<m:Button text="Button 1" id="button1" />
+				<m:Button text="Button 2" id="button2" />
+				<m:Button text="Button 3" id="button3" />
+			</l:HorizontalLayout>
 		</mvc:View>`;
 	const mockPool = {async findResource(name) {
 		return {
@@ -18,41 +17,30 @@ test("analyzeView", async (t) => {
 		};
 	}};
 
-	const aDependencies = [];
-	const mockInfo = {
-		addDependency(name) {
-			aDependencies.push(name);
-		},
-		addImplicitDependency(name) {
-			t.is(name, "sap/ui/core/mvc/XMLView.js");
-		}
-	};
+	const moduleInfo = new ModuleInfo();
 
-	const subject = new XMLTemplateAnalyzer(mockPool);
-	const oResult = await subject.analyzeView(xml, mockInfo);
-	t.deepEqual(oResult, mockInfo);
-	t.deepEqual(aDependencies,
+	const analyzer = new XMLTemplateAnalyzer(mockPool);
+	await analyzer.analyzeView(xml, moduleInfo);
+	t.deepEqual(moduleInfo.dependencies,
 		[
+			"sap/ui/core/mvc/XMLView.js",
 			"myController.controller.js",
 			"sap/ui/layout/HorizontalLayout.js",
-			"sap/m/Button.js",
-			"sap/m/Button.js",
 			"sap/m/Button.js"
-		]);
+		], "Dependencies should come from the XML template");
+	t.true(moduleInfo.isImplicitDependency("sap/ui/core/mvc/XMLView.js"),
+		"Implicit dependency should be added since an XMLView is analyzed");
 });
 
-test("analyzeFragment", async (t) => {
-	t.plan(3);
-
-
+test("Analysis of an xml fragment", async (t) => {
 	const xml = `<HBox xmlns:m="sap.m" xmlns:l="sap.ui.layout" controllerName="myController">
-		<items>
-		<l:HorizontalLayout id="layout">
-		<m:Button text="Button 1" id="button1" />
-		<m:Button text="Button 2" id="button2" />
-		<m:Button text="Button 3" id="button3" />
-		</l:HorizontalLayout>
-		</items>
+			<items>
+				<l:HorizontalLayout id="layout">
+					<m:Button text="Button 1" id="button1" />
+					<m:Button text="Button 2" id="button2" />
+					<m:Button text="Button 3" id="button3" />
+				</l:HorizontalLayout>
+			</items>
 		</HBox>`;
 	const mockPool = {async findResource(name) {
 		return {
@@ -60,19 +48,16 @@ test("analyzeFragment", async (t) => {
 		};
 	}};
 
-	const aDependencies = [];
-	const mockInfo = {
-		addDependency(name) {
-			aDependencies.push(name);
-		},
-		addImplicitDependency(name) {
-			t.is(name, "sap/ui/core/Fragment.js");
-		}
-	};
+	const moduleInfo = new ModuleInfo();
 
-	const subject = new XMLTemplateAnalyzer(mockPool);
-	const oResult = await subject.analyzeFragment(xml, mockInfo);
-	t.deepEqual(oResult, mockInfo);
-	t.deepEqual(aDependencies,
-		["sap/ui/layout/HorizontalLayout.js", "sap/m/Button.js", "sap/m/Button.js", "sap/m/Button.js"]);
+	const analyzer = new XMLTemplateAnalyzer(mockPool);
+	await analyzer.analyzeFragment(xml, moduleInfo);
+	t.deepEqual(moduleInfo.dependencies,
+		[
+			"sap/ui/core/Fragment.js",
+			"sap/ui/layout/HorizontalLayout.js",
+			"sap/m/Button.js"
+		]);
+	t.true(moduleInfo.isImplicitDependency("sap/ui/core/Fragment.js"),
+		"Implicit dependency should be added since a fragment is analyzed");
 });

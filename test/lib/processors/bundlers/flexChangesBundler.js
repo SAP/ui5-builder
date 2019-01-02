@@ -2,18 +2,18 @@ const {test} = require("ava");
 
 const flexChangesBundler = require("../../../../lib/processors/bundlers/flexChangesBundler");
 
-test("flexChangesBundler empty resources", async (t) => {
+test("flexChangesBundler with empty resources", async (t) => {
 	const resources = [];
 	const options = {};
 	const aResult = await flexChangesBundler({resources, options});
-	t.deepEqual(aResult, []);
+	t.deepEqual(aResult, [], "The result should be an empty array");
 });
 
 test("flexChangesBundler with 2 changes", async (t) => {
 	const singleFlexChange = {
 		"changes": [
 			{
-				"fileName": "id_1504764957625_7_rename",
+				"fileName": "id_1504764957625_7_rename1",
 				"fileType": "change",
 				"changeType": "rename",
 				"reference": "rta.performance.Component",
@@ -50,7 +50,7 @@ test("flexChangesBundler with 2 changes", async (t) => {
 					"to": "1.0.0"
 				}
 			}, {
-				"fileName": "id_1504764957630_7_rename",
+				"fileName": "id_1504764957630_7_rename2",
 				"fileType": "change",
 				"changeType": "rename",
 				"reference": "rta.performance.Component",
@@ -87,18 +87,13 @@ test("flexChangesBundler with 2 changes", async (t) => {
 					"to": "1.0.0"
 				}
 			}
-		],
-		"settings": {
-			"isKeyUser": true,
-			"isAtoAvailable": false,
-			"isProductiveSystem": false
-		}
+		]
 	};
 	const resources = [];
 	singleFlexChange.changes.forEach((change) => {
 		resources.push({
 			name: "flexChange",
-			getBuffer: async () => JSON.stringify(singleFlexChange.changes)
+			getBuffer: async () => JSON.stringify(change)
 		});
 	});
 
@@ -106,6 +101,14 @@ test("flexChangesBundler with 2 changes", async (t) => {
 		pathPrefix: "mypath"
 	};
 	const aResult = await flexChangesBundler({resources, options});
-	t.is(aResult.length, 1);
-	t.deepEqual(aResult[0].getPath(), "mypath/changes/changes-bundle.json");
+	t.is(aResult.length, 1, "There should be only one element");
+	const oResult = aResult[0];
+
+	// check path
+	t.deepEqual(oResult.getPath(), "mypath/changes/changes-bundle.json", "path should be generated using options");
+
+	// check content
+	const content = await oResult.getString();
+	const parsedContent = JSON.parse(content);
+	t.deepEqual(parsedContent, singleFlexChange, "Result must contain the content");
 });

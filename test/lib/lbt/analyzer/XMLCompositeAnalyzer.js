@@ -1,11 +1,12 @@
 const {test} = require("ava");
 const esprima = require("esprima");
 const XMLCompositeAnalyzer = require("../../../../lib/lbt/analyzer/XMLCompositeAnalyzer");
+const ModuleInfo = require("../../../../lib/lbt/resources/ModuleInfo");
 
-test("analyze", async (t) => {
+test("Analysis of XMLComposite code", async (t) => {
 	const code = `sap.ui.define([
 		'jquery.sap.global', 'sap/ui/core/XMLComposite'],
-		function(jQuery, XMLComposite, XML) {
+		function(jQuery, XMLComposite) {
 		"use strict";
 		var ButtonList = XMLComposite.extend("composites.ButtonList", {
 			metadata: {
@@ -34,15 +35,10 @@ test("analyze", async (t) => {
 
 	const ast = esprima.parse(code);
 
+	const analyzer = new XMLCompositeAnalyzer({});
 	const name = "composites.ButtonList";
-	const subject = new XMLCompositeAnalyzer({});
-	const dependencies = [];
-	const mockInfo = {
-		addDependency(name) {
-			dependencies.push(name);
-		}
-	};
-	const oResult = await subject.analyze(ast, name, mockInfo);
-	t.falsy(oResult);
-	t.deepEqual(dependencies, ["composites/ButtonList.control.xml"]);
+	const moduleInfo = new ModuleInfo();
+	await analyzer.analyze(ast, name, moduleInfo);
+	t.deepEqual(moduleInfo.dependencies, ["composites/ButtonList.control.xml"],
+		"Dependency should be created from component name");
 });

@@ -1,16 +1,18 @@
 const {test} = require("ava");
 const FioriElementsAnalyzer = require("../../../../lib/lbt/analyzer/FioriElementsAnalyzer");
+const ModuleInfo = require("../../../../lib/lbt/resources/ModuleInfo");
 
 
-test("Component.js", async (t) => {
+test("Analysis with an empty pool of resources", async (t) => {
+	const emptyPool = {};
+	const analyzer = new FioriElementsAnalyzer(emptyPool);
 	const name = "sap/ui/core/Component.js";
-	const subject = new FioriElementsAnalyzer({});
-	const mockInfo = {};
-	const oResult = await subject.analyze({name}, mockInfo);
-	t.deepEqual(oResult, mockInfo);
+	const moduleInfo = new ModuleInfo();
+	await analyzer.analyze({name}, moduleInfo);
+	t.deepEqual(moduleInfo.dependencies, [], "Empty array expected since an empty pool is used");
 });
 
-test("Manifest", async (t) => {
+test("Analysis of Manifest and TemplateAssembler code", async (t) => {
 	const manifest = {
 		"sap.fe": {
 			"entitySets": [{
@@ -36,21 +38,20 @@ test("Manifest", async (t) => {
 				"manifest": "json"
 			}
 		});});`;
-	const mockPool = {async findResource(name) {
-		return {
-			buffer: () => name.endsWith(".json") ? JSON.stringify(manifest): code
-		};
-	}};
-
-	const aDependencies = [];
-	const mockInfo = {
-		addDependency(name) {
-			aDependencies.push(name);
+	const mockPool = {
+		async findResource(name) {
+			return {
+				buffer: () => name.endsWith(".json") ? JSON.stringify(manifest): code
+			};
 		}
 	};
 
-	const subject = new FioriElementsAnalyzer(mockPool);
+	const moduleInfo = new ModuleInfo();
+
+	const analyzer = new FioriElementsAnalyzer(mockPool);
 	const name = "MyComponent.js";
-	await subject.analyze({name}, mockInfo);
-	t.deepEqual(aDependencies, ["sap/fe/templates/MyTmpl/Component.js", "sap/fe/templates/Page/view/Page.view.xml"]);
+	await analyzer.analyze({name}, moduleInfo);
+	t.deepEqual(moduleInfo.dependencies,
+		["sap/fe/templates/MyTmpl/Component.js", "sap/fe/templates/Page/view/Page.view.xml"],
+		"Resulting dependencies should come from manifest and code");
 });
