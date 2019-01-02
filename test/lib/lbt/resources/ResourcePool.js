@@ -2,25 +2,47 @@ const {test} = require("ava");
 const ResourcePool = require("../../../../lib/lbt/resources/ResourcePool");
 const ResourceFilterList = require("../../../../lib/lbt/resources/ResourceFilterList");
 
-test("findResources", async (t) => {
+test("findResources with pattern", async (t) => {
 	const resourcePool = new ResourcePool();
-	const resourcesFromFilterList = await resourcePool.findResources(new ResourceFilterList(["a"]));
-	t.deepEqual(resourcesFromFilterList, []);
 
-	const resources = await resourcePool.findResources("a");
-	t.deepEqual(resources, []);
+	const resourcesOfEmptyPool = await resourcePool.findResources(/a/);
+	t.deepEqual(resourcesOfEmptyPool, [], "nothing is found in empty pool");
+
+
+	const resourceA = {name: "a"};
+	resourcePool.addResource(resourceA);
+
+	const resources = await resourcePool.findResources(/a/);
+	t.deepEqual(resources, [resourceA], "resource a is found");
+});
+
+test("findResources with ResourceFilterList", async (t) => {
+	const resourcePool = new ResourcePool();
+	const resourcesOfEmptyPool = await resourcePool.findResources(new ResourceFilterList(["a"]));
+	t.deepEqual(resourcesOfEmptyPool, [], "nothing is found in empty pool");
+
+	const resourceA = {name: "a"};
+	resourcePool.addResource(resourceA);
+	const resources = await resourcePool.findResources(new ResourceFilterList(["a"]));
+	t.deepEqual(resources, [resourceA], "resource a is found");
 });
 
 test("size", async (t) => {
 	const resourcePool = new ResourcePool();
-	const resourcesFromFilterList = resourcePool.size;
-	t.deepEqual(resourcesFromFilterList, 0);
+	t.is(resourcePool.size, 0, "size of empty pool is 0");
+
+	const resourceA = {name: "a"};
+	resourcePool.addResource(resourceA);
+	t.is(resourcePool.size, 1, "size of pool is 1");
 });
 
 test("resources", async (t) => {
 	const resourcePool = new ResourcePool();
-	const resourcesFromFilterList = resourcePool.resources;
-	t.deepEqual(resourcesFromFilterList, []);
+	t.deepEqual(resourcePool.resources, [], "no resources in empty pool");
+
+	const resourceA = {name: "a"};
+	resourcePool.addResource(resourceA);
+	t.deepEqual(resourcePool.resources, [resourceA], "resource a in pool");
 });
 
 class ResourcePoolWithRejectingModuleInfo extends ResourcePool {
@@ -31,22 +53,23 @@ class ResourcePoolWithRejectingModuleInfo extends ResourcePool {
 
 test("findResourceWithInfo with rejecting getModuleInfo", async (t) => {
 	const resourcePool = new ResourcePoolWithRejectingModuleInfo();
-	resourcePool.addResource({name: "a"});
+	const resourceA = {name: "a"};
+	resourcePool.addResource(resourceA);
 	const resource = await resourcePool.findResourceWithInfo("a");
-	t.falsy(resource.info);
-	t.deepEqual(resource, {name: "a"});
+	t.falsy(resource.info, "in the rejection case the info is not there");
+	t.deepEqual(resource, resourceA, "Although info was rejected resource is still found");
 });
 
 test("getModuleInfo", async (t) => {
 	const resourcePool = new ResourcePool();
-	const inputJsResource = {name: "a.js", buffer: () => ""};
+	const code = "var test = 47;";
+	const inputJsResource = {name: "a.js", buffer: async () => code};
 	resourcePool.addResource(inputJsResource);
 	const jsResource = await resourcePool.getModuleInfo("a.js");
-	t.deepEqual(jsResource.size, 0);
-	t.falsy(jsResource.format);
-	t.deepEqual(jsResource.name, "a.js");
+	t.deepEqual(jsResource.name, inputJsResource.name, "name should be the same");
+	t.deepEqual(jsResource.size, code.length, "size is the character length of code");
 	t.true(jsResource.rawModule);
-	t.deepEqual(jsResource.subModules, []);
+	t.deepEqual(jsResource.subModules, [], "does not contain submodules");
 });
 
 test("getModuleInfo with determineDependencyInfo", async (t) => {
@@ -65,7 +88,7 @@ test("getModuleInfo with determineDependencyInfo", async (t) => {
 			}
 		});
 	});`;
-	const inputJsResource = {name: "a.js", buffer: () => code};
+	const inputJsResource = {name: "a.js", buffer: async () => code};
 	resourcePool.addResource(inputJsResource);
 
 	const xmlFragment = `<HBox xmlns:m="sap.m" xmlns:l="sap.ui.layout" controllerName="myController">
@@ -97,7 +120,7 @@ test("getModuleInfo with determineDependencyInfo", async (t) => {
 
 	const jsResource = await resourcePool.getModuleInfo("a.js");
 	t.deepEqual(jsResource.size, 375);
-	t.deepEqual(jsResource.format, "ui5-define");
+	t.deepEqual(jsResource.format, "ui5-define", "contains sap.ui.define therefore should be a ui5-define format");
 	t.deepEqual(jsResource.name, "a.js");
 	t.false(jsResource.rawModule);
 	t.deepEqual(jsResource.subModules, []);
@@ -127,10 +150,11 @@ test("getModuleInfo with determineDependencyInfo", async (t) => {
 
 test("addResource twice", async (t) => {
 	const resourcePool = new ResourcePool();
-	resourcePool.addResource({name: "a"});
-	resourcePool.addResource({name: "a"});
-	t.is(resourcePool.size, 2);
-	t.deepEqual(resourcePool.resources, [{name: "a"}, {name: "a"}]);
+	const resourceA = {name: "a"};
+	resourcePool.addResource(resourceA);
+	resourcePool.addResource(resourceA);
+	t.is(resourcePool.size, 2, "there should be 2 resources");
+	t.deepEqual(resourcePool.resources, [resourceA, resourceA]);
 });
 
 test("addResource library", async (t) => {
@@ -146,20 +170,28 @@ test("addResource library", async (t) => {
 		<appData>   
 			<packaging xmlns="http://www.sap.com/ui5/buildext/packaging" version="2.0" >
 		       <module-infos>           
-		            <raw-module name="sap/ui/core/support/trace/EppLib.js" />       
+		            <raw-module name="sap/ui/core/support/trace/EppLib.js" depends="sap/ui/thirdparty/jquery.js"/>
 		       </module-infos>       
-		       <all-in-one>
-		            <exclude name="sap/ui/rta/test/controlEnablingCheck.js" />
-		      </all-in-one>
 	        </packaging>
         </appData>
     </library>`;
 
-	const resource = {
+	const library = {
 		name: "a.library",
 		buffer: async () => xml
 	};
-	await resourcePool.addResource(resource);
-	t.is(resourcePool.size, 1);
-	t.deepEqual(resourcePool.resources, [resource]);
+	const eppLib = {name: "sap/ui/core/support/trace/EppLib.js"};
+	// when library is added its xml is processed and eppLib and its dependency is added
+	await resourcePool.addResource(library);
+	await resourcePool.addResource(eppLib);
+	t.is(resourcePool.size, 2);
+	t.deepEqual(resourcePool.resources, [library, eppLib]);
+
+	const libraryInfo = await resourcePool.getModuleInfo("a.library");
+	t.false(libraryInfo.rawModule);
+	t.deepEqual(libraryInfo.dependencies, [], "a.library does not have a dependency");
+
+	const eppLibInfo = await resourcePool.getModuleInfo("sap/ui/core/support/trace/EppLib.js");
+	t.false(eppLibInfo.rawModule);
+	t.deepEqual(eppLibInfo.dependencies, ["sap/ui/thirdparty/jquery.js"], "Contains dependency to jquery");
 });
