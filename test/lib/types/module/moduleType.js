@@ -6,14 +6,14 @@ const moduleType = require("../../../../lib/types/module/moduleType");
 
 const groupLogger = require("@ui5/logger").getGroupLogger("mygroup2");
 
-test("moduleType#format: Project is undefined", async (t) => {
+test("format without project", async (t) => {
 	return moduleType.format(null).catch((error) => {
 		t.is(error.message, "Project is undefined");
 		t.pass();
 	});
 });
 
-test("moduleType#build: Project is undefined", async (t) => {
+test("build without project", async (t) => {
 	const oProject = {
 		metadata: {
 			name: "myproject"

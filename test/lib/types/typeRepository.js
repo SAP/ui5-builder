@@ -8,7 +8,7 @@ test("type retrieval", (t) => {
 	const myType = {};
 	typeRepository.addType("myTypeR", myType);
 	const type = typeRepository.getType("myTypeR");
-	t.is(type, myType);
+	t.is(type, myType, "type is successfully retrieved");
 });
 
 test("Unknown type retrieval", (t) => {

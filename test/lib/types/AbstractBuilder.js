@@ -11,7 +11,7 @@ const AbstractBuilder = require("../../../lib/types/AbstractBuilder");
 test("Instantiate AbstractBuilder", (t) => {
 	const error = t.throws(() => {
 		new AbstractBuilder({});
-	}, TypeError);
+	}, TypeError, "abstract builder cannot be instantiated");
 	t.is(error.message, "Class 'AbstractBuilder' is abstract");
 });
 
@@ -143,7 +143,7 @@ const applicationBTree = {
 	}
 };
 
-class CustomBuilderNoStandardTasks extends AbstractBuilder {
+class CustomBuilderWithoutStandardTasks extends AbstractBuilder {
 	constructor(project = applicationBTree) {
 		super({parentLogger: groupLogger, project});
 	}
@@ -151,13 +151,13 @@ class CustomBuilderNoStandardTasks extends AbstractBuilder {
 
 test("addStandardTasks not overwritten", (t) => {
 	const error = t.throws(() => {
-		new CustomBuilderNoStandardTasks();
-	}, Error);
+		new CustomBuilderWithoutStandardTasks();
+	}, Error, "Has to implement 'addStandardTasks'");
 	t.is(error.message, "Function 'addStandardTasks' is not implemented");
 });
 
 
-class CustomBuilder extends CustomBuilderNoStandardTasks {
+class CustomBuilder extends CustomBuilderWithoutStandardTasks {
 	constructor(project = applicationBTree) {
 		super(project);
 	}
@@ -238,7 +238,6 @@ test("Custom Tasks beforeTask not existing", (t) => {
 	t.is(error.message, "taskRepository: Unknown Task myTask");
 });
 
-
 test("Custom Tasks beforeTask not existing", (t) => {
 	const myProject = Object.assign({}, applicationBTree);
 	myProject.builder = {
@@ -253,7 +252,6 @@ test("Custom Tasks beforeTask not existing", (t) => {
 	t.is(error.message, "Could not find task not-existing, referenced by custom task uglify, " +
 		"to be scheduled for project application.b");
 });
-
 
 test("Custom Tasks beforeTask existing", (t) => {
 	const myProject = Object.assign({}, applicationBTree);
@@ -270,7 +268,6 @@ test("Custom Tasks beforeTask existing", (t) => {
 		"to be scheduled for project application.b");
 });
 
-
 test("Custom Tasks beforeTask existing myStandardTask", (t) => {
 	const myProject = Object.assign({}, applicationBTree);
 	myProject.builder = {
@@ -279,6 +276,6 @@ test("Custom Tasks beforeTask existing myStandardTask", (t) => {
 			"beforeTask": "replaceVersion"
 		}]
 	};
-	const customBuilder = new CustomBuilder( myProject);
+	const customBuilder = new CustomBuilder(myProject);
 	t.truthy(customBuilder, "custom builder can be created");
 });
