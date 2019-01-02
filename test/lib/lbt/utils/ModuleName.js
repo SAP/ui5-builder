@@ -2,7 +2,7 @@ const {test} = require("ava");
 const ModuleName = require("../../../../lib/lbt/utils/ModuleName");
 
 
-test("test ModuleName fromUI5LegacyName", (t) => {
+test("fromUI5LegacyName", (t) => {
 	t.is(ModuleName.fromUI5LegacyName(""), ".js");
 	t.is(ModuleName.fromUI5LegacyName("a/b"), "a/b.js");
 	t.is(ModuleName.fromUI5LegacyName("a.b"), "a/b.js");
@@ -11,10 +11,11 @@ test("test ModuleName fromUI5LegacyName", (t) => {
 	t.is(ModuleName.fromUI5LegacyName("jquery-b", ".mjs"), "jquery-b.mjs");
 	const jQuerythirdParty = "sap.ui.thirdparty.jquery.jquery-b";
 	const jQuerythirdPartyExpected = "sap/ui/thirdparty/jquery/jquery-b.mjs";
-	t.is(ModuleName.fromUI5LegacyName(jQuerythirdParty, ".mjs"), jQuerythirdPartyExpected);
+	t.is(ModuleName.fromUI5LegacyName(jQuerythirdParty, ".mjs"), jQuerythirdPartyExpected,
+		"replaces dots with slashes and adds .mjs ending");
 });
 
-test("test ModuleName toUI5LegacyName", (t) => {
+test("toUI5LegacyName", (t) => {
 	t.is(ModuleName.toUI5LegacyName(".js"), "");
 	t.is(ModuleName.toUI5LegacyName("a/b.js"), "a.b");
 	t.is(ModuleName.toUI5LegacyName("a/b.js"), "a.b");
@@ -27,39 +28,48 @@ test("test ModuleName toUI5LegacyName", (t) => {
 	t.is(error.message, "can't convert a non-JS resource name jquery-b.mjs to a UI5 module name");
 	const jQuerythirdParty = "sap/ui/thirdparty/jquery/jquery-b.js";
 	const jQuerythirdPartyExpected = "sap.ui.thirdparty.jquery.jquery-b";
-	t.is(ModuleName.toUI5LegacyName(jQuerythirdParty), jQuerythirdPartyExpected);
+	t.is(ModuleName.toUI5LegacyName(jQuerythirdParty), jQuerythirdPartyExpected,
+		"replaces slashes with dots and removes .js ending");
 });
 
-test("test ModuleName fromRequireJSName", (t) => {
-	t.is(ModuleName.fromRequireJSName("a"), "a.js");
+test("fromRequireJSName", (t) => {
+	t.is(ModuleName.fromRequireJSName("a"), "a.js", "adds .js ending");
+	t.is(ModuleName.fromRequireJSName("x/a"), "x/a.js", "adds .js ending");
 });
 
-test("test ModuleName toRequireJSName", (t) => {
-	t.is(ModuleName.toRequireJSName("a.js"), "a");
+test("toRequireJSName", (t) => {
+	t.is(ModuleName.toRequireJSName("a.js"), "a", "extracts module name a");
+	t.is(ModuleName.toRequireJSName("x/a.js"), "x/a", "extracts module name x/a");
+
 	const error = t.throws(() => {
 		ModuleName.toRequireJSName("a");
-	}, Error);
+	}, Error, "does not contain a supported ending");
 
 	t.is(error.message, "can't convert a non-JS resource name a to a requireJS module name");
 });
 
-test("test ModuleName getDebugName", (t) => {
-	t.is(ModuleName.getDebugName("a.controller.js"), "a-dbg.controller.js");
-	t.is(ModuleName.getDebugName("a.css"), "a-dbg.css");
-	t.falsy(ModuleName.getDebugName("a"));
+test("getDebugName", (t) => {
+	t.is(ModuleName.getDebugName("a.controller.js"), "a-dbg.controller.js", "'-dbg' is added");
+	t.is(ModuleName.getDebugName("a.css"), "a-dbg.css", "'-dbg' is added");
+	t.falsy(ModuleName.getDebugName("a"), "non supported file ending");
+	t.falsy(ModuleName.getDebugName("a.mjs"), "non supported file ending");
 });
 
-test("test ModuleName getNonDebugName", (t) => {
-	t.is(ModuleName.getNonDebugName("a-dbg.controller.js"), "a.controller.js");
-	t.is(ModuleName.getNonDebugName("a-dbg.css"), "a.css");
-	t.falsy(ModuleName.getNonDebugName("a"));
+test("getNonDebugName", (t) => {
+	t.is(ModuleName.getNonDebugName("a-dbg.controller.js"), "a.controller.js", "contains '-dbg'");
+	t.is(ModuleName.getNonDebugName("a-dbg.css"), "a.css", "contains '-dbg'");
+	t.falsy(ModuleName.getNonDebugName("a"), "does not contain '-dbg'");
+	t.falsy(ModuleName.getNonDebugName("a-dbg.mjs"), "does contain '-dbg' but ending is not supported");
 });
 
-test("test ModuleName resolveRelativePath", (t) => {
+test("resolveRelativePath", (t) => {
+	// paths without relative path operators
 	t.is(ModuleName.resolveRelativePath("a/b/c", "c/x"), "c/x");
 	t.is(ModuleName.resolveRelativePath("a/b/c.g", "c.g/x"), "c.g/x");
 	t.is(ModuleName.resolveRelativePath("a/b/c.g", "gg"), "gg");
 	t.falsy(ModuleName.resolveRelativePath("a"));
+
+	// paths without relative path operators (. or ..)
 	t.is(ModuleName.resolveRelativePath("a/b/c/./g", "./g/./x"), "a/b/c/./g/x");
 	t.is(ModuleName.resolveRelativePath("a/b/c/:/g", "c.g/x"), "c.g/x");
 	t.is(ModuleName.resolveRelativePath("a/b/c/../g", "c.g/x"), "c.g/x");
