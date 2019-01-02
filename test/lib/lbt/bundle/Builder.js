@@ -4,15 +4,19 @@ const Builder = require("../../../../lib/lbt/bundle/Builder");
 const ResourcePool = require("../../../../lib/lbt/resources/ResourcePool");
 
 
-test("createBundle EVOBundleFormat", async (t) => {
+test("createBundle EVOBundleFormat (ui5loader.js)", async (t) => {
 	const pool = new ResourcePool();
 	pool.addResource({
 		name: "ui5loader.js",
-		buffer: async () => ""
+		buffer: async () => "(function(__global) {sap.ui.require = function(){};}(window));"
 	});
 	pool.addResource({
 		name: "jquery.sap.global-dbg.js",
-		buffer: async () => ""
+		buffer: async () => "sap.ui.define([], function(){return {};});"
+	});
+	pool.addResource({
+		name: "myModule.js",
+		buffer: async () => "sap.ui.define([], function(){var mine = {}; return mine;});"
 	});
 
 	const bundleDefinition = {
@@ -20,42 +24,52 @@ test("createBundle EVOBundleFormat", async (t) => {
 		defaultFileTypes: [".js"],
 		sections: [{
 			mode: "preload",
-			filters: ["sap-ui-core.js", "jquery.sap.global-dbg.js"],
-			name: "myname"
+			filters: ["jquery.sap.global-dbg.js"]
 		}, {
 			declareRawModules: undefined,
 			mode: "raw",
-			filters: ["sap-ui-core.js", "jquery.sap.global-dbg.js"],
+			filters: ["myModule.js"],
 			sort: undefined
 		}, {
 			mode: "require",
-			filters: ["sap-ui-core.js", "jquery.sap.global-dbg.js"]
+			filters: ["ui5loader.js"]
 		}]
 	};
 
 	const builder = new Builder(pool);
 	const oResult = await builder.createBundle(bundleDefinition, {numberOfParts: 1, decorateBootstrapModule: true});
 	t.is(oResult.name, "Component-preload.js");
-	t.is(oResult.content, `sap.ui.require.preload({
-	"jquery.sap.global-dbg.js":function(){
+	const expectedContent = `window["sap-ui-optimized"] = true;
+sap.ui.require.preload({
+	"jquery.sap.global-dbg.js":function(){sap.ui.define([], function(){return {};});
 }
 });
-sap.ui.requireSync("jquery.sap.global-dbg");
-`);
+sap.ui.define([], function(){var mine = {}; return mine;});
+sap.ui.requireSync("ui5loader");
+`;
+	t.is(oResult.content, expectedContent, "EVOBundleFormat should start with optomization and " +
+		"should contain:" +
+		" preload part from jquery.sap.global-dbg.js" +
+		" raw part from myModule.js" +
+		" require part from ui5loader.js");
 	t.is(oResult.bundleInfo.name, "Component-preload.js");
-	t.is(oResult.bundleInfo.size, 116);
-	t.deepEqual(oResult.bundleInfo.subModules, ["jquery.sap.global-dbg.js"]);
+	t.is(oResult.bundleInfo.size, 241);
+	t.deepEqual(oResult.bundleInfo.subModules, ["jquery.sap.global-dbg.js", "myModule.js"]);
 });
 
-test("createBundle UI5BundleFormat", async (t) => {
+test("createBundle UI5BundleFormat (non ui5loader.js)", async (t) => {
 	const pool = new ResourcePool();
 	pool.addResource({
-		name: "ui5loader.js",
-		buffer: async () => ""
+		name: "sap-ui-core.js",
+		buffer: async () => "(function(__global) {sap.ui.require = function(){};}(window));"
 	});
 	pool.addResource({
 		name: "jquery.sap.global-dbg.js",
-		buffer: async () => ""
+		buffer: async () => "sap.ui.define([], function(){return {};});"
+	});
+	pool.addResource({
+		name: "myModule.js",
+		buffer: async () => "sap.ui.define([], function(){var mine = {}; return mine;});"
 	});
 
 	const bundleDefinition = {
@@ -63,29 +77,36 @@ test("createBundle UI5BundleFormat", async (t) => {
 		defaultFileTypes: [".js", ".fragment.xml", ".view.xml", ".properties", ".json"],
 		sections: [{
 			mode: "preload",
-			filters: ["sap-ui-core.js", "jquery.sap.global-dbg.js"],
-			name: "myname"
+			filters: ["jquery.sap.global-dbg.js"]
 		}, {
 			declareRawModules: undefined,
 			mode: "raw",
-			filters: ["sap-ui-core.js", "jquery.sap.global-dbg.js"],
+			filters: ["myModule.js"],
 			sort: undefined
 		}, {
 			mode: "require",
-			filters: ["sap-ui-core.js", "jquery.sap.global-dbg.js"]
+			filters: ["sap-ui-core.js"]
 		}]
 	};
 
 	const builder = new Builder(pool);
 	const oResult = await builder.createBundle(bundleDefinition, {numberOfParts: 1, decorateBootstrapModule: true});
 	t.is(oResult.name, "Component-preload.js");
-	t.is(oResult.content, `sap.ui.require.preload({
-	"jquery.sap.global-dbg.js":function(){
+	const expectedContent = `jQuery.sap.registerPreloadedModules({
+"version":"2.0",
+"modules":{
+	"jquery.sap.global-dbg.js":function(){sap.ui.define([], function(){return {};});
 }
-});
-sap.ui.requireSync("jquery.sap.global-dbg");
-`);
+}});
+sap.ui.define([], function(){var mine = {}; return mine;});
+sap.ui.requireSync("sap-ui-core");
+`;
+	t.is(oResult.content, expectedContent, "Ui5BundleFormat should start with registerPreloadedModules " +
+		"and should contain:" +
+		" preload part from jquery.sap.global-dbg.js" +
+		" raw part from myModule.js" +
+		" require part from sap-ui-core.js");
 	t.is(oResult.bundleInfo.name, "Component-preload.js");
-	t.is(oResult.bundleInfo.size, 116);
-	t.deepEqual(oResult.bundleInfo.subModules, ["jquery.sap.global-dbg.js"]);
+	t.is(oResult.bundleInfo.size, 251);
+	t.deepEqual(oResult.bundleInfo.subModules, ["jquery.sap.global-dbg.js", "myModule.js"]);
 });
