@@ -4,18 +4,27 @@ const topologicalSort = require("../../../../lib/lbt/graph/topologicalSort");
 
 const ModuleInfo = require("../../../../lib/lbt/resources/ModuleInfo");
 
-function createMockPool(dependency) {
+function createMockPool(dependencyMapping) {
 	return {
 		async getModuleInfo(name) {
 			const info = new ModuleInfo(name);
-			info.addDependency(dependency);
+			let dependencies = dependencyMapping[name];
+			if (!dependencies) {
+				return info;
+			}
+			if (!Array.isArray(dependencies)) {
+				dependencies = [dependencies];
+			}
+			dependencies.forEach((dep) => {
+				info.addDependency(dep);
+			});
 			return info;
 		}
 	};
 }
 
 test("dominator tree", async (t) => {
-	const pool = createMockPool("mydep");
+	const pool = createMockPool({"myroot": "mydep"});
 	const roots = ["myroot", "mydep"];
 	const topologicalSortResult = await topologicalSort(pool, roots);
 	t.deepEqual(topologicalSortResult, ["mydep", "myroot"]);
@@ -23,18 +32,7 @@ test("dominator tree", async (t) => {
 
 
 test("cyclic dependencies", async (t) => {
-	t.plan(2);
-	const pool = {
-		async getModuleInfo(name) {
-			const info = new ModuleInfo(name);
-			if (name === "third") {
-				info.addDependency("mydep", false);
-			} else if (name === "mydep") {
-				info.addDependency("third", false);
-			}
-			return info;
-		}
-	};
+	const pool = createMockPool({"third": "mydep", "mydep": "third"});
 	const roots = ["myroot", "mydep", "third"];
 	const error = await t.throws(topologicalSort(pool, roots));
 	t.deepEqual(error.message, "failed to resolve cyclic dependencies: mydep,third");
