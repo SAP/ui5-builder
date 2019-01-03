@@ -2,7 +2,6 @@ const {test} = require("ava");
 const path = require("path");
 const chai = require("chai");
 const sinon = require("sinon");
-const assert = require("assert");
 chai.use(require("chai-fs"));
 
 const ApplicationFormatter = require("../../../../lib/types/application/ApplicationFormatter");
@@ -174,9 +173,13 @@ const applicationBTree = {
 	}
 };
 
+function clone(o) {
+	return JSON.parse(JSON.stringify(o));
+}
 
-test("ApplicationFormatter#validate: not existing directory webapp for c3", async (t) => {
-	const myProject = Object.assign({}, applicationBTree);
+
+test("validate: not existing directory webapp for c3", async (t) => {
+	const myProject = clone(applicationBTree);
 	const applicationFormatter = new ApplicationFormatter();
 	return applicationFormatter.validate(myProject).catch((error) => {
 		t.true(error.message && error.message.startsWith("Could not find application directory " +
@@ -185,28 +188,34 @@ test("ApplicationFormatter#validate: not existing directory webapp for c3", asyn
 	});
 });
 
-test("ApplicationFormatter#validate: project not defined", async (t) => {
+test("validate: project not defined", async (t) => {
 	const applicationFormatter = new ApplicationFormatter();
+
+	// error is thrown because project is not defined (null)
 	return applicationFormatter.validate(null).catch((error) => {
 		t.is(error.message, "Project is undefined");
 		t.pass();
 	});
 });
 
-test("ApplicationFormatter#validate: empty version", async (t) => {
-	const myProject = Object.assign({}, applicationBTree);
+test("validate: empty version", async (t) => {
+	const myProject = clone(applicationBTree);
 	myProject.version = undefined;
 	const applicationFormatter = new ApplicationFormatter();
+
+	// error is thrown because project's version is not defined
 	return applicationFormatter.validate(myProject).catch((error) => {
 		t.is(error.message, "\"version\" is missing for project application.b");
 		t.pass();
 	});
 });
 
-test("ApplicationFormatter#validate: empty type", async (t) => {
-	const myProject = Object.assign({}, applicationBTree);
+test("validate: empty type", async (t) => {
+	const myProject = clone(applicationBTree);
 	myProject.type = undefined;
 	const applicationFormatter = new ApplicationFormatter();
+
+	// error is thrown because project's type is not defined
 	return applicationFormatter.validate(myProject).catch((error) => {
 		t.is(error.message, "\"type\" configuration is missing for project application.b");
 		t.pass();
@@ -214,33 +223,38 @@ test("ApplicationFormatter#validate: empty type", async (t) => {
 });
 
 
-test("ApplicationFormatter#validate: metadata", async (t) => {
-	const myProject = Object.assign({}, applicationBTree);
+test("validate: empty metadata", async (t) => {
+	const myProject = clone(applicationBTree);
 	myProject.metadata = undefined;
 	const applicationFormatter = new ApplicationFormatter();
+
+	// error is thrown because project's metadata is not defined
 	return applicationFormatter.validate(myProject).catch((error) => {
 		t.is(error.message, "\"metadata.name\" configuration is missing for project application.b");
 		t.pass();
 	});
 });
 
-test("ApplicationFormatter#validate: project resources", async (t) => {
-	const myProject = Object.assign({}, applicationBTree);
+test("validate: project resources", async (t) => {
+	const myProject = clone(applicationBTree);
 	myProject.resources = undefined;
 	const applicationFormatter = new ApplicationFormatter();
+
+	// error is thrown because project's resources are not defined
 	return applicationFormatter.validate(myProject).catch((error) => {
-		assert.ok(error.message && error.message.startsWith("Could not find application directory " +
+		t.true(error.message && error.message.startsWith("Could not find application directory " +
 			"of project application.b: "));
 		t.pass();
 	});
 });
 
-test("ApplicationFormatter#readManifest: check json", async (t) => {
-	const myProject = Object.assign({}, applicationBTree);
+test("readManifest: check applicationVersion", async (t) => {
+	const myProject = clone(applicationBTree);
 	myProject.path = path.join(__dirname, "..", "..", "..", "fixtures", "application.d");
 	const applicationFormatter = new ApplicationFormatter();
 	return applicationFormatter.readManifest(myProject).then((oRes) => {
 		t.is(typeof oRes, "object");
+		t.is(oRes["sap.app"].applicationVersion.version, "1.2.2");
 		t.pass();
 	});
 });
@@ -255,54 +269,78 @@ function createMockProject() {
 			}
 		},
 		"metadata": {
-			"name": "projectname"
+			"name": "projectName"
 		}
 	};
 }
 
-test("ApplicationFormatter#format: readManifest fail", async (t) => {
+test("format: readManifest fails", async (t) => {
 	const applicationFormatter = new ApplicationFormatter();
-	sinon.stub(applicationFormatter, "validate").resolves();
-	sinon.stub(applicationFormatter, "readManifest").rejects();
+	const validateStub = sinon.stub(applicationFormatter, "validate").resolves();
+	const readManifestStub = sinon.stub(applicationFormatter, "readManifest").rejects();
 	const project = createMockProject();
+	// before
+	t.falsy(project.resources.pathMappings);
 	return applicationFormatter.format(project).then((oRes) => {
-		t.falsy(oRes);
+		// after
+		t.is(project.resources.pathMappings["/"], "webapp", "path mappings was still set");
+		validateStub.restore();
+		readManifestStub.restore();
 		t.pass();
 	});
 });
 
-test("ApplicationFormatter#format: No 'sap.app' configuration found", async (t) => {
+test("format: No 'sap.app' configuration found", async (t) => {
 	const applicationFormatter = new ApplicationFormatter();
-	sinon.stub(applicationFormatter, "validate").resolves();
-	sinon.stub(applicationFormatter, "readManifest").resolves({});
+	const validateStub = sinon.stub(applicationFormatter, "validate").resolves();
+	const readManifestStub = sinon.stub(applicationFormatter, "readManifest").resolves({});
 	const project = createMockProject();
+	// before
+	t.falsy(project.metadata.namespace);
+	t.falsy(project.resources.pathMappings);
 	return applicationFormatter.format(project).then((oRes) => {
-		t.is(project.resources.pathMappings["/"], "webapp");
-		t.falsy(oRes);
+		// after
+		t.is(project.resources.pathMappings["/"], "webapp", "path mappings was still set");
+		t.falsy(project.metadata.namespace,
+			"namespace is still falsy since readManifest resolves with an empty object");
+		validateStub.restore();
+		readManifestStub.restore();
 		t.pass();
 	});
 });
 
-test("ApplicationFormatter#format: No application id found", async (t) => {
+test("format: No application id in 'sap.app' configuration found", async (t) => {
 	const applicationFormatter = new ApplicationFormatter();
-	sinon.stub(applicationFormatter, "validate").resolves();
-	sinon.stub(applicationFormatter, "readManifest").resolves({"sap.app": {}});
+	const validateStub = sinon.stub(applicationFormatter, "validate").resolves();
+	const readManifestStub = sinon.stub(applicationFormatter, "readManifest").resolves({"sap.app": {}});
 	const project = createMockProject();
+	// before
+	t.falsy(project.metadata.namespace);
+	t.falsy(project.resources.pathMappings);
 	return applicationFormatter.format(project).then((oRes) => {
-		t.falsy(oRes);
+		// after
+		t.is(project.resources.pathMappings["/"], "webapp", "path mappings was still set");
+		t.falsy(project.metadata.namespace,
+			"namespace is still falsy since readManifest resolves with an empty sap.app");
+		validateStub.restore();
+		readManifestStub.restore();
 		t.pass();
 	});
 });
 
-test("ApplicationFormatter#format: replace id", async (t) => {
+test("format: replace namespace with id", async (t) => {
 	const applicationFormatter = new ApplicationFormatter();
-	sinon.stub(applicationFormatter, "validate").resolves();
-	sinon.stub(applicationFormatter, "readManifest").resolves({"sap.app": {"id": "my.id"}});
+	const validateStub = sinon.stub(applicationFormatter, "validate").resolves();
+	const readManifestStub = sinon.stub(applicationFormatter, "readManifest").resolves({"sap.app": {"id": "my.id"}});
 	const project = createMockProject();
+	// before
+	t.falsy(project.metadata.namespace);
 	return applicationFormatter.format(project).then((oRes) => {
-		t.falsy(oRes);
-		t.is(project.metadata.namespace, "my/id");
+		// after
+		t.is(project.metadata.namespace, "my/id",
+			"namespace was successfully set since readManifest provides the correct object structure");
+		validateStub.restore();
+		readManifestStub.restore();
 		t.pass();
 	});
 });
-
