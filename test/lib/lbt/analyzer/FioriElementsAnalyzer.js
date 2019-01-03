@@ -103,7 +103,6 @@ test("_analyzeManifest: Manifest with entitySet key", async (t) => {
 
 
 test.serial("_analyzeTemplateComponent: Manifest with TemplateAssembler code", async (t) => {
-
 	const moduleInfo = {
 		addDependency: function() {}
 	};
@@ -138,7 +137,6 @@ test.serial("_analyzeTemplateComponent: Manifest with TemplateAssembler code", a
 });
 
 test.serial("_analyzeTemplateComponent: no default template name", async (t) => {
-
 	const moduleInfo = {
 		addDependency: function() {}
 	};
@@ -168,7 +166,6 @@ test.serial("_analyzeTemplateComponent: no default template name", async (t) => 
 });
 
 test.serial("_analyzeTemplateComponent: no default template name", async (t) => {
-
 	const moduleInfo = {
 		addDependency: function() {}
 	};
@@ -205,7 +202,6 @@ test.serial("_analyzeTemplateComponent: no default template name", async (t) => 
 });
 
 test("_analyzeAST: get template name from ast", async (t) => {
-
 	const code = `sap.ui.define(["a", "sap/fe/core/TemplateAssembler"], function(a, TemplateAssembler){   
 		return TemplateAssembler.getTemplateComponent(getMethods,
 		"sap.fe.templates.Page.Component", {
@@ -236,7 +232,6 @@ test("_analyzeAST: get template name from ast", async (t) => {
 });
 
 test("_analyzeAST: no template name from ast", async (t) => {
-
 	const code = `sap.ui.define(["a", "sap/fe/core/TemplateAssembler"], function(a, TemplateAssembler){   
 		return TemplateAssembler.getTemplateComponent(getMethods,
 		"sap.fe.templates.Page.Component", {
