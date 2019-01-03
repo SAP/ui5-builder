@@ -29,7 +29,7 @@ function getEntities(node) {
 }
 
 /**
- * Dominator Tree is currently not being used there the tests are simplistic
+ * Dominator Tree is currently not being used therefore the tests are simplistic
  */
 test("dominator tree", async (t) => {
 	const pool = createMockPool({"myroot": "mydep"});
