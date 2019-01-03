@@ -3,126 +3,21 @@ const path = require("path");
 const chai = require("chai");
 chai.use(require("chai-fs"));
 
-const groupLogger = require("@ui5/logger").getGroupLogger("mygroup");
+const parentLogger = require("@ui5/logger").getGroupLogger("mygroup");
 
 const AbstractBuilder = require("../../../lib/types/AbstractBuilder");
 
 
-test("Instantiate AbstractBuilder", (t) => {
-	const error = t.throws(() => {
-		new AbstractBuilder({});
-	}, TypeError, "abstract builder cannot be instantiated");
-	t.is(error.message, "Class 'AbstractBuilder' is abstract");
-});
-
+function clone(o) {
+	return JSON.parse(JSON.stringify(o));
+}
 
 const applicationBPath = path.join(__dirname, "..", "..", "..", "fixtures", "application.b");
 const applicationBTree = {
 	"id": "application.b",
 	"version": "1.0.0",
 	"path": applicationBPath,
-	"dependencies": [
-		{
-			"id": "library.d",
-			"version": "1.0.0",
-			"path": path.join(applicationBPath, "node_modules", "library.d"),
-			"dependencies": [],
-			"_level": 1,
-			"specVersion": "0.1",
-			"type": "library",
-			"metadata": {
-				"name": "library.d",
-				"copyright": "Some fancy copyright"
-			},
-			"resources": {
-				"configuration": {
-					"paths": {
-						"src": "main/src",
-						"test": "main/test"
-					}
-				},
-				"pathMappings": {
-					"/resources/": "main/src",
-					"/test-resources/": "main/test"
-				}
-			}
-		},
-		{
-			"id": "library.a",
-			"version": "1.0.0",
-			"path": path.join(applicationBPath, "node_modules", "collection", "library.a"),
-			"dependencies": [],
-			"_level": 1,
-			"specVersion": "0.1",
-			"type": "library",
-			"metadata": {
-				"name": "library.a",
-				"copyright": "${copyright}"
-			},
-			"resources": {
-				"configuration": {
-					"paths": {
-						"src": "src",
-						"test": "test"
-					}
-				},
-				"pathMappings": {
-					"/resources/": "src",
-					"/test-resources/": "test"
-				}
-			}
-		},
-		{
-			"id": "library.b",
-			"version": "1.0.0",
-			"path": path.join(applicationBPath, "node_modules", "collection", "library.b"),
-			"dependencies": [],
-			"_level": 1,
-			"specVersion": "0.1",
-			"type": "library",
-			"metadata": {
-				"name": "library.b",
-				"copyright": "${copyright}"
-			},
-			"resources": {
-				"configuration": {
-					"paths": {
-						"src": "src",
-						"test": "test"
-					}
-				},
-				"pathMappings": {
-					"/resources/": "src",
-					"/test-resources/": "test"
-				}
-			}
-		},
-		{
-			"id": "library.c",
-			"version": "1.0.0",
-			"path": path.join(applicationBPath, "node_modules", "collection", "library.c"),
-			"dependencies": [],
-			"_level": 1,
-			"specVersion": "0.1",
-			"type": "library",
-			"metadata": {
-				"name": "library.c",
-				"copyright": "${copyright}"
-			},
-			"resources": {
-				"configuration": {
-					"paths": {
-						"src": "src",
-						"test": "test"
-					}
-				},
-				"pathMappings": {
-					"/resources/": "src",
-					"/test-resources/": "test"
-				}
-			}
-		}
-	],
+	"dependencies": [],
 	"builder": {},
 	"_level": 0,
 	"specVersion": "0.1",
@@ -143,13 +38,21 @@ const applicationBTree = {
 	}
 };
 
+
+test("Instantiation of AbstractBuilder", (t) => {
+	const error = t.throws(() => {
+		new AbstractBuilder({});
+	}, TypeError, "abstract builder cannot be instantiated since it is abstract");
+	t.is(error.message, "Class 'AbstractBuilder' is abstract");
+});
+
 class CustomBuilderWithoutStandardTasks extends AbstractBuilder {
 	constructor(project = applicationBTree) {
-		super({parentLogger: groupLogger, project});
+		super({parentLogger, project});
 	}
 }
 
-test("addStandardTasks not overwritten", (t) => {
+test("Instantiation of class with addStandardTasks not overwritten", (t) => {
 	const error = t.throws(() => {
 		new CustomBuilderWithoutStandardTasks();
 	}, Error, "Has to implement 'addStandardTasks'");
@@ -170,7 +73,7 @@ class CustomBuilder extends CustomBuilderWithoutStandardTasks {
 }
 
 
-test("Add duplicate Task", (t) => {
+test("addTask: Add duplicate Task", (t) => {
 	const customBuilder = new CustomBuilder();
 	const myFunction = function() {};
 	customBuilder.addTask("myTask", myFunction);
@@ -181,8 +84,8 @@ test("Add duplicate Task", (t) => {
 });
 
 
-test("Custom Tasks No name", (t) => {
-	const myProject = Object.assign({}, applicationBTree);
+test("Instantiation with custom task without a name", (t) => {
+	const myProject = clone(applicationBTree);
 	myProject.builder = {
 		"customTasks": [{
 			"name": ""
@@ -194,22 +97,22 @@ test("Custom Tasks No name", (t) => {
 	t.is(error.message, "Missing name for custom task definition of project application.b at index 0");
 });
 
-test("Custom Tasks No beforeTask nor afterTask", (t) => {
-	const myProject = Object.assign({}, applicationBTree);
+test("Instantiation with custom task with neither beforeTask nor afterTask", (t) => {
+	const myProject = clone(applicationBTree);
 	myProject.builder = {
 		"customTasks": [{
 			"name": "myTask"
 		}]
 	};
 	const error = t.throws(() => {
-		new CustomBuilder( myProject);
+		new CustomBuilder(myProject);
 	}, Error);
 	t.is(error.message, "Custom task definition myTask of project application.b defines " +
 		"neither a \"beforeTask\" nor an \"afterTask\" parameter. One must be defined.");
 });
 
-test("Custom Tasks both beforeTask and afterTask", (t) => {
-	const myProject = Object.assign({}, applicationBTree);
+test("Instantiation with custom task with both: beforeTask and afterTask", (t) => {
+	const myProject = clone(applicationBTree);
 	myProject.builder = {
 		"customTasks": [{
 			"name": "myTask",
@@ -224,8 +127,8 @@ test("Custom Tasks both beforeTask and afterTask", (t) => {
 		"both \"beforeTask\" and \"afterTask\" parameters. Only one must be defined.");
 });
 
-test("Custom Tasks beforeTask not existing", (t) => {
-	const myProject = Object.assign({}, applicationBTree);
+test("Instantiation with custom task and task does not exist", (t) => {
+	const myProject = clone(applicationBTree);
 	myProject.builder = {
 		"customTasks": [{
 			"name": "myTask",
@@ -238,8 +141,8 @@ test("Custom Tasks beforeTask not existing", (t) => {
 	t.is(error.message, "taskRepository: Unknown Task myTask");
 });
 
-test("Custom Tasks beforeTask not existing", (t) => {
-	const myProject = Object.assign({}, applicationBTree);
+test("Instantiation with custom task and beforeTask does not exist", (t) => {
+	const myProject = clone(applicationBTree);
 	myProject.builder = {
 		"customTasks": [{
 			"name": "uglify",
@@ -253,23 +156,9 @@ test("Custom Tasks beforeTask not existing", (t) => {
 		"to be scheduled for project application.b");
 });
 
-test("Custom Tasks beforeTask existing", (t) => {
-	const myProject = Object.assign({}, applicationBTree);
-	myProject.builder = {
-		"customTasks": [{
-			"name": "buildThemes",
-			"beforeTask": "uglify"
-		}]
-	};
-	const error = t.throws(() => {
-		new CustomBuilder( myProject);
-	}, Error);
-	t.is(error.message, "Could not find task uglify, referenced by custom task buildThemes, " +
-		"to be scheduled for project application.b");
-});
 
-test("Custom Tasks beforeTask existing myStandardTask", (t) => {
-	const myProject = Object.assign({}, applicationBTree);
+test("Instantiation with custom task", (t) => {
+	const myProject = clone(applicationBTree);
 	myProject.builder = {
 		"customTasks": [{
 			"name": "createDebugFiles",
@@ -278,4 +167,6 @@ test("Custom Tasks beforeTask existing myStandardTask", (t) => {
 	};
 	const customBuilder = new CustomBuilder(myProject);
 	t.truthy(customBuilder, "custom builder can be created");
+	t.deepEqual(Object.keys(customBuilder.tasks),
+		["myStandardTask", "createDebugFiles", "replaceVersion", "createDebugFiles--1"]);
 });

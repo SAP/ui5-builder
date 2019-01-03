@@ -9,7 +9,7 @@ const AbstractFormatter = require("../../../lib/types/AbstractFormatter");
 class CustomFormatter extends AbstractFormatter {
 }
 
-test("non existing dir", (t) => {
+test("dirExists: non existing dir", (t) => {
 	t.plan(1);
 	const nonExistingFile = path.resolve("non-existing");
 	assert.notPathExists(nonExistingFile, "path should not exist");
@@ -18,7 +18,7 @@ test("non existing dir", (t) => {
 	});
 });
 
-test("existing dir", (t) => {
+test("dirExists: existing dir", (t) => {
 	t.plan(1);
 	const parentDirectory = path.resolve(__dirname);
 	assert.isDirectory(parentDirectory, "path is a directory");
@@ -27,7 +27,7 @@ test("existing dir", (t) => {
 	});
 });
 
-test("existing file", (t) => {
+test("dirExists: existing file", (t) => {
 	t.plan(1);
 	const file = path.resolve(__filename);
 	assert.notIsDirectory(file, "path is not a directory");
