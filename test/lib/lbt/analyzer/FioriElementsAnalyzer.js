@@ -3,13 +3,35 @@ const FioriElementsAnalyzer = require("../../../../lib/lbt/analyzer/FioriElement
 const sinon = require("sinon");
 const esprima = require("esprima");
 
-test("analyze: empty pool of resources", async (t) => {
+test("analyze: with Component.js", async (t) => {
 	const emptyPool = {};
 	const analyzer = new FioriElementsAnalyzer(emptyPool);
 	const name = "sap/ui/core/Component.js";
 	const moduleInfo = {};
 	const result = await analyzer.analyze({name}, moduleInfo);
 	t.deepEqual(result, {}, "moduleInfo was not modified");
+});
+
+test("analyze: without manifest", async (t) => {
+	const mockPool = {
+		async findResource() {
+			return {
+				buffer: async () => Promise.reject()
+			};
+		}
+	};
+
+	const moduleInfo = {};
+
+	const analyzer = new FioriElementsAnalyzer(mockPool);
+
+	const stubAnalyzeManifest = sinon.stub(analyzer, "_analyzeManifest").resolves();
+
+	const name = "MyComponent.js";
+	const result = await analyzer.analyze({name}, moduleInfo);
+
+	t.false(stubAnalyzeManifest.called, "_analyzeManifest was not called");
+	t.deepEqual(result, {}, "empty module info object expected since resource was not found (rejects)");
 });
 
 test("analyze: with manifest", async (t) => {
@@ -165,7 +187,7 @@ test.serial("_analyzeTemplateComponent: no default template name", async (t) => 
 	stubParse.restore();
 });
 
-test.serial("_analyzeTemplateComponent: no default template name", async (t) => {
+test.serial("_analyzeTemplateComponent: with template name from pageConfig", async (t) => {
 	const moduleInfo = {
 		addDependency: function() {}
 	};

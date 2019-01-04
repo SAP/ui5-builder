@@ -1,5 +1,7 @@
 const {test} = require("ava");
-
+const sinon = require("sinon");
+const uglify = require("uglify-es");
+const {pd} = require("pretty-data");
 const BundleResolver = require("../../../../lib/lbt/bundle/Resolver");
 const AutoSplitter = require("../../../../lib/lbt/bundle/AutoSplitter");
 const ModuleInfo = require("../../../../lib/lbt/resources/ModuleInfo");
@@ -30,7 +32,7 @@ function createMockPool(dependencies) {
 	};
 }
 
-test("AutoSplitter with numberOfParts 1", async (t) => {
+test("integration: AutoSplitter with numberOfParts 1", async (t) => {
 	const pool = createMockPool(["mydep"]);
 	const autoSplitter = new AutoSplitter(pool, new BundleResolver(pool));
 	const bundleDefinition = {
@@ -56,7 +58,7 @@ test("AutoSplitter with numberOfParts 1", async (t) => {
 	});
 });
 
-test("AutoSplitter with numberOfParts 2", async (t) => {
+test("integration: AutoSplitter with numberOfParts 2", async (t) => {
 	const pool = createMockPool(["a.js", "b.json"]);
 	const autoSplitter = new AutoSplitter(pool, new BundleResolver(pool));
 	const bundleDefinition = {
@@ -124,4 +126,150 @@ test("AutoSplitter with numberOfParts 2", async (t) => {
 			filters: ["a.js", "c.js"]
 		}]
 	}, "second part should contain the other resources");
+});
+
+
+test("_calcMinSize: compressedSize", async (t) => {
+	const pool = {
+		findResourceWithInfo: function() {
+			return {
+				info: {
+					compressedSize: 123,
+					size: 333
+				}
+			};
+		}
+	};
+	const autpSplitter = new AutoSplitter(pool);
+	t.deepEqual(await autpSplitter._calcMinSize("mymodule.js"), 123);
+});
+
+test("_calcMinSize: js resource", async (t) => {
+	const pool = {
+		findResourceWithInfo: function() {
+			return {
+				info: {
+					size: 333,
+					compressedSize: 333
+				},
+				buffer: async () => "var test = 5;"
+			};
+		}
+	};
+	const autpSplitter = new AutoSplitter(pool);
+	t.deepEqual(await autpSplitter._calcMinSize("mymodule.js"), 13);
+});
+
+
+test.serial("_calcMinSize: uglify js resource", async (t) => {
+	const stubUglify = sinon.stub(uglify, "minify").returns({code: "123"});
+	const pool = {
+		findResourceWithInfo: function() {
+			return {
+				info: {
+					size: 333,
+					compressedSize: 333
+				},
+				buffer: async () => "var test = 5;"
+			};
+		}
+	};
+	const autpSplitter = new AutoSplitter(pool);
+	autpSplitter.optimize = true;
+	t.deepEqual(await autpSplitter._calcMinSize("mymodule.js"), 3);
+	stubUglify.restore();
+});
+
+test("_calcMinSize: properties resource", async (t) => {
+	const pool = {
+		findResourceWithInfo: function() {
+			return {
+				buffer: async () => "1234"
+			};
+		}
+	};
+	const autpSplitter = new AutoSplitter(pool);
+	t.deepEqual(await autpSplitter._calcMinSize("mymodule.properties"), 4);
+});
+
+test("_calcMinSize: xml view resource", async (t) => {
+	const pool = {
+		findResourceWithInfo: function() {
+			return {
+				buffer: async () => "12345"
+			};
+		}
+	};
+	const autpSplitter = new AutoSplitter(pool);
+	autpSplitter.optimizeXMLViews = true;
+	t.deepEqual(await autpSplitter._calcMinSize("mymodule.view.xml"), 5);
+});
+
+test("_calcMinSize: xml view resource without optimizeXMLViews", async (t) => {
+	const pool = {
+		findResourceWithInfo: function() {
+			return {
+				buffer: async () => "123456"
+			};
+		}
+	};
+	const autpSplitter = new AutoSplitter(pool);
+	t.deepEqual(await autpSplitter._calcMinSize("mymodule.view.xml"), 6);
+});
+
+test.serial("_calcMinSize: optimize xml view resource", async (t) => {
+	const stubXmlmin = sinon.stub(pd, "xmlmin").returns("xxx123");
+	const pool = {
+		findResourceWithInfo: function() {
+			return {
+				buffer: async () => "xxx"
+			};
+		}
+	};
+	const autpSplitter = new AutoSplitter(pool);
+	autpSplitter.optimizeXMLViews = true;
+	autpSplitter.optimize = true;
+	t.deepEqual(await autpSplitter._calcMinSize("mymodule.view.xml"), 6);
+	stubXmlmin.restore();
+});
+
+test.serial("_calcMinSize: optimize xml view resource and pre tag", async (t) => {
+	const stubXmlmin = sinon.spy(pd, "xmlmin");
+	const pool = {
+		findResourceWithInfo: function() {
+			return {
+				buffer: async () => "<xml><pre>asd</pre>"
+			};
+		}
+	};
+	const autpSplitter = new AutoSplitter(pool);
+	autpSplitter.optimizeXMLViews = true;
+	autpSplitter.optimize = true;
+	t.false(stubXmlmin.called, "xmlmin should not be called");
+	t.deepEqual(await autpSplitter._calcMinSize("mymodule.view.xml"), 19);
+	stubXmlmin.restore();
+});
+
+test("_calcMinSize: no resource", async (t) => {
+	const pool = {
+		findResourceWithInfo: function() {
+			return null;
+		}
+	};
+	const autpSplitter = new AutoSplitter(pool);
+	t.deepEqual(await autpSplitter._calcMinSize("mymodule.properties"), 0);
+});
+
+test("_calcMinSize: unknown resource with info", async (t) => {
+	const pool = {
+		findResourceWithInfo: function() {
+			return {
+				info: {
+					size: 47
+				}
+			};
+		}
+	};
+	const autpSplitter = new AutoSplitter(pool);
+	t.deepEqual(await autpSplitter._calcMinSize("mymodule.mjs"), 47);
 });
