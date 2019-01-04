@@ -24,9 +24,7 @@ const findFiles = (folder) => {
 	});
 };
 
-test("Build library.d with library preload", async (t) => {
-	t.plan(2);
-
+test("integration: build library.d with library preload", async (t) => {
 	const destPath = "./test/tmp/build/library.d/preload";
 	const expectedPath = "./test/expected/build/library.d/preload";
 	const excludedTasks = ["*"];
@@ -44,12 +42,12 @@ test("Build library.d with library preload", async (t) => {
 		assert.directoryDeepEqual(destPath, expectedPath);
 
 		// Check for all file contents
+		t.deepEqual(expectedFiles.length, 4, "4 files are expected");
 		expectedFiles.forEach((expectedFile) => {
 			const relativeFile = path.relative(expectedPath, expectedFile);
 			const destFile = path.join(destPath, relativeFile);
 			assert.fileEqual(destFile, expectedFile);
 		});
-		t.pass();
 	}));
 });
 
@@ -79,9 +77,7 @@ const libraryDTree = {
 	}
 };
 
-test("Build sap.ui.core with library preload", async (t) => {
-	t.plan(2);
-
+test("integration: build sap.ui.core with library preload", async (t) => {
 	const destPath = "./test/tmp/build/sap.ui.core/preload";
 	const expectedPath = "./test/expected/build/sap.ui.core/preload";
 	const excludedTasks = ["*"];
@@ -99,12 +95,12 @@ test("Build sap.ui.core with library preload", async (t) => {
 		assert.directoryDeepEqual(destPath, expectedPath);
 
 		// Check for all file contents
+		t.deepEqual(expectedFiles.length, 6, "6 files are expected");
 		expectedFiles.forEach((expectedFile) => {
 			const relativeFile = path.relative(expectedPath, expectedFile);
 			const destFile = path.join(destPath, relativeFile);
 			assert.fileEqual(destFile, expectedFile);
 		});
-		t.pass();
 	}));
 });
 

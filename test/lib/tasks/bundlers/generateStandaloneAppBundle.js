@@ -23,13 +23,13 @@ const findFiles = (folder) => {
 	});
 };
 
-test("Build application.b standalone", (t) => {
+test("integration: build application.b standalone", async (t) => {
 	const destPath = "./test/tmp/build/application.b/standalone";
 	const expectedPath = "./test/expected/build/application.b/standalone";
 	const excludedTasks = ["*"];
 	const includedTasks = ["generateStandaloneAppBundle"];
 
-	return builder.build({
+	return t.notThrows(builder.build({
 		tree: applicationBTree,
 		destPath,
 		excludedTasks,
@@ -41,13 +41,13 @@ test("Build application.b standalone", (t) => {
 		assert.directoryDeepEqual(destPath, expectedPath);
 
 		// Check for all file contents
+		t.deepEqual(expectedFiles.length, 10, "10 files are expected");
 		expectedFiles.forEach((expectedFile) => {
 			const relativeFile = path.relative(expectedPath, expectedFile);
 			const destFile = path.join(destPath, relativeFile);
 			assert.fileEqual(destFile, expectedFile);
-			t.pass();
 		});
-	});
+	}));
 });
 
 const applicationBTree = {

@@ -101,11 +101,11 @@ test("flexChangesBundler with 2 changes", async (t) => {
 		pathPrefix: "mypath"
 	};
 	const aResult = await flexChangesBundler({resources, options});
-	t.is(aResult.length, 1, "There should be only one element");
+	t.deepEqual(aResult.length, 1, "There should be only one element");
 	const oResult = aResult[0];
 
 	// check path
-	t.deepEqual(oResult.getPath(), "mypath/changes/changes-bundle.json", "path should be generated using options");
+	t.deepEqual(oResult.getPath(), "mypath/changes/changes-bundle.json", "path should be generated from options");
 
 	// check content
 	const content = await oResult.getString();

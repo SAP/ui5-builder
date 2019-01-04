@@ -65,14 +65,14 @@ test("getStringArray", (t) => {
 		ASTUtils.getStringArray(array);
 	}, TypeError, "array contains a number");
 
-	t.is(error.message, "array element is not a string literal:Literal");
+	t.deepEqual(error.message, "array element is not a string literal:Literal");
 
 	const stringArray = esprima.parse("['a', 'x']").body[0].expression;
 	t.deepEqual(ASTUtils.getStringArray(stringArray), ["a", "x"], "array contains only strings");
 });
 
 test("getLocation", (t) => {
-	t.is(ASTUtils.getLocation(), "");
+	t.deepEqual(ASTUtils.getLocation(), "");
 });
 
 test("getPropertyKey", (t) => {

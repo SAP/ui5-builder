@@ -46,11 +46,11 @@ function getPredecessors(node) {
  *
  */
 test("dependency graph with 1 root", async (t) => {
-	const dependencies = {
+	const dependencyMapping = {
 		"myroot": "mydep",
 		"mydep": "superb"
 	};
-	const pool = createMockPool(dependencies);
+	const pool = createMockPool(dependencyMapping);
 	const roots = [{
 		name: "myroot"
 	}];

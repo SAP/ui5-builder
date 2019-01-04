@@ -51,11 +51,23 @@ const applicationBTree = {
 	}
 };
 
+
 test("Instantiation", (t) => {
 	const project = clone(applicationBTree);
 	const appBuilder = new ApplicationBuilder({parentLogger, project});
 	t.truthy(appBuilder);
-	t.is(Object.keys(appBuilder.tasks).length, 10, "ApplicationBuilder is instantiated with 10 initial tasks");
+	t.deepEqual(appBuilder.taskExecutionOrder, [
+		"replaceCopyright",
+		"replaceVersion",
+		"generateFlexChangesBundle",
+		"generateManifestBundle",
+		"generateComponentPreload",
+		"generateStandaloneAppBundle",
+		"generateBundle",
+		"createDebugFiles",
+		"uglify",
+		"generateVersionInfo"
+	], "ApplicationBuilder is instantiated with standard tasks");
 });
 
 test("Instantiation without component preload", (t) => {
@@ -63,7 +75,18 @@ test("Instantiation without component preload", (t) => {
 	project.builder.componentPreload = undefined;
 	const appBuilder = new ApplicationBuilder({parentLogger, project});
 	t.truthy(appBuilder);
-	t.is(Object.keys(appBuilder.tasks).length, 10, "ApplicationBuilder is still instantiated with 10 initial tasks");
+	t.deepEqual(appBuilder.taskExecutionOrder, [
+		"replaceCopyright",
+		"replaceVersion",
+		"generateFlexChangesBundle",
+		"generateManifestBundle",
+		"generateComponentPreload",
+		"generateStandaloneAppBundle",
+		"generateBundle",
+		"createDebugFiles",
+		"uglify",
+		"generateVersionInfo"
+	], "ApplicationBuilder is still instantiated with standard tasks");
 });
 
 test("Instantiation with custom tasks", (t) => {
@@ -74,6 +97,18 @@ test("Instantiation with custom tasks", (t) => {
 	];
 	const appBuilder = new ApplicationBuilder({parentLogger, project});
 	t.truthy(appBuilder);
-	t.is(Object.keys(appBuilder.tasks).length, 12,
-		"ApplicationBuilder is instantiated with 10 initial and 2 custom tasks");
+	t.deepEqual(appBuilder.taskExecutionOrder, [
+		"replaceCopyright",
+		"uglify--1",
+		"replaceVersion",
+		"generateFlexChangesBundle",
+		"generateManifestBundle",
+		"generateComponentPreload",
+		"generateStandaloneAppBundle",
+		"generateBundle",
+		"createDebugFiles",
+		"uglify",
+		"replaceVersion--1",
+		"generateVersionInfo"
+	], "ApplicationBuilder is still instantiated with standard tasks");
 });

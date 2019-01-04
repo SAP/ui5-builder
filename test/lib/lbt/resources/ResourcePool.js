@@ -5,38 +5,49 @@ const ResourceFilterList = require("../../../../lib/lbt/resources/ResourceFilter
 const LibraryFileAnalyzer = require("../../../../lib/lbt/resources/LibraryFileAnalyzer");
 const sinon = require("sinon");
 
-test("findResources with pattern", async (t) => {
+test("findResources: based on pattern", async (t) => {
 	const resourcePool = new ResourcePool();
 
-	const resourcesOfEmptyPool = await resourcePool.findResources(/a/);
-	t.deepEqual(resourcesOfEmptyPool, [], "nothing is found in empty pool");
+	const resourceB = {name: "b"};
+	resourcePool.addResource(resourceB);
 
+	// not found
+	const resourcesOfEmptyPool = await resourcePool.findResources(/a/);
+	t.deepEqual(resourcesOfEmptyPool, [], "nothing is found");
 
 	const resourceA = {name: "a"};
 	resourcePool.addResource(resourceA);
 
+	// found
 	const resources = await resourcePool.findResources(/a/);
 	t.deepEqual(resources, [resourceA], "resource a is found");
 });
 
-test("findResources with ResourceFilterList", async (t) => {
+test("findResources: based on ResourceFilterList", async (t) => {
 	const resourcePool = new ResourcePool();
+
+	const resourceB = {name: "b"};
+	resourcePool.addResource(resourceB);
+
+	// not found
 	const resourcesOfEmptyPool = await resourcePool.findResources(new ResourceFilterList(["a"]));
-	t.deepEqual(resourcesOfEmptyPool, [], "nothing is found in empty pool");
+	t.deepEqual(resourcesOfEmptyPool, [], "nothing is found");
 
 	const resourceA = {name: "a"};
 	resourcePool.addResource(resourceA);
+
+	// found
 	const resources = await resourcePool.findResources(new ResourceFilterList(["a"]));
 	t.deepEqual(resources, [resourceA], "resource a is found");
 });
 
 test("size", async (t) => {
 	const resourcePool = new ResourcePool();
-	t.is(resourcePool.size, 0, "size of empty pool is 0");
+	t.deepEqual(resourcePool.size, 0, "size of empty pool is 0");
 
 	const resourceA = {name: "a"};
 	resourcePool.addResource(resourceA);
-	t.is(resourcePool.size, 1, "size of pool is 1");
+	t.deepEqual(resourcePool.size, 1, "size of pool is 1");
 });
 
 test("resources", async (t) => {
@@ -54,13 +65,24 @@ class ResourcePoolWithRejectingModuleInfo extends ResourcePool {
 	}
 }
 
-test("findResourceWithInfo with rejecting getModuleInfo", async (t) => {
+test("findResourceWithInfo: rejecting getModuleInfo", async (t) => {
 	const resourcePool = new ResourcePoolWithRejectingModuleInfo();
 	const resourceA = {name: "a"};
 	resourcePool.addResource(resourceA);
 	const resource = await resourcePool.findResourceWithInfo("a");
 	t.falsy(resource.info, "in the rejection case the info is not there");
 	t.deepEqual(resource, resourceA, "Although info was rejected resource is still found");
+});
+
+test("findResourceWithInfo", async (t) => {
+	const resourcePool = new ResourcePool();
+	const resourceA = {name: "a"};
+	resourcePool.addResource(resourceA);
+
+	sinon.stub(resourcePool, "getModuleInfo").resolves("myInfo");
+
+	const resource = await resourcePool.findResourceWithInfo("a");
+	t.deepEqual(resource.info, "myInfo", "info is set correctly");
 });
 
 test("getModuleInfo", async (t) => {
@@ -78,7 +100,7 @@ test("getModuleInfo", async (t) => {
 	t.deepEqual(jsResource.subModules, [], "does not contain submodules");
 });
 
-test("getModuleInfo with determineDependencyInfo for js templateAssembler code", async (t) => {
+test("getModuleInfo: determineDependencyInfo for js templateAssembler code", async (t) => {
 	const resourcePool = new ResourcePool();
 	const code = `sap.ui.define(["a", "sap/fe/core/TemplateAssembler"], function(a, TemplateAssembler){   
 	return TemplateAssembler.getTemplateComponent(getMethods,
@@ -107,7 +129,7 @@ test("getModuleInfo with determineDependencyInfo for js templateAssembler code",
 	t.deepEqual(jsResource.subModules, []);
 });
 
-test("getModuleInfo with determineDependencyInfo for xml control and fragment", async (t) => {
+test("getModuleInfo: determineDependencyInfo for xml control and fragment", async (t) => {
 	const resourcePool = new ResourcePool();
 	const xmlFragment = `<HBox xmlns:m="sap.m" xmlns:l="sap.ui.layout" controllerName="myController">
 		<items>
@@ -144,7 +166,7 @@ test("getModuleInfo with determineDependencyInfo for xml control and fragment", 
 	t.deepEqual(xmlFragmentResource.subModules, []);
 });
 
-test("getModuleInfo with determineDependencyInfo for xml view", async (t) => {
+test("getModuleInfo: determineDependencyInfo for xml view", async (t) => {
 	const resourcePool = new ResourcePool();
 	const xmlView = `<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns:m="sap.m" xmlns:l="sap.ui.layout" 
 		controllerName="myController">
@@ -180,7 +202,7 @@ test("addResource twice", async (t) => {
 	t.is(resourcePool._resourcesByName.size, 1, "resource a was added to _resourcesByName map");
 });
 
-test.serial("addResource library", async (t) => {
+test.serial("addResource: library", async (t) => {
 	const resourcePool = new ResourcePool();
 
 	const stubGetDependencyInfos = sinon.stub(LibraryFileAnalyzer, "getDependencyInfos").returns({

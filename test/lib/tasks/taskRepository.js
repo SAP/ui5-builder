@@ -13,7 +13,7 @@ test("Unknown task retrieval", (t) => {
 	const error = t.throws(() => {
 		taskRepository.getTask("not-existing");
 	}, Error);
-	t.is(error.message, "taskRepository: Unknown Task not-existing");
+	t.deepEqual(error.message, "taskRepository: Unknown Task not-existing");
 });
 
 test("Duplicate task", (t) => {
@@ -22,5 +22,5 @@ test("Duplicate task", (t) => {
 	const error = t.throws(() => {
 		taskRepository.addTask("myTask", myTask);
 	}, Error);
-	t.is(error.message, "taskRepository: Task myTask already registered");
+	t.deepEqual(error.message, "taskRepository: Task myTask already registered");
 });

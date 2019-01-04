@@ -23,7 +23,7 @@ function createMockPool(dependencyMapping) {
 	};
 }
 
-test("dominator tree", async (t) => {
+test("topologicalSort", async (t) => {
 	const pool = createMockPool({"myroot": "mydep"});
 	const roots = ["myroot", "mydep"];
 	const topologicalSortResult = await topologicalSort(pool, roots);
@@ -34,6 +34,6 @@ test("dominator tree", async (t) => {
 test("cyclic dependencies", async (t) => {
 	const pool = createMockPool({"third": "mydep", "mydep": "third"});
 	const roots = ["myroot", "mydep", "third"];
-	const error = await t.throws(topologicalSort(pool, roots));
+	const error = await t.throws(topologicalSort(pool, roots), Error);
 	t.deepEqual(error.message, "failed to resolve cyclic dependencies: mydep,third");
 });
