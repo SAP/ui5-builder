@@ -14,40 +14,40 @@ function clone(o) {
 
 const applicationBPath = path.join(__dirname, "..", "..", "..", "fixtures", "application.b");
 const applicationBTree = {
-	"id": "application.b",
-	"version": "1.0.0",
-	"path": applicationBPath,
-	"dependencies": [],
-	"builder": {
-		"bundles": [{
-			"bundleDefinition": {
-				"name": "application/h/sectionsA/customBundle.js",
-				"defaultFileTypes": [".js"],
-				"sections": [{
-					"mode": "preload",
-					"filters": [
+	id: "application.b",
+	version: "1.0.0",
+	path: applicationBPath,
+	dependencies: [],
+	builder: {
+		bundles: [{
+			bundleDefinition: {
+				name: "application/h/sectionsA/customBundle.js",
+				defaultFileTypes: [".js"],
+				sections: [{
+					mode: "preload",
+					filters: [
 						"application/h/sectionsA/",
 						"!application/h/sectionsA/section2**",
 					]
 				}],
-				"sort": true
+				sort: true
 			},
-			"bundleOptions": {
-				"optimize": true,
-				"usePredefinedCalls": true
+			bundleOptions: {
+				optimize: true,
+				usePredefinedCalls: true
 			}
 		}],
-		"componentPreload": {
-			"paths": [
+		componentPreload: {
+			paths: [
 				"application/g/**/Component.js"
 			]
 		}
 	},
-	"specVersion": "0.1",
-	"type": "application",
-	"metadata": {
-		"name": "application.b",
-		"namespace": "id1"
+	specVersion: "0.1",
+	type: "application",
+	metadata: {
+		name: "application.b",
+		namespace: "id1"
 	}
 };
 

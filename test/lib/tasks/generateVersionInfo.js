@@ -79,7 +79,7 @@ async function assertCreatedVersionInfo(t, oExpectedVersionInfo, options) {
 	t.deepEqual(currentVersionInfo, oExpectedVersionInfo, "Correct content");
 }
 
-test("Library without i18n bundle file", async (t) => {
+test("integration: Library without i18n bundle file", async (t) => {
 	t.context.workspace = createWorkspace();
 	t.context.dependencies = createDependencies();
 
@@ -114,7 +114,7 @@ test("Library without i18n bundle file", async (t) => {
 	});
 });
 
-test("Library without i18n bundle file failure", async (t) => {
+test("integration: Library without i18n bundle file failure", async (t) => {
 	t.context.workspace = createWorkspace();
 	t.context.dependencies = createDependencies();
 
