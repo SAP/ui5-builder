@@ -3,6 +3,7 @@ const path = require("path");
 const chai = require("chai");
 const sinon = require("sinon");
 chai.use(require("chai-fs"));
+const mock = require("mock-require");
 
 test.afterEach.always((t) => {
 	sinon.restore();
@@ -121,19 +122,67 @@ test("format: copyright already configured", async (t) => {
 	t.deepEqual(myProject.metadata.copyright, libraryETree.metadata.copyright, "Copyright was not altered");
 });
 
-/*
-test("format: no dot library file", async (t) => {
+
+test.serial("format: no dot library file", async (t) => {
 	const myProject = clone(libraryETree);
 	myProject.metadata.copyright = undefined;
+
+
+	mock("globby", function(name) {
+		t.deepEqual(name, "**/.library", "Glob for .library files");
+		return Promise.resolve([]);
+	});
+	mock.reRequire("globby");
+
+
+	const log = require("@ui5/logger");
+	const loggerInstance = log.getLogger("types:library:LibraryFormatter");
+
+	mock("@ui5/logger", {
+		getLogger: () => loggerInstance
+	});
+	mock.reRequire("@ui5/logger");
+	const loggerSpy = sinon.spy(loggerInstance, "verbose");
+
+
+	const LibraryFormatter = mock.reRequire("../../../../lib/types/library/LibraryFormatter");
+
 	const libraryFormatter = new LibraryFormatter();
 	sinon.stub(libraryFormatter, "validate").resolves();
-	// sinon.stub(libraryFormatter, "glob").resolves([]);
-	await libraryFormatter.format(myProject);
-	// TODO stub glob and logger and check it
-	t.falsy(myProject.metadata.copyright);
-});*/
 
-// TODO stub glob and test exception when multiple .library files are found
+
+	await libraryFormatter.format(myProject);
+	t.deepEqual(loggerSpy.callCount, 2, "2 calls to verbose should be done");
+	t.true(loggerSpy.getCalls().map((call) => call.args[0]).includes(
+		"Could not find .library file for project library.e"), "should contain message for .library");
+	loggerSpy.restore();
+	mock.stop("globby");
+	mock.stop("@ui5/logger");
+});
+
+
+test.serial("format: multiple dot library file", async (t) => {
+	const myProject = clone(libraryETree);
+	myProject.metadata.copyright = undefined;
+
+
+	mock("globby", function(name) {
+		t.deepEqual(name, "**/.library", "Glob for .library files");
+		return Promise.resolve(["folder1/.library", "folder2/.library"]);
+	});
+	mock.reRequire("globby");
+
+	const LibraryFormatter = mock.reRequire("../../../../lib/types/library/LibraryFormatter");
+
+	const libraryFormatter = new LibraryFormatter();
+	sinon.stub(libraryFormatter, "validate").resolves();
+
+
+	const error = await t.throws(libraryFormatter.format(myProject));
+	t.deepEqual(error.message, "Found multiple (2) .library files for project library.e",
+		"Error message for 2 .library files expectzed");
+	mock.stop("globby");
+});
 
 test("format: takes copyright from .library", async (t) => {
 	const myProject = clone(libraryETree);
