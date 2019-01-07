@@ -1,37 +1,36 @@
 const {test} = require("ava");
-const path = require("path");
-const chai = require("chai");
-chai.use(require("chai-fs"));
-const assert = chai.assert;
+const sinon = require("sinon");
+const fs = require("graceful-fs");
+
+test.afterEach.always((t) => {
+	sinon.restore();
+});
 
 const AbstractFormatter = require("../../../lib/types/AbstractFormatter");
 
 class CustomFormatter extends AbstractFormatter {
 }
 
-test("dirExists: non existing dir", (t) => {
-	t.plan(1);
-	const nonExistingFile = path.resolve("non-existing");
-	assert.notPathExists(nonExistingFile, "path should not exist");
-	return new CustomFormatter().dirExists(nonExistingFile).then((bExists) => {
-		t.false(bExists, "non-existing does not exist");
-	});
+test.serial("dirExists: existing dir stat rejects", async (t) => {
+	sinon.stub(fs, "stat").callsArgWith(1, {code: "MYERROR"});
+	const error = await t.throws(new CustomFormatter().dirExists("non-existing"));
+	t.deepEqual(error.code, "MYERROR", "error code MYERROR when reading dir");
 });
 
-test("dirExists: existing dir", (t) => {
-	t.plan(1);
-	const parentDirectory = path.resolve(__dirname);
-	assert.isDirectory(parentDirectory, "path is a directory");
-	return new CustomFormatter().dirExists(parentDirectory).then((bExists) => {
-		t.true(bExists, "directory __dirname always exists");
-	});
+test.serial("dirExists: non existing dir", async (t) => {
+	sinon.stub(fs, "stat").callsArgWith(1, {code: "ENOENT"});
+	const bExists = await new CustomFormatter().dirExists("non-existing");
+	t.false(bExists, "non-existing does not exist");
 });
 
-test("dirExists: existing file", (t) => {
-	t.plan(1);
-	const file = path.resolve(__filename);
-	assert.notIsDirectory(file, "path is not a directory");
-	return new CustomFormatter().dirExists(file).then((bExists) => {
-		t.false(bExists, "file __filename exists but ");
-	});
+test.serial("dirExists: existing dir", async (t) => {
+	sinon.stub(fs, "stat").callsArgWith(1, null, {isDirectory: () => true});
+	const bExists = await new CustomFormatter().dirExists("dir");
+	t.true(bExists, "directory exists");
+});
+
+test.serial("dirExists: existing file", async (t) => {
+	sinon.stub(fs, "stat").callsArgWith(1, null, {isDirectory: () => false});
+	const bExists = await new CustomFormatter().dirExists("file");
+	t.false(bExists, "file exists but is not a directory");
 });
