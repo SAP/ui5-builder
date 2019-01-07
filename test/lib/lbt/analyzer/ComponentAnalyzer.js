@@ -1,7 +1,24 @@
 const {test} = require("ava");
+const path = require("path");
 const ComponentAnalyzer = require("../../../../lib/lbt/analyzer/ComponentAnalyzer");
 
 const sinon = require("sinon");
+
+function createMockPool(relPath, manifest) {
+	const expectedPath = path.join(relPath, "manifest.json");
+	return {
+		async findResource(name) {
+			if (name !== expectedPath) {
+				throw new Error(`unexpected resource name: ${name}, expected ${expectedPath}`);
+			}
+			return {
+				async buffer() {
+					return JSON.stringify(manifest);
+				}
+			};
+		}
+	};
+}
 
 test("routing with empty config, routes, targets", async (t) => {
 	const mockManifest = {
@@ -315,7 +332,6 @@ test("rootView with string", (t) => {
 });
 
 
-
 test("analyze: with Component.js", async (t) => {
 	const emptyPool = {};
 	const analyzer = new ComponentAnalyzer(emptyPool);
@@ -383,11 +399,9 @@ test("_analyzeManifest: empty Manifest", async (t) => {
 	const stubAddDependency = sinon.spy(moduleInfo, "addDependency");
 
 	const analyzer = new ComponentAnalyzer();
-	const stubVisitRoute = sinon.stub(analyzer, "_visitRoute").returns();
 
 	await analyzer._analyzeManifest(manifest, moduleInfo);
 
-	t.false(stubVisitRoute.called, "_visitRoute was called once");
 	t.false(stubAddDependency.called, "addDependency was called once");
 });
 
@@ -419,33 +433,13 @@ test("_analyzeManifest: Manifest with routing and routes array", async (t) => {
 
 	const analyzer = new ComponentAnalyzer();
 
-	const stubVisitRoute = sinon.stub(analyzer, "_visitRoute").returns();
-
 	await analyzer._analyzeManifest(manifest, moduleInfo);
 
-	t.true(stubVisitRoute.calledOnce, "_visitRoute was called once");
-	t.deepEqual(stubVisitRoute.getCall(0).args[0], {
-		name: "test",
-		target: "test"
-	}, "_visitRoute should be called with the route");
-
-	t.deepEqual(stubVisitRoute.getCall(0).args[1], {
-		config: {
-			viewPath: "test.view",
-			viewType: "XML"
-		},
-		routes: [
-			{
-				name: "test",
-				target: "test"
-			}
-		],
-		targets: {
-			test: {viewName: "App"}
-		}
-	}, "_visitRoute should be called with routing");
-
-	t.false(stubAddDependency.called, "addDependency was not called");
+	t.deepEqual(stubAddDependency.callCount, 2, "addDependency was called twice");
+	t.deepEqual(stubAddDependency.getCall(0).args[0], "sap/ui/core/routing/Router.js",
+		"addDependency should be called with the router dependency name");
+	t.deepEqual(stubAddDependency.getCall(1).args[0], "test/view/App.view.xml",
+		"addDependency should be called with the app dependency name");
 });
 
 test("_analyzeManifest: Manifest with routing and routes object", async (t) => {
@@ -475,31 +469,13 @@ test("_analyzeManifest: Manifest with routing and routes object", async (t) => {
 
 	const analyzer = new ComponentAnalyzer();
 
-	const stubVisitRoute = sinon.stub(analyzer, "_visitRoute").returns();
-
 	await analyzer._analyzeManifest(manifest, moduleInfo);
 
-	t.true(stubVisitRoute.calledOnce, "_visitRoute was called once");
-	t.deepEqual(stubVisitRoute.getCall(0).args[0], {
-		target: "test"
-	}, "_visitRoute should be called with the route");
-
-	t.deepEqual(stubVisitRoute.getCall(0).args[1], {
-		config: {
-			viewPath: "test.view",
-			viewType: "XML"
-		},
-		routes: {
-			test: {
-				target: "test"
-			}
-		},
-		targets: {
-			test: {viewName: "App"}
-		}
-	}, "_visitRoute should be called with routing");
-
-	t.false(stubAddDependency.called, "addDependency was not called");
+	t.deepEqual(stubAddDependency.callCount, 2, "addDependency was called twice");
+	t.deepEqual(stubAddDependency.getCall(0).args[0], "sap/ui/core/routing/Router.js",
+		"addDependency should be called with the router dependency name");
+	t.deepEqual(stubAddDependency.getCall(1).args[0], "test/view/App.view.xml",
+		"addDependency should be called with the app dependency name");
 });
 
 test("_analyzeManifest: Manifest with rootview object", async (t) => {
@@ -616,37 +592,5 @@ test("_analyzeManifest: Manifest with models", async (t) => {
 
 	t.true(stubAddDependency.calledOnce, "addDependency was called once");
 	t.deepEqual(stubAddDependency.getCall(0).args[0], "sap/ui/model/resource/ResourceModel.js",
-		"addDependency should be called with the dependency name");
-});
-
-test("_visitRoute: routing", async (t) => {
-	const routing = {
-		config: {
-			viewPath: "test.view",
-			viewType: "XML"
-		},
-		routes: {
-			test: {
-				target: "test"
-			}
-		},
-		targets: {
-			test: {
-				viewName: "App"
-			}
-		}
-	};
-
-	const moduleInfo = {
-		addDependency: function() {}
-	};
-	const stubAddDependency = sinon.spy(moduleInfo, "addDependency");
-
-	const analyzer = new ComponentAnalyzer();
-
-	await analyzer._visitRoute(routing.routes.test, routing, moduleInfo);
-
-	t.true(stubAddDependency.calledOnce, "addDependency was called once");
-	t.deepEqual(stubAddDependency.getCall(0).args[0], "test/view/App.view.xml",
 		"addDependency should be called with the dependency name");
 });
