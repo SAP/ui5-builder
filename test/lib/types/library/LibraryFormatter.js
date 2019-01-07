@@ -155,7 +155,6 @@ test.serial("format: no dot library file", async (t) => {
 	t.deepEqual(loggerSpy.callCount, 2, "2 calls to verbose should be done");
 	t.true(loggerSpy.getCalls().map((call) => call.args[0]).includes(
 		"Could not find .library file for project library.e"), "should contain message for .library");
-	loggerSpy.restore();
 	mock.stop("globby");
 	mock.stop("@ui5/logger");
 });
