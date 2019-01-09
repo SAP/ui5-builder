@@ -152,7 +152,7 @@ test.serial("Replaces bootstrap src of multiple resources", async (t) => {
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 });
 
-test.serial("Logs warning when bootstrap script can't be found", async (t) => {
+test.serial("Logs warning when bootstrap script can't be found due to missing ID", async (t) => {
 	// Processor should only detect script tags with id=sap-ui-bootstrap
 	// even when a script with sap-ui-core.js could be found.
 	const input = `
@@ -183,7 +183,42 @@ test.serial("Logs warning when bootstrap script can't be found", async (t) => {
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
 
 	t.deepEqual(t.context.logWarnSpy.callCount, 1, "One warning should be logged");
-	t.true(t.context.logWarnSpy.calledWith("Could not find bootstrap script tag with id=sap-ui-bootstrap"),
+	t.true(t.context.logWarnSpy.calledWith("Skipping bootstrap transformation. Could not find bootstrap script tag with id=sap-ui-bootstrap."),
+		"Warning about missing bootstrap script tag should be logged");
+});
+
+test.serial("Logs warning when bootstrap script can't be found due to wrong tag", async (t) => {
+	// Processor should only detect script tags with id=sap-ui-bootstrap
+	// even when a script with sap-ui-core.js could be found.
+	const input = `
+<!DOCTYPE html>
+<html>
+<head>
+	<div id="sap-ui-bootstrap" src="bar.js">
+	</div>
+</head>
+<body>
+</body>
+</html>`;
+
+	const resource = {
+		getString: () => Promise.resolve(input),
+		setString: (actual) => {
+			t.fail("Resource should not be modified!");
+		}
+	};
+
+	const processedResources = await bootstrapHtmlTransformer({
+		resources: [resource],
+		options: {
+			src: "bar.js"
+		}
+	});
+
+	t.deepEqual(processedResources, [resource], "Input resource is returned");
+
+	t.deepEqual(t.context.logWarnSpy.callCount, 1, "One warning should be logged");
+	t.true(t.context.logWarnSpy.calledWith("Skipping bootstrap transformation. Could not find bootstrap script tag with id=sap-ui-bootstrap."),
 		"Warning about missing bootstrap script tag should be logged");
 });
 
@@ -208,7 +243,7 @@ console.log("This is not HTML!")`;
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
 
 	t.deepEqual(t.context.logWarnSpy.callCount, 1, "One warning should be logged");
-	t.true(t.context.logWarnSpy.calledWith("Could not find bootstrap script tag with id=sap-ui-bootstrap"),
+	t.true(t.context.logWarnSpy.calledWith("Skipping bootstrap transformation. Could not find bootstrap script tag with id=sap-ui-bootstrap."),
 		"Warning about missing bootstrap script tag should be logged");
 });
 
@@ -243,6 +278,6 @@ test.serial("Logs warning when multiple bootstrap scripts are found", async (t) 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
 
 	t.deepEqual(t.context.logWarnSpy.callCount, 1, "One warning should be logged");
-	t.true(t.context.logWarnSpy.calledWith("Found multiple bootstrap script tags with id=sap-ui-bootstrap"),
+	t.true(t.context.logWarnSpy.calledWith("Skipping bootstrap transformation. Found multiple bootstrap script tags with id=sap-ui-bootstrap."),
 		"Warning about multiple bootstrap script tags should be logged");
 });
