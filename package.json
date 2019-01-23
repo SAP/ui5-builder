@@ -99,7 +99,7 @@
 		"escope": "^3.6.0",
 		"esprima": "^4.0.1",
 		"estraverse": "^4.2.0",
-		"globby": "^7.1.1",
+		"globby": "^9.0.0",
 		"graceful-fs": "^4.1.15",
 		"less-openui5": "^0.6.0",
 		"pretty-data": "^0.40.0",
