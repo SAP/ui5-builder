@@ -8,8 +8,9 @@ test("generateJsdocConfig", async (t) => {
 	const res = await jsdocGenerator._generateJsdocConfig({
 		sourcePath: "/some/source/path",
 		targetPath: "/some/target/path",
+		tmpPath: "/some/tmp/path",
 		namespace: "some/namespace",
-		libraryName: "some.namespace",
+		projectName: "some.namespace",
 		version: "1.0.0",
 		variants: ["apijson"]
 	});
@@ -25,7 +26,8 @@ test("generateJsdocConfig", async (t) => {
 			"template": "${jsdocGeneratorPath}/ui5/template",
 			"ui5": {
 				"saveSymbols": true
-			}
+			},
+			"destination": "/some/tmp/path"
 		},
 		"templates": {
 			"ui5": {
@@ -40,14 +42,14 @@ test("generateJsdocConfig", async (t) => {
 });
 
 test.serial("writeJsdocConfig", async (t) => {
-	mock("fs", {
+	mock("graceful-fs", {
 		writeFile: (configPath, configContent, callback) => {
 			t.deepEqual(configPath, "/some/path/jsdoc-config.json", "Correct config path supplied");
 			t.deepEqual(configContent, "some config", "Correct config content supplied");
 			callback();
 		}
 	});
-	mock.reRequire("fs");
+	mock.reRequire("graceful-fs");
 
 	// Re-require tested module
 	const jsdocGenerator = mock.reRequire("../../../../lib/processors/jsdoc/jsdocGenerator");
@@ -55,7 +57,7 @@ test.serial("writeJsdocConfig", async (t) => {
 
 	t.deepEqual(res, "/some/path/jsdoc-config.json", "Correct config path returned");
 
-	mock.stop("fs");
+	mock.stop("graceful-fs");
 });
 
 test.serial("buildJsdoc", async (t) => {
