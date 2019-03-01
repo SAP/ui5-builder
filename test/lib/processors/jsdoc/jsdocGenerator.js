@@ -102,3 +102,96 @@ test.serial("buildJsdoc", async (t) => {
 	}));
 	t.deepEqual(error.message, "JSDoc child process closed with code 2");
 });
+
+test.serial("jsdocGenerator", async (t) => {
+	const generateJsdocConfigStub = sinon.stub(jsdocGenerator, "_generateJsdocConfig").resolves("some config");
+	const writeJsdocConfigStub = sinon.stub(jsdocGenerator, "_writeJsdocConfig").resolves("/some/config/path");
+	const buildJsdocStub = sinon.stub(jsdocGenerator, "_buildJsdoc").resolves();
+	const byPathStub = sinon.stub().resolves("some resource");
+	const createAdapterStub = sinon.stub(require("@ui5/fs").resourceFactory, "createAdapter").returns({
+		byPath: byPathStub
+	});
+
+	const res = await jsdocGenerator({
+		sourcePath: "/some/source/path",
+		targetPath: "/some/target/path",
+		tmpPath: "/some/tmp/path",
+		options: {
+			projectName: "some.project.name",
+			version: "1.0.0"
+		}
+	});
+
+	t.deepEqual(res.length, 1, "Returned 1 resource");
+	t.deepEqual(res[0], "some resource", "Returned 1 resource");
+
+	t.deepEqual(generateJsdocConfigStub.callCount, 1, "generateJsdocConfig called once");
+	t.deepEqual(generateJsdocConfigStub.getCall(0).args[0], {
+		targetPath: "/some/target/path",
+		tmpPath: "/some/tmp/path",
+		namespace: "some/project/name",
+		projectName: "some.project.name",
+		version: "1.0.0",
+		variants: ["apijson"]
+	}, "generateJsdocConfig called with correct arguments");
+
+	t.deepEqual(writeJsdocConfigStub.callCount, 1, "writeJsdocConfig called once");
+	t.deepEqual(writeJsdocConfigStub.getCall(0).args[0], "/some/tmp/path",
+		"writeJsdocConfig called with correct tmpPath argument");
+	t.deepEqual(writeJsdocConfigStub.getCall(0).args[1], "some config",
+		"writeJsdocConfig called with correct config argument");
+
+	t.deepEqual(buildJsdocStub.callCount, 1, "buildJsdoc called once");
+	t.deepEqual(buildJsdocStub.getCall(0).args[0], {
+		sourcePath: "/some/source/path",
+		configPath: "/some/config/path"
+	}, "buildJsdoc called with correct arguments");
+
+	t.deepEqual(createAdapterStub.getCall(0).args[0], {
+		fsBasePath: "/some/target/path",
+		virBasePath: "/"
+	}, "createAdapter called with correct arguments");
+	t.deepEqual(byPathStub.getCall(0).args[0], "/test-resources/some/project/name/designtime/api.json",
+		"byPath called with correct path for api.json");
+
+
+	/* Test branch: empty variants array*/
+	await jsdocGenerator({
+		sourcePath: "/some/source/path",
+		targetPath: "/some/target/path",
+		tmpPath: "/some/tmp/path",
+		options: {
+			projectName: "some.project.name",
+			version: "1.0.0",
+			variants: []
+		}
+	});
+
+	t.deepEqual(generateJsdocConfigStub.getCall(1).args[0].variants, ["apijson"],
+		"generateJsdocConfig called with correct variants arguments");
+
+
+	/* Test branch: variants array set + sdkBuild requested*/
+	await jsdocGenerator({
+		sourcePath: "/some/source/path",
+		targetPath: "/some/target/path",
+		tmpPath: "/some/tmp/path",
+		options: {
+			projectName: "some.project.name",
+			version: "1.0.0",
+			variants: ["pony"],
+			sdkBuild: true
+		}
+	});
+
+	t.deepEqual(generateJsdocConfigStub.getCall(2).args[0].variants, ["pony"],
+		"generateJsdocConfig called with correct variants arguments");
+
+	sinon.restore();
+});
+
+test("jsdocGenerator missing parameters", async (t) => {
+	const error = await t.throws(jsdocGenerator());
+	t.deepEqual(error.message, "[jsdocGenerator]: One or more mandatory parameters not provided",
+		"Correct error message thrown");
+});
