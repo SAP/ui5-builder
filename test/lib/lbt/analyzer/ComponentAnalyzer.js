@@ -372,7 +372,7 @@ test("analyze: without manifest", async (t) => {
 	const mockPool = {
 		async findResource() {
 			return {
-				buffer: async () => Promise.reject()
+				buffer: () => Promise.reject(new Error("File not found"))
 			};
 		}
 	};
