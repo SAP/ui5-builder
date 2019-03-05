@@ -92,6 +92,8 @@
 		"url": "git@github.com:SAP/ui5-builder.git"
 	},
 	"dependencies": {
+		"@babel/core": "^7.3.4",
+		"@babel/preset-env": "^7.3.4",
 		"@ui5/fs": "^1.0.1",
 		"@ui5/logger": "^1.0.0",
 		"cheerio": "^0.22.0",
