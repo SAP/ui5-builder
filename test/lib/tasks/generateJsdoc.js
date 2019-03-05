@@ -11,7 +11,7 @@ test.beforeEach((t) => {
 });
 
 test.afterEach.always((t) => {
-	t.context.tmpStub.restore();
+	sinon.restore();
 });
 
 test.serial("createTmpDir successful", async (t) => {
@@ -52,7 +52,7 @@ test.serial("createTmpDirs", async (t) => {
 });
 
 test.serial("writeResourcesToDir", async (t) => {
-	const writeStub = sinon.stub().resolves("some resource");
+	const writeStub = sinon.stub().resolves();
 	const createAdapterStub = sinon.stub(require("@ui5/fs").resourceFactory, "createAdapter").returns({
 		write: writeStub
 	});
@@ -74,9 +74,56 @@ test.serial("writeResourcesToDir", async (t) => {
 	}, "createAdapter called with correct arguments");
 });
 
-// test.serial("generateJsdoc", async (t) => {
+test.serial("generateJsdoc", async (t) => {
+	const jsdocGeneratorStub = sinon.stub().resolves(["some resource 1", "some resource 2"]);
+	mock("../../../lib/processors/jsdoc/jsdocGenerator", jsdocGeneratorStub);
+	const generateJsdoc = mock.reRequire("../../../lib/tasks/generateJsdoc");
 
-// });
+	const createTmpDirsStub = sinon.stub(generateJsdoc, "_createTmpDirs").resolves({
+		sourcePath: "/some/source/path",
+		targetPath: "/some/target/path",
+		tmpPath: "/some/tmp/path",
+	});
+	const writeResourcesToDirStub = sinon.stub(generateJsdoc, "_writeResourcesToDir").resolves();
+
+	const writeStub = sinon.stub().resolves();
+	const workspace = {
+		write: writeStub
+	};
+	await generateJsdoc({
+		workspace,
+		options: {
+			pattern: "some pattern",
+			projectName: "some.project",
+			version: "some version"
+		}
+	});
+
+	t.deepEqual(createTmpDirsStub.callCount, 1, "createTmpDirs got called once");
+	t.deepEqual(createTmpDirsStub.getCall(0).args[0], "some.project",
+		"createTmpDirs got called with correct arguments");
+
+	t.deepEqual(writeResourcesToDirStub.callCount, 1, "writeResourcesToDir got called once");
+	t.deepEqual(writeResourcesToDirStub.getCall(0).args[0], {
+		workspace,
+		pattern: "some pattern",
+		targetPath: "/some/source/path" // one's target is another one's source
+	}, "writeResourcesToDir got called with correct arguments");
+
+	t.deepEqual(jsdocGeneratorStub.callCount, 1, "jsdocGenerator processor got called once");
+	t.deepEqual(jsdocGeneratorStub.getCall(0).args[0], {
+		sourcePath: "/some/source/path",
+		targetPath: "/some/target/path",
+		tmpPath: "/some/tmp/path",
+		options: {
+			projectName: "some.project",
+			version: "some version",
+			variants: ["apijson"]
+		}
+	}, "jsdocGenerator got called with correct arguments");
+
+	mock.stop("../../../lib/processors/jsdoc/jsdocGenerator");
+});
 
 test.serial("generateJsdoc missing parameters", async (t) => {
 	const error = await t.throws(generateJsdoc());
