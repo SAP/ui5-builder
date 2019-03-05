@@ -34,18 +34,19 @@ test.serial("createTmpDir error", async (t) => {
 	t.deepEqual(res, {message: "Dir creation failed"}, "Dir creation failed");
 });
 
-test.serial("createTempDirs", async (t) => {
-	mock("make-dir", function() {
-		return Promise.resolve();
-	});
-	mock.reRequire("make-dir");
+test.serial("createTmpDirs", async (t) => {
+	const makeDirStub = sinon.stub().resolves();
+	mock("make-dir", makeDirStub);
+	const generateJsdoc = mock.reRequire("../../../lib/tasks/generateJsdoc");
 
-	t.context.tmpStub.callsArgWithAsync(1, undefined, "some/path");
+	t.context.tmpStub.callsArgWithAsync(1, undefined, "/some/path");
 
 	const res = await generateJsdoc._createTmpDirs("some.namespace");
 
-	t.deepEqual(res, {sourcePath: "some/path/src", targetPath: "some/path/target", tmpPath: "some/path/tmp"},
+	t.deepEqual(res, {sourcePath: "/some/path/src", targetPath: "/some/path/target", tmpPath: "/some/path/tmp"},
 		"Correct temporary directories returned");
+	t.deepEqual(makeDirStub.callCount, 1, "One directory got created");
+	t.deepEqual(makeDirStub.getCall(0).args[0], "/some/path/tmp", "Correct dir path got created");
 
 	mock.stop("make-dir");
 });
