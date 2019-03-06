@@ -17,10 +17,10 @@ test.afterEach.always((t) => {
 test.serial("createTmpDir successful", async (t) => {
 	t.context.tmpStub.callsArgWithAsync(1, undefined, "some/path");
 
-	const res = await generateJsdoc._createTmpDir("some.namespace");
+	const res = await generateJsdoc._createTmpDir("som$e.nam3/space"); // non alphanum characters get removed
 
 	t.deepEqual(t.context.tmpStub.callCount, 1, "Tmp dir is called once");
-	t.deepEqual(t.context.tmpStub.getCall(0).args[0].prefix, "ui5-tooling-tmp-jsdoc-some.namespace-");
+	t.deepEqual(t.context.tmpStub.getCall(0).args[0].prefix, "ui5-tooling-tmp-jsdoc-somenam3space-");
 	t.deepEqual(res, {path: "some/path"}, "Correct path returned");
 });
 
@@ -30,7 +30,7 @@ test.serial("createTmpDir error", async (t) => {
 	const res = await t.throws(generateJsdoc._createTmpDir("some.namespace"));
 
 	t.deepEqual(t.context.tmpStub.callCount, 1, "Tmp dir is called once");
-	t.deepEqual(t.context.tmpStub.getCall(0).args[0].prefix, "ui5-tooling-tmp-jsdoc-some.namespace-");
+	t.deepEqual(t.context.tmpStub.getCall(0).args[0].prefix, "ui5-tooling-tmp-jsdoc-somenamespace-");
 	t.deepEqual(res, {message: "Dir creation failed"}, "Dir creation failed");
 });
 
