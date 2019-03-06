@@ -51,20 +51,21 @@ test.serial("createTmpDirs", async (t) => {
 	mock.stop("make-dir");
 });
 
-test.serial("writeResourcesToDir", async (t) => {
+test.serial("writeResourcesToDir with byGlobSource", async (t) => {
 	const writeStub = sinon.stub().resolves();
 	const createAdapterStub = sinon.stub(require("@ui5/fs").resourceFactory, "createAdapter").returns({
 		write: writeStub
 	});
 
-	generateJsdoc._writeResourcesToDir({
+	await generateJsdoc._writeResourcesToDir({
 		workspace: {
 			// stub byGlobSource
 			byGlobSource: (pattern) => {
-				return Promise.resolve([]);
+				t.deepEqual(pattern, "some pattern", "Glob with correct pattern");
+				return Promise.resolve(["resource A", "resource B"]);
 			}
 		},
-		pattern: "",
+		pattern: "some pattern",
 		targetPath: "/some/target/path"
 	});
 
@@ -72,6 +73,38 @@ test.serial("writeResourcesToDir", async (t) => {
 		fsBasePath: "/some/target/path",
 		virBasePath: "/resources/"
 	}, "createAdapter called with correct arguments");
+
+	t.deepEqual(writeStub.callCount, 2, "Write got called twice");
+	t.deepEqual(writeStub.getCall(0).args[0], "resource A", "Write got called with correct arguments");
+	t.deepEqual(writeStub.getCall(1).args[0], "resource B", "Write got called with correct arguments");
+});
+
+test.serial("writeResourcesToDir with byGlob", async (t) => {
+	const writeStub = sinon.stub().resolves();
+	const createAdapterStub = sinon.stub(require("@ui5/fs").resourceFactory, "createAdapter").returns({
+		write: writeStub
+	});
+
+	await generateJsdoc._writeResourcesToDir({
+		workspace: {
+			// stub byGlobSource
+			byGlob: (pattern) => {
+				t.deepEqual(pattern, "some pattern", "Glob with correct pattern");
+				return Promise.resolve(["resource A", "resource B"]);
+			}
+		},
+		pattern: "some pattern",
+		targetPath: "/some/target/path"
+	});
+
+	t.deepEqual(createAdapterStub.getCall(0).args[0], {
+		fsBasePath: "/some/target/path",
+		virBasePath: "/resources/"
+	}, "createAdapter called with correct arguments");
+
+	t.deepEqual(writeStub.callCount, 2, "Write got called twice");
+	t.deepEqual(writeStub.getCall(0).args[0], "resource A", "Write got called with correct arguments");
+	t.deepEqual(writeStub.getCall(1).args[0], "resource B", "Write got called with correct arguments");
 });
 
 test.serial("generateJsdoc", async (t) => {
