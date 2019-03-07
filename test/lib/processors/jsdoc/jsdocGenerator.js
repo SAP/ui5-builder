@@ -34,7 +34,7 @@ test("generateJsdocConfig", async (t) => {
 				"variants": ["apijson"],
 				"version": "1.0.0",
 				"jsapiFile": "/some/target/path/libraries/some.namespace.js",
-				"apiJsonFolder": "/some/target/path/dependency-apis",
+				"apiJsonFolder": "/some/tmp/path/dependency-apis",
 				"apiJsonFile": "/some/target/path/test-resources/some/namespace/designtime/api.json"
 			}
 		}

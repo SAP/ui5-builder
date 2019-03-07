@@ -74,9 +74,9 @@ test.serial("writeResourcesToDir with byGlobSource", async (t) => {
 		virBasePath: "/resources/"
 	}, "createAdapter called with correct arguments");
 
-	t.deepEqual(writeStub.callCount, 2, "Write got called twice");
-	t.deepEqual(writeStub.getCall(0).args[0], "resource A", "Write got called with correct arguments");
-	t.deepEqual(writeStub.getCall(1).args[0], "resource B", "Write got called with correct arguments");
+	t.deepEqual(writeStub.callCount, 2, "Write got called four times");
+	t.deepEqual(writeStub.getCall(0).args[0], "resource A", "Write got called for resource A");
+	t.deepEqual(writeStub.getCall(1).args[0], "resource B", "Write got called for resource B");
 });
 
 test.serial("writeResourcesToDir with byGlob", async (t) => {
@@ -87,7 +87,6 @@ test.serial("writeResourcesToDir with byGlob", async (t) => {
 
 	await generateJsdoc._writeResourcesToDir({
 		workspace: {
-			// stub byGlobSource
 			byGlob: (pattern) => {
 				t.deepEqual(pattern, "some pattern", "Glob with correct pattern");
 				return Promise.resolve(["resource A", "resource B"]);
@@ -102,13 +101,71 @@ test.serial("writeResourcesToDir with byGlob", async (t) => {
 		virBasePath: "/resources/"
 	}, "createAdapter called with correct arguments");
 
-	t.deepEqual(writeStub.callCount, 2, "Write got called twice");
-	t.deepEqual(writeStub.getCall(0).args[0], "resource A", "Write got called with correct arguments");
-	t.deepEqual(writeStub.getCall(1).args[0], "resource B", "Write got called with correct arguments");
+	t.deepEqual(writeStub.callCount, 2, "Write got called four times");
+	t.deepEqual(writeStub.getCall(0).args[0], "resource A", "Write got called for resource A");
+	t.deepEqual(writeStub.getCall(1).args[0], "resource B", "Write got called for resource B");
+});
+
+test.serial("writeDependencyApisToDir with byGlob", async (t) => {
+	const writeStub = sinon.stub().resolves();
+	const createAdapterStub = sinon.stub(require("@ui5/fs").resourceFactory, "createAdapter").returns({
+		write: writeStub
+	});
+
+	const setPathStubA = sinon.stub();
+	const setPathStubB = sinon.stub();
+
+	const cloneStubA = sinon.stub().resolves({
+		// Cloned resource
+		id: "resource A",
+		setPath: setPathStubA
+	});
+	const cloneStubB = sinon.stub().resolves({
+		// Cloned resource
+		id: "resource B",
+		setPath: setPathStubB
+	});
+	const initialResourceA = {
+		// Globbed resource
+		clone: cloneStubA
+	};
+	const initialResourceB = {
+		// Globbed resource
+		clone: cloneStubB
+	};
+
+	await generateJsdoc._writeDependencyApisToDir({
+		dependencies: {
+			byGlob: (pattern) => {
+				t.deepEqual(pattern, "/test-resources/**/designtime/api.json",
+					"Dependency api.json glob with correct pattern");
+				return Promise.resolve([initialResourceA, initialResourceB]);
+			}
+		},
+		targetPath: "/some/target/path"
+	});
+
+	t.deepEqual(cloneStubA.callCount, 1, "resource A got cloned once");
+	t.deepEqual(cloneStubB.callCount, 1, "resource B got cloned once");
+
+	t.deepEqual(setPathStubA.callCount, 1, "Path of cloned resource A got changed");
+	t.deepEqual(setPathStubA.getCall(0).args[0], "/api-0.json", "Path of cloned resource A got changed correctly");
+
+	t.deepEqual(setPathStubB.callCount, 1, "Path of cloned resource B got changed");
+	t.deepEqual(setPathStubB.getCall(0).args[0], "/api-1.json", "Path of cloned resource B got changed correctly");
+
+	t.deepEqual(createAdapterStub.getCall(0).args[0], {
+		fsBasePath: "/some/target/path",
+		virBasePath: "/"
+	}, "createAdapter called with correct arguments");
+
+	t.deepEqual(writeStub.callCount, 2, "Write got called four times");
+	t.deepEqual(writeStub.getCall(0).args[0].id, "resource A", "Write got called for resource A");
+	t.deepEqual(writeStub.getCall(1).args[0].id, "resource B", "Write got called for resource B");
 });
 
 test.serial("generateJsdoc", async (t) => {
-	const jsdocGeneratorStub = sinon.stub().resolves(["some resource 1", "some resource 2"]);
+	const jsdocGeneratorStub = sinon.stub().resolves(["resource A", "resource B"]);
 	mock("../../../lib/processors/jsdoc/jsdocGenerator", jsdocGeneratorStub);
 	const generateJsdoc = mock.reRequire("../../../lib/tasks/generateJsdoc");
 
@@ -118,6 +175,7 @@ test.serial("generateJsdoc", async (t) => {
 		tmpPath: "/some/tmp/path",
 	});
 	const writeResourcesToDirStub = sinon.stub(generateJsdoc, "_writeResourcesToDir").resolves();
+	const writeDependencyApisToDirStub = sinon.stub(generateJsdoc, "_writeDependencyApisToDir").resolves();
 
 	const writeStub = sinon.stub().resolves();
 	const workspace = {
@@ -125,6 +183,7 @@ test.serial("generateJsdoc", async (t) => {
 	};
 	await generateJsdoc({
 		workspace,
+		dependencies: "dependencies",
 		options: {
 			pattern: "some pattern",
 			projectName: "some.project",
@@ -139,9 +198,16 @@ test.serial("generateJsdoc", async (t) => {
 	t.deepEqual(writeResourcesToDirStub.callCount, 1, "writeResourcesToDir got called once");
 	t.deepEqual(writeResourcesToDirStub.getCall(0).args[0], {
 		workspace,
+		dependencies: "dependencies",
 		pattern: "some pattern",
 		targetPath: "/some/source/path" // one's target is another one's source
 	}, "writeResourcesToDir got called with correct arguments");
+
+	t.deepEqual(writeDependencyApisToDirStub.callCount, 1, "writeDependencyApisToDir got called once");
+	t.deepEqual(writeDependencyApisToDirStub.getCall(0).args[0], {
+		dependencies: "dependencies",
+		targetPath: "/some/tmp/path/dependency-apis"
+	}, "writeDependencyApisToDir got called with correct arguments");
 
 	t.deepEqual(jsdocGeneratorStub.callCount, 1, "jsdocGenerator processor got called once");
 	t.deepEqual(jsdocGeneratorStub.getCall(0).args[0], {
@@ -154,6 +220,10 @@ test.serial("generateJsdoc", async (t) => {
 			variants: ["apijson"]
 		}
 	}, "jsdocGenerator got called with correct arguments");
+
+	t.deepEqual(writeStub.callCount, 2, "Write got called twice");
+	t.deepEqual(writeStub.getCall(0).args[0], "resource A", "Write got called with correct arguments");
+	t.deepEqual(writeStub.getCall(1).args[0], "resource B", "Write got called with correct arguments");
 
 	mock.stop("../../../lib/processors/jsdoc/jsdocGenerator");
 });
