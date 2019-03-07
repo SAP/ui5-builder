@@ -19,11 +19,11 @@ test("generateJsdocConfig", async (t) => {
 		"jsdoc");
 
 	t.deepEqual(res, `{
-		"plugins": ["${jsdocGeneratorPath}/ui5/plugin.js"],
+		"plugins": ["${jsdocGeneratorPath}/lib/ui5/plugin.js"],
 		"opts": {
 			"recurse": true,
 			"lenient": true,
-			"template": "${jsdocGeneratorPath}/ui5/template",
+			"template": "${jsdocGeneratorPath}/lib/ui5/template",
 			"ui5": {
 				"saveSymbols": true
 			},
