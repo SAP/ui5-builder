@@ -59,7 +59,8 @@
 			"docs/**",
 			"jsdocs/**",
 			"coverage/**",
-			"test/**"
+			"test/**",
+			"lib/processors/jsdoc/lib/**"
 		],
 		"check-coverage": true,
 		"statements": 85,
