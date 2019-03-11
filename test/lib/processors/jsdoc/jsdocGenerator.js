@@ -8,7 +8,7 @@ test("generateJsdocConfig", async (t) => {
 	const res = await jsdocGenerator._generateJsdocConfig({
 		sourcePath: "/some/source/path",
 		targetPath: "/some/target/path",
-		tmpPath: "/some/tmp/path",
+		tmpPath: "/some/tm\\p/path",
 		namespace: "some/namespace",
 		projectName: "some.namespace",
 		version: "1.0.0",
@@ -18,24 +18,41 @@ test("generateJsdocConfig", async (t) => {
 	const jsdocGeneratorPath = path.resolve(__dirname, "..", "..", "..", "..", "lib", "processors",
 		"jsdoc");
 
+	const backslashRegex = /\\/g;
+
+	const pluginPath = path.join(jsdocGeneratorPath, "lib", "ui5", "plugin.js")
+		.replace(backslashRegex, "\\\\");
+	const templatePath = path.join(jsdocGeneratorPath, "lib", "ui5", "template")
+		.replace(backslashRegex, "\\\\");
+	const destinationPath = path.join("/", "some", "tm\\p", "path")
+		.replace(backslashRegex, "\\\\");
+	const jsapiFilePath = path.join("/", "some", "target", "path", "libraries", "some.namespace.js")
+		.replace(backslashRegex, "\\\\");
+	const apiJsonFolderPath = path.join("/", "some", "tm\\p", "path", "dependency-apis")
+		.replace(backslashRegex, "\\\\");
+	const apiJsonFilePath =
+		path.join("/", "some", "target", "path", "test-resources", "some", "namespace", "designtime", "api.json")
+			.replace(backslashRegex, "\\\\");
+
+
 	t.deepEqual(res, `{
-		"plugins": ["${jsdocGeneratorPath}/lib/ui5/plugin.js"],
+		"plugins": ["${pluginPath}"],
 		"opts": {
 			"recurse": true,
 			"lenient": true,
-			"template": "${jsdocGeneratorPath}/lib/ui5/template",
+			"template": "${templatePath}",
 			"ui5": {
 				"saveSymbols": true
 			},
-			"destination": "/some/tmp/path"
+			"destination": "${destinationPath}"
 		},
 		"templates": {
 			"ui5": {
 				"variants": ["apijson"],
 				"version": "1.0.0",
-				"jsapiFile": "/some/target/path/libraries/some.namespace.js",
-				"apiJsonFolder": "/some/tmp/path/dependency-apis",
-				"apiJsonFile": "/some/target/path/test-resources/some/namespace/designtime/api.json"
+				"jsapiFile": "${jsapiFilePath}",
+				"apiJsonFolder": "${apiJsonFolderPath}",
+				"apiJsonFile": "${apiJsonFilePath}"
 			}
 		}
 	}`, "Correct config generated");
