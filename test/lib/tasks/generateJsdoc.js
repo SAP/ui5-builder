@@ -1,6 +1,7 @@
 const {test} = require("ava");
 const sinon = require("sinon");
 const tmp = require("tmp");
+const path = require("path");
 
 const mock = require("mock-require");
 
@@ -43,10 +44,13 @@ test.serial("createTmpDirs", async (t) => {
 
 	const res = await generateJsdoc._createTmpDirs("some.namespace");
 
-	t.deepEqual(res, {sourcePath: "/some/path/src", targetPath: "/some/path/target", tmpPath: "/some/path/tmp"},
-		"Correct temporary directories returned");
+	t.deepEqual(res, {
+		sourcePath: path.join("/", "some", "path", "src"),
+		targetPath: path.join("/", "some", "path", "target"),
+		tmpPath: path.join("/", "some", "path", "tmp")
+	}, "Correct temporary directories returned");
 	t.deepEqual(makeDirStub.callCount, 1, "One directory got created");
-	t.deepEqual(makeDirStub.getCall(0).args[0], "/some/path/tmp", "Correct dir path got created");
+	t.deepEqual(makeDirStub.getCall(0).args[0], path.join("/", "some", "path", "tmp"), "Correct dir path got created");
 
 	mock.stop("make-dir");
 });

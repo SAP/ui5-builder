@@ -44,7 +44,8 @@ test("generateJsdocConfig", async (t) => {
 test.serial("writeJsdocConfig", async (t) => {
 	mock("graceful-fs", {
 		writeFile: (configPath, configContent, callback) => {
-			t.deepEqual(configPath, "/some/path/jsdoc-config.json", "Correct config path supplied");
+			t.deepEqual(configPath, path.join("/", "some", "path", "jsdoc-config.json"),
+				"Correct config path supplied");
 			t.deepEqual(configContent, "some config", "Correct config content supplied");
 			callback();
 		}
@@ -55,7 +56,7 @@ test.serial("writeJsdocConfig", async (t) => {
 	const jsdocGenerator = mock.reRequire("../../../../lib/processors/jsdoc/jsdocGenerator");
 	const res = await jsdocGenerator._writeJsdocConfig("/some/path", "some config");
 
-	t.deepEqual(res, "/some/path/jsdoc-config.json", "Correct config path returned");
+	t.deepEqual(res, path.join("/", "some", "path", "jsdoc-config.json"), "Correct config path returned");
 
 	mock.stop("graceful-fs");
 });
