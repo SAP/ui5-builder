@@ -136,6 +136,7 @@ test.serial("jsdocGenerator", async (t) => {
 		tmpPath: "/some/tmp/path",
 		options: {
 			projectName: "some.project.name",
+			namespace: "some/project/name",
 			version: "1.0.0"
 		}
 	});
@@ -180,6 +181,7 @@ test.serial("jsdocGenerator", async (t) => {
 		tmpPath: "/some/tmp/path",
 		options: {
 			projectName: "some.project.name",
+			namespace: "some/project/name",
 			version: "1.0.0",
 			variants: []
 		}
@@ -196,6 +198,7 @@ test.serial("jsdocGenerator", async (t) => {
 		tmpPath: "/some/tmp/path",
 		options: {
 			projectName: "some.project.name",
+			namespace: "some/project/name",
 			version: "1.0.0",
 			variants: ["pony"],
 			sdkBuild: true

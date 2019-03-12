@@ -5,7 +5,7 @@ const path = require("path");
 
 const mock = require("mock-require");
 
-const generateJsdoc = require("../../../lib/tasks/generateJsdoc");
+const generateJsdoc = require("../../../lib/tasks/jsdoc/generateJsdoc");
 
 test.beforeEach((t) => {
 	t.context.tmpStub = sinon.stub(tmp, "dir");
@@ -38,7 +38,7 @@ test.serial("createTmpDir error", async (t) => {
 test.serial("createTmpDirs", async (t) => {
 	const makeDirStub = sinon.stub().resolves();
 	mock("make-dir", makeDirStub);
-	const generateJsdoc = mock.reRequire("../../../lib/tasks/generateJsdoc");
+	const generateJsdoc = mock.reRequire("../../../lib/tasks/jsdoc/generateJsdoc");
 
 	t.context.tmpStub.callsArgWithAsync(1, undefined, "/some/path");
 
@@ -171,7 +171,7 @@ test.serial("writeDependencyApisToDir with byGlob", async (t) => {
 test.serial("generateJsdoc", async (t) => {
 	const jsdocGeneratorStub = sinon.stub().resolves(["resource A", "resource B"]);
 	mock("../../../lib/processors/jsdoc/jsdocGenerator", jsdocGeneratorStub);
-	const generateJsdoc = mock.reRequire("../../../lib/tasks/generateJsdoc");
+	const generateJsdoc = mock.reRequire("../../../lib/tasks/jsdoc/generateJsdoc");
 
 	const createTmpDirsStub = sinon.stub(generateJsdoc, "_createTmpDirs").resolves({
 		sourcePath: "/some/source/path",
@@ -191,6 +191,7 @@ test.serial("generateJsdoc", async (t) => {
 		options: {
 			pattern: "some pattern",
 			projectName: "some.project",
+			namespace: "some/project",
 			version: "some version"
 		}
 	});
@@ -220,6 +221,7 @@ test.serial("generateJsdoc", async (t) => {
 		tmpPath: "/some/tmp/path",
 		options: {
 			projectName: "some.project",
+			namespace: "some/project",
 			version: "some version",
 			variants: ["apijson"]
 		}
