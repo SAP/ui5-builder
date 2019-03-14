@@ -49,8 +49,13 @@ test.serial("createTmpDirs", async (t) => {
 		targetPath: path.join("/", "some", "path", "target"),
 		tmpPath: path.join("/", "some", "path", "tmp")
 	}, "Correct temporary directories returned");
-	t.deepEqual(makeDirStub.callCount, 1, "One directory got created");
-	t.deepEqual(makeDirStub.getCall(0).args[0], path.join("/", "some", "path", "tmp"), "Correct dir path got created");
+	t.deepEqual(makeDirStub.callCount, 3, "One directory got created");
+	t.deepEqual(makeDirStub.getCall(0).args[0], path.join("/", "some", "path", "src"),
+		"Correct srcdir path got created");
+	t.deepEqual(makeDirStub.getCall(1).args[0], path.join("/", "some", "path", "target"),
+		"Correct target dir path got created");
+	t.deepEqual(makeDirStub.getCall(2).args[0], path.join("/", "some", "path", "tmp"),
+		"Correct tmp dir path got created");
 
 	mock.stop("make-dir");
 });
