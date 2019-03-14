@@ -89,6 +89,9 @@ test.serial("executeJsdocSdkTransformation", async (t) => {
 	t.deepEqual(writeStub.getCall(1).args[0], "resource B", "Write got called with correct arguments");
 
 	mock.stop("../../../../lib/processors/jsdoc/sdkTransformer");
+
+	sinon.restore();
+	mock.reRequire("../../../../lib/tasks/jsdoc/executeJsdocSdkTransformation");
 });
 
 test("executeJsdocSdkTransformation with missing parameters", async (t) => {
@@ -97,7 +100,15 @@ test("executeJsdocSdkTransformation with missing parameters", async (t) => {
 		"Correct error message thrown");
 });
 
-test("executeJsdocSdkTransformation with missing project api.json", async (t) => {
+test.serial("executeJsdocSdkTransformation with missing project api.json (skips processing)", async (t) => {
+	const logger = require("@ui5/logger");
+	const infoLogStub = sinon.stub();
+	const myLoggerInstance = {
+		info: infoLogStub
+	};
+	sinon.stub(logger, "getLogger").returns(myLoggerInstance);
+	const executeJsdocSdkTransformation = mock.reRequire("../../../../lib/tasks/jsdoc/executeJsdocSdkTransformation");
+
 	const byGlobWorkspaceStub = sinon.stub()
 		.onFirstCall().resolves([])
 		.onSecondCall().resolves([{
@@ -116,17 +127,22 @@ test("executeJsdocSdkTransformation with missing project api.json", async (t) =>
 		byGlob: byGlobDependenciesStub
 	};
 
-	const error = await t.throws(executeJsdocSdkTransformation({
+	await executeJsdocSdkTransformation({
 		workspace,
 		dependencies,
 		options: {
 			projectName: "some.project",
 			dotLibraryPattern: "some .library pattern"
 		}
-	}));
-	t.deepEqual(error.message,
-		"[executeJsdocSdkTransformation]: Failed to locate api.json resource for project some.project.",
-		"Correct error message thrown");
+	});
+
+	t.deepEqual(infoLogStub.callCount, 1, "One message has been logged");
+	t.deepEqual(infoLogStub.getCall(0).args[0],
+		"Failed to locate api.json resource for project some.project. Skipping SDK Transformation...",
+		"Correct message has been logged");
+
+	sinon.restore();
+	mock.reRequire("../../../../lib/tasks/jsdoc/executeJsdocSdkTransformation");
 });
 
 test("executeJsdocSdkTransformation too many project api.json resources", async (t) => {
