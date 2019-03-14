@@ -5,7 +5,7 @@ const path = require("path");
 
 const mock = require("mock-require");
 
-const generateJsdoc = require("../../../lib/tasks/jsdoc/generateJsdoc");
+const generateJsdoc = require("../../../../lib/tasks/jsdoc/generateJsdoc");
 
 test.beforeEach((t) => {
 	t.context.tmpStub = sinon.stub(tmp, "dir");
@@ -38,7 +38,7 @@ test.serial("createTmpDir error", async (t) => {
 test.serial("createTmpDirs", async (t) => {
 	const makeDirStub = sinon.stub().resolves();
 	mock("make-dir", makeDirStub);
-	const generateJsdoc = mock.reRequire("../../../lib/tasks/jsdoc/generateJsdoc");
+	const generateJsdoc = mock.reRequire("../../../../lib/tasks/jsdoc/generateJsdoc");
 
 	t.context.tmpStub.callsArgWithAsync(1, undefined, "/some/path");
 
@@ -170,8 +170,8 @@ test.serial("writeDependencyApisToDir with byGlob", async (t) => {
 
 test.serial("generateJsdoc", async (t) => {
 	const jsdocGeneratorStub = sinon.stub().resolves(["resource A", "resource B"]);
-	mock("../../../lib/processors/jsdoc/jsdocGenerator", jsdocGeneratorStub);
-	const generateJsdoc = mock.reRequire("../../../lib/tasks/jsdoc/generateJsdoc");
+	mock("../../../../lib/processors/jsdoc/jsdocGenerator", jsdocGeneratorStub);
+	const generateJsdoc = mock.reRequire("../../../../lib/tasks/jsdoc/generateJsdoc");
 
 	const createTmpDirsStub = sinon.stub(generateJsdoc, "_createTmpDirs").resolves({
 		sourcePath: "/some/source/path",
@@ -231,7 +231,7 @@ test.serial("generateJsdoc", async (t) => {
 	t.deepEqual(writeStub.getCall(0).args[0], "resource A", "Write got called with correct arguments");
 	t.deepEqual(writeStub.getCall(1).args[0], "resource B", "Write got called with correct arguments");
 
-	mock.stop("../../../lib/processors/jsdoc/jsdocGenerator");
+	mock.stop("../../../../lib/processors/jsdoc/jsdocGenerator");
 });
 
 test.serial("generateJsdoc missing parameters", async (t) => {
