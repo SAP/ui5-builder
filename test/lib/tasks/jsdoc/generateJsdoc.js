@@ -183,8 +183,8 @@ test.serial("generateJsdoc", async (t) => {
 		targetPath: "/some/target/path",
 		tmpPath: "/some/tmp/path",
 	});
-	const writeResourcesToDirStub = sinon.stub(generateJsdoc, "_writeResourcesToDir").resolves();
-	const writeDependencyApisToDirStub = sinon.stub(generateJsdoc, "_writeDependencyApisToDir").resolves();
+	const writeResourcesToDirStub = sinon.stub(generateJsdoc, "_writeResourcesToDir").resolves(1);
+	const writeDependencyApisToDirStub = sinon.stub(generateJsdoc, "_writeDependencyApisToDir").resolves(0);
 
 	const writeStub = sinon.stub().resolves();
 	const workspace = {
@@ -208,7 +208,6 @@ test.serial("generateJsdoc", async (t) => {
 	t.deepEqual(writeResourcesToDirStub.callCount, 1, "writeResourcesToDir got called once");
 	t.deepEqual(writeResourcesToDirStub.getCall(0).args[0], {
 		workspace,
-		dependencies: "dependencies",
 		pattern: "some pattern",
 		targetPath: "/some/source/path" // one's target is another one's source
 	}, "writeResourcesToDir got called with correct arguments");
@@ -235,6 +234,50 @@ test.serial("generateJsdoc", async (t) => {
 	t.deepEqual(writeStub.callCount, 2, "Write got called twice");
 	t.deepEqual(writeStub.getCall(0).args[0], "resource A", "Write got called with correct arguments");
 	t.deepEqual(writeStub.getCall(1).args[0], "resource B", "Write got called with correct arguments");
+
+	mock.stop("../../../../lib/processors/jsdoc/jsdocGenerator");
+});
+
+test.serial("generateJsdoc with missing resources", async (t) => {
+	const jsdocGeneratorStub = sinon.stub().resolves();
+	mock("../../../../lib/processors/jsdoc/jsdocGenerator", jsdocGeneratorStub);
+	const logger = require("@ui5/logger");
+	const infoLogStub = sinon.stub();
+	const myLoggerInstance = {
+		info: infoLogStub
+	};
+	sinon.stub(logger, "getLogger").returns(myLoggerInstance);
+	const generateJsdoc = mock.reRequire("../../../../lib/tasks/jsdoc/generateJsdoc");
+
+	sinon.stub(generateJsdoc, "_createTmpDirs").resolves({
+		sourcePath: "/some/source/path",
+		targetPath: "/some/target/path",
+		tmpPath: "/some/tmp/path",
+	});
+	sinon.stub(generateJsdoc, "_writeResourcesToDir").resolves(0);
+	sinon.stub(generateJsdoc, "_writeDependencyApisToDir").resolves(0);
+
+	const writeStub = sinon.stub().resolves();
+	const workspace = {
+		write: writeStub
+	};
+	await generateJsdoc({
+		workspace,
+		dependencies: "dependencies",
+		options: {
+			pattern: "some pattern",
+			projectName: "some.project",
+			namespace: "some/project",
+			version: "some version"
+		}
+	});
+
+	t.deepEqual(infoLogStub.callCount, 1, "One message has been logged");
+	t.deepEqual(infoLogStub.getCall(0).args[0], "Failed to find any input resources for project some.project " +
+		"using pattern some pattern. Skipping JSDoc generation...",
+	"Correct message has been logged");
+
+	t.deepEqual(jsdocGeneratorStub.callCount, 0, "jsdocGenerator processor has *not* been called");
 
 	mock.stop("../../../../lib/processors/jsdoc/jsdocGenerator");
 });
