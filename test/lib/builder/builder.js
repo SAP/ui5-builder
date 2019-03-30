@@ -118,7 +118,7 @@ test("Build application.a and clear target path [dev mode]", (t) => {
 		return builder.build({
 			tree: applicationATree,
 			destPath,
-			clearDestPath: true,
+			clearDest: true,
 			dev: true
 		});
 	}).then(() => {
