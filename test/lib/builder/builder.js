@@ -14,8 +14,9 @@ const applicationGPath = path.join(__dirname, "..", "..", "fixtures", "applicati
 const applicationHPath = path.join(__dirname, "..", "..", "fixtures", "application.h");
 const libraryDPath = path.join(__dirname, "..", "..", "fixtures", "library.d");
 const libraryEPath = path.join(__dirname, "..", "..", "fixtures", "library.e");
-const libraryIPath = path.join(__dirname, "..", "..", "fixtures", "library.i");
 const libraryHPath = path.join(__dirname, "..", "..", "fixtures", "library.h");
+const libraryIPath = path.join(__dirname, "..", "..", "fixtures", "library.i");
+const libraryJPath = path.join(__dirname, "..", "..", "fixtures", "library.j");
 const libraryCore = path.join(__dirname, "..", "..", "fixtures", "sap.ui.core-evo");
 const themeJPath = path.join(__dirname, "..", "..", "fixtures", "theme.j");
 
@@ -57,7 +58,13 @@ async function checkFileContentsIgnoreLineFeeds(expectedFiles, expectedPath, des
 		const currentFileContentPromise = readFile(destFile, "utf8");
 		const expectedFileContentPromise = readFile(expectedFile, "utf8");
 		const assertContents = ([currentContent, expectedContent]) => {
-			assert.equal(currentContent.replace(newLineRegexp, "\n"), expectedContent.replace(newLineRegexp, "\n"));
+			if (expectedFile.endsWith("sap-ui-cachebuster-info.json")) {
+				currentContent = JSON.parse(currentContent.replace(/(:\s+)(\d+)/g, ": 0"));
+				expectedContent = JSON.parse(expectedContent.replace(/(:\s+)(\d+)/g, ": 0"));
+				assert.deepEqual(currentContent, expectedContent);
+			} else {
+				assert.equal(currentContent.replace(newLineRegexp, "\n"), expectedContent.replace(newLineRegexp, "\n"));
+			}
 		};
 		await Promise.all([currentFileContentPromise, expectedFileContentPromise]).then(assertContents);
 	}
@@ -235,6 +242,28 @@ test("Build library.i with manifest info taken from .library and library.js", (t
 		tree: libraryITree,
 		destPath,
 		excludedTasks: ["createDebugFiles", "generateLibraryPreload", "uglify"]
+	}).then(() => {
+		return findFiles(expectedPath);
+	}).then((expectedFiles) => {
+		// Check for all directories and files
+		assert.directoryDeepEqual(destPath, expectedPath);
+
+		// Check for all file contents
+		return checkFileContentsIgnoreLineFeeds(expectedFiles, expectedPath, destPath);
+	}).then(() => {
+		t.pass();
+	});
+});
+
+test("Build library.j with JSDoc build only", (t) => {
+	const destPath = path.join("test", "tmp", "build", "library.j", "dest");
+	const expectedPath = path.join("test", "expected", "build", "library.j", "dest");
+
+	return builder.build({
+		tree: libraryJTree,
+		destPath,
+		includedTasks: ["generateJsdoc"],
+		excludedTasks: ["*"]
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
@@ -749,6 +778,30 @@ const libraryITree = {
 		"pathMappings": {
 			"/resources/": "main/src",
 			"/test-resources/": "main/test"
+		}
+	}
+};
+
+const libraryJTree = {
+	"id": "library.j",
+	"version": "1.0.0",
+	"path": libraryJPath,
+	"dependencies": [],
+	"_level": 0,
+	"specVersion": "0.1",
+	"type": "library",
+	"metadata": {
+		"name": "library.j",
+		"copyright": "Some fancy copyright"
+	},
+	"resources": {
+		"configuration": {
+			"paths": {
+				"src": "main/src"
+			}
+		},
+		"pathMappings": {
+			"/resources/": "main/src"
 		}
 	}
 };
