@@ -1,8 +1,6 @@
 const test = require("ava");
 const path = require("path");
-const chai = require("chai");
 const sinon = require("sinon");
-chai.use(require("chai-fs"));
 
 test.afterEach.always((t) => {
 	sinon.restore();
@@ -38,47 +36,47 @@ function clone(o) {
 test("validate: not existing directory webapp for c3", async (t) => {
 	const myProject = clone(applicationBTree);
 	myProject.path = path.join(__dirname, "..", "..", "..", "fixtures", "application.notExisting");
-	const applicationFormatter = new ApplicationFormatter();
-	const error = await t.throwsAsync(applicationFormatter.validate(myProject));
+	const applicationFormatter = new ApplicationFormatter({project: myProject});
+	const error = await t.throwsAsync(applicationFormatter.validate());
 	t.regex(error.message, /^Could not find application directory of project application\.b: (?!(undefined))+/,
 		"Correct exception thrown");
 });
 
 test("validate: project not defined", async (t) => {
-	const applicationFormatter = new ApplicationFormatter();
+	const applicationFormatter = new ApplicationFormatter({project: null});
 
 	// error is thrown because project is not defined (null)
-	const error = await t.throwsAsync(applicationFormatter.validate(null));
+	const error = await t.throwsAsync(applicationFormatter.validate());
 	t.deepEqual(error.message, "Project is undefined", "Correct exception thrown");
 });
 
 test("validate: empty version", async (t) => {
 	const myProject = clone(applicationBTree);
 	myProject.version = undefined;
-	const applicationFormatter = new ApplicationFormatter();
+	const applicationFormatter = new ApplicationFormatter({project: myProject});
 
 	// error is thrown because project's version is not defined
-	const error = await t.throwsAsync(applicationFormatter.validate(myProject));
+	const error = await t.throwsAsync(applicationFormatter.validate());
 	t.deepEqual(error.message, `"version" is missing for project application.b`, "Correct exception thrown");
 });
 
 test("validate: empty type", async (t) => {
 	const myProject = clone(applicationBTree);
 	myProject.type = undefined;
-	const applicationFormatter = new ApplicationFormatter();
+	const applicationFormatter = new ApplicationFormatter({project: myProject});
 
 	// error is thrown because project's type is not defined
-	const error = await t.throwsAsync(applicationFormatter.validate(myProject));
+	const error = await t.throwsAsync(applicationFormatter.validate());
 	t.deepEqual(error.message, `"type" configuration is missing for project application.b`, "Correct exception thrown");
 });
 
 test("validate: empty metadata", async (t) => {
 	const myProject = clone(applicationBTree);
 	myProject.metadata = undefined;
-	const applicationFormatter = new ApplicationFormatter();
+	const applicationFormatter = new ApplicationFormatter({project: myProject});
 
 	// error is thrown because project's metadata is not defined
-	const error = await t.throwsAsync(applicationFormatter.validate(myProject));
+	const error = await t.throwsAsync(applicationFormatter.validate());
 	t.deepEqual(error.message, `"metadata.name" configuration is missing for project application.b`,
 		"Correct exception thrown");
 });
@@ -86,23 +84,24 @@ test("validate: empty metadata", async (t) => {
 test("validate: empty resources", async (t) => {
 	const myProject = clone(applicationBTree);
 	myProject.resources = undefined;
-	const applicationFormatter = new ApplicationFormatter();
+	const applicationFormatter = new ApplicationFormatter({project: myProject});
 
 	// error is thrown because project's resources are not defined
-	await applicationFormatter.validate(myProject);
+	await applicationFormatter.validate();
 	t.deepEqual(myProject.resources.configuration.paths.webapp, "webapp", "default webapp directory is set");
 });
 
-test("readManifest: check applicationVersion", async (t) => {
-	const applicationFormatter = new ApplicationFormatter();
-	const oRes = await applicationFormatter.readManifest({
+test("getManifest: check applicationVersion", async (t) => {
+	const myProject = {
 		path: applicationBPath,
 		resources: {
 			pathMappings: {
 				"/": "webapp"
 			}
 		}
-	});
+	};
+	const applicationFormatter = new ApplicationFormatter({project: myProject});
+	const oRes = await applicationFormatter.getManifest();
 	t.deepEqual(oRes["sap.app"].applicationVersion.version, "1.2.2", "Manifest read correctly");
 });
 
@@ -122,38 +121,38 @@ function createMockProject() {
 }
 
 test("format: No 'sap.app' configuration found", async (t) => {
-	const applicationFormatter = new ApplicationFormatter();
-	sinon.stub(applicationFormatter, "validate").resolves();
-	sinon.stub(applicationFormatter, "readManifest").resolves({});
 	const project = createMockProject();
+	const applicationFormatter = new ApplicationFormatter({project});
+	sinon.stub(applicationFormatter, "validate").resolves();
+	sinon.stub(applicationFormatter, "getManifest").resolves({});
 
-	await applicationFormatter.format(project);
+	await applicationFormatter.format();
 	t.deepEqual(project.resources.pathMappings["/"], "webapp", "path mappings is set");
 	t.falsy(project.metadata.namespace,
-		"namespace is falsy since readManifest resolves with an empty object");
+		"namespace is falsy since getManifest resolves with an empty object");
 });
 
 test("format: No application id in 'sap.app' configuration found", async (t) => {
-	const applicationFormatter = new ApplicationFormatter();
-	sinon.stub(applicationFormatter, "validate").resolves();
-	sinon.stub(applicationFormatter, "readManifest").resolves({"sap.app": {}});
 	const project = createMockProject();
+	const applicationFormatter = new ApplicationFormatter({project});
+	sinon.stub(applicationFormatter, "validate").resolves();
+	sinon.stub(applicationFormatter, "getManifest").resolves({"sap.app": {}});
 
-	await applicationFormatter.format(project);
+	await applicationFormatter.format();
 	t.deepEqual(project.resources.pathMappings["/"], "webapp", "path mappings is set");
 	t.falsy(project.metadata.namespace,
-		"namespace is falsy since readManifest resolves with an empty object");
+		"namespace is falsy since getManifest resolves with an empty object");
 });
 
 test("format: set namespace to id", async (t) => {
-	const applicationFormatter = new ApplicationFormatter();
-	sinon.stub(applicationFormatter, "validate").resolves();
-	sinon.stub(applicationFormatter, "readManifest").resolves({"sap.app": {id: "my.id"}});
 	const project = createMockProject();
+	const applicationFormatter = new ApplicationFormatter({project});
+	sinon.stub(applicationFormatter, "validate").resolves();
+	sinon.stub(applicationFormatter, "getManifest").resolves({"sap.app": {id: "my.id"}});
 
-	await applicationFormatter.format(project);
+	await applicationFormatter.format();
 	t.deepEqual(project.metadata.namespace, "my/id",
-		"namespace was successfully set since readManifest provides the correct object structure");
+		"namespace was successfully set since getManifest provides the correct object structure");
 });
 
 const applicationHPath = path.join(__dirname, "..", "..", "..", "fixtures", "application.h");
@@ -180,29 +179,29 @@ const applicationHTree = {
 test("namespace: detect namespace from pom.xml via ${project.artifactId}", async (t) => {
 	const myProject = clone(applicationHTree);
 	myProject.resources.configuration.paths.webapp = "webapp-project.artifactId";
-	const applicationFormatter = new ApplicationFormatter();
+	const applicationFormatter = new ApplicationFormatter({project: myProject});
 
-	await applicationFormatter.format(myProject);
+	await applicationFormatter.format();
 	t.deepEqual(myProject.metadata.namespace, "application/h",
-		"namespace was successfully set since readManifest provides the correct object structure");
+		"namespace was successfully set since getManifest provides the correct object structure");
 });
 
 test("namespace: detect namespace from pom.xml via ${componentName} from properties", async (t) => {
 	const myProject = clone(applicationHTree);
 	myProject.resources.configuration.paths.webapp = "webapp-properties.componentName";
-	const applicationFormatter = new ApplicationFormatter();
+	const applicationFormatter = new ApplicationFormatter({project: myProject});
 
-	await applicationFormatter.format(myProject);
+	await applicationFormatter.format();
 	t.deepEqual(myProject.metadata.namespace, "application/h",
-		"namespace was successfully set since readManifest provides the correct object structure");
+		"namespace was successfully set since getManifest provides the correct object structure");
 });
 
 test("namespace: detect namespace from pom.xml via ${appId} from properties", async (t) => {
 	const myProject = clone(applicationHTree);
 	myProject.resources.configuration.paths.webapp = "webapp-properties.appId";
-	const applicationFormatter = new ApplicationFormatter();
+	const applicationFormatter = new ApplicationFormatter({project: myProject});
 
-	await applicationFormatter.format(myProject);
+	await applicationFormatter.format();
 	t.falsy(myProject.metadata.namespace,
-		"namespace is falsy since readManifest resolves with an empty object");
+		"namespace is falsy since getManifest resolves with an empty object");
 });

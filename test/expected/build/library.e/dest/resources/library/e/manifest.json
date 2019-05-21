@@ -1,7 +1,7 @@
 {
   "_version": "1.9.0",
   "sap.app": {
-    "id": "library.d",
+    "id": "library.e",
     "type": "library",
     "embeds": [],
     "applicationVersion": {
