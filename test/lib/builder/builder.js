@@ -169,6 +169,27 @@ test("Build application.g with component preload paths", (t) => {
 	});
 });
 
+test("Build application.g with excludes", (t) => {
+	const destPath = "./test/tmp/build/application.g/excludes";
+	const expectedPath = path.join("test", "expected", "build", "application.g", "excludes");
+
+	return builder.build({
+		tree: applicationGTreeWithExcludes,
+		destPath,
+		includeTasks: ["createDebugFiles"],
+		excludedTasks: ["*"]
+	}).then(() => {
+		return findFiles(expectedPath);
+	}).then((expectedFiles) => {
+		// Check for all directories and files
+		assert.directoryDeepEqual(destPath, expectedPath);
+		// Check for all file contents
+		return checkFileContentsIgnoreLineFeeds(expectedFiles, expectedPath, destPath);
+	}).then(() => {
+		t.pass();
+	});
+});
+
 test("Build application.h", (t) => {
 	const destPath = "./test/tmp/build/application.h/dest";
 	const expectedPath = path.join("test", "expected", "build", "application.h", "dest");
@@ -176,7 +197,8 @@ test("Build application.h", (t) => {
 	return builder.build({
 		tree: applicationHTree,
 		destPath,
-		excludedTasks: ["createDebugFiles", "generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo"]
+		excludedTasks: ["createDebugFiles", "generateComponentPreload",
+			"generateStandaloneAppBundle", "generateVersionInfo"]
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
@@ -569,6 +591,39 @@ const applicationGTree = {
 				"application/g/subcomponentB"
 			]
 		}
+	}
+};
+
+const applicationGTreeWithExcludes = {
+	"id": "application.g",
+	"version": "1.0.0",
+	"path": applicationGPath,
+	"_level": 0,
+	"specVersion": "0.1",
+	"type": "application",
+	"metadata": {
+		"name": "application.g",
+		"namespace": "application/g",
+		"copyright": "Some fancy copyright"
+	},
+	"dependencies": [],
+	"resources": {
+		"configuration": {
+			"paths": {
+				"webapp": "webapp"
+			}
+		},
+		"pathMappings": {
+			"/": "webapp"
+		}
+	},
+	"builder": {
+		"excludes": [
+			"/subcomponentA/**",
+			"!**/manifest.json",
+			"/subcomponentB/**",
+			"/Component.js",
+		]
 	}
 };
 
