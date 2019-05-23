@@ -918,8 +918,7 @@ const libraryITree = {
 			}
 		},
 		"pathMappings": {
-			"/resources/": "main/src",
-			"/test-resources/": "main/test"
+			"/resources/": "main/src"
 		}
 	}
 };
@@ -968,8 +967,7 @@ const themeJTree = {
 			}
 		},
 		"pathMappings": {
-			"/resources/": "main/src",
-			"/test-resources/": "main/test"
+			"/resources/": "main/src"
 		}
 	}
 };
