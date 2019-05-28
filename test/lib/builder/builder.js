@@ -618,12 +618,14 @@ const applicationGTreeWithExcludes = {
 		}
 	},
 	"builder": {
-		"excludes": [
-			"/subcomponentA/**",
-			"!**/manifest.json",
-			"/subcomponentB/**",
-			"/Component.js",
-		]
+		"resources": {
+			"excludes": [
+				"/subcomponentA/**",
+				"!**/manifest.json",
+				"/subcomponentB/**",
+				"/Component.js",
+			]
+		}
 	}
 };
 
