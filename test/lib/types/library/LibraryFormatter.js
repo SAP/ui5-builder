@@ -1,4 +1,5 @@
 const test = require("ava");
+const fs = require("graceful-fs");
 const path = require("path");
 const sinon = require("sinon");
 const mock = require("mock-require");
@@ -121,15 +122,13 @@ test("format: copyright already configured", async (t) => {
 });
 
 
-test.serial("format: no dot library file", async (t) => {
+test.serial("format: namespace resolution fails", async (t) => {
 	const myProject = clone(libraryETree);
 	myProject.metadata.copyright = undefined;
 
 
-	mock("globby", function(name) {
-		t.deepEqual(name, "**/.library", "Glob for .library files");
-		return Promise.resolve([]);
-	});
+	const globbyStub = sinon.stub().resolves([]);
+	mock("globby", globbyStub);
 	mock.reRequire("globby");
 
 
@@ -150,6 +149,10 @@ test.serial("format: no dot library file", async (t) => {
 
 
 	await libraryFormatter.format();
+	t.deepEqual(globbyStub.callCount, 3, "globby got called three times");
+	t.deepEqual(globbyStub.getCall(0).args[0], "**/manifest.json", "First glob is for manifest.json files");
+	t.deepEqual(globbyStub.getCall(1).args[0], "**/.library", "Second glob is for .library files");
+	t.deepEqual(globbyStub.getCall(2).args[0], "**/.library", "Third glob for library.js files");
 	t.deepEqual(loggerSpy.callCount, 1, "1 calls to warn should be done");
 	t.true(loggerSpy.getCalls().map((call) => call.args[0]).includes(
 		"Namespace resolution from .library failed for project library.e: " +
@@ -177,8 +180,11 @@ test("getDotLibrary: reads correctly", async (t) => {
 
 	const libraryFormatter = new LibraryFormatter({project: myProject});
 
-	const res = await libraryFormatter.getDotLibrary();
-	t.deepEqual(res.library.name, "library.e", ".library content has been read");
+	const {content, fsPath} = await libraryFormatter.getDotLibrary();
+	t.deepEqual(content.library.name, "library.e", ".library content has been read");
+	const expectedPath = path.join(myProject.path,
+		myProject.resources.configuration.paths.src, "library", "e", ".library");
+	t.deepEqual(fsPath, expectedPath, ".library fsPath is correct");
 });
 
 test.serial("getDotLibrary: multiple dot library files", async (t) => {
@@ -237,8 +243,11 @@ test.serial("getDotLibrary: result is cached", async (t) => {
 
 	const libraryFormatter = new LibraryFormatter({project: myProject});
 
-	const res = await libraryFormatter.getDotLibrary();
-	t.deepEqual(res.library.name, "library.e", ".library content has been read");
+	const {content, fsPath} = await libraryFormatter.getDotLibrary();
+	t.deepEqual(content.library.name, "library.e", ".library content has been read");
+	const expectedPath = path.join(myProject.path,
+		myProject.resources.configuration.paths.src, "library", "e", ".library");
+	t.deepEqual(fsPath, expectedPath, ".library fsPath is correct");
 
 	t.deepEqual(globbySpy.callCount, 1,
 		"globby got called exactly once (and then cached)");
@@ -286,12 +295,38 @@ test("getNamespace: from manifest.json", async (t) => {
 
 	const libraryFormatter = new LibraryFormatter({project: myProject});
 	sinon.stub(libraryFormatter, "getManifest").resolves({
-		"sap.app": {
-			id: "mani-pony"
-		}
+		content: {
+			"sap.app": {
+				id: "mani-pony"
+			}
+		},
+		fsPath: "/some/path/mani-pony/manifest.json"
 	});
+	const getSourceBasePathStub = sinon.stub(libraryFormatter, "getSourceBasePath").returns("/some/path/");
 	const res = await libraryFormatter.getNamespace();
+	t.deepEqual(getSourceBasePathStub.getCall(0).args[0], true,
+		"getSourceBasePath called with correct argument");
 	t.deepEqual(res, "mani-pony", "Returned correct namespace");
+});
+
+test("getNamespace: from manifest.json with not matching file path", async (t) => {
+	const myProject = clone(libraryETree);
+
+	const libraryFormatter = new LibraryFormatter({project: myProject});
+	sinon.stub(libraryFormatter, "getManifest").resolves({
+		content: {
+			"sap.app": {
+				id: "mani-pony"
+			}
+		},
+		fsPath: "/some/path/different/namespace/manifest.json"
+	});
+	sinon.stub(libraryFormatter, "getSourceBasePath").returns("/some/path/");
+	const err = await t.throwsAsync(libraryFormatter.getNamespace());
+
+	t.deepEqual(err.message, `Detected namespace "mani-pony" does not match detected directory structure ` +
+		`"different/namespace" for project library.e`,
+	"Rejected with correct error message");
 });
 
 test("getNamespace: from .library", async (t) => {
@@ -300,10 +335,56 @@ test("getNamespace: from .library", async (t) => {
 	const libraryFormatter = new LibraryFormatter({project: myProject});
 	sinon.stub(libraryFormatter, "getManifest").rejects("No manifest aint' here");
 	sinon.stub(libraryFormatter, "getDotLibrary").resolves({
-		library: {name: "dot-pony"}
+		content: {
+			library: {name: "dot-pony"}
+		},
+		fsPath: "/some/path/dot-pony/.library"
 	});
+	sinon.stub(libraryFormatter, "getSourceBasePath").returns("/some/path/");
 	const res = await libraryFormatter.getNamespace();
 	t.deepEqual(res, "dot-pony", "Returned correct namespace");
+});
+
+test("getNamespace: from .library with maven placeholder", async (t) => {
+	const myProject = clone(libraryETree);
+
+	const libraryFormatter = new LibraryFormatter({project: myProject});
+	sinon.stub(libraryFormatter, "getManifest").rejects("No manifest aint' here");
+	sinon.stub(libraryFormatter, "getDotLibrary").resolves({
+		content: {
+			library: {name: "${mvn-pony}"}
+		},
+		fsPath: "/some/path/mvn-unicorn/.library"
+	});
+	const resolveMavenPlaceholderStub =
+		sinon.stub(libraryFormatter, "resolveMavenPlaceholder").resolves("mvn-unicorn");
+	const getSourceBasePathStub = sinon.stub(libraryFormatter, "getSourceBasePath").returns("/some/path/");
+	const res = await libraryFormatter.getNamespace();
+
+	t.deepEqual(resolveMavenPlaceholderStub.getCall(0).args[0], "${mvn-pony}",
+		"resolveMavenPlaceholder called with correct argument");
+	t.deepEqual(getSourceBasePathStub.getCall(0).args[0], true,
+		"getSourceBasePath called with correct argument");
+	t.deepEqual(res, "mvn-unicorn", "Returned correct namespace");
+});
+
+test("getNamespace: from .library with not matching file path", async (t) => {
+	const myProject = clone(libraryETree);
+
+	const libraryFormatter = new LibraryFormatter({project: myProject});
+	sinon.stub(libraryFormatter, "getManifest").rejects("No manifest aint' here");
+	sinon.stub(libraryFormatter, "getDotLibrary").resolves({
+		content: {
+			library: {name: "mvn-pony"}
+		},
+		fsPath: "/some/path/different/namespace/.library"
+	});
+	sinon.stub(libraryFormatter, "getSourceBasePath").returns("/some/path/");
+	const err = await t.throwsAsync(libraryFormatter.getNamespace());
+
+	t.deepEqual(err.message, `Detected namespace "mvn-pony" does not match detected directory structure ` +
+		`"different/namespace" for project library.e`,
+	"Rejected with correct error message");
 });
 
 test("getNamespace: neither manifest nor .library contain it", async (t) => {
@@ -319,31 +400,17 @@ test("getNamespace: neither manifest nor .library contain it", async (t) => {
 		"Rejected with correct error message");
 });
 
-test("getNamespace: from .library with maven placeholder", async (t) => {
-	const myProject = clone(libraryETree);
-
-	const libraryFormatter = new LibraryFormatter({project: myProject});
-	sinon.stub(libraryFormatter, "getManifest").rejects("No manifest aint' here");
-	sinon.stub(libraryFormatter, "getDotLibrary").resolves({
-		library: {name: "${mvn-pony}"}
-	});
-	const resolveMavenPlaceholderStub =
-		sinon.stub(libraryFormatter, "resolveMavenPlaceholder").resolves("mvn-unicorn");
-	const res = await libraryFormatter.getNamespace();
-
-	t.deepEqual(resolveMavenPlaceholderStub.getCall(0).args[0], "${mvn-pony}",
-		"resolveMavenPlaceholder called with correct argument");
-	t.deepEqual(res, "mvn-unicorn", "Returned correct namespace");
-});
-
 test("getNamespace: maven placeholder resolution fails", async (t) => {
 	const myProject = clone(libraryETree);
 
 	const libraryFormatter = new LibraryFormatter({project: myProject});
 	sinon.stub(libraryFormatter, "getManifest").resolves({
-		"sap.app": {
-			id: "${mvn-pony}"
-		}
+		content: {
+			"sap.app": {
+				id: "${mvn-pony}"
+			}
+		},
+		fsPath: "/some/path/not/used"
 	});
 	const resolveMavenPlaceholderStub =
 		sinon.stub(libraryFormatter, "resolveMavenPlaceholder")
@@ -354,4 +421,105 @@ test("getNamespace: maven placeholder resolution fails", async (t) => {
 	t.deepEqual(err.message,
 		"Failed to resolve namespace maven placeholder of project library.e: because squirrel",
 		"Rejected with correct error message");
+});
+
+test("getManifest: reads correctly", async (t) => {
+	const myProject = clone(libraryETree);
+	myProject.resources.pathMappings = {
+		"/resources/": myProject.resources.configuration.paths.src
+	};
+
+	const libraryFormatter = new LibraryFormatter({project: myProject});
+
+	const {content, fsPath} = await libraryFormatter.getManifest();
+	t.deepEqual(content._version, "1.1.0", "manifest.json content has been read");
+	const expectedPath = path.join(libraryEPath, "src", "library", "e", "manifest.json");
+	t.deepEqual(fsPath, expectedPath, "Correct manifest.json path returned");
+});
+
+test.serial("getManifest: invalid JSON", async (t) => {
+	const myProject = clone(libraryETree);
+	myProject.resources.pathMappings = {
+		"/resources/": myProject.resources.configuration.paths.src
+	};
+
+	const readFileStub = sinon.stub(fs, "readFile").callsArgWithAsync(1, undefined, "pony");
+
+	const LibraryFormatter = mock.reRequire("../../../../lib/types/library/LibraryFormatter");
+	const libraryFormatter = new LibraryFormatter({project: myProject});
+
+	const error = await t.throwsAsync(libraryFormatter.getManifest());
+	t.deepEqual(error.message,
+		"Failed to read manifest.json for project library.e: " +
+		"Unexpected token p in JSON at position 0",
+		"Rejected with correct error message");
+	t.deepEqual(readFileStub.callCount, 1, "fs.read got called once");
+	const expectedPath = path.join(libraryEPath, "src", "library", "e", "manifest.json");
+	t.deepEqual(readFileStub.getCall(0).args[0], expectedPath, "fs.read got called with the correct argument");
+});
+
+test.serial("getManifest: fs read error", async (t) => {
+	const myProject = clone(libraryETree);
+	myProject.resources.pathMappings = {
+		"/resources/": myProject.resources.configuration.paths.src
+	};
+
+	const readFileStub = sinon.stub(fs, "readFile").callsArgWithAsync(1, new Error("EPON: Pony Error"));
+
+	const LibraryFormatter = mock.reRequire("../../../../lib/types/library/LibraryFormatter");
+	const libraryFormatter = new LibraryFormatter({project: myProject});
+
+	const error = await t.throwsAsync(libraryFormatter.getManifest());
+	t.deepEqual(error.message,
+		"Failed to read manifest.json for project library.e: " +
+		"EPON: Pony Error",
+		"Rejected with correct error message");
+	t.deepEqual(readFileStub.callCount, 1, "fs.read got called once");
+	const expectedPath = path.join(libraryEPath, "src", "library", "e", "manifest.json");
+	t.deepEqual(readFileStub.getCall(0).args[0], expectedPath, "fs.read got called with the correct argument");
+});
+
+test.serial("getManifest: multiple manifest.json files", async (t) => {
+	const myProject = clone(libraryETree);
+	myProject.resources.pathMappings = {
+		"/resources/": myProject.resources.configuration.paths.src
+	};
+
+	mock("globby", function(name) {
+		t.deepEqual(name, "**/manifest.json", "Glob for .library files");
+		return Promise.resolve(["folder1/.library", "folder2/.library"]);
+	});
+	mock.reRequire("globby");
+
+	const LibraryFormatter = mock.reRequire("../../../../lib/types/library/LibraryFormatter");
+
+	const libraryFormatter = new LibraryFormatter({project: myProject});
+	const error = await t.throwsAsync(libraryFormatter.getManifest());
+	t.deepEqual(error.message, "Found multiple (2) manifest.json files for project library.e",
+		"Rejected with correct error message");
+	mock.stop("globby");
+});
+
+
+test.serial("getManifest: result is cached", async (t) => {
+	const myProject = clone(libraryETree);
+	myProject.resources.pathMappings = {
+		"/resources/": myProject.resources.configuration.paths.src
+	};
+
+	const readFileStub = sinon.stub(fs, "readFile").callsArgWithAsync(1, undefined,
+		`{"pony": "no unicorn"}`);
+
+	const LibraryFormatter = mock.reRequire("../../../../lib/types/library/LibraryFormatter");
+	const libraryFormatter = new LibraryFormatter({project: myProject});
+
+	const expectedPath = path.join(libraryEPath, "src", "library", "e", "manifest.json");
+	const {content, fsPath} = await libraryFormatter.getManifest();
+
+	t.deepEqual(readFileStub.callCount, 1, "fs.read got called exactly once (and then cached)");
+	t.deepEqual(content, {pony: "no unicorn"}, "Correct result on first call");
+	t.deepEqual(fsPath, expectedPath, "Correct manifest.json path returned on first call");
+	const {content: content2, fsPath: fsPath2} = await libraryFormatter.getManifest();
+	t.deepEqual(content2, {pony: "no unicorn"}, "Correct result on second call");
+	t.deepEqual(fsPath2, expectedPath, "Correct manifest.json path returned on second call");
 });

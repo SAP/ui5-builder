@@ -1,6 +1,8 @@
 const test = require("ava");
 const path = require("path");
 const sinon = require("sinon");
+const fs = require("graceful-fs");
+const mock = require("mock-require");
 
 test.afterEach.always((t) => {
 	sinon.restore();
@@ -25,6 +27,9 @@ const applicationBTree = {
 			paths: {
 				webapp: "webapp"
 			}
+		},
+		pathMappings: {
+			"/": "webapp"
 		}
 	}
 };
@@ -91,20 +96,6 @@ test("validate: empty resources", async (t) => {
 	t.deepEqual(myProject.resources.configuration.paths.webapp, "webapp", "default webapp directory is set");
 });
 
-test("getManifest: check applicationVersion", async (t) => {
-	const myProject = {
-		path: applicationBPath,
-		resources: {
-			pathMappings: {
-				"/": "webapp"
-			}
-		}
-	};
-	const applicationFormatter = new ApplicationFormatter({project: myProject});
-	const oRes = await applicationFormatter.getManifest();
-	t.deepEqual(oRes["sap.app"].applicationVersion.version, "1.2.2", "Manifest read correctly");
-});
-
 function createMockProject() {
 	return {
 		resources: {
@@ -124,7 +115,7 @@ test("format: No 'sap.app' configuration found", async (t) => {
 	const project = createMockProject();
 	const applicationFormatter = new ApplicationFormatter({project});
 	sinon.stub(applicationFormatter, "validate").resolves();
-	sinon.stub(applicationFormatter, "getManifest").resolves({});
+	sinon.stub(applicationFormatter, "getManifest").resolves({content: {}, fsPath: {}});
 
 	await applicationFormatter.format();
 	t.deepEqual(project.resources.pathMappings["/"], "webapp", "path mappings is set");
@@ -136,7 +127,7 @@ test("format: No application id in 'sap.app' configuration found", async (t) => 
 	const project = createMockProject();
 	const applicationFormatter = new ApplicationFormatter({project});
 	sinon.stub(applicationFormatter, "validate").resolves();
-	sinon.stub(applicationFormatter, "getManifest").resolves({"sap.app": {}});
+	sinon.stub(applicationFormatter, "getManifest").resolves({content: {"sap.app": {}}});
 
 	await applicationFormatter.format();
 	t.deepEqual(project.resources.pathMappings["/"], "webapp", "path mappings is set");
@@ -148,11 +139,78 @@ test("format: set namespace to id", async (t) => {
 	const project = createMockProject();
 	const applicationFormatter = new ApplicationFormatter({project});
 	sinon.stub(applicationFormatter, "validate").resolves();
-	sinon.stub(applicationFormatter, "getManifest").resolves({"sap.app": {id: "my.id"}});
+	sinon.stub(applicationFormatter, "getManifest").resolves({content: {"sap.app": {id: "my.id"}}});
 
 	await applicationFormatter.format();
 	t.deepEqual(project.metadata.namespace, "my/id",
 		"namespace was successfully set since getManifest provides the correct object structure");
+});
+
+test("getManifest: reads correctly", async (t) => {
+	const myProject = clone(applicationBTree);
+
+	const libraryFormatter = new ApplicationFormatter({project: myProject});
+
+	const {content, fsPath} = await libraryFormatter.getManifest();
+	t.deepEqual(content._version, "1.1.0", "manifest.json content has been read");
+	const expectedPath = path.join(applicationBPath, "webapp", "manifest.json");
+	t.deepEqual(fsPath, expectedPath, "Correct manifest.json path returned");
+});
+
+test.serial("getManifest: invalid JSON", async (t) => {
+	const myProject = clone(applicationBTree);
+
+	const readFileStub = sinon.stub(fs, "readFile").callsArgWithAsync(1, undefined, "pony");
+
+	const ApplicationFormatter = mock.reRequire("../../../../lib/types/application/ApplicationFormatter");
+	const libraryFormatter = new ApplicationFormatter({project: myProject});
+
+	const error = await t.throwsAsync(libraryFormatter.getManifest());
+	t.deepEqual(error.message,
+		"Failed to read manifest.json for project application.b: " +
+		"Unexpected token p in JSON at position 0",
+		"Rejected with correct error message");
+	t.deepEqual(readFileStub.callCount, 1, "fs.read got called once");
+	const expectedPath = path.join(applicationBPath, "webapp", "manifest.json");
+	t.deepEqual(readFileStub.getCall(0).args[0], expectedPath, "fs.read got called with the correct argument");
+});
+
+test.serial("getManifest: fs read error", async (t) => {
+	const myProject = clone(applicationBTree);
+
+	const readFileStub = sinon.stub(fs, "readFile").callsArgWithAsync(1, new Error("EPON: Pony Error"));
+
+	const ApplicationFormatter = mock.reRequire("../../../../lib/types/application/ApplicationFormatter");
+	const libraryFormatter = new ApplicationFormatter({project: myProject});
+
+	const error = await t.throwsAsync(libraryFormatter.getManifest());
+	t.deepEqual(error.message,
+		"Failed to read manifest.json for project application.b: " +
+		"EPON: Pony Error",
+		"Rejected with correct error message");
+	t.deepEqual(readFileStub.callCount, 1, "fs.read got called once");
+	const expectedPath = path.join(applicationBPath, "webapp", "manifest.json");
+	t.deepEqual(readFileStub.getCall(0).args[0], expectedPath, "fs.read got called with the correct argument");
+});
+
+test.serial("getManifest: result is cached", async (t) => {
+	const myProject = clone(applicationBTree);
+
+	const readFileStub = sinon.stub(fs, "readFile").callsArgWithAsync(1, undefined,
+		`{"pony": "no unicorn"}`);
+
+	const ApplicationFormatter = mock.reRequire("../../../../lib/types/application/ApplicationFormatter");
+	const libraryFormatter = new ApplicationFormatter({project: myProject});
+
+	const expectedPath = path.join(applicationBPath, "webapp", "manifest.json");
+	const {content, fsPath} = await libraryFormatter.getManifest();
+	t.deepEqual(content, {pony: "no unicorn"}, "Correct result on first call");
+	t.deepEqual(fsPath, expectedPath, "Correct manifest.json path returned on first call");
+	const {content: content2, fsPath: fsPath2} = await libraryFormatter.getManifest();
+	t.deepEqual(content2, {pony: "no unicorn"}, "Correct result on second call");
+	t.deepEqual(fsPath2, expectedPath, "Correct manifest.json path returned on second call");
+
+	t.deepEqual(readFileStub.callCount, 1, "fs.read got called exactly once (and then cached)");
 });
 
 const applicationHPath = path.join(__dirname, "..", "..", "..", "fixtures", "application.h");
