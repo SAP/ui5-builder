@@ -1,0 +1,1 @@
+{"version":3,"sources":["Component.js"],"names":["sap","ui","predefine","UIComponent","extend","metadata","manifest"],"mappings":";AAAAA,IAAIC,GAAGC,kDAAO,CAAC,2BAA4B,SAASC,GACnD,aACA,OAAOA,EAAYC,OAAO,wCAAyC,CAClEC,SAAU,CACTC,SAAU","file":"application/g/subcomponentB/Component-preload.js","sourceRoot":"."}

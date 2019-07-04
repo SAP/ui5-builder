@@ -5,6 +5,7 @@ const mock = require("mock-require");
 const Builder = require("../../../../lib/lbt/bundle/Builder");
 const ResourcePool = require("../../../../lib/lbt/resources/ResourcePool");
 
+const sourceMappingString = "//# sourceMappingURL=";
 test.afterEach.always((t) => {
 	mock.stopAll();
 	sinon.restore();
@@ -106,7 +107,6 @@ sap.ui.requireSync("ui5loader");
 	t.deepEqual(oResult.bundleInfo.subModules, ["a.js"],
 		"bundle info subModules are correct");
 });
-
 test("integration: createBundle EVOBundleFormat (ui5loader.js)", async (t) => {
 	const pool = new ResourcePool();
 	pool.addResource({
@@ -152,8 +152,9 @@ sap.ui.require.preload({
 //@ui5-bundle-raw-include myModule.js
 (function(){window.mine = {};}());
 sap.ui.requireSync("ui5loader");
+${sourceMappingString}Component-preload.js.map
 `;
-	t.deepEqual(oResult.content, expectedContent, "EVOBundleFormat should start with optomization and " +
+	t.deepEqual(oResult.content, expectedContent, "EVOBundleFormat should start with optimization and " +
 		"should contain:" +
 		" preload part from jquery.sap.global-dbg.js" +
 		" raw part from myModule.js" +
@@ -222,6 +223,7 @@ sap.ui.require.preload({
 //@ui5-bundle-raw-include myRawModule.js
 (function(){window.mine={}})();
 sap.ui.requireSync("ui5loader");
+${sourceMappingString}Component-preload.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "EVOBundleFormat should start with optomization and " +
 		"should contain:" +
@@ -285,6 +287,7 @@ sap.ui.getCore().boot && sap.ui.getCore().boot();
 } catch(oError) {
 if (oError.name != "Restart") { throw oError; }
 }
+${sourceMappingString}bootstrap.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "EVOBundleFormat should start with optomization and " +
 		"should contain:" +
@@ -344,6 +347,7 @@ jQuery.sap.registerPreloadedModules({
 //@ui5-bundle-raw-include myModule.js
 (function(){window.mine = {};}());
 sap.ui.requireSync("sap-ui-core");
+${sourceMappingString}Component-preload.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "Ui5BundleFormat should start with registerPreloadedModules " +
 		"and should contain:" +
@@ -418,6 +422,7 @@ sap.ui.getCore().boot && sap.ui.getCore().boot();
 } catch(oError) {
 if (oError.name != "Restart") { throw oError; }
 }
+${sourceMappingString}bootstrap.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "EVOBundleFormat should start with optomization and " +
 		"should contain:" +

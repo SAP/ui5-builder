@@ -22,3 +22,4 @@ console.log(" Some ");
  * Some fancy copyright
  */
 console.log(" Not including ");
+//# sourceMappingURL=customBundle.js.map
