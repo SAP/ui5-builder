@@ -5,6 +5,7 @@ const mock = require("mock-require");
 const Builder = require("../../../../lib/lbt/bundle/Builder");
 const ResourcePool = require("../../../../lib/lbt/resources/ResourcePool");
 
+const sourceMappingString = '//# sourceMappingURL=';
 test.afterEach.always((t) => {
 	mock.stopAll();
 	sinon.restore();
@@ -150,8 +151,9 @@ sap.ui.require.preload({
 //@ui5-bundle-raw-include myModule.js
 (function(){window.mine = {};}());
 sap.ui.requireSync("ui5loader");
+${sourceMappingString}Component-preload.js.map
 `;
-	t.deepEqual(oResult.content, expectedContent, "EVOBundleFormat should start with optomization and " +
+	t.deepEqual(oResult.content, expectedContent, "EVOBundleFormat should start with optimization and " +
 		"should contain:" +
 		" preload part from jquery.sap.global-dbg.js" +
 		" raw part from myModule.js" +
@@ -341,6 +343,7 @@ jQuery.sap.registerPreloadedModules({
 //@ui5-bundle-raw-include myModule.js
 (function(){window.mine = {};}());
 sap.ui.requireSync("sap-ui-core");
+${sourceMappingString}Component-preload.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "Ui5BundleFormat should start with registerPreloadedModules " +
 		"and should contain:" +
