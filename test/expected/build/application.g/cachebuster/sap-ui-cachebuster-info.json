@@ -1,12 +1,13 @@
 {
-  "Component-preload.js": 1562676453262,
+  "Component-preload.js.map": 1562680358230,
   "subcomponentA/manifest.json": 1557825419958,
+  "manifest.json": 1557825419957,
   "subcomponentB/manifest.json": 1557825419958,
-  "subcomponentB/Component.js": 1557825419958,
   "subcomponentA/Component.js": 1557825419958,
   "Component.js": 1557825419957,
-  "manifest.json": 1557825419957,
-  "Component-dbg.js": 1557825419957,
+  "Component-preload.js": 1562680358229,
+  "subcomponentB/Component.js": 1557825419958,
   "subcomponentA/Component-dbg.js": 1557825419958,
-  "subcomponentB/Component-dbg.js": 1557825419958
+  "subcomponentB/Component-dbg.js": 1557825419958,
+  "Component-dbg.js": 1557825419957
 }
