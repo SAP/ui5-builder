@@ -5,7 +5,7 @@ const mock = require("mock-require");
 const Builder = require("../../../../lib/lbt/bundle/Builder");
 const ResourcePool = require("../../../../lib/lbt/resources/ResourcePool");
 
-const sourceMappingString = '//# sourceMappingURL=';
+const sourceMappingString = "//# sourceMappingURL=";
 test.afterEach.always((t) => {
 	mock.stopAll();
 	sinon.restore();
@@ -105,7 +105,6 @@ sap.ui.requireSync("ui5loader");
 	t.deepEqual(oResult.bundleInfo.subModules, ["a.js"],
 		"bundle info subModules are correct");
 });
-
 test("integration: createBundle EVOBundleFormat (ui5loader.js)", async (t) => {
 	const pool = new ResourcePool();
 	pool.addResource({
