@@ -35,7 +35,7 @@ city=Ort:`;
 	});
 
 	return workspace.write(resource).then(() => {
-		return tasks.escapePropertiesFiles({
+		return tasks.escapeNonAsciiCharacters({
 			workspace,
 			options: {
 				pattern: "/**/*.properties"
@@ -83,7 +83,7 @@ city=Ort:`;
 	});
 
 	return workspace.write(resource).then(() => {
-		return tasks.escapePropertiesFiles({
+		return tasks.escapeNonAsciiCharacters({
 			workspace,
 			options: {
 				sourceEncoding: "UTF-8",
@@ -104,7 +104,7 @@ city=Ort:`;
 });
 
 test("integration: escape non ascii characters source encoding being UTF-16", (t) => {
-	return tasks.escapePropertiesFiles({
+	return tasks.escapeNonAsciiCharacters({
 		workspace: undefined,
 		options: {
 			sourceEncoding: "UTF-16",
