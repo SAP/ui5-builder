@@ -16,7 +16,14 @@ function createMockPool(dependencies) {
 			if (name === "c.js") {
 				info.compressedSize = 512;
 			}
-			return {info, buffer: async () => name.padStart(2048, "*")};
+			return {
+				info,
+				buffer: async () => Buffer.from(name.padStart(2048, "*")),
+				getProject: () => undefined,
+				resource: {
+					getBuffer: () => Buffer.from(name.padStart(2048, "*"))
+				}
+			};
 		},
 		resources: [{
 			name: "a.js"
@@ -152,7 +159,8 @@ test("_calcMinSize: js resource", async (t) => {
 					size: 333,
 					compressedSize: 333
 				},
-				buffer: async () => "var test = 5;"
+				buffer: async () => "var test = 5;",
+				getProject: () => undefined
 			};
 		}
 	};
@@ -170,7 +178,8 @@ test.serial("_calcMinSize: uglify js resource", async (t) => {
 					size: 333,
 					compressedSize: 333
 				},
-				buffer: async () => "var test = 5;"
+				buffer: async () => "var test = 5;",
+				getProject: () => undefined
 			};
 		}
 	};
@@ -184,7 +193,11 @@ test("_calcMinSize: properties resource", async (t) => {
 	const pool = {
 		findResourceWithInfo: function() {
 			return {
-				buffer: async () => "1234"
+				buffer: async () => Buffer.from("1234"),
+				resource: {
+					getBuffer: () => Buffer.from("1234")
+				},
+				getProject: () => undefined
 			};
 		}
 	};
@@ -196,7 +209,8 @@ test("_calcMinSize: xml view resource", async (t) => {
 	const pool = {
 		findResourceWithInfo: function() {
 			return {
-				buffer: async () => "12345"
+				buffer: async () => "12345",
+				getProject: () => undefined
 			};
 		}
 	};
@@ -209,7 +223,8 @@ test("_calcMinSize: xml view resource without optimizeXMLViews", async (t) => {
 	const pool = {
 		findResourceWithInfo: function() {
 			return {
-				buffer: async () => "123456"
+				buffer: async () => "123456",
+				getProject: () => undefined
 			};
 		}
 	};
@@ -222,7 +237,8 @@ test.serial("_calcMinSize: optimize xml view resource", async (t) => {
 	const pool = {
 		findResourceWithInfo: function() {
 			return {
-				buffer: async () => "xxx"
+				buffer: async () => "xxx",
+				getProject: () => undefined
 			};
 		}
 	};
@@ -238,7 +254,8 @@ test.serial("_calcMinSize: optimize xml view resource and pre tag", async (t) =>
 	const pool = {
 		findResourceWithInfo: function() {
 			return {
-				buffer: async () => "<xml><pre>asd</pre>"
+				buffer: async () => "<xml><pre>asd</pre>",
+				getProject: () => undefined
 			};
 		}
 	};

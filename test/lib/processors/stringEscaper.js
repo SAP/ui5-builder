@@ -11,13 +11,17 @@ const stringEscaper = require("../../../lib/processors/stringEscaper");
 const escape = async function(input) {
 	let result = undefined;
 	const resource = {
-		getString: () => Promise.resolve(input),
 		setString: (actual) => {
 			result = actual;
+		},
+		getString: async () => {
+			return result;
+		},
+		getBuffer: async () => {
+			return Buffer.from(input, "utf8");
 		}
 	};
-	await stringEscaper({resources: [resource]});
-	return result;
+	return stringEscaper({resources: [resource]});
 };
 
 test("Replace symbol characters", async (t) => {
@@ -25,8 +29,8 @@ test("Replace symbol characters", async (t) => {
 
 	const input = `L♥VE is everywhere`;
 	const expected = `L\\u2665VE is everywhere`;
-	const output = await escape(input);
-	t.deepEqual(output, expected, "Correct file content should be set");
+	const [resource] = await escape(input);
+	t.deepEqual(await resource.getString(), expected, "Correct file content should be set");
 });
 
 test("Replace chinese characters", async (t) => {
@@ -34,8 +38,8 @@ test("Replace chinese characters", async (t) => {
 
 	const input = `These are 人物 characters`;
 	const expected = "These are \\u4eba\\u7269 characters";
-	const output = await escape(input);
-	t.deepEqual(output, expected, "Correct file content should be set");
+	const [resource] = await escape(input);
+	t.deepEqual(await resource.getString(), expected, "Correct file content should be set");
 });
 
 test("Replace umlaut characters", async (t) => {
@@ -43,8 +47,8 @@ test("Replace umlaut characters", async (t) => {
 
 	const input = `Achso Ähem`;
 	const expected = "Achso \\u00c4hem";
-	const output = await escape(input);
-	t.deepEqual(output, expected, "Correct file content should be set");
+	const [resource] = await escape(input);
+	t.deepEqual(await resource.getString(), expected, "Correct file content should be set");
 });
 
 test("Replace constructed characters", async (t) => {
@@ -52,8 +56,8 @@ test("Replace constructed characters", async (t) => {
 
 	const input = `Oh ẛ̣ that's ẛ̣ yes`;
 	const expected = "Oh \\u1e9b\\u0323 that's \\u1e9b\\u0323 yes";
-	const output = await escape(input);
-	t.deepEqual(output, expected, "Correct file content should be set");
+	const [resource] = await escape(input);
+	t.deepEqual(await resource.getString(), expected, "Correct file content should be set");
 });
 
 
@@ -62,8 +66,8 @@ test("Replace multiple times same character", async (t) => {
 
 	const input = `♥H L♥VE AND HARM♥NY ♥MG`;
 	const expected = "\\u2665H L\\u2665VE AND HARM\\u2665NY \\u2665MG";
-	const output = await escape(input);
-	t.deepEqual(output, expected, "Correct file content should be set");
+	const [resource] = await escape(input);
+	t.deepEqual(await resource.getString(), expected, "Correct file content should be set");
 });
 
 test("No Replace of characters", async (t) => {
@@ -71,6 +75,6 @@ test("No Replace of characters", async (t) => {
 
 	const input = `ONE LOVE`;
 	const expected = undefined;
-	const output = await escape(input);
-	t.deepEqual(output, expected, "Correct file content should not be modified");
+	const [resource] = await escape(input);
+	t.deepEqual(await resource.getString(), expected, "Correct file content should be set");
 });
