@@ -19,7 +19,7 @@ module.exports = {
 		bootstrapHtmlTransformer: require("./lib/processors/bootstrapHtmlTransformer"),
 		debugFileCreator: require("./lib/processors/debugFileCreator"),
 		resourceCopier: require("./lib/processors/resourceCopier"),
-		stringEscaper: require("./lib/processors/stringEscaper"),
+		nonAsciiEscaper: require("./lib/processors/nonAsciiEscaper"),
 		stringReplacer: require("./lib/processors/stringReplacer"),
 		themeBuilder: require("./lib/processors/themeBuilder"),
 		uglifier: require("./lib/processors/uglifier"),

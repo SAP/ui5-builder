@@ -38,6 +38,7 @@ city=Ort:`;
 		return tasks.escapeNonAsciiCharacters({
 			workspace,
 			options: {
+				encoding: "UTF-8",
 				pattern: "/**/*.properties"
 			}
 		}).then(() => {

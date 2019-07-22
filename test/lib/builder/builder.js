@@ -84,7 +84,7 @@ test("Build application.a", (t) => {
 	return builder.build({
 		tree: applicationATree,
 		destPath,
-		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo"]
+		excludedTasks: ["escapeNonAsciiCharacters", "generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo"]
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
@@ -136,7 +136,7 @@ test("Build application.g", (t) => {
 	return builder.build({
 		tree: applicationGTree,
 		destPath,
-		excludedTasks: ["generateStandaloneAppBundle", "generateVersionInfo"]
+		excludedTasks: ["escapeNonAsciiCharacters", "generateStandaloneAppBundle", "generateVersionInfo"]
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
@@ -156,7 +156,7 @@ test("Build application.g with component preload paths", (t) => {
 	return builder.build({
 		tree: applicationGTreeComponentPreloadPaths,
 		destPath,
-		excludedTasks: ["generateStandaloneAppBundle", "generateVersionInfo"]
+		excludedTasks: ["escapeNonAsciiCharacters", "generateStandaloneAppBundle", "generateVersionInfo"]
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
@@ -197,7 +197,7 @@ test("Build application.h", (t) => {
 	return builder.build({
 		tree: applicationHTree,
 		destPath,
-		excludedTasks: ["createDebugFiles", "generateComponentPreload",
+		excludedTasks: ["escapeNonAsciiCharacters", "createDebugFiles", "generateComponentPreload",
 			"generateStandaloneAppBundle", "generateVersionInfo"]
 	}).then(() => {
 		return findFiles(expectedPath);
@@ -218,7 +218,7 @@ test("Build application.i", (t) => {
 	return builder.build({
 		tree: applicationITree,
 		destPath,
-		excludedTasks: ["createDebugFiles", "generateStandaloneAppBundle", "generateVersionInfo"]
+		excludedTasks: ["escapeNonAsciiCharacters", "createDebugFiles", "generateStandaloneAppBundle", "generateVersionInfo"]
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
@@ -238,7 +238,7 @@ test("Build library.d with copyright from .library file", (t) => {
 	return builder.build({
 		tree: libraryDTree,
 		destPath,
-		excludedTasks: ["generateLibraryPreload"]
+		excludedTasks: ["escapeNonAsciiCharacters", "generateLibraryPreload"]
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
@@ -259,7 +259,7 @@ test("Build library.e with copyright from settings of ui5.yaml", (t) => {
 	return builder.build({
 		tree: libraryETree,
 		destPath,
-		excludedTasks: ["generateLibraryPreload"]
+		excludedTasks: ["escapeNonAsciiCharacters", "generateLibraryPreload"]
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
@@ -280,7 +280,7 @@ test("Build library.h with custom bundles and component-preloads", (t) => {
 	return builder.build({
 		tree: libraryHTree,
 		destPath,
-		excludedTasks: ["createDebugFiles", "generateLibraryPreload"]
+		excludedTasks: ["escapeNonAsciiCharacters", "createDebugFiles", "generateLibraryPreload"]
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
@@ -301,7 +301,7 @@ test("Build library.i with manifest info taken from .library and library.js", (t
 	return builder.build({
 		tree: libraryITree,
 		destPath,
-		excludedTasks: ["createDebugFiles", "generateLibraryPreload", "uglify"]
+		excludedTasks: ["escapeNonAsciiCharacters", "createDebugFiles", "generateLibraryPreload", "uglify"]
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
@@ -342,7 +342,8 @@ test("Build theme.j even without an library", (t) => {
 	const expectedPath = "./test/expected/build/theme.j/dest";
 	return builder.build({
 		tree: themeJTree,
-		destPath
+		destPath,
+		excludedTasks: ["escapeNonAsciiCharacters"]
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {

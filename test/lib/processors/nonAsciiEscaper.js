@@ -1,6 +1,6 @@
 const test = require("ava");
 
-const stringEscaper = require("../../../lib/processors/stringEscaper");
+const nonAsciiEscaper = require("../../../lib/processors/nonAsciiEscaper");
 
 /**
  * Executes string escaping. Returns <code>undefined</code> if nothing was escaped.
@@ -22,7 +22,7 @@ const escape = async function(input, options) {
 			return Buffer.from(input, "utf8");
 		}
 	};
-	return stringEscaper({resources: [resource], options});
+	return nonAsciiEscaper({resources: [resource], options});
 };
 
 test("Replace symbol characters", async (t) => {
@@ -86,4 +86,16 @@ test("Invalid encoding", async (t) => {
 	const input = `ONE LOVE`;
 	const error = await t.throwsAsync(escape(input, {encoding: "asd"}));
 	t.is(error.message, "Unknown encoding: asd");
+});
+
+
+test("getEncodingFromNiceName", (t) => {
+	t.is("utf8", nonAsciiEscaper.getEncodingFromNiceName("UTF-8"));
+});
+
+test("getEncodingFromNiceName invalid", (t) => {
+	const error = t.throws(function() {
+		nonAsciiEscaper.getEncodingFromNiceName("asd");
+	});
+	t.is(error.message, `Encoding "asd" is not supported. Only UTF-8,ISO-8859-1 are allowed values`);
 });
