@@ -108,7 +108,7 @@ test.skip("integration: escape non ascii characters source encoding being UTF-16
 	return tasks.escapeNonAsciiCharacters({
 		workspace: undefined,
 		options: {
-			sourceEncoding: "UTF-16",
+			encoding: "utf16le",
 			pattern: "/**/*.properties"
 		}
 	}).catch((error) => {
