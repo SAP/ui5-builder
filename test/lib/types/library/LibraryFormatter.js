@@ -151,7 +151,8 @@ test("format: formats correctly", async (t) => {
 			pathMappings: {
 				"/resources/": "src",
 				"/test-resources/": "test"
-			}
+			},
+			propertiesFileEncoding: "ISO-8859-1"
 		}
 	}, "Project got formatted correctly");
 });

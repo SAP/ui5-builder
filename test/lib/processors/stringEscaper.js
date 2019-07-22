@@ -6,9 +6,10 @@ const stringEscaper = require("../../../lib/processors/stringEscaper");
  * Executes string escaping. Returns <code>undefined</code> if nothing was escaped.
  *
  * @param {string} input string
+ * @param {Object} [options]
  * @returns {Promise<string|undefined>} escaped string if non-ascii characters present, <code>undefined</code> otherwise
  */
-const escape = async function(input) {
+const escape = async function(input, options) {
 	let result = undefined;
 	const resource = {
 		setString: (actual) => {
@@ -21,7 +22,7 @@ const escape = async function(input) {
 			return Buffer.from(input, "utf8");
 		}
 	};
-	return stringEscaper({resources: [resource]});
+	return stringEscaper({resources: [resource], options});
 };
 
 test("Replace symbol characters", async (t) => {
@@ -77,4 +78,12 @@ test("No Replace of characters", async (t) => {
 	const expected = undefined;
 	const [resource] = await escape(input);
 	t.deepEqual(await resource.getString(), expected, "Correct file content should be set");
+});
+
+test("Invalid encoding", async (t) => {
+	t.plan(2);
+
+	const input = `ONE LOVE`;
+	const error = await t.throwsAsync(escape(input, {encoding: "asd"}));
+	t.is(error.message, "Unknown encoding: asd");
 });
