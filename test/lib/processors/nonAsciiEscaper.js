@@ -89,13 +89,13 @@ test("Invalid encoding", async (t) => {
 });
 
 
-test("getEncodingFromNiceName", (t) => {
-	t.is("utf8", nonAsciiEscaper.getEncodingFromNiceName("UTF-8"));
+test("getEncodingFromAlias", (t) => {
+	t.is("utf8", nonAsciiEscaper.getEncodingFromAlias("UTF-8"));
 });
 
-test("getEncodingFromNiceName invalid", (t) => {
+test("getEncodingFromAlias invalid", (t) => {
 	const error = t.throws(function() {
-		nonAsciiEscaper.getEncodingFromNiceName("asd");
+		nonAsciiEscaper.getEncodingFromAlias("asd");
 	});
 	t.is(error.message, `Encoding "asd" is not supported. Only UTF-8,ISO-8859-1 are allowed values`);
 });
