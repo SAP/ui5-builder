@@ -105,14 +105,40 @@ city=Ort:`;
 	});
 });
 
-test.skip("integration: escape non ascii characters source encoding being UTF-16", (t) => {
-	return tasks.escapeNonAsciiCharacters({
-		workspace: undefined,
+test("integration: escape non ascii characters source encoding being empty", async (t) => {
+	const reader = resourceFactory.createAdapter({
+		virBasePath: "/"
+	});
+	const writer = resourceFactory.createAdapter({
+		virBasePath: "/"
+	});
+	const workspace = new DuplexCollection({reader, writer});
+
+	const error = await t.throwsAsync(tasks.escapeNonAsciiCharacters({
+		workspace,
+		options: {
+			encoding: "",
+			pattern: "/**/*.properties"
+		}
+	}));
+	return t.is(error.message, "No Encoding specified");
+});
+
+test("integration: escape non ascii characters source encoding being UTF-16", async (t) => {
+	const reader = resourceFactory.createAdapter({
+		virBasePath: "/"
+	});
+	const writer = resourceFactory.createAdapter({
+		virBasePath: "/"
+	});
+	const workspace = new DuplexCollection({reader, writer});
+
+	const error = await t.throwsAsync(tasks.escapeNonAsciiCharacters({
+		workspace,
 		options: {
 			encoding: "utf16le",
 			pattern: "/**/*.properties"
 		}
-	}).catch((error) => {
-		return t.deepEqual(error.message, "Invalid encoding specified: 'UTF-16'. Must be one of UTF-8,ISO-8859-1");
-	});
+	}));
+	return t.is(error.message, `Encoding "utf16le" is not supported. Only UTF-8,ISO-8859-1 are allowed values`);
 });
