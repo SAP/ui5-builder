@@ -113,6 +113,16 @@ test("validate: test directory does not exist", async (t) => {
 	t.deepEqual(myProject.resources.propertiesFileEncoding, "ISO-8859-1", "Project resources propertiesFileEncoding is set to ISO-8859-1");
 });
 
+test("validate: test invalid encoding", async (t) => {
+	const myProject = clone(libraryETree);
+	myProject.resources.propertiesFileEncoding = "test";
+	const libraryFormatter = new LibraryFormatter({project: myProject});
+
+	const error = await t.throwsAsync(libraryFormatter.validate(myProject));
+	t.is(error.message, `Invalid properties file encoding specified for project library.e.id: encoding provided: test. Must be either "ISO-8859-1" or "UTF-8".`,
+		"Missing source directory caused error");
+});
+
 test("format: copyright already configured", async (t) => {
 	const myProject = clone(libraryETree);
 	const libraryFormatter = new LibraryFormatter({project: myProject});

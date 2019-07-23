@@ -96,6 +96,16 @@ test("validate: empty resources", async (t) => {
 	t.deepEqual(myProject.resources.configuration.paths.webapp, "webapp", "default webapp directory is set");
 });
 
+test("validate: test invalid encoding", async (t) => {
+	const myProject = clone(applicationBTree);
+	myProject.resources.propertiesFileEncoding = "test";
+	const applicationFormatter = new ApplicationFormatter({project: myProject});
+
+	const error = await t.throwsAsync(applicationFormatter.validate(myProject));
+	t.is(error.message, `Invalid properties file encoding specified for project application.b: encoding provided: test. Must be either "ISO-8859-1" or "UTF-8".`,
+		"Missing source directory caused error");
+});
+
 function createMockProject() {
 	return {
 		resources: {
