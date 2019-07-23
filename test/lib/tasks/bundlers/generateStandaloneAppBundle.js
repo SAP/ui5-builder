@@ -333,6 +333,7 @@ const applicationBTree = {
 		},
 		"pathMappings": {
 			"/": "webapp"
-		}
+		},
+		"propertiesFileEncoding": "ISO-8859-1"
 	}
 };

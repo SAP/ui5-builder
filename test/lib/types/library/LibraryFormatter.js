@@ -109,7 +109,8 @@ test("validate: test directory does not exist", async (t) => {
 
 	await libraryFormatter.validate(myProject);
 	// Missing test directory is not an error
-	t.deepEqual(myProject.resources.configuration.paths.test, null, "Project test path configuration is set to nul");
+	t.deepEqual(myProject.resources.configuration.paths.test, null, "Project test path configuration is set to null");
+	t.deepEqual(myProject.resources.propertiesFileEncoding, "ISO-8859-1", "Project resources propertiesFileEncoding is set to ISO-8859-1");
 });
 
 test("format: copyright already configured", async (t) => {
@@ -151,8 +152,7 @@ test("format: formats correctly", async (t) => {
 			pathMappings: {
 				"/resources/": "src",
 				"/test-resources/": "test"
-			},
-			propertiesFileEncoding: "ISO-8859-1"
+			}
 		}
 	}, "Project got formatted correctly");
 });
