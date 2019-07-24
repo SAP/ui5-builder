@@ -329,11 +329,11 @@ const applicationBTree = {
 		"configuration": {
 			"paths": {
 				"webapp": "webapp"
-			}
+			},
+			"propertiesFileEncoding": "ISO-8859-1"
 		},
 		"pathMappings": {
 			"/": "webapp"
-		},
-		"propertiesFileEncoding": "ISO-8859-1"
+		}
 	}
 };

@@ -110,12 +110,12 @@ test("validate: test directory does not exist", async (t) => {
 	await libraryFormatter.validate(myProject);
 	// Missing test directory is not an error
 	t.deepEqual(myProject.resources.configuration.paths.test, null, "Project test path configuration is set to null");
-	t.deepEqual(myProject.resources.propertiesFileEncoding, "ISO-8859-1", "Project resources propertiesFileEncoding is set to ISO-8859-1");
+	t.deepEqual(myProject.resources.configuration.propertiesFileEncoding, "ISO-8859-1", "Project resources propertiesFileEncoding is set to ISO-8859-1");
 });
 
 test("validate: test invalid encoding", async (t) => {
 	const myProject = clone(libraryETree);
-	myProject.resources.propertiesFileEncoding = "test";
+	myProject.resources.configuration.propertiesFileEncoding = "test";
 	const libraryFormatter = new LibraryFormatter({project: myProject});
 
 	const error = await t.throwsAsync(libraryFormatter.validate(myProject));
