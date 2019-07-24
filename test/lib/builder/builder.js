@@ -84,7 +84,7 @@ test("Build application.a", (t) => {
 	return builder.build({
 		tree: applicationATree,
 		destPath,
-		excludedTasks: ["escapeNonAsciiCharacters", "generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo"]
+		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo"]
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
@@ -136,7 +136,7 @@ test("Build application.g", (t) => {
 	return builder.build({
 		tree: applicationGTree,
 		destPath,
-		excludedTasks: ["escapeNonAsciiCharacters", "generateStandaloneAppBundle", "generateVersionInfo"]
+		excludedTasks: ["generateStandaloneAppBundle", "generateVersionInfo"]
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
@@ -156,7 +156,7 @@ test("Build application.g with component preload paths", (t) => {
 	return builder.build({
 		tree: applicationGTreeComponentPreloadPaths,
 		destPath,
-		excludedTasks: ["escapeNonAsciiCharacters", "generateStandaloneAppBundle", "generateVersionInfo"]
+		excludedTasks: ["generateStandaloneAppBundle", "generateVersionInfo"]
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
@@ -197,7 +197,7 @@ test("Build application.h", (t) => {
 	return builder.build({
 		tree: applicationHTree,
 		destPath,
-		excludedTasks: ["escapeNonAsciiCharacters", "createDebugFiles", "generateComponentPreload",
+		excludedTasks: ["createDebugFiles", "generateComponentPreload",
 			"generateStandaloneAppBundle", "generateVersionInfo"]
 	}).then(() => {
 		return findFiles(expectedPath);
@@ -218,7 +218,7 @@ test("Build application.i", (t) => {
 	return builder.build({
 		tree: applicationITree,
 		destPath,
-		excludedTasks: ["escapeNonAsciiCharacters", "createDebugFiles", "generateStandaloneAppBundle", "generateVersionInfo"]
+		excludedTasks: ["createDebugFiles", "generateStandaloneAppBundle", "generateVersionInfo"]
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
@@ -238,7 +238,7 @@ test("Build library.d with copyright from .library file", (t) => {
 	return builder.build({
 		tree: libraryDTree,
 		destPath,
-		excludedTasks: ["escapeNonAsciiCharacters", "generateLibraryPreload"]
+		excludedTasks: ["generateLibraryPreload"]
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
@@ -259,7 +259,7 @@ test("Build library.e with copyright from settings of ui5.yaml", (t) => {
 	return builder.build({
 		tree: libraryETree,
 		destPath,
-		excludedTasks: ["escapeNonAsciiCharacters", "generateLibraryPreload"]
+		excludedTasks: ["generateLibraryPreload"]
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
@@ -280,7 +280,7 @@ test("Build library.h with custom bundles and component-preloads", (t) => {
 	return builder.build({
 		tree: libraryHTree,
 		destPath,
-		excludedTasks: ["escapeNonAsciiCharacters", "createDebugFiles", "generateLibraryPreload"]
+		excludedTasks: ["createDebugFiles", "generateLibraryPreload"]
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
@@ -301,7 +301,7 @@ test("Build library.i with manifest info taken from .library and library.js", (t
 	return builder.build({
 		tree: libraryITree,
 		destPath,
-		excludedTasks: ["escapeNonAsciiCharacters", "createDebugFiles", "generateLibraryPreload", "uglify"]
+		excludedTasks: ["createDebugFiles", "generateLibraryPreload", "uglify"]
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
@@ -534,7 +534,8 @@ const applicationATree = {
 		"configuration": {
 			"paths": {
 				"webapp": "webapp"
-			}
+			},
+			"propertiesFileEncoding": "ISO-8859-1"
 		},
 		"pathMappings": {
 			"/": "webapp"
@@ -557,7 +558,8 @@ const applicationATreeBadType = {
 		"configuration": {
 			"paths": {
 				"webapp": "webapp"
-			}
+			},
+			"propertiesFileEncoding": "ISO-8859-1"
 		},
 		"pathMappings": {
 			"/": "webapp"
@@ -582,7 +584,8 @@ const applicationGTree = {
 		"configuration": {
 			"paths": {
 				"webapp": "webapp"
-			}
+			},
+			"propertiesFileEncoding": "ISO-8859-1"
 		},
 		"pathMappings": {
 			"/": "webapp"
@@ -616,7 +619,8 @@ const applicationGTreeWithExcludes = {
 		"configuration": {
 			"paths": {
 				"webapp": "webapp"
-			}
+			},
+			"propertiesFileEncoding": "ISO-8859-1"
 		},
 		"pathMappings": {
 			"/": "webapp"
@@ -651,7 +655,8 @@ const applicationGTreeComponentPreloadPaths = {
 		"configuration": {
 			"paths": {
 				"webapp": "webapp"
-			}
+			},
+			"propertiesFileEncoding": "ISO-8859-1"
 		},
 		"pathMappings": {
 			"/": "webapp"
@@ -682,7 +687,8 @@ const applicationHTree = {
 		"configuration": {
 			"paths": {
 				"webapp": "webapp"
-			}
+			},
+			"propertiesFileEncoding": "ISO-8859-1"
 		},
 		"pathMappings": {
 			"/": "webapp"
@@ -742,7 +748,8 @@ const applicationITree = {
 		"configuration": {
 			"paths": {
 				"webapp": "webapp"
-			}
+			},
+			"propertiesFileEncoding": "ISO-8859-1"
 		},
 		"pathMappings": {
 			"/": "webapp"
@@ -796,7 +803,8 @@ const libraryDTree = {
 			"paths": {
 				"src": "main/src",
 				"test": "main/test"
-			}
+			},
+			"propertiesFileEncoding": "ISO-8859-1"
 		},
 		"pathMappings": {
 			"/resources/": "main/src",
@@ -848,7 +856,8 @@ const libraryETree = {
 			"paths": {
 				"src": "src",
 				"test": "test"
-			}
+			},
+			"propertiesFileEncoding": "ISO-8859-1"
 		},
 		"pathMappings": {
 			"/resources/": "src",
@@ -900,7 +909,8 @@ const libraryHTree = {
 			"paths": {
 				"src": "main/src",
 				"test": "main/test"
-			}
+			},
+			"propertiesFileEncoding": "ISO-8859-1"
 		},
 		"pathMappings": {
 			"/resources/": "main/src",
@@ -985,7 +995,8 @@ const libraryITree = {
 			"paths": {
 				"src": "main/src",
 				"test": "main/test"
-			}
+			},
+			"propertiesFileEncoding": "ISO-8859-1"
 		},
 		"pathMappings": {
 			"/resources/": "main/src"

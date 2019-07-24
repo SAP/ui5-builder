@@ -19,7 +19,15 @@ function createMockPool(dependencies) {
 			return {
 				info,
 				buffer: async () => Buffer.from(name.padStart(2048, "*")),
-				getProject: () => undefined,
+				getProject: () => {
+					return {
+						"resources": {
+							"configuration": {
+								"propertiesFileEncoding": "ISO-8859-1"
+							}
+						}
+					};
+				},
 				resource: {
 					getBuffer: () => Buffer.from(name.padStart(2048, "*"))
 				}
@@ -192,17 +200,29 @@ test.serial("_calcMinSize: uglify js resource", async (t) => {
 test("_calcMinSize: properties resource", async (t) => {
 	const pool = {
 		findResourceWithInfo: function() {
+			let content = "1234ß";
 			return {
-				buffer: async () => Buffer.from("1234"),
+				buffer: async () => Buffer.from(content),
 				resource: {
-					getBuffer: () => Buffer.from("1234")
+					setString: (string) => {
+						content = string;
+					},
+					getBuffer: () => Buffer.from(content, "latin1")
 				},
-				getProject: () => undefined
+				getProject: () => {
+					return {
+						"resources": {
+							"configuration": {
+								"propertiesFileEncoding": "ISO-8859-1"
+							}
+						}
+					};
+				}
 			};
 		}
 	};
 	const autpSplitter = new AutoSplitter(pool);
-	t.deepEqual(await autpSplitter._calcMinSize("mymodule.properties"), 4);
+	t.deepEqual(await autpSplitter._calcMinSize("mymodule.properties"), 10, "length of 1234\\u00df");
 });
 
 test("_calcMinSize: xml view resource", async (t) => {

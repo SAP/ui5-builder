@@ -140,5 +140,5 @@ test("integration: escape non ascii characters source encoding being UTF-16", as
 			pattern: "/**/*.properties"
 		}
 	}));
-	return t.is(error.message, `Encoding "utf16le" is not supported. Only UTF-8,ISO-8859-1 are allowed values`);
+	return t.is(error.message, `Encoding "utf16le" is not supported. Only UTF-8, ISO-8859-1 are allowed values`);
 });

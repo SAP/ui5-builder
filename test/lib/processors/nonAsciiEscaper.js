@@ -1,29 +1,32 @@
 const test = require("ava");
 
 const nonAsciiEscaper = require("../../../lib/processors/nonAsciiEscaper");
+const Resource = require("@ui5/fs").Resource;
 
 /**
  * Executes string escaping. Returns <code>undefined</code> if nothing was escaped.
  *
  * @param {string} input string
  * @param {Object} [options]
+ * @param {string} encoding character encoding used, e.g. utf8, latin1, ..
  * @returns {Promise<string|undefined>} escaped string if non-ascii characters present, <code>undefined</code> otherwise
  */
-const escape = async function(input, options) {
-	let result = undefined;
-	const resource = {
-		setString: (actual) => {
-			result = actual;
-		},
-		getString: async () => {
-			return result;
-		},
-		getBuffer: async () => {
-			return Buffer.from(input, "utf8");
-		}
-	};
+const escape = async function(input, options={}, encoding="utf8") {
+	const resource = new Resource({
+		path: "my.properties",
+		buffer: Buffer.from(input, encoding)
+	});
 	return nonAsciiEscaper({resources: [resource], options});
 };
+
+test("Replace ISO-8859-1 characters", async (t) => {
+	t.plan(1);
+
+	const input = `Viele Grüße`;
+	const expected = `Viele Gr\\ufffd\\ufffde`;
+	const [resource] = await escape(input, {}, "latin1");
+	t.deepEqual(await resource.getString(), expected, "Correct file content should be set");
+});
 
 test("Replace symbol characters", async (t) => {
 	t.plan(1);
@@ -75,7 +78,7 @@ test("No Replace of characters", async (t) => {
 	t.plan(1);
 
 	const input = `ONE LOVE`;
-	const expected = undefined;
+	const expected = `ONE LOVE`;
 	const [resource] = await escape(input);
 	t.deepEqual(await resource.getString(), expected, "Correct file content should be set");
 });
@@ -97,5 +100,5 @@ test("getEncodingFromAlias invalid", (t) => {
 	const error = t.throws(function() {
 		nonAsciiEscaper.getEncodingFromAlias("asd");
 	});
-	t.is(error.message, `Encoding "asd" is not supported. Only UTF-8,ISO-8859-1 are allowed values`);
+	t.is(error.message, `Encoding "asd" is not supported. Only UTF-8, ISO-8859-1 are allowed values`);
 });
