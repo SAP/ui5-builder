@@ -121,7 +121,7 @@ test("integration: escape non ascii characters source encoding being empty", asy
 			pattern: "/**/*.properties"
 		}
 	}));
-	return t.is(error.message, "No Encoding specified");
+	return t.is(error.message, "[escapeNonAsciiCharacters] Mandatory option 'encoding' not provided");
 });
 
 test("integration: escape non ascii characters source encoding being UTF-16", async (t) => {
