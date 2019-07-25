@@ -29,7 +29,7 @@ function createMockPool(dependencies) {
 					};
 				},
 				resource: {
-					getBuffer: () => Buffer.from(name.padStart(2048, "*"))
+					getBuffer: async () => Buffer.from(name.padStart(2048, "*"))
 				}
 			};
 		},
@@ -207,7 +207,7 @@ test("_calcMinSize: properties resource", async (t) => {
 					setString: (string) => {
 						content = string;
 					},
-					getBuffer: () => Buffer.from(content, "latin1")
+					getBuffer: async () => Buffer.from(content, "latin1")
 				},
 				getProject: () => {
 					return {

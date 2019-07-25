@@ -19,12 +19,35 @@ const escape = async function(input, options={}, encoding="utf8") {
 	return nonAsciiEscaper({resources: [resource], options});
 };
 
-test("Replace ISO-8859-1 characters", async (t) => {
+test("Escape characters (ISO-8859-1)", async (t) => {
 	t.plan(1);
 
 	const input = `Viele Grüße`;
-	const expected = `Viele Gr\\ufffd\\ufffde`;
-	const [resource] = await escape(input, {}, "latin1");
+	const expected = `Viele Gr\\u00fc\\u00dfe`;
+	const [resource] = await escape(input, {
+		encoding: "latin1" // escape encoding
+	}, "latin1"); // resource encoding
+	t.deepEqual(await resource.getString(), expected, "Correct file content should be set");
+});
+
+test("Escape characters (UTF-8, explicit parameter)", async (t) => {
+	t.plan(1);
+
+	const input = `These are 人物 characters`;
+	const expected = "These are \\u4eba\\u7269 characters";
+	const [resource] = await escape(input, {
+		encoding: "utf8" // escape encoding
+	}, "utf8"); // resource encoding
+	t.deepEqual(await resource.getString(), expected, "Correct file content should be set");
+});
+
+test("Escape characters (UTF-8, default)", async (t) => {
+	t.plan(1);
+
+	const input = `Viele Grüße`;
+	const expected = `Viele Gr\\u00fc\\u00dfe`;
+	// default encoding is utf8
+	const [resource] = await escape(input);
 	t.deepEqual(await resource.getString(), expected, "Correct file content should be set");
 });
 
