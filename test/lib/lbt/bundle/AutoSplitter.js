@@ -23,7 +23,7 @@ function createMockPool(dependencies) {
 					return {
 						"resources": {
 							"configuration": {
-								"propertiesFileEncoding": "ISO-8859-1"
+								"propertiesSourceFileEncoding": "ISO-8859-1"
 							}
 						}
 					};
@@ -213,7 +213,7 @@ test("_calcMinSize: properties resource", async (t) => {
 					return {
 						"resources": {
 							"configuration": {
-								"propertiesFileEncoding": "ISO-8859-1"
+								"propertiesSourceFileEncoding": "ISO-8859-1"
 							}
 						}
 					};

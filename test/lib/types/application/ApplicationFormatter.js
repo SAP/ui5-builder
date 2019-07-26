@@ -98,7 +98,7 @@ test("validate: empty resources", async (t) => {
 
 test("validate: test invalid encoding", async (t) => {
 	const myProject = clone(applicationBTree);
-	myProject.resources.configuration.propertiesFileEncoding = "test";
+	myProject.resources.configuration.propertiesSourceFileEncoding = "test";
 	const applicationFormatter = new ApplicationFormatter({project: myProject});
 
 	const error = await t.throwsAsync(applicationFormatter.validate(myProject));

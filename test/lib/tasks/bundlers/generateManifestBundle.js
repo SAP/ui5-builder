@@ -190,7 +190,7 @@ const applicationBTree = {
 			"paths": {
 				"webapp": "webapp"
 			},
-			"propertiesFileEncoding": "ISO-8859-1"
+			"propertiesSourceFileEncoding": "ISO-8859-1"
 		},
 		"pathMappings": {
 			"/": "webapp"
