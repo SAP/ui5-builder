@@ -535,7 +535,7 @@ const applicationATree = {
 			"paths": {
 				"webapp": "webapp"
 			},
-			"propertiesSourceFileEncoding": "ISO-8859-1"
+			"propertiesFileSourceEncoding": "ISO-8859-1"
 		},
 		"pathMappings": {
 			"/": "webapp"
@@ -559,7 +559,7 @@ const applicationATreeBadType = {
 			"paths": {
 				"webapp": "webapp"
 			},
-			"propertiesSourceFileEncoding": "ISO-8859-1"
+			"propertiesFileSourceEncoding": "ISO-8859-1"
 		},
 		"pathMappings": {
 			"/": "webapp"
@@ -585,7 +585,7 @@ const applicationGTree = {
 			"paths": {
 				"webapp": "webapp"
 			},
-			"propertiesSourceFileEncoding": "ISO-8859-1"
+			"propertiesFileSourceEncoding": "ISO-8859-1"
 		},
 		"pathMappings": {
 			"/": "webapp"
@@ -620,7 +620,7 @@ const applicationGTreeWithExcludes = {
 			"paths": {
 				"webapp": "webapp"
 			},
-			"propertiesSourceFileEncoding": "ISO-8859-1"
+			"propertiesFileSourceEncoding": "ISO-8859-1"
 		},
 		"pathMappings": {
 			"/": "webapp"
@@ -656,7 +656,7 @@ const applicationGTreeComponentPreloadPaths = {
 			"paths": {
 				"webapp": "webapp"
 			},
-			"propertiesSourceFileEncoding": "ISO-8859-1"
+			"propertiesFileSourceEncoding": "ISO-8859-1"
 		},
 		"pathMappings": {
 			"/": "webapp"
@@ -688,7 +688,7 @@ const applicationHTree = {
 			"paths": {
 				"webapp": "webapp"
 			},
-			"propertiesSourceFileEncoding": "ISO-8859-1"
+			"propertiesFileSourceEncoding": "ISO-8859-1"
 		},
 		"pathMappings": {
 			"/": "webapp"
@@ -749,7 +749,7 @@ const applicationITree = {
 			"paths": {
 				"webapp": "webapp"
 			},
-			"propertiesSourceFileEncoding": "ISO-8859-1"
+			"propertiesFileSourceEncoding": "ISO-8859-1"
 		},
 		"pathMappings": {
 			"/": "webapp"
@@ -804,7 +804,7 @@ const libraryDTree = {
 				"src": "main/src",
 				"test": "main/test"
 			},
-			"propertiesSourceFileEncoding": "ISO-8859-1"
+			"propertiesFileSourceEncoding": "ISO-8859-1"
 		},
 		"pathMappings": {
 			"/resources/": "main/src",
@@ -857,7 +857,7 @@ const libraryETree = {
 				"src": "src",
 				"test": "test"
 			},
-			"propertiesSourceFileEncoding": "ISO-8859-1"
+			"propertiesFileSourceEncoding": "ISO-8859-1"
 		},
 		"pathMappings": {
 			"/resources/": "src",
@@ -910,7 +910,7 @@ const libraryHTree = {
 				"src": "main/src",
 				"test": "main/test"
 			},
-			"propertiesSourceFileEncoding": "ISO-8859-1"
+			"propertiesFileSourceEncoding": "ISO-8859-1"
 		},
 		"pathMappings": {
 			"/resources/": "main/src",
@@ -996,7 +996,7 @@ const libraryITree = {
 				"src": "main/src",
 				"test": "main/test"
 			},
-			"propertiesSourceFileEncoding": "ISO-8859-1"
+			"propertiesFileSourceEncoding": "ISO-8859-1"
 		},
 		"pathMappings": {
 			"/resources/": "main/src"
