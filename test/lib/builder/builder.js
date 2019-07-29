@@ -342,8 +342,7 @@ test("Build theme.j even without an library", (t) => {
 	const expectedPath = "./test/expected/build/theme.j/dest";
 	return builder.build({
 		tree: themeJTree,
-		destPath,
-		excludedTasks: ["escapeNonAsciiCharacters"]
+		destPath
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
@@ -1047,7 +1046,8 @@ const themeJTree = {
 			"paths": {
 				"src": "main/src",
 				"test": "main/test"
-			}
+			},
+			"propertiesFileSourceEncoding": "ISO-8859-1"
 		},
 		"pathMappings": {
 			"/resources/": "main/src"

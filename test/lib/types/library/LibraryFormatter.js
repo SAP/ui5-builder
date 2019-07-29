@@ -88,6 +88,15 @@ test("validate: empty resources", async (t) => {
 	t.deepEqual(myProject.resources.configuration.paths.test, "test", "default test directory is set");
 });
 
+test("validate: empty encoding", async (t) => {
+	const myProject = clone(libraryETree);
+	delete myProject.resources.configuration.propertiesFileSourceEncoding;
+	const libraryFormatter = new LibraryFormatter({project: myProject});
+
+	await libraryFormatter.validate(myProject);
+	t.deepEqual(myProject.resources.configuration.propertiesFileSourceEncoding, "ISO-8859-1", "default resources encoding is set");
+});
+
 test("validate: src directory does not exist", async (t) => {
 	const myProject = clone(libraryETree);
 	const libraryFormatter = new LibraryFormatter({project: myProject});
@@ -110,7 +119,6 @@ test("validate: test directory does not exist", async (t) => {
 	await libraryFormatter.validate(myProject);
 	// Missing test directory is not an error
 	t.deepEqual(myProject.resources.configuration.paths.test, null, "Project test path configuration is set to null");
-	t.deepEqual(myProject.resources.configuration.propertiesFileSourceEncoding, "ISO-8859-1", "Project resources propertiesFileSourceEncoding is set to ISO-8859-1");
 });
 
 test("validate: test invalid encoding", async (t) => {
