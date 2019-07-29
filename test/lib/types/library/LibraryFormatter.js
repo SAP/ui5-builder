@@ -104,7 +104,7 @@ test("validate: src directory does not exist", async (t) => {
 	dirExists.onFirstCall().resolves(false);
 	dirExists.onSecondCall().resolves(true);
 
-	const error = await await t.throwsAsync(libraryFormatter.validate(myProject));
+	const error = await t.throwsAsync(libraryFormatter.validate(myProject));
 	t.regex(error.message, /^Could not find source directory of project library\.e\.id: (?!(undefined))+/,
 		"Missing source directory caused error");
 });
