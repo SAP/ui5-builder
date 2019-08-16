@@ -92,6 +92,68 @@ test("integration: Analysis of a xml view with core:require", async (t) => {
 		"Implicit dependency should be added since an XMLView is analyzed");
 });
 
+test("integration: Analysis of a xml view with core:require (invalid module name)", async (t) => {
+	const xml = `<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns="sap.m"
+		controllerName="myController"
+		core:require="{
+			Foo: { 'bar': true },
+			Bar: 123
+		}">
+
+			<Button core:require="{ Toast: '' }" text="Show Toast" press="Toast.show(\${$source>text})"/>
+
+		</mvc:View>`;
+	const mockPool = {async findResource(name) {
+		return {
+			buffer: () => name.endsWith(".xml") ? JSON.stringify(xml): "test"
+		};
+	}};
+
+	const moduleInfo = new ModuleInfo();
+
+	const analyzer = new XMLTemplateAnalyzer(mockPool);
+	await analyzer.analyzeView(xml, moduleInfo);
+	t.deepEqual(moduleInfo.dependencies,
+		[
+			"sap/ui/core/mvc/XMLView.js",
+			"myController.controller.js",
+			"sap/m/Button.js"
+		], "Dependencies should come from the XML template");
+	t.true(moduleInfo.isImplicitDependency("sap/ui/core/mvc/XMLView.js"),
+		"Implicit dependency should be added since an XMLView is analyzed");
+});
+
+test("integration: Analysis of a xml view with core:require (parsing error)", async (t) => {
+	const xml = `<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns="sap.m"
+		controllerName="myController"
+		core:require="{
+			Foo:'sap/ui/Foo'
+			Bar:'myApp/Bar'
+		}">
+
+			<Button core:require="this can't be parsed" text="Show Toast" press="Toast.show(\${$source>text})"/>
+
+		</mvc:View>`;
+	const mockPool = {async findResource(name) {
+		return {
+			buffer: () => name.endsWith(".xml") ? JSON.stringify(xml): "test"
+		};
+	}};
+
+	const moduleInfo = new ModuleInfo();
+
+	const analyzer = new XMLTemplateAnalyzer(mockPool);
+	await analyzer.analyzeView(xml, moduleInfo);
+	t.deepEqual(moduleInfo.dependencies,
+		[
+			"sap/ui/core/mvc/XMLView.js",
+			"myController.controller.js",
+			"sap/m/Button.js"
+		], "Dependencies should come from the XML template");
+	t.true(moduleInfo.isImplicitDependency("sap/ui/core/mvc/XMLView.js"),
+		"Implicit dependency should be added since an XMLView is analyzed");
+});
+
 test("integration: Analysis of a xml fragment", async (t) => {
 	const xml = `<HBox xmlns:m="sap.m" xmlns:l="sap.ui.layout" controllerName="myController">
 			<items>
