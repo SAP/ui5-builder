@@ -3,7 +3,7 @@ const XMLTemplateAnalyzer = require("../../../../lib/lbt/analyzer/XMLTemplateAna
 const ModuleInfo = require("../../../../lib/lbt/resources/ModuleInfo");
 const sinon = require("sinon");
 
-test("integration: Analysis of a xml view", async (t) => {
+test("integration: Analysis of an xml view", async (t) => {
 	const xml = `<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns:m="sap.m" xmlns:l="sap.ui.layout"
 		controllerName="myController">
 			<l:HorizontalLayout id="layout">
@@ -33,7 +33,7 @@ test("integration: Analysis of a xml view", async (t) => {
 		"Implicit dependency should be added since an XMLView is analyzed");
 });
 
-test("integration: Analysis of a xml view with data binding in properties", async (t) => {
+test("integration: Analysis of an xml view with data binding in properties", async (t) => {
 	const xml = `<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core"
 		controllerName="myController">
 			<core:ComponentContainer async="true" name="{/component}" />
@@ -58,7 +58,7 @@ test("integration: Analysis of a xml view with data binding in properties", asyn
 		"Implicit dependency should be added since an XMLView is analyzed");
 });
 
-test("integration: Analysis of a xml view with core:require", async (t) => {
+test("integration: Analysis of an xml view with core:require", async (t) => {
 	const xml = `<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns="sap.m"
 		controllerName="myController"
 		core:require="{
@@ -92,7 +92,7 @@ test("integration: Analysis of a xml view with core:require", async (t) => {
 		"Implicit dependency should be added since an XMLView is analyzed");
 });
 
-test("integration: Analysis of a xml view with core:require (invalid module name)", async (t) => {
+test("integration: Analysis of an xml view with core:require (invalid module name)", async (t) => {
 	const xml = `<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns="sap.m"
 		controllerName="myController"
 		core:require="{
@@ -123,7 +123,7 @@ test("integration: Analysis of a xml view with core:require (invalid module name
 		"Implicit dependency should be added since an XMLView is analyzed");
 });
 
-test("integration: Analysis of a xml view with core:require (parsing error)", async (t) => {
+test("integration: Analysis of an xml view with core:require (parsing error)", async (t) => {
 	const xml = `<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns="sap.m"
 		controllerName="myController"
 		core:require="{
@@ -154,7 +154,7 @@ test("integration: Analysis of a xml view with core:require (parsing error)", as
 		"Implicit dependency should be added since an XMLView is analyzed");
 });
 
-test("integration: Analysis of a xml fragment", async (t) => {
+test("integration: Analysis of an xml fragment", async (t) => {
 	const xml = `<HBox xmlns:m="sap.m" xmlns:l="sap.ui.layout" controllerName="myController">
 			<items>
 				<l:HorizontalLayout id="layout">
