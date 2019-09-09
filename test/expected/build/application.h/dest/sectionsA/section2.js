@@ -1,1 +1,1 @@
-sap.ui.define(["sap/m/Button"],function(n){console.log("Section 2 included")});
+sap.ui.define(["sap/m/Button"],(function(n){console.log("Section 2 included")}));

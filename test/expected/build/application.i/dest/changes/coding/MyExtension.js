@@ -1,1 +1,1 @@
-sap.ui.define([],function(){return{}});
+sap.ui.define([],(function(){return{}}));
