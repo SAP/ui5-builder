@@ -1,1 +1,1 @@
-{"version":3,"sources":["../../../../Component-dbg.js"],"names":["sap","ui","predefine","UIComponent","extend"],"mappings":";AAAAA,IAAIC,GAAGC,0DAAQ,2BAA4B,SAASC,GACnD,aACA,OAAOA,EAAYC,OAAO","file":"library/h/components/subcomponent2/Component-preload.js","sourceRoot":"."}
+{"version":3,"sources":["../../../../Component-dbg.js"],"names":["sap","ui","predefine","UIComponent","extend"],"mappings":";AAAAA,IAAIC,GAAGC,yDAAO,CAAC,2BAA4B,SAASC,GACnD,aACA,OAAOA,EAAYC,OAAO,0BAA2B","file":"library/h/components/subcomponent2/Component-preload.js","sourceRoot":"."}

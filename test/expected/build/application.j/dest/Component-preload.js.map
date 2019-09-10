@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../Component-dbg.js","../../MyExtension-dbg.js"],"names":["sap","ui","predefine","UIComponent","extend","metadata","manifest"],"mappings":";AAAAA,IAAIC,GAAGC,oCAAO,CAAC,2BAA4B,SAASC,GACnD,aACA,OAAOA,EAAYC,OAAO,0BAA2B,CACpDC,SAAU,CACTC,SAAU;ACJbN,IAAIC,GAAGC,qDAAO,GAAG,WAChB,MAAO","file":"application/j/Component-preload.js","sourceRoot":"."}
