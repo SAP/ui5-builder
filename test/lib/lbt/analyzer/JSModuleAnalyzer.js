@@ -78,7 +78,7 @@ function analyzeModule(
 		}
 		if ( expectedDependencies != null ) {
 			assertModuleNamesEqual(t,
-				info.dependencies,
+				deps,
 				expectedDependencies,
 				"module dependencies should match");
 		}
@@ -94,7 +94,6 @@ function analyzeModule(
 				expectedSubmodules,
 				"submodules should match");
 		}
-		//t.end();
 	}).finally(() => t.end());
 }
 
@@ -127,9 +126,9 @@ test.cb("AMDSpecialDependenciesShouldBeIgnored", (t) => {
 	analyzeModule(t,
 		"modules/amd_special_dependencies.js",
 		"modules/amd_special_dependencies.js",
-		["modules/dep1.js", "dep2.js", "utils/dep1.js", "ui5loader-autoconfig.js" ],
+		["modules/dep1.js", "dep2.js", "utils/dep1.js", "ui5loader-autoconfig.js"],
 		[],
-		["utils/helper1.js", "utils/helper2.js", "utils/helper3.js" ]
+		["utils/helper1.js", "utils/helper2.js", "utils/helper3.js"]
 	);
 });
 
@@ -178,7 +177,6 @@ test("AMDMultipleUnnamedModules", (t) =>
 		.then(() => {
 			t.fail("parsing a file with multiple unnamed modules shouldn't succeed");
 		}, (err) => {
-			console.error("hi hopsa sa");
 			t.true(/only one of them/.test(err.message),
 				"Exception message should contain a hint on multiple unnamed modules");
 		})
