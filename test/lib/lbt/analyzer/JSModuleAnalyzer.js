@@ -21,9 +21,7 @@ const EXPECTED_DEFINE_DEPENDENCIES_NO_LEGACY = [
 ];
 
 const EXPECTED_DEFINE_DEPENDENCIES_WITH_LEGACY = [
-	// FIXME as long as the bug in the sap.ui.define handling of JSModuleAnalyzer
-	// has not been fixed, the wrong implicit dependency is determined here
-	"ui5loader-autoconfig.js", // should be "jquery.sap.global.js",
+	"jquery.sap.global.js",
 	"define/arg1.js", "define/arg2.js",
 	"require/arg1.js"
 ];
@@ -31,16 +29,23 @@ const EXPECTED_DEFINE_DEPENDENCIES_WITH_LEGACY = [
 const NO_DEPENDENCIES = [];
 
 function analyze(file, name) {
+	if ( arguments.length === 1 ) {
+		name = file;
+	}
 	return new Promise( (resolve, reject) => {
 		file = path.join(__dirname, "..", "..", "..", "fixtures", "lbt", file);
 		fs.readFile(file, (err, buffer) => {
 			if ( err ) {
 				reject(err);
 			}
-			const ast = esprima.parseScript(buffer.toString());
-			const info = new ModuleInfo(name);
-			new JSModuleAnalyzer().analyze(ast, name, info);
-			resolve( info );
+			try {
+				const ast = esprima.parseScript(buffer.toString());
+				const info = new ModuleInfo(name);
+				new JSModuleAnalyzer().analyze(ast, name, info);
+				resolve(info);
+			} catch (execErr) {
+				reject(execErr);
+			}
 		});
 	});
 }
@@ -51,38 +56,46 @@ function assertModuleNamesEqual(t, actual, expected, msg) {
 	t.deepEqual(actual, expected, msg);
 }
 
+function getConditionalDependencies(info) {
+	return info.dependencies.filter((dep) => info.isConditionalDependency(dep));
+}
+
 function analyzeModule(
 	t,
 	file,
 	name,
 	expectedDependencies,
 	expectedConditionalDependencies,
-	expectedSubmodules) {
+	expectedSubmodules,
+	ignoreImplicitDependencies
+) {
+	//
 	analyze(file, name).then( (info) => {
 		t.is(info.name, name, "module name should match");
-		// if ( expectDocumentation !== false ) {
-		// 	t.assertNotNull(info.description, "module should have documentation");
-		// 	t.assertTrue(info.description.indexOf("declares") >= 0, "module documentation should match", );
-		// }
-		assertModuleNamesEqual(t,
-			info.dependencies,
-			expectedDependencies,
-			"module dependencies should match");
-		t.truthy(info.dependencies.every((dep) => !info.isConditionalDependency(dep)), "none of the dependencies must be 'conditional'");
+		let deps = info.dependencies;
+		if ( ignoreImplicitDependencies ) {
+			deps = deps.filter((dep) => !info.isImplicitDependency(dep));
+		}
+		if ( expectedDependencies != null ) {
+			assertModuleNamesEqual(t,
+				info.dependencies,
+				expectedDependencies,
+				"module dependencies should match");
+		}
 		if ( expectedConditionalDependencies != null ) {
 			assertModuleNamesEqual(t,
-				expectedConditionalDependencies,
 				getConditionalDependencies(info),
+				expectedConditionalDependencies,
 				"conditional module dependencies should match");
 		}
 		if ( expectedSubmodules != null ) {
 			assertModuleNamesEqual(t,
+				info.subModules,
 				expectedSubmodules,
-				getConditionalDependencies(info),
 				"submodules should match");
 		}
-		t.end();
-	});
+		//t.end();
+	}).finally(() => t.end());
 }
 
 test.cb("DeclareToplevel", analyzeModule, "modules/declare_toplevel.js", EXPECTED_MODULE_NAME, EXPECTED_DECLARE_DEPENDENCIES);
@@ -98,13 +111,13 @@ test.cb("DefineToplevelUnnamed", analyzeModule, "modules/define_toplevel_unnamed
 test.cb("DefineWithLegacyCalls", analyzeModule, "modules/define_with_legacy_calls.js", "modules/define_with_legacy_calls.js", EXPECTED_DEFINE_DEPENDENCIES_WITH_LEGACY);
 
 test.cb("OldStyleModuleWithoutDeclare", function(t) {
-	analyze("modules/no_declare_but_requires.js", "modules/define_with_legacy_calls.js").then((info) => {
-		t.is(info.name, null, "module nameshould be null");
+	analyze("modules/no_declare_but_requires.js", null).then((info) => {
+		t.is(info.name, null, "module name should be null");
 		t.end();
 	});
 });
 
-test.cb("NotAnUI5Module", analyzeModule, "modules/not_a_module.js", "modules/not_a_module.js", NO_DEPENDENCIES, false);
+test.cb("NotAnUI5Module", analyzeModule, "modules/not_a_module.js", "modules/not_a_module.js", NO_DEPENDENCIES);
 
 test.cb("AMDSpecialDependenciesShouldBeIgnored", (t) => {
 	analyzeModule(t,
@@ -156,15 +169,16 @@ test.cb("AMDMultipleNamedModulesOneMatchingFileName", (t) => {
 	);
 });
 
-test.cb("AMDMultipleUnnamedModules", (t) => {
-	try {
-		analyzeModule(t, "modules/amd_multiple_unnamed_modules.js");
-		t.fail("parsing a file with multiple unnamed modules shouldn't succeed");
-	} catch (err) {
-		t.true(/only one of them/.test(err.message),
-			"Exception message should contain a hint on multiple unnamed modules");
-	}
-});
+test("AMDMultipleUnnamedModules", (t) =>
+	analyze("modules/amd_multiple_unnamed_modules.js")
+		.then(() => {
+			t.fail("parsing a file with multiple unnamed modules shouldn't succeed");
+		}, (err) => {
+			console.error("hi hopsa sa");
+			t.true(/only one of them/.test(err.message),
+				"Exception message should contain a hint on multiple unnamed modules");
+		})
+);
 
 test.cb("AMDSingleNamedModule", (t) => {
 	analyzeModule(t,
@@ -186,35 +200,36 @@ test.cb("AMDSingleUnnamedModule", (t) => {
 	);
 });
 
-test.cb("AMDMultipleModulesWithConflictBetweenNamedAndUnnamed", (t) => {
-	try {
-		analyzeModule(t, "modules/amd_multiple_modules_with_conflict_between_named_and_unnamed.js");
-		t.fail("parsing a file with conflicting modules shouldn't succeed");
-	} catch (e) {
-		t.is("conflicting main modules found (unnamed + named)", err.nessage,
-			"Exception message should contain a hint on conflicting modules");
-	}
-});
 
-test.cb("AMDMultipleModulesWithConflictBetweenUnnamedAndNamed", (t) => {
-	try {
-		analyzeModule(t, "modules/amd_multiple_modules_with_conflict_between_unnamed_and_named.js");
-		t.fail("parsing a file with conflicting modules shouldn't succeed");
-	} catch (e) {
-		t.is("conflicting main modules found (unnamed + named)", e.message,
-			"Exception message should contain a hint on conflicting modules");
-	}
-});
+test("AMDMultipleModulesWithConflictBetweenNamedAndUnnamed", (t) =>
+	analyze("modules/amd_multiple_modules_with_conflict_between_named_and_unnamed.js")
+		.then(() => {
+			t.fail("parsing a file with conflicting modules shouldn't succeed");
+		}, (err) => {
+			t.is(err.message, "conflicting main modules found (unnamed + named)",
+				"Exception message should contain a hint on conflicting modules");
+		})
+);
 
-test.cb("AMDMultipleModulesWithConflictBetweenTwoNamed", (t) => {
-	try {
-		analyzeModule(t, "modules/amd_multiple_modules_with_conflict_between_two_named.js");
-		t.fail("parsing a file with conflicting modules shouldn't succeed");
-	} catch (e) {
-		t.is("conflicting main modules found (unnamed + named)", e.message,
-			"Exception message should contain a hint on conflicting modules");
-	}
-});
+test("AMDMultipleModulesWithConflictBetweenUnnamedAndNamed", (t) =>
+	analyze("modules/amd_multiple_modules_with_conflict_between_unnamed_and_named.js")
+		.then(() => {
+			t.fail("parsing a file with conflicting modules shouldn't succeed");
+		}, (err) => {
+			t.is(err.message, "conflicting main modules found (unnamed + named)",
+				"Exception message should contain a hint on conflicting modules");
+		})
+);
+
+test("AMDMultipleModulesWithConflictBetweenTwoNamed", (t) =>
+	analyze("modules/amd_multiple_modules_with_conflict_between_two_named.js")
+		.then(() => {
+			t.fail("parsing a file with conflicting modules shouldn't succeed");
+		}, (err) => {
+			t.is(err.message, "conflicting main modules found (unnamed + named)",
+				"Exception message should contain a hint on conflicting modules");
+		})
+);
 
 test.cb("OldStyleBundle", (t) => {
 	analyzeModule(t,
@@ -270,10 +285,8 @@ test.cb("OldStyleBundleV2", (t) => {
 	);
 });
 
-/*
- * Note: this test still fails as the evo-style bundles don't declare the names of the
- * contained raw-modules any longer.
- */
+// Note: this test still fails as the evo-style bundles don't declare the names of the
+// contained raw-modules any longer.
 test.cb("EvoBundle", (t) => {
 	analyzeModule(t,
 		"modules/bundle-evo.js",
@@ -346,3 +359,4 @@ test("ES6 Syntax", (t) => {
 		});
 	});
 });
+
