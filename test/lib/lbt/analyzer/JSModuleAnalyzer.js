@@ -94,7 +94,7 @@ function analyzeModule(
 				expectedSubmodules,
 				"submodules should match");
 		}
-	}).finally(() => t.end());
+	}).then(() => t.end(), () => t.end());
 }
 
 test.cb("DeclareToplevel", analyzeModule, "modules/declare_toplevel.js", EXPECTED_MODULE_NAME, EXPECTED_DECLARE_DEPENDENCIES);
