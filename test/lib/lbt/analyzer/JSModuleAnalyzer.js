@@ -39,7 +39,7 @@ function analyze(file, name) {
 				reject(err);
 			}
 			try {
-				const ast = esprima.parseScript(buffer.toString());
+				const ast = esprima.parseScript(buffer.toString(), {comment: true});
 				const info = new ModuleInfo(name);
 				new JSModuleAnalyzer().analyze(ast, name, info);
 				resolve(info);
