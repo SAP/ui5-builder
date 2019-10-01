@@ -25,23 +25,38 @@ test("extract packaging info from .library file", (t) => {
 </library>
 `;
 
-	const expectedNames = ["vendor/blanket.js", "vendor/crossroads.js", "vendor/hasher.js", "vendor/require.js"];
-	const expectedDependencies = [
-		[],
-		["vendor/signals.js"],
-		["vendor/signals.js"],
-		[]
+	const expectedInfos = [
+		{
+			name: "vendor/blanket.js",
+			dependencies: [],
+			ignoredGlobals: undefined
+		},
+		{
+			name: "vendor/crossroads.js",
+			dependencies: ["vendor/signals.js"],
+			ignoredGlobals: ["foo", "bar"]
+		},
+		{
+			name: "vendor/hasher.js",
+			dependencies: ["vendor/signals.js"],
+			ignoredGlobals: undefined
+		},
+		{
+			name: "vendor/require.js",
+			dependencies: [],
+			ignoredGlobals: undefined
+		}
 	];
-	const expectedIG = [undefined, ["foo", "bar"], undefined, undefined];
-
 
 	const actual = LibraryFileAnalyzer.getDependencyInfos(libraryFile);
 
-	t.deepEqual(Object.keys(actual), expectedNames, "library a has been added to resources array twice");
-	expectedNames.forEach((name, idx) => {
+	t.deepEqual(Object.keys(actual), expectedInfos.map((exp) => exp.name),
+		"Method should return the expected set of modules");
+	expectedInfos.forEach(({name, dependencies, ignoredGlobals}) => {
+		t.true(actual[name] != null, "expected info should exist");
 		t.is(actual[name].rawModule, true, "info should have rawModule marker");
 		t.is(actual[name].name, name, "info should have expected module id");
-		t.deepEqual(actual[name].dependencies, expectedDependencies[idx], "info should have the expected dependencies");
-		t.deepEqual(actual[name].ignoredGlobals, expectedIG[idx], "ignoredGlobals should have the expected value");
+		t.deepEqual(actual[name].dependencies, dependencies, "info should have the expected dependencies");
+		t.deepEqual(actual[name].ignoredGlobals, ignoredGlobals, "ignoredGlobals should have the expected value");
 	});
 });

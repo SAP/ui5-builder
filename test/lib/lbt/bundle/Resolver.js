@@ -51,8 +51,8 @@ test.serial("resolve without resolving dependencies", async (t) => {
 	const resolvedBundle = await resolver.resolve(bundleDefinition);
 
 	// assert
-	t.truthy(resolvedBundle != null, "resolve() should return a bundle");
-	t.is(resolvedBundle.sections.length, 1, "bundle should have 1 section");
+	t.true(resolvedBundle != null, "resolve() should return a bundle");
+	t.is(resolvedBundle.sections.length, 1, "bundle should contain 1 section");
 	t.deepEqual(
 		sortedCopy(resolvedBundle.sections[0].modules),
 		[
@@ -94,8 +94,8 @@ test.serial("resolve with resolving static dependencies", async (t) => {
 	const resolvedBundle = await resolver.resolve(bundleDefinition);
 
 	// assert
-	t.truthy(resolvedBundle != null, "resolve() should return a bundle");
-	t.is(resolvedBundle.sections.length, 1, "bundle should have an array of 2 sections");
+	t.true(resolvedBundle != null, "resolve() should return a bundle");
+	t.is(resolvedBundle.sections.length, 1, "bundle should contain 1 section");
 	t.deepEqual(
 		sortedCopy(resolvedBundle.sections[0].modules),
 		[
@@ -141,8 +141,8 @@ test.serial("resolve, with resolving also conditional dependencies", async (t) =
 	const resolvedBundle = await resolver.resolve(bundleDefinition);
 
 	// assert
-	t.truthy(resolvedBundle != null, "resolve() should return a bundle");
-	t.is(resolvedBundle.sections.length, 1, "bundle should have an array of 2 sections");
+	t.true(resolvedBundle != null, "resolve() should return a bundle");
+	t.is(resolvedBundle.sections.length, 1, "bundle should contain 1 section");
 	t.deepEqual(
 		sortedCopy(resolvedBundle.sections[0].modules),
 		[
@@ -183,8 +183,8 @@ test.serial("embedd a decomposable bundle", async (t) => {
 
 	const resolvedBundle = await resolver.resolve(bundleDefinition);
 
-	t.truthy(resolvedBundle != null, "resolve() should return a bundle");
-	t.is(resolvedBundle.sections.length, 1, "bundle should have an array with 1 section");
+	t.true(resolvedBundle != null, "resolve() should return a bundle");
+	t.is(resolvedBundle.sections.length, 1, "bundle should contain 1 section");
 	t.deepEqual(
 		sortedCopy(resolvedBundle.sections[0].modules),
 		[
@@ -222,8 +222,8 @@ test.serial("embedd a non-decomposable bundle", async (t) => {
 
 	const resolvedBundle = await resolver.resolve(bundleDefinition);
 
-	t.truthy(resolvedBundle != null, "resolve() should return a bundle");
-	t.is(resolvedBundle.sections.length, 1, "bundle should have an array with 1 section");
+	t.true(resolvedBundle != null, "resolve() should return a bundle");
+	t.is(resolvedBundle.sections.length, 1, "bundle should contain 1 section");
 	t.deepEqual(
 		sortedCopy(resolvedBundle.sections[0].modules),
 		[
