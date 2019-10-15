@@ -336,6 +336,34 @@ test("Bundle", (t) => {
 	});
 });
 
+test("Bundle with annotation", (t) => {
+	return analyze("modules/bundle-annotation.js").then( (info) => {
+		const expected = [
+			"sap/m/CheckBox.js",
+			"sap/ui/core/Core.js",
+			"todo/Component.js",
+			"todo/controller/App.controller.js",
+			"sap/m/messagebundle.properties",
+			"todo/manifest.json",
+			"todo/model/todoitems.json",
+			"todo/view/App.view.xml"
+		];
+		t.deepEqual(info.subModules, expected, "module dependencies should match");
+		t.truthy(info.dependencies.every((dep) => !info.isConditionalDependency(dep)), "none of the dependencies must be 'conditional'");
+		t.deepEqual(info.name, "sap/m/core-em.js");
+	});
+});
+
+test("Raw bundle with annotation", (t) => {
+	return analyze("modules/bundle-raw-annotation.js").then( (info) => {
+		const expected = [
+			"sap/mine.js"
+		];
+		t.deepEqual(info.subModules, expected, "module dependencies should match");
+		t.deepEqual(info.name, "modules/bundle-raw-annotation.js");
+	});
+});
+
 test("ES6 Syntax", (t) => {
 	return analyze("modules/es6-syntax.js", "modules/es6-syntax.js").then( (info) => {
 		const expected = [
