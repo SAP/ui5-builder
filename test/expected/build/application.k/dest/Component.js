@@ -1,1 +1,0 @@
-sap.ui.define(["sap/ui/core/UIComponent"],function(n){"use strict";return n.extend("application.k.Component",{metadata:{manifest:"json"}})});
