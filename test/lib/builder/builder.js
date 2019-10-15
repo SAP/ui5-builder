@@ -16,6 +16,7 @@ const applicationGPath = path.join(__dirname, "..", "..", "fixtures", "applicati
 const applicationHPath = path.join(__dirname, "..", "..", "fixtures", "application.h");
 const applicationIPath = path.join(__dirname, "..", "..", "fixtures", "application.i");
 const applicationJPath = path.join(__dirname, "..", "..", "fixtures", "application.j");
+const applicationKPath = path.join(__dirname, "..", "..", "fixtures", "application.k");
 const libraryDPath = path.join(__dirname, "..", "..", "fixtures", "library.d");
 const libraryEPath = path.join(__dirname, "..", "..", "fixtures", "library.e");
 const libraryHPath = path.join(__dirname, "..", "..", "fixtures", "library.h");
@@ -266,6 +267,26 @@ test("Build application.j", (t) => {
 
 	return builder.build({
 		tree: applicationJTree,
+		destPath,
+		excludedTasks: ["createDebugFiles", "generateStandaloneAppBundle", "generateVersionInfo"]
+	}).then(() => {
+		return findFiles(expectedPath);
+	}).then((expectedFiles) => {
+		// Check for all directories and files
+		assert.directoryDeepEqual(destPath, expectedPath);
+		// Check for all file contents
+		return checkFileContentsIgnoreLineFeeds(expectedFiles, expectedPath, destPath);
+	}).then(() => {
+		t.pass();
+	});
+});
+
+test("Build application.k", (t) => {
+	const destPath = "./test/tmp/build/application.k/dest";
+	const expectedPath = path.join("test", "expected", "build", "application.k", "dest");
+
+	return builder.build({
+		tree: applicationKTree,
 		destPath,
 		excludedTasks: ["createDebugFiles", "generateStandaloneAppBundle", "generateVersionInfo"]
 	}).then(() => {
@@ -818,6 +839,34 @@ const applicationJTree = {
 	"metadata": {
 		"name": "application.j",
 		"namespace": "application/j"
+	},
+	"dependencies": [],
+	"resources": {
+		"configuration": {
+			"paths": {
+				"webapp": "webapp"
+			},
+			"propertiesFileSourceEncoding": "ISO-8859-1"
+		},
+		"pathMappings": {
+			"/": "webapp"
+		}
+	},
+	"builder": {
+		"bundles": []
+	}
+};
+
+const applicationKTree = {
+	"id": "application.k",
+	"version": "1.0.0",
+	"path": applicationKPath,
+	"_level": 0,
+	"specVersion": "0.1",
+	"type": "application",
+	"metadata": {
+		"name": "application.k",
+		"namespace": "application/k"
 	},
 	"dependencies": [],
 	"resources": {
