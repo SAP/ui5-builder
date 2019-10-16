@@ -94,7 +94,7 @@ function analyzeModule(
 				expectedSubmodules,
 				"submodules should match");
 		}
-	}).then(() => t.end(), () => t.end());
+	}).then(() => t.end(), (e) => t.fail(`failed to analyze module with error: ${e.message}`));
 }
 
 test.cb("DeclareToplevel", analyzeModule, "modules/declare_toplevel.js", EXPECTED_MODULE_NAME, EXPECTED_DECLARE_DEPENDENCIES);
@@ -287,8 +287,6 @@ test.cb("OldStyleBundleV2", (t) => {
 	);
 });
 
-// Note: this test still fails as the evo-style bundles don't declare the names of the
-// contained raw-modules any longer.
 test.cb("EvoBundle", (t) => {
 	analyzeModule(t,
 		"modules/bundle-evo.js",
@@ -333,34 +331,6 @@ test("Bundle", (t) => {
 		];
 		t.deepEqual(info.subModules, expected, "module dependencies should match");
 		t.truthy(info.dependencies.every((dep) => !info.isConditionalDependency(dep)), "none of the dependencies must be 'conditional'");
-	});
-});
-
-test("Bundle with annotation", (t) => {
-	return analyze("modules/bundle-annotation.js").then( (info) => {
-		const expected = [
-			"sap/m/CheckBox.js",
-			"sap/ui/core/Core.js",
-			"todo/Component.js",
-			"todo/controller/App.controller.js",
-			"sap/m/messagebundle.properties",
-			"todo/manifest.json",
-			"todo/model/todoitems.json",
-			"todo/view/App.view.xml"
-		];
-		t.deepEqual(info.subModules, expected, "module dependencies should match");
-		t.truthy(info.dependencies.every((dep) => !info.isConditionalDependency(dep)), "none of the dependencies must be 'conditional'");
-		t.deepEqual(info.name, "sap/m/core-em.js");
-	});
-});
-
-test("Raw bundle with annotation", (t) => {
-	return analyze("modules/bundle-raw-annotation.js").then( (info) => {
-		const expected = [
-			"sap/mine.js"
-		];
-		t.deepEqual(info.subModules, expected, "module dependencies should match");
-		t.deepEqual(info.name, "modules/bundle-raw-annotation.js");
 	});
 });
 
