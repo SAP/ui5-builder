@@ -192,11 +192,11 @@ test("flexChangesBundler has ctrl_variant and hasFlexBundleVersion = true", asyn
 	];
 	const compVariants = [{
 		"fileName": "id_1504764957625_7_rename1",
-		"fileType": "change",
+		"fileType": "variant",
 		"changeType": "rename",
 		"reference": "rta.performance.Component",
 		"packageName": "$TMP",
-		"appDescriptorChange": true,
+		"appDescriptorChange": false,
 		"content": {
 			"originalControlType": "sap.m.Label"
 		},
