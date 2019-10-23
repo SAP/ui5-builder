@@ -221,6 +221,7 @@ sap.ui.require.preload({
 //@ui5-bundle-raw-include myRawModule.js
 (function(){window.mine={}})();
 sap.ui.requireSync("ui5loader");
+${sourceMappingString}Component-preload.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "EVOBundleFormat should start with optomization and " +
 		"should contain:" +
@@ -283,6 +284,7 @@ sap.ui.getCore().boot && sap.ui.getCore().boot();
 } catch(oError) {
 if (oError.name != "Restart") { throw oError; }
 }
+${sourceMappingString}bootstrap.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "EVOBundleFormat should start with optomization and " +
 		"should contain:" +
@@ -417,6 +419,7 @@ sap.ui.getCore().boot && sap.ui.getCore().boot();
 } catch(oError) {
 if (oError.name != "Restart") { throw oError; }
 }
+${sourceMappingString}bootstrap.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "EVOBundleFormat should start with optomization and " +
 		"should contain:" +

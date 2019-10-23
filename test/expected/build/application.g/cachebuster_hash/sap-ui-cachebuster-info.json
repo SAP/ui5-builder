@@ -1,13 +1,13 @@
 {
-  "Component-preload.js": "87a55b3fa5c504a1ae1880488b7161762f1b0b62",
-  "subcomponentB/manifest.json": "3a08d0555e3e49fe683e01205090eed3182b4a9f",
+  "subcomponentA/manifest.json": "7dfcdf568dcfb47c74d309e2f00193688b112fb7",
   "manifest.json": "a867583cff8c3a5135bfbdd97dcb7a9cad4948bd",
+  "subcomponentB/manifest.json": "3a08d0555e3e49fe683e01205090eed3182b4a9f",
   "subcomponentB/Component.js": "8d21f8ab86d26da1758a55d49779d64c6e469e54",
   "subcomponentA/Component.js": "6182eab4f507255e4ceb6275325ae84b0e58cd20",
   "Component.js": "9812808a09dfbc3c7dd5e41e0b6faa3320f67ff9",
-  "subcomponentA/manifest.json": "7dfcdf568dcfb47c74d309e2f00193688b112fb7",
-  "Component-preload.js.map": "7e8d2b46c20fe231803b9dec9743b61690022ff2",
-  "subcomponentA/Component-dbg.js": "fef3a5814776e5575302f814e96ae31a13df12b7",
+  "Component-preload.js": "67b8dcee014ebcd619eb7e6ae8572eee0a0c7727",
+  "Component-preload.js.map": "dcdfaa11ffec7cba703ff1fa00b9fa63609925fe",
   "subcomponentB/Component-dbg.js": "c03da2c5ff162c1d9d5e5c4a3edc2cebcda6b0a1",
+  "subcomponentA/Component-dbg.js": "fef3a5814776e5575302f814e96ae31a13df12b7",
   "Component-dbg.js": "874c35543ae850262d1552b6c2d00cecaae205a7"
 }
