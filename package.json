@@ -100,6 +100,7 @@
 		"@ui5/fs": "^1.1.2",
 		"@ui5/logger": "^1.0.2",
 		"cheerio": "^0.22.0",
+		"clean-css": "^4.2.1",
 		"escape-unicode": "^0.2.0",
 		"escodegen": "^1.12.1",
 		"escope": "^3.6.0",
