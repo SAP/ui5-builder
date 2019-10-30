@@ -8,9 +8,11 @@ let buildThemes = require("../../../lib/tasks/buildThemes");
 test.beforeEach((t) => {
 	// Stubbing processors/themeBuilder
 	t.context.themeBuilderStub = sinon.stub();
+	t.context.cssOptimizerStub = sinon.stub();
 	t.context.fsInterfaceStub = sinon.stub(require("@ui5/fs"), "fsInterface");
 	t.context.fsInterfaceStub.returns({});
 	mock("../../../lib/processors/themeBuilder", t.context.themeBuilderStub);
+	mock("../../../lib/processors/cssOptimizer", t.context.cssOptimizerStub);
 
 	// Re-require tested module
 	buildThemes = mock.reRequire("../../../lib/tasks/buildThemes");
@@ -19,10 +21,11 @@ test.beforeEach((t) => {
 test.afterEach.always((t) => {
 	t.context.fsInterfaceStub.restore();
 	mock.stop("../../../lib/processors/themeBuilder");
+	mock.stop("../../../lib/processors/cssOptimizer");
 });
 
 test.serial("buildThemes", async (t) => {
-	t.plan(6);
+	t.plan(8);
 
 	const lessResource = {};
 
@@ -37,9 +40,9 @@ test.serial("buildThemes", async (t) => {
 		write: sinon.stub()
 	};
 
-	const cssResource = {};
-	const cssRtlResource = {};
-	const jsonParametersResource = {};
+	const cssResource = {getPath: () => "fu.css"};
+	const cssRtlResource = {getPath: () => "fu-rtl.css"};
+	const jsonParametersResource = {getPath: () => "fu.json"};
 
 	t.context.themeBuilderStub.returns([
 		cssResource,
@@ -56,15 +59,22 @@ test.serial("buildThemes", async (t) => {
 	});
 
 	t.deepEqual(t.context.themeBuilderStub.callCount, 1,
-		"Processor should be called once");
+		"Theme Builder should be called once");
 
 	t.deepEqual(t.context.themeBuilderStub.getCall(0).args[0], {
 		resources: [lessResource],
 		fs: {},
 		options: {
-			compress: true // default
+			compressJSON: true, // default
+			compress: false
 		}
-	}, "Processor should be called with expected arguments");
+	}, "Theme Builder should be called with expected arguments");
+
+	t.deepEqual(t.context.cssOptimizerStub.callCount, 1, "CSS Optimizer should be called once");
+	t.deepEqual(t.context.cssOptimizerStub.getCall(0).args[0], {
+		resources: [cssResource, cssRtlResource],
+		fs: {}
+	}, "CSS Optimizer should be called with expected arguments");
 
 	t.deepEqual(workspace.write.callCount, 3,
 		"workspace.write should be called 3 times");
@@ -75,7 +85,7 @@ test.serial("buildThemes", async (t) => {
 
 
 test.serial("buildThemes (compress = false)", async (t) => {
-	t.plan(6);
+	t.plan(7);
 
 	const lessResource = {};
 
@@ -90,9 +100,9 @@ test.serial("buildThemes (compress = false)", async (t) => {
 		write: sinon.stub()
 	};
 
-	const cssResource = {};
-	const cssRtlResource = {};
-	const jsonParametersResource = {};
+	const cssResource = {getPath: () => "fu.css"};
+	const cssRtlResource = {getPath: () => "fu-rtl.css"};
+	const jsonParametersResource = {getPath: () => "fu.json"};
 
 	t.context.themeBuilderStub.returns([
 		cssResource,
@@ -110,15 +120,18 @@ test.serial("buildThemes (compress = false)", async (t) => {
 	});
 
 	t.deepEqual(t.context.themeBuilderStub.callCount, 1,
-		"Processor should be called once");
+		"Theme Builder should be called once");
 
 	t.deepEqual(t.context.themeBuilderStub.getCall(0).args[0], {
 		resources: [lessResource],
 		fs: {},
 		options: {
+			compressJSON: false,
 			compress: false
 		}
-	}, "Processor should be called with expected arguments");
+	}, "Theme Builder should be called with expected arguments");
+
+	t.deepEqual(t.context.cssOptimizerStub.callCount, 0, "CSS Optimizer should not be called");
 
 	t.deepEqual(workspace.write.callCount, 3,
 		"workspace.write should be called 3 times");
