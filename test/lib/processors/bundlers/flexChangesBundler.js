@@ -489,5 +489,5 @@ test("flexChangesBundler has ctrl_variant and hasFlexBundleVersion = false", asy
 	};
 
 	const error = await t.throwsAsync(flexChangesBundler({resources, options}), Error);
-	t.deepEqual(error.message, "There is some control variant changes in the changes folder. This only works with a minUI5Version 1.73.0. Please update the minUI5Version in the manifest.json to 1.73.0 or higher", "Correct exception thrown");
+	t.deepEqual(error.message, "There are some control variant changes in the changes folder. This only works with a minUI5Version 1.73.0. Please update the minUI5Version in the manifest.json to 1.73.0 or higher", "Correct exception thrown");
 });

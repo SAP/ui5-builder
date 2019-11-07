@@ -16,8 +16,7 @@
 				"sap.ui.layout": {},
 				"sap.ui.core": {},
 				"sap.m": {}
-			},
-			"minUI5Version": "1.72.0"
+			}
         }
     }
 }
