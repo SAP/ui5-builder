@@ -59,3 +59,11 @@ test("Find Import Name (no dependencies)", (t) => {
 	const call = new SapUiDefineCall(ast, "FileSystemName");
 	t.is(call.findImportName("wanted.js"), null);
 });
+
+test("Error handling: Unexpected array in dependencies parameter", (t) => {
+	const ast = parse("sap.ui.define(['a', 'b', ['c']], function(a,b,c) {});");
+	const error = t.throws(()=> {
+		new SapUiDefineCall(ast, "FileSystemName");
+	});
+	t.deepEqual(error.message, "<Something helpful>");
+});
