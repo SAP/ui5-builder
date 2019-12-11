@@ -155,3 +155,89 @@ test("integration: imports", (t) => {
 		});
 	});
 });
+
+test("integration: imports advanced", async (t) => {
+	const workspaceReader = resourceFactory.createAdapter({
+		virBasePath: "/"
+	});
+	const writer = resourceFactory.createAdapter({
+		virBasePath: "/"
+	});
+	const workspace = new DuplexCollection({reader: workspaceReader, writer});
+
+	const dependencies = resourceFactory.createAdapter({
+		virBasePath: "/"
+	});
+	const lessContent =
+		`@import "/resources/dep/variables.less";
+.fluffyHammer {
+  color: @deepSea;
+  padding: 1px 2px 3px 4px;
+}`;
+	const lessVariablesContent =
+		"@deepSea: #123456;";
+	const cssExpected =
+		`.fluffyHammer{color:#123456;padding:1px 2px 3px 4px}
+/* Inline theming parameters */
+#sap-ui-theme-super\\.duper\\.looper{background-image:url('data:text/plain;utf-8,%7B%22deepSea%22%3A%22%23123456%22%7D')}
+`;
+	const cssRtlExpected =
+		`.fluffyHammer{color:#123456;padding:1px 4px 3px 2px}
+/* Inline theming parameters */
+#sap-ui-theme-super\\.duper\\.looper{background-image:url('data:text/plain;utf-8,%7B%22deepSea%22%3A%22%23123456%22%7D')}
+`;
+	const parametersExpected =
+		`{"deepSea":"#123456"}`;
+	const cssPath = "/resources/super/duper/looper/themes/brightlight/library.css";
+	const cssRtlPath = "/resources/super/duper/looper/themes/brightlight/library-RTL.css";
+	const parametersPath = "/resources/super/duper/looper/themes/brightlight/library-parameters.json";
+
+	// /resources/super/duper/looper/themes/brightlight/library.source.less
+	const lessPath = "/resources/super/duper/looper/themes/brightlight/library.source.less";
+	const lessResource = resourceFactory.createResource({
+		path: lessPath,
+		string: lessContent
+	});
+
+	// /dep/variables.less
+	const lessVariablesPath = "/resources/dep/variables.less";
+	const lessVariablesResource = resourceFactory.createResource({
+		path: lessVariablesPath,
+		string: lessVariablesContent
+	});
+
+
+	await workspaceReader.write(lessResource);
+	await dependencies.write(lessVariablesResource);
+
+	const librarySourceLessFiles = await workspace.byGlob("/resources/**/themes/*/library.source.less");
+
+	for (let i = 0; i < librarySourceLessFiles.length; i++) {
+		// /resources/super/duper/looper/themes/brightlight/library.source.less
+		const inputPattern = librarySourceLessFiles[i].getPath();
+
+		await tasks.buildThemes({
+			workspace,
+			dependencies,
+			options: {
+				inputPattern
+			}});
+		const [cssResource, cssRtlResource, parametersResource] = await Promise.all([
+			writer.byPath(cssPath),
+			writer.byPath(cssRtlPath),
+			writer.byPath(parametersPath)
+		]);
+		t.truthy(cssResource, "CSS resource has been created");
+		t.truthy(cssRtlResource, "CSS right-to-left resource has been created");
+		t.truthy(parametersResource, "Parameters JSON resource has been created");
+
+		const [cssBuffer, cssRtlBuffer, parametersBuffer] = await Promise.all([
+			cssResource.getBuffer(),
+			cssRtlResource.getBuffer(),
+			parametersResource.getBuffer()
+		]);
+		t.deepEqual(cssBuffer.toString(), cssExpected, "Correct CSS content");
+		t.deepEqual(cssRtlBuffer.toString(), cssRtlExpected, "Correct CSS right-to-left content");
+		t.deepEqual(parametersBuffer.toString(), parametersExpected, "Correct parameters JSON content");
+	}
+});
