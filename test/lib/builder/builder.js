@@ -98,7 +98,6 @@ test("Build application.a", (t) => {
 	});
 });
 
-
 test("Build application.a with error", async (t) => {
 	const destPath = "./test/tmp/build/application.a/dest";
 
@@ -107,6 +106,122 @@ test("Build application.a with error", async (t) => {
 		destPath
 	}));
 	t.deepEqual(error.message, `Unknown type 'non existent'`);
+});
+
+test("Build application.a with dependencies", (t) => {
+	const destPath = "./test/tmp/build/application.a/dest-deps";
+	const expectedPath = path.join("test", "expected", "build", "application.a", "dest-deps");
+
+	return builder.build({
+		tree: applicationATree,
+		destPath,
+		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo", "generateLibraryPreload", "escapeNonAsciiCharacters"],
+		buildDependencies: true
+	}).then(() => {
+		return findFiles(expectedPath);
+	}).then((expectedFiles) => {
+		// Check for all directories and files
+		assert.directoryDeepEqual(destPath, expectedPath);
+		// Check for all file contents
+		return checkFileContentsIgnoreLineFeeds(expectedFiles, expectedPath, destPath);
+	}).then(() => {
+		t.pass();
+	});
+});
+
+test("Build application.a with dependencies include", (t) => {
+	const destPath = "./test/tmp/build/application.a/dest-deps-incl";
+	const expectedPath = path.join("test", "expected", "build", "application.a", "dest-deps");
+
+	return builder.build({
+		tree: applicationATree,
+		destPath,
+		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo", "generateLibraryPreload", "escapeNonAsciiCharacters"],
+		includedDependencies: ["*"]
+	}).then(() => {
+		return findFiles(expectedPath);
+	}).then((expectedFiles) => {
+		// Check for all directories and files
+		assert.directoryDeepEqual(destPath, expectedPath);
+		// Check for all file contents
+		return checkFileContentsIgnoreLineFeeds(expectedFiles, expectedPath, destPath);
+	}).then(() => {
+		t.pass();
+	});
+});
+
+test("Build application.a with dependencies exclude", (t) => {
+	const destPath = "./test/tmp/build/application.a/dest-deps-excl";
+	const expectedPath = path.join("test", "expected", "build", "application.a", "dest");
+
+	return builder.build({
+		tree: applicationATree,
+		destPath,
+		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo", "generateLibraryPreload", "escapeNonAsciiCharacters"],
+		excludedDependencies: ["library.d"]
+	}).then(() => {
+		return findFiles(expectedPath);
+	}).then((expectedFiles) => {
+		// Check for all directories and files
+		assert.directoryDeepEqual(destPath, expectedPath);
+		// Check for all file contents
+		return checkFileContentsIgnoreLineFeeds(expectedFiles, expectedPath, destPath);
+	}).then(() => {
+		t.pass();
+	});
+});
+
+test("Build application.a self-contained", (t) => {
+	const destPath = "./test/tmp/build/application.a/dest-self";
+	const expectedPath = path.join("test", "expected", "build", "application.a", "dest-self");
+
+	return builder.build({
+		tree: applicationATree,
+		destPath,
+		excludedTasks: ["generateComponentPreload", "generateVersionInfo"],
+		selfContained: true
+	}).then(() => {
+		return findFiles(expectedPath);
+	}).then((expectedFiles) => {
+		// Check for all directories and files
+		assert.directoryDeepEqual(destPath, expectedPath);
+		// Check for all file contents
+		return checkFileContentsIgnoreLineFeeds(expectedFiles, expectedPath, destPath);
+	}).then(() => {
+		t.pass();
+	});
+});
+
+test("Build application.a with dependencies self-contained", (t) => {
+	const destPath = "./test/tmp/build/application.a/dest-depself";
+	const expectedPath = path.join("test", "expected", "build", "application.a", "dest-depself");
+
+	return builder.build({
+		tree: applicationATree,
+		destPath,
+		excludedTasks: ["generateComponentPreload", "generateVersionInfo", "escapeNonAsciiCharacters"],
+		buildDependencies: true,
+		selfContained: true
+	}).then(() => {
+		return findFiles(expectedPath);
+	}).then((expectedFiles) => {
+		// Check for all directories and files
+		assert.directoryDeepEqual(destPath, expectedPath);
+		// Check for all file contents
+		return checkFileContentsIgnoreLineFeeds(expectedFiles, expectedPath, destPath);
+	}).then(() => {
+		t.pass();
+	});
+});
+
+test("Build application.a with deprecated parameters", async (t) => {
+	const destPath = "./test/tmp/build/application.a/dest";
+
+	await t.throwsAsync(builder.build({
+		tree: applicationATree,
+		destPath,
+		buildDependencies: true, includedDependencies: [], excludedDependencies: []
+	}), /^builder.build called with parameters.*/);
 });
 
 test("Build application.a [dev mode]", (t) => {
@@ -462,37 +577,66 @@ test.serial("Cleanup", async (t) => {
 	t.deepEqual(executeCleanupTasksStub.callCount, 2, "Cleanup called twice");
 });
 
-const applicationATree = {
-	"id": "application.a",
+
+const libraryDTree = {
+	"id": "library.d",
 	"version": "1.0.0",
-	"path": applicationAPath,
+	"path": libraryDPath,
 	"dependencies": [
 		{
-			"id": "library.d",
+			"id": "sap.ui.core-evo",
 			"version": "1.0.0",
-			"path": path.join(applicationAPath, "node_modules", "library.d"),
+			"path": libraryCore,
 			"dependencies": [],
 			"_level": 1,
 			"specVersion": "0.1",
 			"type": "library",
 			"metadata": {
-				"name": "library.d",
-				"namespace": "library/d",
+				"name": "sap.ui.core",
+				"namespace": "sap/ui/core",
 				"copyright": "Some fancy copyright"
 			},
 			"resources": {
 				"configuration": {
 					"paths": {
-						"src": "main/src",
-						"test": "main/test"
+						"src": "main/src"
 					}
 				},
 				"pathMappings": {
-					"/resources/": "main/src",
-					"/test-resources/": "main/test"
+					"/resources/": "main/src"
 				}
 			}
+		}
+	],
+	"_level": 0,
+	"specVersion": "0.1",
+	"type": "library",
+	"metadata": {
+		"name": "library.d",
+		"namespace": "library/d",
+		"copyright": "Some fancy copyright"
+	},
+	"resources": {
+		"configuration": {
+			"paths": {
+				"src": "main/src",
+				"test": "main/test"
+			},
+			"propertiesFileSourceEncoding": "ISO-8859-1"
 		},
+		"pathMappings": {
+			"/resources/": "main/src",
+			"/test-resources/": "main/test"
+		}
+	}
+};
+
+const applicationATree = {
+	"id": "application.a",
+	"version": "1.0.0",
+	"path": applicationAPath,
+	"dependencies": [
+		libraryDTree,
 		{
 			"id": "library.a",
 			"version": "1.0.0",
@@ -576,7 +720,8 @@ const applicationATree = {
 	"specVersion": "0.1",
 	"type": "application",
 	"metadata": {
-		"name": "application.a"
+		"name": "application.a",
+		"namespace": "application/a"
 	},
 	"resources": {
 		"configuration": {
@@ -832,59 +977,6 @@ const applicationJTree = {
 	},
 	"builder": {
 		"bundles": []
-	}
-};
-
-const libraryDTree = {
-	"id": "library.d",
-	"version": "1.0.0",
-	"path": libraryDPath,
-	"dependencies": [
-		{
-			"id": "sap.ui.core-evo",
-			"version": "1.0.0",
-			"path": libraryCore,
-			"dependencies": [],
-			"_level": 1,
-			"specVersion": "0.1",
-			"type": "library",
-			"metadata": {
-				"name": "sap.ui.core",
-				"namespace": "sap/ui/core",
-				"copyright": "Some fancy copyright"
-			},
-			"resources": {
-				"configuration": {
-					"paths": {
-						"src": "main/src"
-					}
-				},
-				"pathMappings": {
-					"/resources/": "main/src"
-				}
-			}
-		}
-	],
-	"_level": 0,
-	"specVersion": "0.1",
-	"type": "library",
-	"metadata": {
-		"name": "library.d",
-		"namespace": "library/d",
-		"copyright": "Some fancy copyright"
-	},
-	"resources": {
-		"configuration": {
-			"paths": {
-				"src": "main/src",
-				"test": "main/test"
-			},
-			"propertiesFileSourceEncoding": "ISO-8859-1"
-		},
-		"pathMappings": {
-			"/resources/": "main/src",
-			"/test-resources/": "main/test"
-		}
 	}
 };
 
