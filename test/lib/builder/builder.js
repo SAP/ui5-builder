@@ -137,7 +137,7 @@ test("Build application.a with dependencies include", (t) => {
 		tree: applicationATree,
 		destPath,
 		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo", "generateLibraryPreload", "escapeNonAsciiCharacters"],
-		includedDependencies: ["*"]
+		buildDependencies: true, includedDependencies: ["*"]
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
@@ -158,7 +158,7 @@ test("Build application.a with dependencies exclude", (t) => {
 		tree: applicationATree,
 		destPath,
 		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo", "generateLibraryPreload", "escapeNonAsciiCharacters"],
-		excludedDependencies: ["library.d"]
+		buildDependencies: true, excludedDependencies: ["library.d"]
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
@@ -212,16 +212,6 @@ test("Build application.a with dependencies self-contained", (t) => {
 	}).then(() => {
 		t.pass();
 	});
-});
-
-test("Build application.a with deprecated parameters", async (t) => {
-	const destPath = "./test/tmp/build/application.a/dest";
-
-	await t.throwsAsync(builder.build({
-		tree: applicationATree,
-		destPath,
-		buildDependencies: true, includedDependencies: [], excludedDependencies: []
-	}), /^builder.build called with parameters.*/);
 });
 
 test("Build application.a [dev mode]", (t) => {
