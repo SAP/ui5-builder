@@ -16,6 +16,7 @@ const applicationGPath = path.join(__dirname, "..", "..", "fixtures", "applicati
 const applicationHPath = path.join(__dirname, "..", "..", "fixtures", "application.h");
 const applicationIPath = path.join(__dirname, "..", "..", "fixtures", "application.i");
 const applicationJPath = path.join(__dirname, "..", "..", "fixtures", "application.j");
+const collectionPath = path.join(__dirname, "..", "..", "fixtures", "collection");
 const libraryDPath = path.join(__dirname, "..", "..", "fixtures", "library.d");
 const libraryEPath = path.join(__dirname, "..", "..", "fixtures", "library.e");
 const libraryHPath = path.join(__dirname, "..", "..", "fixtures", "library.h");
@@ -115,7 +116,7 @@ test("Build application.a with dependencies", (t) => {
 	return builder.build({
 		tree: applicationATree,
 		destPath,
-		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo", "generateLibraryPreload", "escapeNonAsciiCharacters"],
+		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo", "generateLibraryPreload", "escapeNonAsciiCharacters", "generateLibraryManifest"],
 		buildDependencies: true
 	}).then(() => {
 		return findFiles(expectedPath);
@@ -136,7 +137,7 @@ test("Build application.a with dependencies include", (t) => {
 	return builder.build({
 		tree: applicationATree,
 		destPath,
-		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo", "generateLibraryPreload", "escapeNonAsciiCharacters"],
+		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo", "generateLibraryPreload", "escapeNonAsciiCharacters", "generateLibraryManifest"],
 		buildDependencies: true, includedDependencies: ["*"]
 	}).then(() => {
 		return findFiles(expectedPath);
@@ -152,12 +153,12 @@ test("Build application.a with dependencies include", (t) => {
 
 test("Build application.a with dependencies exclude", (t) => {
 	const destPath = "./test/tmp/build/application.a/dest-deps-excl";
-	const expectedPath = path.join("test", "expected", "build", "application.a", "dest");
+	const expectedPath = path.join("test", "expected", "build", "application.a", "dest-deps-excl");
 
 	return builder.build({
 		tree: applicationATree,
 		destPath,
-		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo", "generateLibraryPreload", "escapeNonAsciiCharacters"],
+		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo", "generateLibraryPreload", "escapeNonAsciiCharacters", "generateLibraryManifest"],
 		buildDependencies: true, excludedDependencies: ["library.d"]
 	}).then(() => {
 		return findFiles(expectedPath);
@@ -199,7 +200,7 @@ test("Build application.a with dependencies self-contained", (t) => {
 	return builder.build({
 		tree: applicationATree,
 		destPath,
-		excludedTasks: ["generateComponentPreload", "generateVersionInfo", "escapeNonAsciiCharacters"],
+		excludedTasks: ["generateComponentPreload", "generateVersionInfo", "escapeNonAsciiCharacters", "generateLibraryManifest"],
 		buildDependencies: true,
 		selfContained: true
 	}).then(() => {
@@ -630,7 +631,7 @@ const applicationATree = {
 		{
 			"id": "library.a",
 			"version": "1.0.0",
-			"path": path.join(applicationAPath, "node_modules", "collection", "library.a"),
+			"path": path.join(collectionPath, "library.a"),
 			"dependencies": [],
 			"_level": 1,
 			"specVersion": "0.1",
@@ -656,7 +657,7 @@ const applicationATree = {
 		{
 			"id": "library.b",
 			"version": "1.0.0",
-			"path": path.join(applicationAPath, "node_modules", "collection", "library.b"),
+			"path": path.join(collectionPath, "library.b"),
 			"dependencies": [],
 			"_level": 1,
 			"specVersion": "0.1",
@@ -682,7 +683,7 @@ const applicationATree = {
 		{
 			"id": "library.c",
 			"version": "1.0.0",
-			"path": path.join(applicationAPath, "node_modules", "collection", "library.c"),
+			"path": path.join(collectionPath, "library.c"),
 			"dependencies": [],
 			"_level": 1,
 			"specVersion": "0.1",
