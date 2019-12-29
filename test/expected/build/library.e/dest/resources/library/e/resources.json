@@ -5,11 +5,21 @@
 			"name": ".library"
 		},
 		{
+			"name": "library-dbg.js",
+			"module": "library/e/library.js",
+			"isDebug": true
+		},
+		{
 			"name": "library.js",
 			"module": "library/e/library.js"
 		},
 		{
 			"name": "manifest.json"
+		},
+		{
+			"name": "some-dbg.js",
+			"module": "library/e/some.js",
+			"isDebug": true
 		},
 		{
 			"name": "some.js",

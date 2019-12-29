@@ -10,6 +10,9 @@
 			"required": [
 				"sap/ui/core/Core.js"
 			]
+		},
+		{
+			"name": "manifest.json"
 		}
 	]
 }

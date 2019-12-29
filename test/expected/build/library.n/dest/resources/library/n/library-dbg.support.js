@@ -1,0 +1,23 @@
+/*!
+ * UI development toolkit for HTML5 (OpenUI5)
+ * (c) Copyright 2009-xxx SAP SE or an SAP affiliate company.
+ * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+ */
+sap.ui.define([
+	"sap/ui/support/library",
+	"./rules/Button.support"
+], function(
+		SupportLib,
+		ButtonSupport,
+	) {
+	"use strict";
+
+	return {
+		name: "library.n",
+		niceName: "Library N",
+		ruleset: [
+			ButtonSupport
+		]
+	};
+
+});

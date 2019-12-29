@@ -7,6 +7,18 @@
 			"theme": "somefancytheme"
 		},
 		{
+			"name": "library-RTL.css",
+			"theme": "somefancytheme"
+		},
+		{
+			"name": "library-parameters.json",
+			"theme": "somefancytheme"
+		},
+		{
+			"name": "library.css",
+			"theme": "somefancytheme"
+		},
+		{
 			"name": "library.source.less",
 			"designtime": true,
 			"theme": "somefancytheme"

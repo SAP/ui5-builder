@@ -5,6 +5,14 @@
 			"name": ".library"
 		},
 		{
+			"name": "manifest.json"
+		},
+		{
+			"name": "some-dbg.js",
+			"module": "library/d/some.js",
+			"isDebug": true
+		},
+		{
 			"name": "some.js",
 			"module": "library/d/some.js"
 		}

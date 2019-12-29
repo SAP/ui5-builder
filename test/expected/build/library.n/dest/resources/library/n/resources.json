@@ -1,0 +1,153 @@
+{
+	"_version": "1.1.0",
+	"resources": [
+		{
+			"name": ".library"
+		},
+		{
+			"name": "Button-dbg.js",
+			"module": "library/n/Button.js",
+			"isDebug": true,
+			"required": [
+				"library/n/library.js",
+				"sap/ui/core/Control.js"
+			]
+		},
+		{
+			"name": "Button.js",
+			"module": "library/n/Button.js",
+			"required": [
+				"library/n/library.js",
+				"sap/ui/core/Control.js"
+			]
+		},
+		{
+			"name": "changeHandler/SplitButton-dbg.js",
+			"module": "library/n/changeHandler/SplitButton.js",
+			"isDebug": true,
+			"required": [
+				"sap/ui/core/util/reflection/JsControlTreeModifier.js"
+			]
+		},
+		{
+			"name": "changeHandler/SplitButton.js",
+			"module": "library/n/changeHandler/SplitButton.js",
+			"required": [
+				"sap/ui/core/util/reflection/JsControlTreeModifier.js"
+			]
+		},
+		{
+			"name": "designtime/Button-dbg.designtime.js",
+			"module": "library/n/designtime/Button.designtime.js",
+			"isDebug": true,
+			"designtime": true
+		},
+		{
+			"name": "designtime/Button.create.fragment.xml",
+			"module": "library/n/designtime/Button.create.fragment.xml",
+			"designtime": true,
+			"required": [
+				"library/n/Button.js"
+			]
+		},
+		{
+			"name": "designtime/Button.designtime.js",
+			"module": "library/n/designtime/Button.designtime.js",
+			"designtime": true
+		},
+		{
+			"name": "designtime/Button.icon.svg",
+			"designtime": true
+		},
+		{
+			"name": "designtime/library-dbg.designtime.js",
+			"module": "library/n/designtime/library.designtime.js",
+			"isDebug": true,
+			"designtime": true
+		},
+		{
+			"name": "designtime/library.designtime.js",
+			"module": "library/n/designtime/library.designtime.js",
+			"designtime": true
+		},
+		{
+			"name": "flexibility/Button.flexibility-dbg.js",
+			"module": "library/n/flexibility/Button.flexibility.js",
+			"isDebug": true,
+			"required": [
+				"library/n/changeHandler/SplitButton.js",
+				"sap/ui/fl/changeHandler/BaseRename.js"
+			]
+		},
+		{
+			"name": "flexibility/Button.flexibility.js",
+			"module": "library/n/flexibility/Button.flexibility.js",
+			"required": [
+				"library/n/changeHandler/SplitButton.js",
+				"sap/ui/fl/changeHandler/BaseRename.js"
+			]
+		},
+		{
+			"name": "library-dbg.js",
+			"module": "library/n/library.js",
+			"isDebug": true,
+			"required": [
+				"sap/m/library.js",
+				"sap/ui/core/Core.js",
+				"sap/ui/core/library.js"
+			]
+		},
+		{
+			"name": "library-dbg.support.js",
+			"module": "library/n/library.support.js",
+			"isDebug": true,
+			"support": true,
+			"required": [
+				"library/n/rules/Button.support.js",
+				"sap/ui/support/library.js"
+			]
+		},
+		{
+			"name": "library.js",
+			"module": "library/n/library.js",
+			"required": [
+				"sap/m/library.js",
+				"sap/ui/core/Core.js",
+				"sap/ui/core/library.js"
+			]
+		},
+		{
+			"name": "library.support.js",
+			"module": "library/n/library.support.js",
+			"support": true,
+			"required": [
+				"library/n/rules/Button.support.js",
+				"sap/ui/support/library.js"
+			]
+		},
+		{
+			"name": "manifest.json"
+		},
+		{
+			"name": "messagebundle.properties",
+			"locale": "",
+			"raw": "messagebundle.properties"
+		},
+		{
+			"name": "messagebundle_de.properties",
+			"locale": "de",
+			"raw": "messagebundle.properties"
+		},
+		{
+			"name": "rules/Button-dbg.support.js",
+			"module": "library/n/rules/Button.support.js",
+			"isDebug": true,
+			"support": true
+		},
+		{
+			"name": "rules/Button.support.js",
+			"module": "library/n/rules/Button.support.js",
+			"support": true
+		}
+	]
+}
