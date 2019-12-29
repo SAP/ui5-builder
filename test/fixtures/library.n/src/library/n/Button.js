@@ -12,7 +12,7 @@ sap.ui.define([
 ) {
 	"use strict";
 
-	return Control.extend("library.n.Button", { 
+	return Control.extend("library.n.Button", {
 		metadata : {
 			library : "library.n",
 			properties : {
@@ -42,6 +42,13 @@ sap.ui.define([
 				oRm.close("span");
 				oRm.close("button");
 			}
+		},
+		helper: function(sCalendarType) {
+			var sCalendar = "sap/ui/core/date/" + sCalendarType;
+			sap.ui.require(["sap/ui/core/format/DateFormat", sCalendar], function(DateFormat, Calendar) {
+				DateFormat.getInstance();
+				new Calendar();
+			});
 		}
 	});
 

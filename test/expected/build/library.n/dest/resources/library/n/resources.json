@@ -11,7 +11,11 @@
 			"required": [
 				"library/n/library.js",
 				"sap/ui/core/Control.js"
-			]
+			],
+			"condRequired": [
+				"sap/ui/core/format/DateFormat.js"
+			],
+			"dynRequired": true
 		},
 		{
 			"name": "Button.js",
@@ -19,7 +23,11 @@
 			"required": [
 				"library/n/library.js",
 				"sap/ui/core/Control.js"
-			]
+			],
+			"condRequired": [
+				"sap/ui/core/format/DateFormat.js"
+			],
+			"dynRequired": true
 		},
 		{
 			"name": "changeHandler/SplitButton-dbg.js",
