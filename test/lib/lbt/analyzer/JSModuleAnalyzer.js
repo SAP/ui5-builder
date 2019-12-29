@@ -96,7 +96,6 @@ function analyzeModule(
 		}
 		t.false(info.dynamicDependencies,
 			"no use of dynamic dependencies should have been detected");
-
 	}).then(() => t.end(), (e) => t.fail(`failed to analyze module with error: ${e.message}`));
 }
 
