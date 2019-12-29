@@ -1,0 +1,12 @@
+{
+	"_version": "1.1.0",
+	"resources": [
+		{
+			"name": "Component.js",
+			"module": "library/h/components/subcomponent3/Component.js",
+			"required": [
+				"sap/ui/core/UIComponent.js"
+			]
+		}
+	]
+}

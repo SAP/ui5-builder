@@ -1,0 +1,19 @@
+{
+	"_version": "1.1.0",
+	"resources": [
+		{
+			"name": ".library"
+		},
+		{
+			"name": "library.js",
+			"module": "library/e/library.js"
+		},
+		{
+			"name": "manifest.json"
+		},
+		{
+			"name": "some.js",
+			"module": "library/e/some.js"
+		}
+	]
+}

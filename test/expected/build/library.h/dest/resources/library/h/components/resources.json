@@ -1,0 +1,37 @@
+{
+	"_version": "1.1.0",
+	"resources": [
+		{
+			"name": "Component.js",
+			"module": "library/h/components/Component.js",
+			"required": [
+				"sap/ui/core/UIComponent.js"
+			]
+		},
+		{
+			"name": "TodoComponent.js",
+			"module": "library/h/components/TodoComponent.js"
+		},
+		{
+			"name": "subcomponent1/Component.js",
+			"module": "library/h/components/subcomponent1/Component.js",
+			"required": [
+				"sap/ui/core/UIComponent.js"
+			]
+		},
+		{
+			"name": "subcomponent2/Component.js",
+			"module": "library/h/components/subcomponent2/Component.js",
+			"required": [
+				"sap/ui/core/UIComponent.js"
+			]
+		},
+		{
+			"name": "subcomponent3/Component.js",
+			"module": "library/h/components/subcomponent3/Component.js",
+			"required": [
+				"sap/ui/core/UIComponent.js"
+			]
+		}
+	]
+}

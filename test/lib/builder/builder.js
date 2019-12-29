@@ -200,7 +200,7 @@ test("Build application.a with dependencies", (t) => {
 	return builder.build({
 		tree: applicationATree,
 		destPath,
-		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo", "generateLibraryPreload", "escapeNonAsciiCharacters", "generateLibraryManifest"],
+		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo", "generateLibraryPreload", "escapeNonAsciiCharacters", "generateLibraryManifest", "generateResourcesJson"],
 		buildDependencies: true
 	}).then(() => {
 		return findFiles(expectedPath);
@@ -221,7 +221,7 @@ test("Build application.a with dependencies include", (t) => {
 	return builder.build({
 		tree: applicationATree,
 		destPath,
-		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo", "generateLibraryPreload", "escapeNonAsciiCharacters", "generateLibraryManifest"],
+		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo", "generateLibraryPreload", "escapeNonAsciiCharacters", "generateLibraryManifest", "generateResourcesJson"],
 		buildDependencies: true, includedDependencies: ["*"]
 	}).then(() => {
 		return findFiles(expectedPath);
@@ -242,7 +242,7 @@ test("Build application.a with dependencies exclude", (t) => {
 	return builder.build({
 		tree: applicationATree,
 		destPath,
-		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo", "generateLibraryPreload", "escapeNonAsciiCharacters", "generateLibraryManifest"],
+		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo", "generateLibraryPreload", "escapeNonAsciiCharacters", "generateLibraryManifest", "generateResourcesJson"],
 		buildDependencies: true, excludedDependencies: ["library.d"]
 	}).then(() => {
 		return findFiles(expectedPath);
@@ -284,7 +284,7 @@ test("Build application.a with dependencies self-contained", (t) => {
 	return builder.build({
 		tree: applicationATree,
 		destPath,
-		excludedTasks: ["generateComponentPreload", "generateVersionInfo", "escapeNonAsciiCharacters", "generateLibraryManifest"],
+		excludedTasks: ["generateComponentPreload", "generateVersionInfo", "escapeNonAsciiCharacters", "generateLibraryManifest", "generateResourcesJson"],
 		buildDependencies: true,
 		selfContained: true
 	}).then(() => {
