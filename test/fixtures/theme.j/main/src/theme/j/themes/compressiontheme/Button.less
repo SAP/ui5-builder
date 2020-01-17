@@ -1,0 +1,19 @@
+/* function */
+._sapUiTableVScrWithActionsInnerMixin_CalcMarginRight(@ScrollbarSize, @RowActionWidth) {
+	margin-right: calc(@ScrollbarSize ~"+" @RowActionWidth);
+}
+
+._sapUiTableVScrWithActionsInnerMixin(@ScrollbarSize, @RowActionWidth) {
+
+	.meinnerle {
+		._sapUiTableVScrWithActionsInnerMixin_CalcMarginRight(@ScrollbarSize, @RowActionWidth);
+	}
+
+	.myele {
+		margin-right: @ScrollbarSize;
+	}
+}
+
+.supi:not(.thehe) {
+	._sapUiTableVScrWithActionsInnerMixin(0px, @_mywidth);
+}
