@@ -68,7 +68,7 @@ async function checkFileContentsIgnoreLineFeeds(expectedFiles, expectedPath, des
 				expectedContent = JSON.parse(expectedContent.replace(/(:\s+)(\d+)/g, ": 0"));
 				assert.deepEqual(currentContent, expectedContent);
 			} else {
-				assert.equal(currentContent.replace(newLineRegexp, "\n"), expectedContent.replace(newLineRegexp, "\n"));
+				assert.equal(currentContent.replace(newLineRegexp, "\n"), expectedContent.replace(newLineRegexp, "\n"), `file contents do not match. Paths actual: '${destFile}', expected: '${expectedFile}'`);
 			}
 		};
 		await Promise.all([currentFileContentPromise, expectedFileContentPromise]).then(assertContents);
