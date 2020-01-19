@@ -114,7 +114,7 @@
 		"pretty-hrtime": "^1.0.3",
 		"replacestream": "^4.0.3",
 		"rimraf": "^3.0.0",
-		"semver": "^6.3.0",
+		"semver": "^7.1.1",
 		"slash": "^3.0.0",
 		"terser": "^4.6.3",
 		"xml2js": "^0.4.23",
