@@ -289,10 +289,16 @@ test.serial("buildThemes (filtering themes)", async (t) => {
 
 	const baseThemes = {
 		"sap/ui/core/themes/theme1/": {
-			getPath: sinon.stub().returns("/resources/sap/ui/core/themes/theme1/")
+			getPath: sinon.stub().returns("/resources/sap/ui/core/themes/theme1/"),
+			getStatInfo: () => {
+				return {isDirectory: () => true};
+			}
 		},
 		"sap/ui/core/themes/theme3/": {
-			getPath: sinon.stub().returns("/resources/sap/ui/core/themes/theme3/")
+			getPath: sinon.stub().returns("/resources/sap/ui/core/themes/theme3/"),
+			getStatInfo: () => {
+				return {isDirectory: () => true};
+			}
 		}
 	};
 
@@ -310,7 +316,7 @@ test.serial("buildThemes (filtering themes)", async (t) => {
 		]);
 
 	t.context.comboByGlob
-		.withArgs("/resources/sap/ui/core/themes/*").resolves([
+		.withArgs("/resources/sap/ui/core/themes/*", {nodir: false}).resolves([
 			baseThemes["sap/ui/core/themes/theme1/"],
 			baseThemes["sap/ui/core/themes/theme3/"]
 		]);
@@ -389,10 +395,16 @@ test.serial("buildThemes (filtering libraries + themes)", async (t) => {
 
 	const baseThemes = {
 		"sap/ui/core/themes/theme1/": {
-			getPath: sinon.stub().returns("/resources/sap/ui/core/themes/theme1/")
+			getPath: sinon.stub().returns("/resources/sap/ui/core/themes/theme1/"),
+			getStatInfo: () => {
+				return {isDirectory: () => true};
+			}
 		},
 		"sap/ui/core/themes/theme3/": {
-			getPath: sinon.stub().returns("/resources/sap/ui/core/themes/theme3/")
+			getPath: sinon.stub().returns("/resources/sap/ui/core/themes/theme3/"),
+			getStatInfo: () => {
+				return {isDirectory: () => true};
+			}
 		}
 	};
 
@@ -420,7 +432,7 @@ test.serial("buildThemes (filtering libraries + themes)", async (t) => {
 			dotLibraryResources["sap/ui/lib1/.library"],
 			dotLibraryResources["sap/ui/lib3/.library"]
 		])
-		.withArgs("/resources/sap/ui/core/themes/*").resolves([
+		.withArgs("/resources/sap/ui/core/themes/*", {nodir: false}).resolves([
 			baseThemes["sap/ui/core/themes/theme1/"],
 			baseThemes["sap/ui/core/themes/theme3/"]
 		]);
