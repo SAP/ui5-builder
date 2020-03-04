@@ -5,6 +5,10 @@ const mock = require("mock-require");
 
 let buildThemes = require("../../../lib/tasks/buildThemes");
 
+test.before(() => {
+	require("@ui5/logger").setLevel("verbose");
+});
+
 test.beforeEach((t) => {
 	// Stubbing processors/themeBuilder
 	t.context.themeBuilderStub = sinon.stub();
