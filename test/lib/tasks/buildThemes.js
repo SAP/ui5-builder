@@ -6,6 +6,7 @@ const mock = require("mock-require");
 let buildThemes = require("../../../lib/tasks/buildThemes");
 
 test.before(() => {
+	// Enable verbose logging to also cover verbose logging code
 	require("@ui5/logger").setLevel("verbose");
 });
 
