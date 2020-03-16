@@ -202,12 +202,15 @@ test.serial("format: namespace resolution fails", async (t) => {
 	sinon.stub(libraryFormatter, "validate").resolves();
 
 
-	await libraryFormatter.format();
+	const error = await t.throwsAsync(libraryFormatter.format());
+	t.deepEqual(error.message, "Failed to detect namespace or namespace is empty for project library.e." +
+		" Check verbose log for details.");
+
 	t.deepEqual(globbyStub.callCount, 3, "globby got called three times");
 	t.deepEqual(globbyStub.getCall(0).args[0], "**/manifest.json", "First glob is for manifest.json files");
 	t.deepEqual(globbyStub.getCall(1).args[0], "**/.library", "Second glob is for .library files");
 	t.deepEqual(globbyStub.getCall(2).args[0], "**/library.js", "Third glob for library.js files");
-	t.deepEqual(loggerVerboseSpy.callCount, 7, "7 calls to log.verbose should be done");
+	t.deepEqual(loggerVerboseSpy.callCount, 6, "7 calls to log.verbose should be done");
 	const logVerboseCalls = loggerVerboseSpy.getCalls().map((call) => call.args[0]);
 
 	t.true(logVerboseCalls.includes(
@@ -224,12 +227,6 @@ test.serial("format: namespace resolution fails", async (t) => {
 		"Namespace resolution from library.js file path failed for project library.e: " +
 		"Could not find library.js file for project library.e"),
 	"should contain message for missing library.js");
-
-	t.deepEqual(loggerWarnSpy.callCount, 1, "1 calls to log.warn should be done");
-	const logWarnCalls = loggerWarnSpy.getCalls().map((call) => call.args[0]);
-	t.true(logWarnCalls.includes(
-		"Failed to detect namespace or namespace is empty for project library.e. Check verbose log for details."),
-	"should contain message for .library");
 
 	mock.stop("globby");
 	mock.stop("@ui5/logger");
