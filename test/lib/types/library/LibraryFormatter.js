@@ -505,6 +505,25 @@ test("getNamespace: from manifest.json", async (t) => {
 	t.deepEqual(res, "mani-pony", "Returned correct namespace");
 });
 
+test("getNamespace: from manifest.json with not matching file path", async (t) => {
+	const myProject = clone(libraryETree);
+
+	const libraryFormatter = new LibraryFormatter({project: myProject});
+	sinon.stub(libraryFormatter, "getManifest").resolves({
+		content: {
+			"sap.app": {
+				id: "mani-pony"
+			}
+		},
+		fsPath: path.normalize("/some/path/different/namespace/manifest.json") // normalize for windows
+	});
+	sinon.stub(libraryFormatter, "getSourceBasePath").returns("/some/path/");
+	const err = await t.throwsAsync(libraryFormatter.getNamespace());
+
+	t.deepEqual(err.message, `Detected namespace "mani-pony" does not match detected directory structure ` +
+		`"different/namespace" for project library.e`, "Rejected with correct error message");
+});
+
 test.serial("getNamespace: from manifest.json without sap.app id", async (t) => {
 	const myProject = clone(libraryETree);
 
