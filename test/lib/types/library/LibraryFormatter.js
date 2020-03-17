@@ -140,6 +140,34 @@ test("format: copyright already configured", async (t) => {
 	t.deepEqual(myProject.metadata.copyright, libraryETree.metadata.copyright, "Copyright was not altered");
 });
 
+test.serial("format: copyright retrieval fails", async (t) => {
+	const myProject = clone(libraryETree);
+
+	const log = require("@ui5/logger");
+	const loggerInstance = log.getLogger("types:library:LibraryFormatter");
+
+	mock("@ui5/logger", {
+		getLogger: () => loggerInstance
+	});
+	mock.reRequire("@ui5/logger");
+	const loggerVerboseSpy = sinon.spy(loggerInstance, "verbose");
+
+	const LibraryFormatter = mock.reRequire("../../../../lib/types/library/LibraryFormatter");
+
+	const libraryFormatter = new LibraryFormatter({project: myProject});
+	sinon.stub(libraryFormatter, "validate").resolves();
+	sinon.stub(libraryFormatter, "getCopyright").rejects(Error("my-pony"));
+
+	await libraryFormatter.format();
+	t.deepEqual(myProject.metadata.copyright, libraryETree.metadata.copyright, "Copyright was not altered");
+
+
+	t.is(loggerVerboseSpy.callCount, 4, "calls to verbose");
+	t.is(loggerVerboseSpy.getCall(3).args[0], "my-pony", "message from rejection");
+
+	mock.stop("@ui5/logger");
+});
+
 test("format: formats correctly", async (t) => {
 	const myProject = clone(libraryETree);
 	myProject.metadata.copyright = undefined;
@@ -504,7 +532,7 @@ test.serial("getNamespace: from manifest.json without sap.app id", async (t) => 
 	const err = await t.throwsAsync(libraryFormatter.getNamespace());
 
 	t.deepEqual(err.message, `Failed to detect namespace or namespace is empty for project library.e. Check verbose log for details.`, "Rejected with correct error message");
-	t.is(loggerSpy.callCount, 4, "call to verbose");
+	t.is(loggerSpy.callCount, 4, "calls to verbose");
 
 
 	t.is(loggerSpy.getCall(0).args[0], "No \"sap.app\" ID configuration found in manifest.json of project library.e", "correct verbose message");
