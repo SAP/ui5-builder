@@ -130,6 +130,15 @@ function createMockProject() {
 	};
 }
 
+test("getSourceBasePath: posix", async (t) => {
+	const myProject = clone(applicationBTree);
+	myProject.path = "my/pony";
+	const applicationFormatter = new ApplicationFormatter({project: myProject});
+
+	const sourceBasePath = applicationFormatter.getSourceBasePath(true);
+	t.is(sourceBasePath, "my/pony/webapp", "correct path");
+});
+
 test("format: No 'sap.app' configuration found", async (t) => {
 	const project = createMockProject();
 	const applicationFormatter = new ApplicationFormatter({project});
