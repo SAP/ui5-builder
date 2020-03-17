@@ -282,21 +282,13 @@ test("getDotLibrary: reads correctly", async (t) => {
 	const expectedPath = path.join(myProject.path,
 		myProject.resources.configuration.paths.src, "library", "e", ".library");
 	t.deepEqual(fsPath, expectedPath, ".library fsPath is correct");
-});
 
-test("getDotLibrary: reads correctly call again", async (t) => {
-	const myProject = clone(libraryETree);
-	myProject.resources.pathMappings = {
-		"/resources/": myProject.resources.configuration.paths.src
-	};
-
-	const libraryFormatter = new LibraryFormatter({project: myProject});
-
-	const {content} = await libraryFormatter.getDotLibrary();
-	t.deepEqual(content.library.name, "library.e", ".library content has been read");
-
-	const {content: contentSecondCall} = await libraryFormatter.getDotLibrary();
-	t.deepEqual(contentSecondCall.library.name, "library.e", ".library content has been read second time");
+	const {content: contentSecondCall, fsPath: fsPathSecondCall} = await libraryFormatter.getDotLibrary();
+	t.deepEqual(contentSecondCall.library.name, "library.e", ".library content has been read," +
+		"but should be cached now.");
+	const expectedPathSecondCall = path.join(myProject.path,
+		myProject.resources.configuration.paths.src, "library", "e", ".library");
+	t.deepEqual(fsPathSecondCall, expectedPathSecondCall, ".library fsPath is correct");
 });
 
 test.serial("getDotLibrary: multiple dot library files", async (t) => {
