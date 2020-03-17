@@ -477,24 +477,38 @@ test("getNamespace: from manifest.json", async (t) => {
 	t.deepEqual(res, "mani-pony", "Returned correct namespace");
 });
 
-test("getNamespace: from manifest.json with not matching file path", async (t) => {
+test.serial("getNamespace: from manifest.json without sap.app id", async (t) => {
 	const myProject = clone(libraryETree);
+
+	const log = require("@ui5/logger");
+	const loggerInstance = log.getLogger("types:library:LibraryFormatter");
+
+	mock("@ui5/logger", {
+		getLogger: () => loggerInstance
+	});
+	mock.reRequire("@ui5/logger");
+
+	const LibraryFormatter = mock.reRequire("../../../../lib/types/library/LibraryFormatter");
 
 	const libraryFormatter = new LibraryFormatter({project: myProject});
 	sinon.stub(libraryFormatter, "getManifest").resolves({
 		content: {
 			"sap.app": {
-				id: "mani-pony"
 			}
 		},
 		fsPath: path.normalize("/some/path/different/namespace/manifest.json") // normalize for windows
 	});
 	sinon.stub(libraryFormatter, "getSourceBasePath").returns("/some/path/");
+
+	const loggerSpy = sinon.spy(loggerInstance, "verbose");
 	const err = await t.throwsAsync(libraryFormatter.getNamespace());
 
-	t.deepEqual(err.message, `Detected namespace "mani-pony" does not match detected directory structure ` +
-		`"different/namespace" for project library.e`,
-	"Rejected with correct error message");
+	t.deepEqual(err.message, `Failed to detect namespace or namespace is empty for project library.e. Check verbose log for details.`, "Rejected with correct error message");
+	t.is(loggerSpy.callCount, 4, "call to verbose");
+
+
+	t.is(loggerSpy.getCall(0).args[0], "No \"sap.app\" ID configuration found in manifest.json of project library.e", "correct verbose message");
+	mock.stop("@ui5/logger");
 });
 
 test("getNamespace: from .library", async (t) => {
