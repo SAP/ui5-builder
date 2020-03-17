@@ -194,7 +194,6 @@ test.serial("format: namespace resolution fails", async (t) => {
 	});
 	mock.reRequire("@ui5/logger");
 	const loggerVerboseSpy = sinon.spy(loggerInstance, "verbose");
-	const loggerWarnSpy = sinon.spy(loggerInstance, "warn");
 
 	const LibraryFormatter = mock.reRequire("../../../../lib/types/library/LibraryFormatter");
 
