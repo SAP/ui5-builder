@@ -282,13 +282,6 @@ test("getDotLibrary: reads correctly", async (t) => {
 	const expectedPath = path.join(myProject.path,
 		myProject.resources.configuration.paths.src, "library", "e", ".library");
 	t.deepEqual(fsPath, expectedPath, ".library fsPath is correct");
-
-	const {content: contentSecondCall, fsPath: fsPathSecondCall} = await libraryFormatter.getDotLibrary();
-	t.deepEqual(contentSecondCall.library.name, "library.e", ".library content has been read," +
-		"but should be cached now.");
-	const expectedPathSecondCall = path.join(myProject.path,
-		myProject.resources.configuration.paths.src, "library", "e", ".library");
-	t.deepEqual(fsPathSecondCall, expectedPathSecondCall, ".library fsPath is correct");
 });
 
 test.serial("getDotLibrary: multiple dot library files", async (t) => {
@@ -344,7 +337,6 @@ test.serial("getDotLibrary: result is cached", async (t) => {
 	mock.reRequire("globby");
 
 	const LibraryFormatter = mock.reRequire("../../../../lib/types/library/LibraryFormatter");
-
 	const libraryFormatter = new LibraryFormatter({project: myProject});
 
 	const {content, fsPath} = await libraryFormatter.getDotLibrary();
@@ -352,6 +344,13 @@ test.serial("getDotLibrary: result is cached", async (t) => {
 	const expectedPath = path.join(myProject.path,
 		myProject.resources.configuration.paths.src, "library", "e", ".library");
 	t.deepEqual(fsPath, expectedPath, ".library fsPath is correct");
+
+	const {content: contentSecondCall, fsPath: fsPathSecondCall} = await libraryFormatter.getDotLibrary();
+	t.deepEqual(contentSecondCall.library.name, "library.e", ".library content has been read," +
+		"but should be cached now.");
+	const expectedPathSecondCall = path.join(myProject.path,
+		myProject.resources.configuration.paths.src, "library", "e", ".library");
+	t.deepEqual(fsPathSecondCall, expectedPathSecondCall, ".library fsPath is correct");
 
 	t.deepEqual(globbySpy.callCount, 1,
 		"globby got called exactly once (and then cached)");
@@ -370,25 +369,6 @@ test("getLibraryJsPath: reads correctly", async (t) => {
 	const expectedPath = path.join(myProject.path,
 		myProject.resources.configuration.paths.src, "library", "e", "library.js");
 	t.deepEqual(fsPath, expectedPath, ".library fsPath is correct");
-});
-
-test("getLibraryJsPath: reads correctly call again", async (t) => {
-	const myProject = clone(libraryETree);
-	myProject.resources.pathMappings = {
-		"/resources/": myProject.resources.configuration.paths.src
-	};
-
-	const libraryFormatter = new LibraryFormatter({project: myProject});
-
-	const fsPath = await libraryFormatter.getLibraryJsPath();
-	const expectedPath = path.join(myProject.path,
-		myProject.resources.configuration.paths.src, "library", "e", "library.js");
-	t.deepEqual(fsPath, expectedPath, ".library fsPath is correct");
-
-	const fsPathSecondCall = await libraryFormatter.getLibraryJsPath();
-	const expectedPathSecondCall = path.join(myProject.path,
-		myProject.resources.configuration.paths.src, "library", "e", "library.js");
-	t.deepEqual(fsPathSecondCall, expectedPathSecondCall, ".library fsPath is correct");
 });
 
 test.serial("getLibraryJsPath: multiple dot library files", async (t) => {
@@ -451,6 +431,11 @@ test.serial("getLibraryJsPath: result is cached", async (t) => {
 	const expectedPath = path.join(myProject.path,
 		myProject.resources.configuration.paths.src, "library", "e", "library.js");
 	t.deepEqual(fsPath, expectedPath, ".library fsPath is correct");
+
+	const fsPathSecondCall = await libraryFormatter.getLibraryJsPath();
+	const expectedPathSecondCall = path.join(myProject.path,
+		myProject.resources.configuration.paths.src, "library", "e", "library.js");
+	t.deepEqual(fsPathSecondCall, expectedPathSecondCall, ".library fsPath is correct");
 
 	t.deepEqual(globbySpy.callCount, 1,
 		"globby got called exactly once (and then cached)");

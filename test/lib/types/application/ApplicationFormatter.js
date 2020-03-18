@@ -227,11 +227,12 @@ test.serial("getManifest: result is cached", async (t) => {
 
 	const ApplicationFormatter = mock.reRequire("../../../../lib/types/application/ApplicationFormatter");
 	const libraryFormatter = new ApplicationFormatter({project: myProject});
-
 	const expectedPath = path.join(applicationBPath, "webapp", "manifest.json");
+
 	const {content, fsPath} = await libraryFormatter.getManifest();
 	t.deepEqual(content, {pony: "no unicorn"}, "Correct result on first call");
 	t.deepEqual(fsPath, expectedPath, "Correct manifest.json path returned on first call");
+
 	const {content: content2, fsPath: fsPath2} = await libraryFormatter.getManifest();
 	t.deepEqual(content2, {pony: "no unicorn"}, "Correct result on second call");
 	t.deepEqual(fsPath2, expectedPath, "Correct manifest.json path returned on second call");
