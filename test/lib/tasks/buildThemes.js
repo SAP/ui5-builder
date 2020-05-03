@@ -82,7 +82,8 @@ test.serial("buildThemes", async (t) => {
 		fs: {},
 		options: {
 			compress: true, // default
-			cssVariables: false // default
+			cssVariables: false, // default
+			rtl: true // default
 		}
 	}, "Processor should be called with expected arguments");
 
@@ -137,7 +138,8 @@ test.serial("buildThemes (compress = false)", async (t) => {
 		fs: {},
 		options: {
 			compress: false,
-			cssVariables: false
+			cssVariables: false,
+			rtl: true
 		}
 	}, "Processor should be called with expected arguments");
 
@@ -199,7 +201,8 @@ test.serial("buildThemes (cssVariables = true)", async (t) => {
 		fs: {},
 		options: {
 			compress: true,
-			cssVariables: true
+			cssVariables: true,
+			rtl: true
 		}
 	}, "Processor should be called with expected arguments");
 
@@ -212,6 +215,120 @@ test.serial("buildThemes (cssVariables = true)", async (t) => {
 	t.true(workspace.write.calledWithExactly(cssVariablesResource));
 	t.true(workspace.write.calledWithExactly(cssSkeletonResource));
 	t.true(workspace.write.calledWithExactly(cssSkeletonRtlResource));
+});
+
+test.serial("buildThemes (rtl = false)", async (t) => {
+	t.plan(5);
+
+	const lessResource = {};
+
+	const workspace = {
+		byGlob: async (globPattern) => {
+			if (globPattern === "/resources/test/library.source.less") {
+				return [lessResource];
+			} else {
+				return [];
+			}
+		},
+		write: sinon.stub()
+	};
+
+	const cssResource = {};
+	const jsonParametersResource = {};
+
+	t.context.themeBuilderStub.returns([
+		cssResource,
+		jsonParametersResource
+	]);
+
+	await buildThemes({
+		workspace,
+		options: {
+			projectName: "sap.ui.demo.app",
+			inputPattern: "/resources/test/library.source.less",
+			rtl: false
+		}
+	});
+
+	t.deepEqual(t.context.themeBuilderStub.callCount, 1,
+		"Processor should be called once");
+
+	t.deepEqual(t.context.themeBuilderStub.getCall(0).args[0], {
+		resources: [lessResource],
+		fs: {},
+		options: {
+			compress: true,
+			cssVariables: false,
+			rtl: false
+		}
+	}, "Processor should be called with expected arguments");
+
+	t.deepEqual(workspace.write.callCount, 2,
+		"workspace.write should be called 7 times");
+	t.true(workspace.write.calledWithExactly(cssResource));
+	t.true(workspace.write.calledWithExactly(jsonParametersResource));
+});
+
+test.serial("buildThemes (cssVariables = true, rtl = false)", async (t) => {
+	t.plan(8);
+
+	const lessResource = {};
+
+	const workspace = {
+		byGlob: async (globPattern) => {
+			if (globPattern === "/resources/test/library.source.less") {
+				return [lessResource];
+			} else {
+				return [];
+			}
+		},
+		write: sinon.stub()
+	};
+
+	const cssResource = {};
+	const jsonParametersResource = {};
+	const cssVariablesSourceResource = {};
+	const cssVariablesResource = {};
+	const cssSkeletonResource = {};
+
+	t.context.themeBuilderStub.returns([
+		cssResource,
+		jsonParametersResource,
+		cssVariablesSourceResource,
+		cssVariablesResource,
+		cssSkeletonResource
+	]);
+
+	await buildThemes({
+		workspace,
+		options: {
+			projectName: "sap.ui.demo.app",
+			inputPattern: "/resources/test/library.source.less",
+			cssVariables: true,
+			rtl: false
+		}
+	});
+
+	t.deepEqual(t.context.themeBuilderStub.callCount, 1,
+		"Processor should be called once");
+
+	t.deepEqual(t.context.themeBuilderStub.getCall(0).args[0], {
+		resources: [lessResource],
+		fs: {},
+		options: {
+			compress: true,
+			cssVariables: true,
+			rtl: false
+		}
+	}, "Processor should be called with expected arguments");
+
+	t.deepEqual(workspace.write.callCount, 5,
+		"workspace.write should be called 7 times");
+	t.true(workspace.write.calledWithExactly(cssResource));
+	t.true(workspace.write.calledWithExactly(jsonParametersResource));
+	t.true(workspace.write.calledWithExactly(cssVariablesSourceResource));
+	t.true(workspace.write.calledWithExactly(cssVariablesResource));
+	t.true(workspace.write.calledWithExactly(cssSkeletonResource));
 });
 
 test.serial("buildThemes (filtering libraries)", async (t) => {
@@ -279,7 +396,8 @@ test.serial("buildThemes (filtering libraries)", async (t) => {
 		fs: {},
 		options: {
 			compress: true,
-			cssVariables: false
+			cssVariables: false,
+			rtl: true
 		}
 	}, "Processor should be called with expected arguments");
 
@@ -358,7 +476,8 @@ test.serial("buildThemes (filtering themes)", async (t) => {
 		fs: {},
 		options: {
 			compress: true,
-			cssVariables: false
+			cssVariables: false,
+			rtl: true
 		}
 	}, "Processor should be called with expected arguments");
 
@@ -477,7 +596,8 @@ test.serial("buildThemes (filtering libraries + themes)", async (t) => {
 		fs: {},
 		options: {
 			compress: true,
-			cssVariables: false
+			cssVariables: false,
+			rtl: true
 		}
 	}, "Processor should be called with expected arguments");
 
