@@ -1,0 +1,129 @@
+const test = require("ava");
+
+const yazl = require("yazl");
+const sinon = require("sinon");
+const mock = require("mock-require");
+
+let manifestBundler = require("../../../../lib/processors/bundlers/manifestBundler");
+
+test.beforeEach((t) => {
+	// Spying logger of processors/bootstrapHtmlTransformer
+	const log = require("@ui5/logger");
+	const loggerInstance = log.getLogger("builder:processors:bundlers:manifestBundler");
+	mock("@ui5/logger", {
+		getLogger: () => loggerInstance
+	});
+	mock.reRequire("@ui5/logger");
+	t.context.logVerboseSpy = sinon.spy(loggerInstance, "verbose");
+
+	// Re-require tested module
+	manifestBundler = mock.reRequire("../../../../lib/processors/bundlers/manifestBundler");
+
+
+	const zip = new yazl.ZipFile();
+	t.context.addBufferSpy = sinon.spy(zip, "addBuffer");
+	t.context.endSpy = sinon.spy(zip, "end");
+	t.context.yazlZipFile = sinon.stub(yazl, "ZipFile").returns(zip);
+});
+
+test.afterEach.always((t) => {
+	mock.stop("@ui5/logger");
+	t.context.logVerboseSpy.restore();
+	t.context.yazlZipFile.restore();
+	t.context.addBufferSpy.restore();
+	t.context.endSpy.restore();
+});
+
+test.serial("manifestBundler with empty resources", async (t) => {
+	const resources = [];
+	const options = {};
+	await manifestBundler({resources, options});
+	t.deepEqual(t.context.addBufferSpy.callCount, 0, "should not be called");
+	t.deepEqual(t.context.endSpy.callCount, 1, "should not be called");
+	t.deepEqual(t.context.logVerboseSpy.callCount, 0, "should not be called");
+});
+
+test.serial("manifestBundler with manifest without i18n", async (t) => {
+	const resources = [];
+	resources.push({
+		name: "manifest.json",
+		getPath: () => "pony/manifest.json",
+		getBuffer: async () => JSON.stringify({
+			"sap.app": {}
+		})
+	});
+	const options = {
+		descriptor: "manifest.json"
+	};
+	await manifestBundler({resources, options});
+	t.deepEqual(t.context.addBufferSpy.callCount, 0, "should not be called");
+	t.deepEqual(t.context.endSpy.callCount, 1, "should not be called");
+	t.deepEqual(t.context.logVerboseSpy.callCount, 1, "should be called once");
+	t.deepEqual(t.context.logVerboseSpy.getCall(0).args, ["Not bundling resource with path pony/manifest.json since it is not based on path /resources/undefined/"], "should be called once");
+});
+
+test.serial("manifestBundler with manifest with i18n string", async (t) => {
+	const resources = [];
+	resources.push({
+		name: "manifest.json",
+		getPath: () => "pony/manifest.json",
+		getBuffer: async () => JSON.stringify({
+			"sap.app": {
+				"i18n": "i18n/i18n.properties"
+			}
+		})
+	});
+	const options = {
+		descriptor: "manifest.json"
+	};
+	await manifestBundler({resources, options});
+	t.deepEqual(t.context.addBufferSpy.callCount, 0, "should not be called");
+	t.deepEqual(t.context.endSpy.callCount, 1, "should not be called");
+	t.deepEqual(t.context.logVerboseSpy.callCount, 1, "should be called once");
+	t.deepEqual(t.context.logVerboseSpy.getCall(0).args, ["Not bundling resource with path pony/manifest.json since it is not based on path /resources/undefined/"], "should be called once");
+});
+
+test.serial("manifestBundler with manifest with i18n object", async (t) => {
+	const resources = [];
+	resources.push({
+		name: "manifest.json",
+		getPath: () => "pony/manifest.json",
+		getBuffer: async () => JSON.stringify({
+			"sap.app": {
+				"i18n": {
+					"bundleUrl": "i18n/i18n.properties",
+					"supportedLocales": ["en", "de"],
+					"fallbackLocale": "en"
+				}
+			}
+		})
+	});
+	const options = {
+		descriptor: "manifest.json"
+	};
+	await manifestBundler({resources, options});
+	t.deepEqual(t.context.addBufferSpy.callCount, 0, "should not be called");
+	t.deepEqual(t.context.endSpy.callCount, 1, "should not be called");
+	t.deepEqual(t.context.logVerboseSpy.callCount, 1, "should be called once");
+	t.deepEqual(t.context.logVerboseSpy.getCall(0).args, ["Not bundling resource with path pony/manifest.json since it is not based on path /resources/undefined/"], "should be called once");
+});
+
+test.serial("manifestBundler with manifest without i18n and valid manifest path", async (t) => {
+	const resources = [];
+	resources.push({
+		name: "manifest.json",
+		getPath: () => "/resources/pony/manifest.json",
+		getBuffer: async () => JSON.stringify({
+			"sap.app": {}
+		})
+	});
+	const options = {
+		descriptor: "manifest.json",
+		namespace: "pony"
+	};
+	await manifestBundler({resources, options});
+	t.deepEqual(t.context.addBufferSpy.callCount, 1, "should not be called");
+	t.deepEqual(t.context.endSpy.callCount, 1, "should not be called");
+	t.deepEqual(t.context.logVerboseSpy.callCount, 0, "should not be called");
+	t.deepEqual(t.context.addBufferSpy.getCall(0).args, ["{\"sap.app\":{}}", "manifest.json"], "should be called once");
+});
