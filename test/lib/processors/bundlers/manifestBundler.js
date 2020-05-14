@@ -85,27 +85,42 @@ test.serial("manifestBundler with manifest with i18n string", async (t) => {
 
 test.serial("manifestBundler with manifest with i18n object", async (t) => {
 	const resources = [];
+	const manifestString = JSON.stringify({
+		"sap.app": {
+			"i18n": {
+				"bundleUrl": "i18n/i18n.properties",
+				"supportedLocales": ["en", "de"],
+				"fallbackLocale": "en"
+			}
+		}
+	});
 	resources.push({
 		name: "manifest.json",
-		getPath: () => "pony/manifest.json",
-		getBuffer: async () => JSON.stringify({
-			"sap.app": {
-				"i18n": {
-					"bundleUrl": "i18n/i18n.properties",
-					"supportedLocales": ["en", "de"],
-					"fallbackLocale": "en"
-				}
-			}
-		})
+		getPath: () => "/resources/pony/manifest.json",
+		getBuffer: async () => manifestString
+	});
+	resources.push({
+		name: "i18n_de.properties",
+		getPath: () => "/resources/pony/i18n/i18n_de.properties",
+		getBuffer: async () => "A=B"
+	});
+	resources.push({
+		name: "i18n_en.properties",
+		getPath: () => "/resources/pony/i18n/i18n_en.properties",
+		getBuffer: async () => "A=C"
 	});
 	const options = {
-		descriptor: "manifest.json"
+		descriptor: "manifest.json",
+		namespace: "pony",
+		propertiesExtension: ".properties"
 	};
 	await manifestBundler({resources, options});
-	t.deepEqual(t.context.addBufferSpy.callCount, 0, "should not be called");
+	t.deepEqual(t.context.addBufferSpy.callCount, 3, "should not be called");
 	t.deepEqual(t.context.endSpy.callCount, 1, "should not be called");
-	t.deepEqual(t.context.logVerboseSpy.callCount, 1, "should be called once");
-	t.deepEqual(t.context.logVerboseSpy.getCall(0).args, ["Not bundling resource with path pony/manifest.json since it is not based on path /resources/undefined/"], "should be called once");
+	t.deepEqual(t.context.logVerboseSpy.callCount, 0, "should be called once");
+	t.deepEqual(t.context.addBufferSpy.getCall(0).args, [manifestString, "manifest.json"], "should be called once");
+	t.deepEqual(t.context.addBufferSpy.getCall(1).args, ["A=B", "i18n/i18n_de.properties"], "should be called once");
+	t.deepEqual(t.context.addBufferSpy.getCall(2).args, ["A=C", "i18n/i18n_en.properties"], "should be called once");
 });
 
 test.serial("manifestBundler with manifest without i18n and valid manifest path", async (t) => {
