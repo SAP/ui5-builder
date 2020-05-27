@@ -447,3 +447,32 @@ test("_analyzeViewRootNode: process node", async (t) => {
 	t.deepEqual(stubAddDependency.getCall(1).args[0], "myResourceBundleName.properties",
 		"addDependency should be called with the dependency name");
 });
+
+test("_analyzeCoreRequire: Catches error when attribute can't be parsed", async (t) => {
+	const analyzer = new XMLTemplateAnalyzer();
+	analyzer.info = {
+		addImplicitDependency: function() {},
+		addDependency: function() {}
+	};
+	const stubAddImplicitDependency = sinon.spy(analyzer.info, "addImplicitDependency");
+	const stubAddDependency = sinon.spy(analyzer.info, "addDependency");
+
+	const node = {
+		$: {
+			"core:require": {
+				name: "core:require",
+				prefix: "core",
+				local: "require",
+				uri: "sap.ui.core",
+				value: "{= '{Handler: \\'' + ${action>handlerModule} + '\\'}'}"
+			}
+		},
+		$ns: {
+			local: "Button"
+		}
+	};
+	await analyzer._analyzeCoreRequire(node);
+
+	t.is(stubAddImplicitDependency.callCount, 0, "addImplicitDependency was never called");
+	t.is(stubAddDependency.callCount, 0, "addDependency was never called");
+});
