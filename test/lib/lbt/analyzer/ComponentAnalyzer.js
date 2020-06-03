@@ -510,7 +510,7 @@ test("_analyzeManifest: Manifest with legacy routes object", async (t) => {
 	await analyzer._analyzeManifest(manifest, moduleInfo);
 
 	// Note: Dependencies to views within legacy routes are not collected
-	t.deepEqual(stubAddDependency.callCount, 1, "addDependency was called twice");
+	t.true(stubAddDependency.calledOnce, "addDependency was called once");
 	t.deepEqual(stubAddDependency.getCall(0).args[0], "sap/ui/core/routing/Router.js",
 		"addDependency should be called with the router dependency name");
 });
@@ -537,7 +537,7 @@ test("_analyzeManifest: Manifest with empty routes array", async (t) => {
 
 	await analyzer._analyzeManifest(manifest, moduleInfo);
 
-	t.deepEqual(stubAddDependency.callCount, 1, "addDependency was called once");
+	t.true(stubAddDependency.calledOnce, "addDependency was called once");
 	t.deepEqual(stubAddDependency.getCall(0).args[0], "sap/ui/core/routing/Router.js",
 		"addDependency should be called with the router dependency name");
 });
