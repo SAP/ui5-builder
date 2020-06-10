@@ -185,6 +185,23 @@ test("integration: Analysis of an xml fragment", async (t) => {
 		"Implicit dependency should be added since a fragment is analyzed");
 });
 
+test("integration: Analysis of an empty xml view", async (t) => {
+	const xml = "";
+	const mockPool = {async findResource(name) {
+		return {
+			buffer: () => name.endsWith(".xml") ? JSON.stringify(xml): "test"
+		};
+	}};
+
+	const moduleInfo = new ModuleInfo();
+
+	const analyzer = new XMLTemplateAnalyzer(mockPool);
+	await analyzer.analyzeView(xml, moduleInfo);
+	t.deepEqual(moduleInfo.dependencies, [], "No dependencies should be detected");
+	t.false(moduleInfo.isImplicitDependency("sap/ui/core/mvc/XMLView.js"),
+		"No implicit dependency should be added for an empty XMLView");
+});
+
 test("_addDependency: self reference", (t) => {
 	const moduleInfo = {
 		addDependency: function() {},
