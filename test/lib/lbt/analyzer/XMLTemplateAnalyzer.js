@@ -193,13 +193,13 @@ test("integration: Analysis of an empty xml view", async (t) => {
 		};
 	}};
 
-	const moduleInfo = new ModuleInfo();
+	const moduleInfo = new ModuleInfo("empty.xml");
 
 	const analyzer = new XMLTemplateAnalyzer(mockPool);
-	await analyzer.analyzeView(xml, moduleInfo);
-	t.deepEqual(moduleInfo.dependencies, [], "No dependencies should be detected");
-	t.false(moduleInfo.isImplicitDependency("sap/ui/core/mvc/XMLView.js"),
-		"No implicit dependency should be added for an empty XMLView");
+
+	await t.throwsAsync(analyzer.analyzeView(xml, moduleInfo), {
+		message: "Invalid empty XML document: empty.xml"
+	}, "Should throw an error for empty XML views");
 });
 
 test("_addDependency: self reference", (t) => {
