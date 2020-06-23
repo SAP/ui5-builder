@@ -4,24 +4,29 @@
 		{
 			"name": "Button.less",
 			"designtime": true,
-			"theme": "somefancytheme"
+			"theme": "somefancytheme",
+			"size": 34
 		},
 		{
 			"name": "library-RTL.css",
-			"theme": "somefancytheme"
+			"theme": "somefancytheme",
+			"size": 162
 		},
 		{
 			"name": "library-parameters.json",
-			"theme": "somefancytheme"
+			"theme": "somefancytheme",
+			"size": 20
 		},
 		{
 			"name": "library.css",
-			"theme": "somefancytheme"
+			"theme": "somefancytheme",
+			"size": 162
 		},
 		{
 			"name": "library.source.less",
 			"designtime": true,
-			"theme": "somefancytheme"
+			"theme": "somefancytheme",
+			"size": 42
 		}
 	]
 }

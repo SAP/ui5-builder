@@ -2,28 +2,34 @@
 	"_version": "1.1.0",
 	"resources": [
 		{
-			"name": ".library"
+			"name": ".library",
+			"size": 270
 		},
 		{
 			"name": "library-dbg.js",
 			"module": "library/e/library.js",
-			"isDebug": true
+			"isDebug": true,
+			"size": 51
 		},
 		{
 			"name": "library.js",
-			"module": "library/e/library.js"
+			"module": "library/e/library.js",
+			"size": 51
 		},
 		{
-			"name": "manifest.json"
+			"name": "manifest.json",
+			"size": 443
 		},
 		{
 			"name": "some-dbg.js",
 			"module": "library/e/some.js",
-			"isDebug": true
+			"isDebug": true,
+			"size": 50
 		},
 		{
 			"name": "some.js",
-			"module": "library/e/some.js"
+			"module": "library/e/some.js",
+			"size": 50
 		}
 	]
 }

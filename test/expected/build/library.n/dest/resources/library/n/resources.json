@@ -2,12 +2,14 @@
 	"_version": "1.1.0",
 	"resources": [
 		{
-			"name": ".library"
+			"name": ".library",
+			"size": 404
 		},
 		{
 			"name": "Button-dbg.js",
 			"module": "library/n/Button.js",
 			"isDebug": true,
+			"size": 1201,
 			"required": [
 				"library/n/library.js",
 				"sap/ui/core/Control.js"
@@ -20,6 +22,7 @@
 		{
 			"name": "Button.js",
 			"module": "library/n/Button.js",
+			"size": 1201,
 			"required": [
 				"library/n/library.js",
 				"sap/ui/core/Control.js"
@@ -33,6 +36,7 @@
 			"name": "changeHandler/SplitButton-dbg.js",
 			"module": "library/n/changeHandler/SplitButton.js",
 			"isDebug": true,
+			"size": 540,
 			"required": [
 				"sap/ui/core/util/reflection/JsControlTreeModifier.js"
 			]
@@ -40,6 +44,7 @@
 		{
 			"name": "changeHandler/SplitButton.js",
 			"module": "library/n/changeHandler/SplitButton.js",
+			"size": 540,
 			"required": [
 				"sap/ui/core/util/reflection/JsControlTreeModifier.js"
 			]
@@ -48,12 +53,14 @@
 			"name": "designtime/Button-dbg.designtime.js",
 			"module": "library/n/designtime/Button.designtime.js",
 			"isDebug": true,
-			"designtime": true
+			"designtime": true,
+			"size": 789
 		},
 		{
 			"name": "designtime/Button.create.fragment.xml",
 			"module": "library/n/designtime/Button.create.fragment.xml",
 			"designtime": true,
+			"size": 172,
 			"required": [
 				"library/n/Button.js"
 			]
@@ -61,27 +68,32 @@
 		{
 			"name": "designtime/Button.designtime.js",
 			"module": "library/n/designtime/Button.designtime.js",
-			"designtime": true
+			"designtime": true,
+			"size": 789
 		},
 		{
 			"name": "designtime/Button.icon.svg",
-			"designtime": true
+			"designtime": true,
+			"size": 1386
 		},
 		{
 			"name": "designtime/library-dbg.designtime.js",
 			"module": "library/n/designtime/library.designtime.js",
 			"isDebug": true,
-			"designtime": true
+			"designtime": true,
+			"size": 86
 		},
 		{
 			"name": "designtime/library.designtime.js",
 			"module": "library/n/designtime/library.designtime.js",
-			"designtime": true
+			"designtime": true,
+			"size": 86
 		},
 		{
 			"name": "flexibility/Button.flexibility-dbg.js",
 			"module": "library/n/flexibility/Button.flexibility.js",
 			"isDebug": true,
+			"size": 379,
 			"required": [
 				"library/n/changeHandler/SplitButton.js",
 				"sap/ui/fl/changeHandler/BaseRename.js"
@@ -90,6 +102,7 @@
 		{
 			"name": "flexibility/Button.flexibility.js",
 			"module": "library/n/flexibility/Button.flexibility.js",
+			"size": 379,
 			"required": [
 				"library/n/changeHandler/SplitButton.js",
 				"sap/ui/fl/changeHandler/BaseRename.js"
@@ -99,6 +112,7 @@
 			"name": "library-dbg.js",
 			"module": "library/n/library.js",
 			"isDebug": true,
+			"size": 681,
 			"required": [
 				"sap/m/library.js",
 				"sap/ui/core/Core.js",
@@ -110,6 +124,7 @@
 			"module": "library/n/library.support.js",
 			"isDebug": true,
 			"support": true,
+			"size": 256,
 			"required": [
 				"library/n/rules/Button.support.js",
 				"sap/ui/support/library.js"
@@ -118,6 +133,7 @@
 		{
 			"name": "library.js",
 			"module": "library/n/library.js",
+			"size": 681,
 			"required": [
 				"sap/m/library.js",
 				"sap/ui/core/Core.js",
@@ -128,34 +144,40 @@
 			"name": "library.support.js",
 			"module": "library/n/library.support.js",
 			"support": true,
+			"size": 256,
 			"required": [
 				"library/n/rules/Button.support.js",
 				"sap/ui/support/library.js"
 			]
 		},
 		{
-			"name": "manifest.json"
+			"name": "manifest.json",
+			"size": 708
 		},
 		{
 			"name": "messagebundle.properties",
 			"locale": "",
-			"raw": "messagebundle.properties"
+			"raw": "messagebundle.properties",
+			"size": 13
 		},
 		{
 			"name": "messagebundle_de.properties",
 			"locale": "de",
-			"raw": "messagebundle.properties"
+			"raw": "messagebundle.properties",
+			"size": 20
 		},
 		{
 			"name": "rules/Button-dbg.support.js",
 			"module": "library/n/rules/Button.support.js",
 			"isDebug": true,
-			"support": true
+			"support": true,
+			"size": 50
 		},
 		{
 			"name": "rules/Button.support.js",
 			"module": "library/n/rules/Button.support.js",
-			"support": true
+			"support": true,
+			"size": 50
 		}
 	]
 }
