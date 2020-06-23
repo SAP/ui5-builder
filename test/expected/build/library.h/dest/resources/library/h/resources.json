@@ -26,7 +26,8 @@
 		{
 			"name": "components/TodoComponent.js",
 			"module": "library/h/components/TodoComponent.js",
-			"size": 47
+			"size": 47,
+			"format": "raw"
 		},
 		{
 			"name": "components/subcomponent1/Component-preload.js",
@@ -83,7 +84,7 @@
 			"name": "customBundle.js",
 			"module": "library/h/customBundle.js",
 			"merged": true,
-			"size": 344,
+			"size": 368,
 			"included": [
 				"library/h/file.js",
 				"library/h/library.js",
@@ -93,12 +94,14 @@
 		{
 			"name": "file.js",
 			"module": "library/h/file.js",
-			"size": 47
+			"size": 47,
+			"format": "raw"
 		},
 		{
 			"name": "library.js",
 			"module": "library/h/library.js",
-			"size": 50
+			"size": 50,
+			"format": "raw"
 		},
 		{
 			"name": "manifest.json",
@@ -107,12 +110,18 @@
 		{
 			"name": "not.js",
 			"module": "library/h/not.js",
-			"size": 56
+			"size": 56,
+			"format": "raw"
 		},
 		{
 			"name": "some.js",
 			"module": "library/h/some.js",
-			"size": 47
+			"size": 101,
+			"requiresTopLevelScope": true,
+			"exposedGlobals": [
+				"myexport"
+			],
+			"format": "raw"
 		}
 	]
 }

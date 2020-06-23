@@ -10,9 +10,5 @@ console.log(" File ");
  */
 console.log(" Library ");
 },
-	"library/h/some.js":function(){/*!
- * Some fancy copyright
- */
-console.log(" Some ");
-}
+	"library/h/some.js":'/*!\n * Some fancy copyright\n */\nvar myexport=function(){"use strict";String("asd")}();'
 });

@@ -1,4 +1,4 @@
 /*!
  * Some fancy copyright
  */
-console.log(" Some ");
+var myexport=function(){"use strict";String("asd")}();

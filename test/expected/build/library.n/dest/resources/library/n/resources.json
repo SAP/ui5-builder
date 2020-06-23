@@ -171,13 +171,15 @@
 			"module": "library/n/rules/Button.support.js",
 			"isDebug": true,
 			"support": true,
-			"size": 50
+			"size": 50,
+			"format": "raw"
 		},
 		{
 			"name": "rules/Button.support.js",
 			"module": "library/n/rules/Button.support.js",
 			"support": true,
-			"size": 50
+			"size": 50,
+			"format": "raw"
 		}
 	]
 }

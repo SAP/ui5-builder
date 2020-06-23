@@ -22,7 +22,8 @@
 		{
 			"name": "TodoComponent.js",
 			"module": "library/h/components/TodoComponent.js",
-			"size": 47
+			"size": 47,
+			"format": "raw"
 		},
 		{
 			"name": "subcomponent1/Component-preload.js",

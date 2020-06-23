@@ -13,12 +13,14 @@
 			"name": "some-dbg.js",
 			"module": "library/d/some.js",
 			"isDebug": true,
-			"size": 134
+			"size": 134,
+			"format": "raw"
 		},
 		{
 			"name": "some.js",
 			"module": "library/d/some.js",
-			"size": 134
+			"size": 134,
+			"format": "raw"
 		}
 	]
 }
