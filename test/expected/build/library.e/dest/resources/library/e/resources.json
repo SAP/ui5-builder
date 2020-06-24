@@ -3,19 +3,19 @@
 	"resources": [
 		{
 			"name": ".library",
-			"size": 270
+			"size": 426
 		},
 		{
 			"name": "library-dbg.js",
 			"module": "library/e/library.js",
 			"isDebug": true,
-			"size": 51,
+			"size": 212,
 			"format": "raw"
 		},
 		{
 			"name": "library.js",
 			"module": "library/e/library.js",
-			"size": 51,
+			"size": 211,
 			"format": "raw"
 		},
 		{
@@ -26,13 +26,13 @@
 			"name": "some-dbg.js",
 			"module": "library/e/some.js",
 			"isDebug": true,
-			"size": 50,
+			"size": 211,
 			"format": "raw"
 		},
 		{
 			"name": "some.js",
 			"module": "library/e/some.js",
-			"size": 50,
+			"size": 211,
 			"format": "raw"
 		}
 	]

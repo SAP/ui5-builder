@@ -3,7 +3,7 @@
 	"resources": [
 		{
 			"name": ".library",
-			"size": 278
+			"size": 273
 		},
 		{
 			"name": "manifest.json",
@@ -13,13 +13,13 @@
 			"name": "some-dbg.js",
 			"module": "library/d/some.js",
 			"isDebug": true,
-			"size": 134,
+			"size": 142,
 			"format": "raw"
 		},
 		{
 			"name": "some.js",
 			"module": "library/d/some.js",
-			"size": 134,
+			"size": 86,
 			"format": "raw"
 		}
 	]

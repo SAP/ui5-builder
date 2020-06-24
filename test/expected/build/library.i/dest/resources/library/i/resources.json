@@ -3,12 +3,12 @@
 	"resources": [
 		{
 			"name": ".library",
-			"size": 1371
+			"size": 1374
 		},
 		{
 			"name": "library.js",
 			"module": "library/i/library.js",
-			"size": 594,
+			"size": 597,
 			"required": [
 				"sap/ui/core/Core.js"
 			]

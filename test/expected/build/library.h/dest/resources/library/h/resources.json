@@ -3,7 +3,7 @@
 	"resources": [
 		{
 			"name": ".library",
-			"size": 278
+			"size": 273
 		},
 		{
 			"name": "components/Component-preload.js",
@@ -18,7 +18,7 @@
 		{
 			"name": "components/Component.js",
 			"module": "library/h/components/Component.js",
-			"size": 146,
+			"size": 115,
 			"required": [
 				"sap/ui/core/UIComponent.js"
 			]
@@ -26,7 +26,7 @@
 		{
 			"name": "components/TodoComponent.js",
 			"module": "library/h/components/TodoComponent.js",
-			"size": 47,
+			"size": 54,
 			"format": "raw"
 		},
 		{
@@ -41,7 +41,7 @@
 		{
 			"name": "components/subcomponent1/Component.js",
 			"module": "library/h/components/subcomponent1/Component.js",
-			"size": 146,
+			"size": 115,
 			"required": [
 				"sap/ui/core/UIComponent.js"
 			]
@@ -58,7 +58,7 @@
 		{
 			"name": "components/subcomponent2/Component.js",
 			"module": "library/h/components/subcomponent2/Component.js",
-			"size": 146,
+			"size": 115,
 			"required": [
 				"sap/ui/core/UIComponent.js"
 			]
@@ -75,7 +75,7 @@
 		{
 			"name": "components/subcomponent3/Component.js",
 			"module": "library/h/components/subcomponent3/Component.js",
-			"size": 146,
+			"size": 115,
 			"required": [
 				"sap/ui/core/UIComponent.js"
 			]
@@ -94,13 +94,13 @@
 		{
 			"name": "file.js",
 			"module": "library/h/file.js",
-			"size": 47,
+			"size": 54,
 			"format": "raw"
 		},
 		{
 			"name": "library.js",
 			"module": "library/h/library.js",
-			"size": 50,
+			"size": 57,
 			"format": "raw"
 		},
 		{
@@ -110,13 +110,13 @@
 		{
 			"name": "not.js",
 			"module": "library/h/not.js",
-			"size": 56,
+			"size": 63,
 			"format": "raw"
 		},
 		{
 			"name": "some.js",
 			"module": "library/h/some.js",
-			"size": 101,
+			"size": 86,
 			"requiresTopLevelScope": true,
 			"exposedGlobals": [
 				"myexport"
