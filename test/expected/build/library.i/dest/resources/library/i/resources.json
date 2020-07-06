@@ -16,6 +16,10 @@
 		{
 			"name": "manifest.json",
 			"size": 1740
+		},
+		{
+			"name": "resources.json",
+			"size": 332
 		}
 	]
 }

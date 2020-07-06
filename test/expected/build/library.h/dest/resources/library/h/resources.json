@@ -136,6 +136,10 @@
 			"format": "raw"
 		},
 		{
+			"name": "resources.json",
+			"size": 3403
+		},
+		{
 			"name": "some.js",
 			"module": "library/h/some.js",
 			"size": 86,

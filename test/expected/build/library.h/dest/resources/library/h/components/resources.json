@@ -26,6 +26,10 @@
 			"format": "raw"
 		},
 		{
+			"name": "resources.json",
+			"size": 1915
+		},
+		{
 			"name": "subcomponent1/Component-preload.js",
 			"module": "library/h/components/subcomponent1/Component-preload.js",
 			"size": 279,

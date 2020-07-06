@@ -169,6 +169,10 @@
 			"raw": "messagebundle.properties"
 		},
 		{
+			"name": "resources.json",
+			"size": 4166
+		},
+		{
 			"name": "rules/Button-dbg.support.js",
 			"module": "library/n/rules/Button.support.js",
 			"size": 211,

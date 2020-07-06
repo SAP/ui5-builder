@@ -10,6 +10,10 @@
 			"size": 491
 		},
 		{
+			"name": "resources.json",
+			"size": 418
+		},
+		{
 			"name": "some-dbg.js",
 			"module": "library/d/some.js",
 			"size": 142,

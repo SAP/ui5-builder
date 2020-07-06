@@ -17,6 +17,10 @@
 			"required": [
 				"sap/ui/core/UIComponent.js"
 			]
+		},
+		{
+			"name": "resources.json",
+			"size": 519
 		}
 	]
 }
