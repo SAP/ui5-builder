@@ -3,30 +3,30 @@
 	"resources": [
 		{
 			"name": "Button.less",
+			"size": 34,
 			"designtime": true,
-			"theme": "somefancytheme",
-			"size": 34
+			"theme": "somefancytheme"
 		},
 		{
 			"name": "library-RTL.css",
-			"theme": "somefancytheme",
-			"size": 162
+			"size": 162,
+			"theme": "somefancytheme"
 		},
 		{
 			"name": "library-parameters.json",
-			"theme": "somefancytheme",
-			"size": 20
+			"size": 20,
+			"theme": "somefancytheme"
 		},
 		{
 			"name": "library.css",
-			"theme": "somefancytheme",
-			"size": 162
+			"size": 162,
+			"theme": "somefancytheme"
 		},
 		{
 			"name": "library.source.less",
+			"size": 42,
 			"designtime": true,
-			"theme": "somefancytheme",
-			"size": 42
+			"theme": "somefancytheme"
 		}
 	]
 }

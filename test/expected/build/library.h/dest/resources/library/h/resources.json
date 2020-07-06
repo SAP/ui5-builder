@@ -3,13 +3,13 @@
 	"resources": [
 		{
 			"name": ".library",
-			"size": 273
+			"size": 473
 		},
 		{
 			"name": "components/Component-preload.js",
 			"module": "library/h/components/Component-preload.js",
-			"merged": true,
 			"size": 361,
+			"merged": true,
 			"included": [
 				"library/h/components/Component.js",
 				"library/h/components/TodoComponent.js"
@@ -32,8 +32,8 @@
 		{
 			"name": "components/subcomponent1/Component-preload.js",
 			"module": "library/h/components/subcomponent1/Component-preload.js",
-			"merged": true,
 			"size": 279,
+			"merged": true,
 			"included": [
 				"library/h/components/subcomponent1/Component.js"
 			]
@@ -49,8 +49,8 @@
 		{
 			"name": "components/subcomponent2/Component-preload.js",
 			"module": "library/h/components/subcomponent2/Component-preload.js",
-			"merged": true,
 			"size": 279,
+			"merged": true,
 			"included": [
 				"library/h/components/subcomponent2/Component.js"
 			]
@@ -66,8 +66,8 @@
 		{
 			"name": "components/subcomponent3/Component-preload.js",
 			"module": "library/h/components/subcomponent3/Component-preload.js",
-			"merged": true,
 			"size": 279,
+			"merged": true,
 			"included": [
 				"library/h/components/subcomponent3/Component.js"
 			]
@@ -83,13 +83,35 @@
 		{
 			"name": "customBundle.js",
 			"module": "library/h/customBundle.js",
-			"merged": true,
 			"size": 368,
+			"merged": true,
 			"included": [
 				"library/h/file.js",
 				"library/h/library.js",
 				"library/h/some.js"
 			]
+		},
+		{
+			"name": "designtime/library.designtime.js",
+			"module": "library/h/designtime/library.designtime.js",
+			"size": 84,
+			"designtime": true
+		},
+		{
+			"name": "designtime/messagebundle.properties",
+			"module": "library/h/designtime/messagebundle.properties",
+			"size": 3,
+			"designtime": true,
+			"locale": "",
+			"raw": "designtime/messagebundle.properties"
+		},
+		{
+			"name": "designtime/messagebundle_en.properties",
+			"module": "library/h/designtime/messagebundle_en.properties",
+			"size": 3,
+			"designtime": true,
+			"locale": "en",
+			"raw": "designtime/messagebundle.properties"
 		},
 		{
 			"name": "file.js",
@@ -110,7 +132,7 @@
 		{
 			"name": "not.js",
 			"module": "library/h/not.js",
-			"size": 63,
+			"size": 4151,
 			"format": "raw"
 		},
 		{

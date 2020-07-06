@@ -12,9 +12,9 @@
 		{
 			"name": "some-dbg.js",
 			"module": "library/d/some.js",
-			"isDebug": true,
 			"size": 142,
-			"format": "raw"
+			"format": "raw",
+			"isDebug": true
 		},
 		{
 			"name": "some.js",

@@ -8,8 +8,8 @@
 		{
 			"name": "Button-dbg.js",
 			"module": "library/n/Button.js",
-			"isDebug": true,
 			"size": 1362,
+			"isDebug": true,
 			"required": [
 				"library/n/library.js",
 				"sap/ui/core/Control.js"
@@ -35,8 +35,8 @@
 		{
 			"name": "changeHandler/SplitButton-dbg.js",
 			"module": "library/n/changeHandler/SplitButton.js",
-			"isDebug": true,
 			"size": 701,
+			"isDebug": true,
 			"required": [
 				"sap/ui/core/util/reflection/JsControlTreeModifier.js"
 			]
@@ -52,15 +52,15 @@
 		{
 			"name": "designtime/Button-dbg.designtime.js",
 			"module": "library/n/designtime/Button.designtime.js",
+			"size": 950,
 			"isDebug": true,
-			"designtime": true,
-			"size": 950
+			"designtime": true
 		},
 		{
 			"name": "designtime/Button.create.fragment.xml",
 			"module": "library/n/designtime/Button.create.fragment.xml",
-			"designtime": true,
 			"size": 172,
+			"designtime": true,
 			"required": [
 				"library/n/Button.js"
 			]
@@ -68,32 +68,32 @@
 		{
 			"name": "designtime/Button.designtime.js",
 			"module": "library/n/designtime/Button.designtime.js",
-			"designtime": true,
-			"size": 661
+			"size": 661,
+			"designtime": true
 		},
 		{
 			"name": "designtime/Button.icon.svg",
-			"designtime": true,
-			"size": 1386
+			"size": 1386,
+			"designtime": true
 		},
 		{
 			"name": "designtime/library-dbg.designtime.js",
 			"module": "library/n/designtime/library.designtime.js",
+			"size": 247,
 			"isDebug": true,
-			"designtime": true,
-			"size": 247
+			"designtime": true
 		},
 		{
 			"name": "designtime/library.designtime.js",
 			"module": "library/n/designtime/library.designtime.js",
-			"designtime": true,
-			"size": 237
+			"size": 237,
+			"designtime": true
 		},
 		{
 			"name": "flexibility/Button.flexibility-dbg.js",
 			"module": "library/n/flexibility/Button.flexibility.js",
-			"isDebug": true,
 			"size": 540,
+			"isDebug": true,
 			"required": [
 				"library/n/changeHandler/SplitButton.js",
 				"sap/ui/fl/changeHandler/BaseRename.js"
@@ -111,8 +111,8 @@
 		{
 			"name": "library-dbg.js",
 			"module": "library/n/library.js",
-			"isDebug": true,
 			"size": 837,
+			"isDebug": true,
 			"required": [
 				"sap/m/library.js",
 				"sap/ui/core/Core.js",
@@ -122,9 +122,9 @@
 		{
 			"name": "library-dbg.support.js",
 			"module": "library/n/library.support.js",
+			"size": 417,
 			"isDebug": true,
 			"support": true,
-			"size": 417,
 			"required": [
 				"library/n/rules/Button.support.js",
 				"sap/ui/support/library.js"
@@ -143,8 +143,8 @@
 		{
 			"name": "library.support.js",
 			"module": "library/n/library.support.js",
-			"support": true,
 			"size": 338,
+			"support": true,
 			"required": [
 				"library/n/rules/Button.support.js",
 				"sap/ui/support/library.js"
@@ -156,30 +156,32 @@
 		},
 		{
 			"name": "messagebundle.properties",
+			"module": "library/n/messagebundle.properties",
+			"size": 13,
 			"locale": "",
-			"raw": "messagebundle.properties",
-			"size": 13
+			"raw": "messagebundle.properties"
 		},
 		{
 			"name": "messagebundle_de.properties",
+			"module": "library/n/messagebundle_de.properties",
+			"size": 20,
 			"locale": "de",
-			"raw": "messagebundle.properties",
-			"size": 20
+			"raw": "messagebundle.properties"
 		},
 		{
 			"name": "rules/Button-dbg.support.js",
 			"module": "library/n/rules/Button.support.js",
-			"isDebug": true,
-			"support": true,
 			"size": 211,
-			"format": "raw"
+			"format": "raw",
+			"isDebug": true,
+			"support": true
 		},
 		{
 			"name": "rules/Button.support.js",
 			"module": "library/n/rules/Button.support.js",
-			"support": true,
 			"size": 211,
-			"format": "raw"
+			"format": "raw",
+			"support": true
 		}
 	]
 }

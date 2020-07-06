@@ -8,9 +8,9 @@
 		{
 			"name": "library-dbg.js",
 			"module": "library/e/library.js",
-			"isDebug": true,
 			"size": 212,
-			"format": "raw"
+			"format": "raw",
+			"isDebug": true
 		},
 		{
 			"name": "library.js",
@@ -25,9 +25,9 @@
 		{
 			"name": "some-dbg.js",
 			"module": "library/e/some.js",
-			"isDebug": true,
 			"size": 211,
-			"format": "raw"
+			"format": "raw",
+			"isDebug": true
 		},
 		{
 			"name": "some.js",
