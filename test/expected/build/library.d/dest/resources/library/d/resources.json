@@ -7,11 +7,12 @@
 		},
 		{
 			"name": "manifest.json",
+			"module": "library/d/manifest.json",
 			"size": 491
 		},
 		{
 			"name": "resources.json",
-			"size": 418
+			"size": 458
 		},
 		{
 			"name": "some-dbg.js",

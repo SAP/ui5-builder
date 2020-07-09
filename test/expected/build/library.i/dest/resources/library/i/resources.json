@@ -15,11 +15,12 @@
 		},
 		{
 			"name": "manifest.json",
+			"module": "library/i/manifest.json",
 			"size": 1740
 		},
 		{
 			"name": "resources.json",
-			"size": 332
+			"size": 372
 		}
 	]
 }

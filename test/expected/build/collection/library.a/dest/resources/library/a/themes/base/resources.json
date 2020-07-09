@@ -1,0 +1,27 @@
+{
+	"_version": "1.1.0",
+	"resources": [
+		{
+			"name": "library-RTL.css",
+			"size": 203,
+			"theme": "base"
+		},
+		{
+			"name": "library-parameters.json",
+			"module": "library/a/themes/base/library-parameters.json",
+			"size": 28,
+			"theme": "base"
+		},
+		{
+			"name": "library.css",
+			"size": 203,
+			"theme": "base"
+		},
+		{
+			"name": "library.source.less",
+			"size": 111,
+			"designtime": true,
+			"theme": "base"
+		}
+	]
+}

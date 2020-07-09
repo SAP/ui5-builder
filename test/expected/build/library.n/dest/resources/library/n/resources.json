@@ -152,6 +152,7 @@
 		},
 		{
 			"name": "manifest.json",
+			"module": "library/n/manifest.json",
 			"size": 708
 		},
 		{
@@ -170,7 +171,7 @@
 		},
 		{
 			"name": "resources.json",
-			"size": 4166
+			"size": 4206
 		},
 		{
 			"name": "rules/Button-dbg.support.js",
