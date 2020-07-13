@@ -67,14 +67,14 @@
 			"size": 2012,
 			"merged": true,
 			"required": [
-				"../changeHandler/SplitButton",
-				"./library",
-				"sap/m/library",
-				"sap/ui/core/Control",
-				"sap/ui/core/Core",
-				"sap/ui/core/library",
-				"sap/ui/core/util/reflection/JsControlTreeModifier",
-				"sap/ui/fl/changeHandler/BaseRename"
+				"../changeHandler/SplitButton.js",
+				"./library.js",
+				"sap/m/library.js",
+				"sap/ui/core/Control.js",
+				"sap/ui/core/Core.js",
+				"sap/ui/core/library.js",
+				"sap/ui/core/util/reflection/JsControlTreeModifier.js",
+				"sap/ui/fl/changeHandler/BaseRename.js"
 			],
 			"condRequired": [
 				"sap/ui/core/format/DateFormat.js"
@@ -123,7 +123,7 @@
 		},
 		{
 			"name": "resources.json",
-			"size": 3013
+			"size": 3037
 		},
 		{
 			"name": "rules/Button.support.js",
