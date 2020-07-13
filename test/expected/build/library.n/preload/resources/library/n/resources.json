@@ -76,6 +76,10 @@
 				"sap/ui/core/util/reflection/JsControlTreeModifier",
 				"sap/ui/fl/changeHandler/BaseRename"
 			],
+			"condRequired": [
+				"sap/ui/core/format/DateFormat.js"
+			],
+			"dynRequired": true,
 			"included": [
 				"library/n/Button.js",
 				"library/n/changeHandler/SplitButton.js",
@@ -119,7 +123,7 @@
 		},
 		{
 			"name": "resources.json",
-			"size": 2923
+			"size": 3013
 		},
 		{
 			"name": "rules/Button.support.js",
