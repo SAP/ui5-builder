@@ -138,14 +138,14 @@
 		},
 		{
 			"name": "resources.json",
-			"size": 3443
+			"size": 3447
 		},
 		{
 			"name": "some.js",
 			"module": "library/h/some.js",
 			"size": 86,
 			"requiresTopLevelScope": true,
-			"exposedGlobals": [
+			"exposedGlobalNames": [
 				"myexport"
 			],
 			"format": "raw"
