@@ -178,7 +178,7 @@ test("Build application.a", (t) => {
 	return builder.build({
 		tree: applicationATree,
 		destPath,
-		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo"]
+		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo", "generateResourcesJson"]
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
@@ -271,7 +271,7 @@ test("Build application.a self-contained", (t) => {
 	return builder.build({
 		tree: applicationATree,
 		destPath,
-		excludedTasks: ["generateComponentPreload", "generateVersionInfo"],
+		excludedTasks: ["generateComponentPreload", "generateVersionInfo", "generateResourcesJson"],
 		selfContained: true
 	}).then(() => {
 		return findFiles(expectedPath);

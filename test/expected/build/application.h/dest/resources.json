@@ -1,0 +1,91 @@
+{
+	"_version": "1.1.0",
+	"resources": [
+		{
+			"name": "Component.js",
+			"module": "application/h/Component.js",
+			"size": 141,
+			"required": [
+				"sap/ui/core/UIComponent.js"
+			]
+		},
+		{
+			"name": "manifest.json",
+			"module": "application/h/manifest.json",
+			"size": 278
+		},
+		{
+			"name": "resources.json",
+			"size": 1816
+		},
+		{
+			"name": "sectionsA/customBundle.js",
+			"module": "application/h/sectionsA/customBundle.js",
+			"size": 391,
+			"merged": true,
+			"included": [
+				"application/h/sectionsA/section1.js",
+				"application/h/sectionsA/section3.js"
+			]
+		},
+		{
+			"name": "sectionsA/section1.js",
+			"module": "application/h/sectionsA/section1.js",
+			"size": 79,
+			"required": [
+				"sap/m/Button.js"
+			]
+		},
+		{
+			"name": "sectionsA/section2.js",
+			"module": "application/h/sectionsA/section2.js",
+			"size": 79,
+			"required": [
+				"sap/m/Button.js"
+			]
+		},
+		{
+			"name": "sectionsA/section3.js",
+			"module": "application/h/sectionsA/section3.js",
+			"size": 79,
+			"required": [
+				"sap/m/Button.js"
+			]
+		},
+		{
+			"name": "sectionsB/customBundle.js",
+			"module": "application/h/sectionsB/customBundle.js",
+			"size": 524,
+			"merged": true,
+			"included": [
+				"application/h/sectionsB/section1.js",
+				"application/h/sectionsB/section2.js",
+				"application/h/sectionsB/section3.js"
+			]
+		},
+		{
+			"name": "sectionsB/section1.js",
+			"module": "application/h/sectionsB/section1.js",
+			"size": 79,
+			"required": [
+				"sap/m/Button.js"
+			]
+		},
+		{
+			"name": "sectionsB/section2.js",
+			"module": "application/h/sectionsB/section2.js",
+			"size": 79,
+			"required": [
+				"sap/m/Button.js"
+			]
+		},
+		{
+			"name": "sectionsB/section3.js",
+			"module": "application/h/sectionsB/section3.js",
+			"size": 79,
+			"required": [
+				"sap/m/Button.js"
+			]
+		}
+	]
+}
