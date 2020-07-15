@@ -213,6 +213,6 @@ test.serial("jsdocGenerator", async (t) => {
 
 test("jsdocGenerator missing parameters", async (t) => {
 	const error = await t.throwsAsync(jsdocGenerator());
-	t.deepEqual(error.message, "[jsdocGenerator]: One or more mandatory parameters not provided",
+	t.deepEqual(error.message, "Cannot destructure property 'sourcePath' of 'undefined' as it is undefined.",
 		"Correct error message thrown");
 });

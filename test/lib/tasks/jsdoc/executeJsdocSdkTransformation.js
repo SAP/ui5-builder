@@ -94,7 +94,7 @@ test.serial("executeJsdocSdkTransformation", async (t) => {
 
 test("executeJsdocSdkTransformation with missing parameters", async (t) => {
 	const error = await t.throwsAsync(executeJsdocSdkTransformation());
-	t.deepEqual(error.message, "[executeJsdocSdkTransformation]: One or more mandatory options not provided",
+	t.deepEqual(error.message, "Cannot read property 'projectName' of undefined",
 		"Correct error message thrown");
 });
 
