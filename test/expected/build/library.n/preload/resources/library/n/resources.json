@@ -8,12 +8,13 @@
 		{
 			"name": "Button.js",
 			"module": "library/n/Button.js",
-			"size": 1201,
+			"size": 1256,
 			"required": [
 				"library/n/library.js",
 				"sap/ui/core/Control.js"
 			],
 			"condRequired": [
+				"library/n/changeHandler/SplitButton.js",
 				"sap/ui/core/format/DateFormat.js"
 			],
 			"dynRequired": true
@@ -64,11 +65,9 @@
 		{
 			"name": "library-preload.js",
 			"module": "library/n/library-preload.js",
-			"size": 2012,
+			"size": 2062,
 			"merged": true,
 			"required": [
-				"../changeHandler/SplitButton.js",
-				"./library.js",
 				"sap/m/library.js",
 				"sap/ui/core/Control.js",
 				"sap/ui/core/Core.js",
@@ -123,7 +122,7 @@
 		},
 		{
 			"name": "resources.json",
-			"size": 3037
+			"size": 3024
 		},
 		{
 			"name": "rules/Button.support.js",

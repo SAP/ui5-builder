@@ -31,6 +31,7 @@ sap.ui.define([
 		renderer: {
 			apiVersion: 2,
 			render: function(oRm, oButton) {
+				sap.ui.requireSync("./changeHandler/SplitButton");
 				oRm.openStart("button", oButton);
 				oRm.class("libNBtnBase");
 				oRm.openEnd();

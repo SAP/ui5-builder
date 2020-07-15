@@ -8,13 +8,14 @@
 		{
 			"name": "Button-dbg.js",
 			"module": "library/n/Button.js",
-			"size": 1362,
+			"size": 1417,
 			"isDebug": true,
 			"required": [
 				"library/n/library.js",
 				"sap/ui/core/Control.js"
 			],
 			"condRequired": [
+				"library/n/changeHandler/SplitButton.js",
 				"sap/ui/core/format/DateFormat.js"
 			],
 			"dynRequired": true
@@ -22,12 +23,13 @@
 		{
 			"name": "Button.js",
 			"module": "library/n/Button.js",
-			"size": 948,
+			"size": 998,
 			"required": [
 				"library/n/library.js",
 				"sap/ui/core/Control.js"
 			],
 			"condRequired": [
+				"library/n/changeHandler/SplitButton.js",
 				"sap/ui/core/format/DateFormat.js"
 			],
 			"dynRequired": true
@@ -171,7 +173,7 @@
 		},
 		{
 			"name": "resources.json",
-			"size": 4206
+			"size": 4298
 		},
 		{
 			"name": "rules/Button-dbg.support.js",
