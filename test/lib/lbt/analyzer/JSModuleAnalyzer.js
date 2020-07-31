@@ -67,7 +67,8 @@ function analyzeModule(
 	expectedDependencies,
 	expectedConditionalDependencies,
 	expectedSubmodules,
-	ignoreImplicitDependencies
+	ignoreImplicitDependencies,
+	rawModule
 ) {
 	//
 	analyze(file, name).then( (info) => {
@@ -96,6 +97,13 @@ function analyzeModule(
 		}
 		t.false(info.dynamicDependencies,
 			"no use of dynamic dependencies should have been detected");
+		if (rawModule) {
+			t.true(info.rawModule,
+				"raw module");
+		} else {
+			t.false(info.rawModule,
+				"ui5 module");
+		}
 	}).then(() => t.end(), (e) => t.fail(`failed to analyze module with error: ${e.message}`));
 }
 
@@ -114,6 +122,7 @@ test.cb("DefineWithLegacyCalls", analyzeModule, "modules/define_with_legacy_call
 test.cb("OldStyleModuleWithoutDeclare", function(t) {
 	analyze("modules/no_declare_but_requires.js", null).then((info) => {
 		t.is(info.name, null, "module name should be null");
+		t.false(info.rawModule, "ui5 module");
 		assertModuleNamesEqual(t,
 			info.dependencies,
 			["dependency1.js", "dependency2.js", "jquery.sap.global.js"],
@@ -122,7 +131,7 @@ test.cb("OldStyleModuleWithoutDeclare", function(t) {
 	});
 });
 
-test.cb("NotAnUI5Module", analyzeModule, "modules/not_a_module.js", "modules/not_a_module.js", NO_DEPENDENCIES);
+test.cb("NotAnUI5Module", analyzeModule, "modules/not_a_module.js", "modules/not_a_module.js", NO_DEPENDENCIES, NO_DEPENDENCIES, NO_DEPENDENCIES, NO_DEPENDENCIES, true);
 
 test.cb("AMDSpecialDependenciesShouldBeIgnored", (t) => {
 	analyzeModule(t,
@@ -456,6 +465,8 @@ test("Bundle", (t) => {
 		];
 		t.deepEqual(info.subModules, expected, "module dependencies should match");
 		t.truthy(info.dependencies.every((dep) => !info.isConditionalDependency(dep)), "none of the dependencies must be 'conditional'");
+		t.false(info.rawModule,
+			"ui5 module");
 	});
 });
 
@@ -483,6 +494,8 @@ test("ES6 Syntax", (t) => {
 				"all dependencies other than 'conditional/*' and 'static/*' should be implicit");
 			t.false(info.dynamicDependencies,
 				"no use of dynamic dependencies should have been detected");
+			t.false(info.rawModule,
+				"ui5 module");
 		});
 	});
 });
@@ -491,6 +504,8 @@ test("Dynamic import (declare/require)", (t) => {
 	return analyze("modules/declare_dynamic_require.js").then((info) => {
 		t.true(info.dynamicDependencies,
 			"the use of dynamic dependencies should have been detected");
+		t.false(info.rawModule,
+			"ui5 module");
 	});
 });
 
@@ -498,6 +513,8 @@ test("Dynamic import (define/require)", (t) => {
 	return analyze("modules/amd_dynamic_require.js").then((info) => {
 		t.true(info.dynamicDependencies,
 			"the use of dynamic dependencies should have been detected");
+		t.false(info.rawModule,
+			"ui5 module");
 	});
 });
 
@@ -505,7 +522,22 @@ test("Dynamic import (define/requireSync)", (t) => {
 	return analyze("modules/amd_dynamic_require_sync.js").then((info) => {
 		t.true(info.dynamicDependencies,
 			"the use of dynamic dependencies should have been detected");
+		t.false(info.rawModule,
+			"ui5 module");
 	});
 });
 
+test("Nested require", (t) => {
+	return analyze("modules/nestedRequire.js").then((info) => {
+		t.true(info.rawModule,
+			"raw module");
+	});
+});
+
+test("Toplevel define", (t) => {
+	return analyze("modules/functionDefine.js").then((info) => {
+		t.true(info.rawModule,
+			"raw module");
+	});
+});
 
