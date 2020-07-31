@@ -122,7 +122,7 @@ test.cb("DefineWithLegacyCalls", analyzeModule, "modules/define_with_legacy_call
 test.cb("OldStyleModuleWithoutDeclare", function(t) {
 	analyze("modules/no_declare_but_requires.js", null).then((info) => {
 		t.is(info.name, null, "module name should be null");
-		t.false(info.rawModule, "ui5 module");
+		t.true(info.rawModule, "raw module");
 		assertModuleNamesEqual(t,
 			info.dependencies,
 			["dependency1.js", "dependency2.js", "jquery.sap.global.js"],
