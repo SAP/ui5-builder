@@ -24,7 +24,7 @@ test.beforeEach((t) => {
 	t.context.generateLibraryPreload = mock.reRequire("../../../../lib/tasks/bundlers/generateLibraryPreload");
 });
 
-test.afterEach(() => {
+test.afterEach.always(() => {
 	sinon.restore();
 	mock.stopAll();
 });
