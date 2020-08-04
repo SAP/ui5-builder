@@ -21,7 +21,7 @@
 		"test": "npm run lint && npm run jsdoc-generate && npm run coverage",
 		"test-azure": "npm run lint && npm run jsdoc-generate && npm run coverage-xunit",
 		"lint": "eslint ./",
-		"unit": "rimraf test/tmp && ava -v",
+		"unit": "rimraf test/tmp && ava",
 		"unit-verbose": "rimraf test/tmp && cross-env UI5_LOG_LVL=verbose ava --verbose --serial",
 		"unit-watch": "rimraf test/tmp && ava --watch",
 		"unit-nyan": "rimraf test/tmp && ava --tap | tnyan",
