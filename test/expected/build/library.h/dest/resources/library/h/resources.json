@@ -133,12 +133,12 @@
 		{
 			"name": "not.js",
 			"module": "library/h/not.js",
-			"size": 4151,
+			"size": 63,
 			"format": "raw"
 		},
 		{
 			"name": "resources.json",
-			"size": 3447
+			"size": 3445
 		},
 		{
 			"name": "some.js",
