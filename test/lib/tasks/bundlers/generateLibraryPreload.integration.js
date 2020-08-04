@@ -8,6 +8,7 @@ const assert = chai.assert;
 const ui5Builder = require("../../../../");
 const builder = ui5Builder.builder;
 const libraryDPath = path.join(__dirname, "..", "..", "..", "fixtures", "library.d");
+const libraryNPath = path.join(__dirname, "..", "..", "..", "fixtures", "library.n");
 const sapUiCorePath = path.join(__dirname, "..", "..", "..", "fixtures", "sap.ui.core");
 
 const recursive = require("recursive-readdir");
@@ -126,6 +127,63 @@ const sapUiCoreTree = {
 		"pathMappings": {
 			"/resources/": "main/src",
 			"/test-resources/": "main/test"
+		}
+	}
+};
+
+test("integration: build library.n with library preload", (t) => {
+	const destPath = "./test/tmp/build/library.n/preload";
+	const expectedPath = "./test/expected/build/library.n/preload";
+	const excludedTasks = ["*"];
+	const includedTasks = ["generateLibraryPreload", "generateResourcesJson"];
+
+	return builder.build({
+		tree: libraryNTree,
+		destPath,
+		excludedTasks,
+		includedTasks
+	}).then(() => {
+		return findFiles(expectedPath);
+	}).then((expectedFiles) => {
+		// Check for all directories and files
+		assert.directoryDeepEqual(destPath, expectedPath);
+
+		// Check for all file contents
+		t.deepEqual(expectedFiles.length, 15, "15 files are expected");
+		expectedFiles.forEach((expectedFile) => {
+			const relativeFile = path.relative(expectedPath, expectedFile);
+			const destFile = path.join(destPath, relativeFile);
+			assert.fileEqual(destFile, expectedFile);
+		});
+	}).then(() => {
+		t.pass();
+	});
+});
+
+const libraryNTree = {
+	"id": "library.n",
+	"version": "1.0.0",
+	"path": libraryNPath,
+	"dependencies": [],
+	"_level": 0,
+	"specVersion": "0.1",
+	"type": "library",
+	"metadata": {
+		"name": "library.n",
+		"namespace": "library/n",
+		"copyright": "UI development toolkit for HTML5 (OpenUI5)\n * (c) Copyright 2009-xxx SAP SE or an SAP affiliate company.\n * Licensed under the Apache License, Version 2.0 - see LICENSE.txt."
+	},
+	"resources": {
+		"configuration": {
+			"paths": {
+				"src": "src",
+				"test": "test"
+			},
+			"propertiesFileSourceEncoding": "ISO-8859-1"
+		},
+		"pathMappings": {
+			"/resources/": "src",
+			"/test-resources/": "test"
 		}
 	}
 };
