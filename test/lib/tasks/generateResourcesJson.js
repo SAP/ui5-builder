@@ -37,7 +37,7 @@ test.afterEach.always((t) => {
 	mock.stop("../../../lib/processors/resourceListCreator");
 });
 
-test.serial("empty resources", async (t) => {
+test("empty resources", async (t) => {
 	const generateResourcesJson = require("../../../lib/tasks/generateResourcesJson");
 
 	const result = await generateResourcesJson({workspace: createWorkspace(), dependencies: undefined, options: {projectName: "sap.ui.core"}});
