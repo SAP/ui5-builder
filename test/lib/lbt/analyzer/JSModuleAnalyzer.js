@@ -541,3 +541,29 @@ test("Toplevel define", (t) => {
 	});
 });
 
+test("Invalid ui5 bundle comment", (t) => {
+	return analyze("modules/bundle-evo_invalid_comment.js").then((info) => {
+		t.is(info.name, "my/module.js",
+			"module name matches");
+		t.deepEqual(info.subModules, [],
+			"no submodules");
+	});
+});
+
+test("Declare two times", (t) => {
+	return analyze("modules/declare_times_two.js").then((info) => {
+		t.is(info.name, "sap/ui/testmodule.js",
+			"module name matches");
+		t.deepEqual(info.subModules, [],
+			"no submodules");
+	});
+});
+
+test("Declare unnamed", (t) => {
+	return analyze("modules/declare_unnamed.js").then((info) => {
+		t.is(info.name, "modules/declare_unnamed.js",
+			"module name matches");
+		t.deepEqual(info.subModules, [],
+			"no submodules");
+	});
+});
