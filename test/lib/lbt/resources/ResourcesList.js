@@ -60,3 +60,42 @@ test("add: add i18n resource", (t) => {
 	const result = resourcesList.resourcesByName.get("../i18n_en.properties");
 	t.is(result.i18nName, "../i18n.properties", "i18n name is set relative");
 });
+
+test("add: resource with the same name", (t) => {
+	const resourcesList = new ResourcesList("prefix");
+
+	resourcesList.add({name: "myfile.js", size: 13});
+	resourcesList.add({name: "myfile.js", size: 13});
+
+	t.is(resourcesList.resources.length, 1, "one entry");
+
+	const result = resourcesList.resourcesByName.get("../myfile.js");
+	t.is(result.name, "../myfile.js", "name is set relative");
+});
+
+test("toJSON: resource with the same name", (t) => {
+	const resourcesList = new ResourcesList("prefix");
+
+	resourcesList.resources.push({name: "myfile.js", size: 13});
+	resourcesList.resources.push({name: "myfile.js", size: 13});
+
+	t.deepEqual(resourcesList.toJSON(), {
+		_version: "1.1.0",
+		resources: [
+			{
+				name: "myfile.js",
+				size: 13,
+			},
+			{
+				name: "myfile.js",
+				size: 13,
+			},
+		],
+	}, "one entry");
+});
+
+test("makePathRelativeTo: same prefix", (t) => {
+	const relativePath = ResourcesList.makePathRelativeTo("am/bn/cf", "args/myfile.js");
+
+	t.is(relativePath, "../../../args/myfile.js", "relative path");
+});
