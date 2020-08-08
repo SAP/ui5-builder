@@ -73,12 +73,6 @@ test("Find Import Name (no dependencies)", (t) => {
 	t.is(call.findImportName("wanted.js"), null);
 });
 
-test("Find Import Name (successful)", (t) => {
-	const ast = parse("sap.ui.define(['wanted'], function(johndoe) {});");
-	const call = new SapUiDefineCall(ast, "FileSystemName");
-	t.is(call.findImportName("wanted.js"), "johndoe");
-});
-
 test("Export as Global: omitted", (t) => {
 	const ast = parse("sap.ui.define(['wanted'], function(johndoe) {});");
 	const call = new SapUiDefineCall(ast, "FileSystemName");
