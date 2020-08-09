@@ -337,12 +337,12 @@ test.serial("generateJsdoc with missing resources", async (t) => {
 
 test.serial("generateJsdoc no parameters", async (t) => {
 	const error = await t.throwsAsync(generateJsdoc());
-	t.deepEqual(error.message, "[generateJsdoc]: One or more mandatory options not provided",
+	t.deepEqual(error.message, "Cannot destructure property 'buildContext' of 'undefined' as it is undefined.",
 		"Correct error message thrown");
 });
 
 test.serial("generateJsdoc missing parameters", async (t) => {
 	const error = await t.throwsAsync(generateJsdoc({}));
-	t.deepEqual(error.message, "Cannot read property 'pattern' of undefined",
+	t.deepEqual(error.message, "[generateJsdoc]: One or more mandatory options not provided",
 		"Correct error message thrown");
 });

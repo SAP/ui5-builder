@@ -213,6 +213,6 @@ test.serial("jsdocGenerator", async (t) => {
 
 test("jsdocGenerator missing parameters", async (t) => {
 	const error = await t.throwsAsync(jsdocGenerator());
-	t.deepEqual(error.message, "Cannot destructure property 'sourcePath' of 'undefined' as it is undefined.",
+	t.deepEqual(error.message, "Cannot read property 'projectName' of undefined",
 		"Correct error message thrown");
 });
