@@ -212,7 +212,7 @@ test.serial("jsdocGenerator", async (t) => {
 });
 
 test("jsdocGenerator missing parameters", async (t) => {
-	const error = await t.throwsAsync(jsdocGenerator());
-	t.deepEqual(error.message, "Cannot read property 'projectName' of undefined",
-		"Correct error message thrown");
+	await t.throwsAsync(jsdocGenerator(), {
+		instanceOf: TypeError
+	}, "TypeError thrown");
 });

@@ -336,9 +336,9 @@ test.serial("generateJsdoc with missing resources", async (t) => {
 });
 
 test.serial("generateJsdoc no parameters", async (t) => {
-	const error = await t.throwsAsync(generateJsdoc());
-	t.deepEqual(error.message, "Cannot destructure property 'buildContext' of 'undefined' as it is undefined.",
-		"Correct error message thrown");
+	await t.throwsAsync(generateJsdoc(), {
+		instanceOf: TypeError
+	}, "TypeError thrown");
 });
 
 test.serial("generateJsdoc missing parameters", async (t) => {

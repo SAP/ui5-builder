@@ -93,9 +93,9 @@ test.serial("executeJsdocSdkTransformation", async (t) => {
 });
 
 test("executeJsdocSdkTransformation with missing parameters", async (t) => {
-	const error = await t.throwsAsync(executeJsdocSdkTransformation());
-	t.deepEqual(error.message, "Cannot read property 'projectName' of undefined",
-		"Correct error message thrown");
+	await t.throwsAsync(executeJsdocSdkTransformation(), {
+		instanceOf: TypeError
+	}, "TypeError thrown");
 });
 
 test.serial("executeJsdocSdkTransformation with missing project api.json (skips processing)", async (t) => {
