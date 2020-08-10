@@ -361,9 +361,6 @@ test("Build application.g", (t) => {
 	const expectedPath = path.join("test", "expected", "build", "application.g", "dest");
 
 	return builder.build({
-		includedTasks: [
-			"generateResourcesJson"
-		],
 		tree: applicationGTree,
 		destPath,
 		excludedTasks: ["generateStandaloneAppBundle", "generateVersionInfo"]
@@ -384,9 +381,6 @@ test("Build application.g with component preload paths", (t) => {
 	const expectedPath = path.join("test", "expected", "build", "application.g", "dest");
 
 	return builder.build({
-		includedTasks: [
-			"generateResourcesJson"
-		],
 		tree: applicationGTreeComponentPreloadPaths,
 		destPath,
 		excludedTasks: ["generateStandaloneAppBundle", "generateVersionInfo"]
@@ -430,9 +424,6 @@ test("Build application.h", (t) => {
 	return builder.build({
 		tree: applicationHTree,
 		destPath,
-		includedTasks: [
-			"generateResourcesJson"
-		],
 		excludedTasks: ["createDebugFiles", "generateComponentPreload",
 			"generateStandaloneAppBundle", "generateVersionInfo"]
 	}).then(() => {
@@ -452,9 +443,6 @@ test("Build application.i", (t) => {
 	const expectedPath = path.join("test", "expected", "build", "application.i", "dest");
 
 	return builder.build({
-		includedTasks: [
-			"generateResourcesJson"
-		],
 		tree: applicationITree,
 		destPath,
 		excludedTasks: ["createDebugFiles", "generateStandaloneAppBundle", "generateVersionInfo"]
@@ -475,9 +463,30 @@ test("Build application.j", (t) => {
 	const expectedPath = path.join("test", "expected", "build", "application.j", "dest");
 
 	return builder.build({
+		tree: applicationJTree,
+		destPath,
+		excludedTasks: ["createDebugFiles", "generateStandaloneAppBundle", "generateVersionInfo"]
+	}).then(() => {
+		return findFiles(expectedPath);
+	}).then((expectedFiles) => {
+		// Check for all directories and files
+		assert.directoryDeepEqual(destPath, expectedPath);
+		// Check for all file contents
+		return checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath);
+	}).then(() => {
+		t.pass();
+	});
+});
+
+test("Build application.j with resources.json", (t) => {
+	const destPath = "./test/tmp/build/application.j/dest-resources-json";
+	const expectedPath = path.join("test", "expected", "build", "application.j", "dest-resources-json");
+
+	return builder.build({
 		includedTasks: [
 			"generateResourcesJson"
-		],		tree: applicationJTree,
+		],
+		tree: applicationJTree,
 		destPath,
 		excludedTasks: ["createDebugFiles", "generateStandaloneAppBundle", "generateVersionInfo"]
 	}).then(() => {
@@ -497,9 +506,6 @@ test("Build library.d with copyright from .library file", (t) => {
 	const expectedPath = path.join("test", "expected", "build", "library.d", "dest");
 
 	return builder.build({
-		includedTasks: [
-			"generateResourcesJson"
-		],
 		tree: libraryDTree,
 		destPath,
 		excludedTasks: ["generateLibraryPreload"]
@@ -521,9 +527,6 @@ test("Build library.e with copyright from settings of ui5.yaml", (t) => {
 	const expectedPath = path.join("test", "expected", "build", "library.e", "dest");
 
 	return builder.build({
-		includedTasks: [
-			"generateResourcesJson"
-		],
 		tree: libraryETree,
 		destPath,
 		excludedTasks: ["generateLibraryPreload"]
@@ -543,6 +546,27 @@ test("Build library.e with copyright from settings of ui5.yaml", (t) => {
 test("Build library.h with custom bundles and component-preloads", (t) => {
 	const destPath = path.join("test", "tmp", "build", "library.h", "dest");
 	const expectedPath = path.join("test", "expected", "build", "library.h", "dest");
+
+	return builder.build({
+		tree: libraryHTree,
+		destPath,
+		excludedTasks: ["createDebugFiles", "generateLibraryPreload"]
+	}).then(() => {
+		return findFiles(expectedPath);
+	}).then((expectedFiles) => {
+		// Check for all directories and files
+		assert.directoryDeepEqual(destPath, expectedPath);
+
+		// Check for all file contents
+		return checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath);
+	}).then(() => {
+		t.pass();
+	});
+});
+
+test("Build library.h with custom bundles and component-preloads with resources.json", (t) => {
+	const destPath = path.join("test", "tmp", "build", "library.h", "dest-resources-json");
+	const expectedPath = path.join("test", "expected", "build", "library.h", "dest-resources-json");
 
 	return builder.build({
 		includedTasks: [
@@ -635,6 +659,27 @@ test("Build theme.j even without an library", (t) => {
 test("Build library.n", (t) => {
 	const destPath = path.join("test", "tmp", "build", "library.n", "dest");
 	const expectedPath = path.join("test", "expected", "build", "library.n", "dest");
+
+	return builder.build({
+		tree: libraryNTree,
+		destPath,
+		excludedTasks: ["generateLibraryPreload"]
+	}).then(() => {
+		return findFiles(expectedPath);
+	}).then((expectedFiles) => {
+		// Check for all directories and files
+		assert.directoryDeepEqual(destPath, expectedPath);
+
+		// Check for all file contents
+		return checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath);
+	}).then(() => {
+		t.pass();
+	});
+});
+
+test("Build library.n with resources.json", (t) => {
+	const destPath = path.join("test", "tmp", "build", "library.n", "dest-resources-json");
+	const expectedPath = path.join("test", "expected", "build", "library.n", "dest-resources-json");
 
 	return builder.build({
 		includedTasks: [
