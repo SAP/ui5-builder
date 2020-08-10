@@ -28,6 +28,10 @@
 			"size": 42,
 			"designtime": true,
 			"theme": "somefancytheme"
+		},
+		{
+			"name": "resources.json",
+			"size": 633
 		}
 	]
 }

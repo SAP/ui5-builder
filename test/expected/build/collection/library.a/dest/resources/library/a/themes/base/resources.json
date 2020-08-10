@@ -22,6 +22,10 @@
 			"size": 111,
 			"designtime": true,
 			"theme": "base"
+		},
+		{
+			"name": "resources.json",
+			"size": 484
 		}
 	]
 }
