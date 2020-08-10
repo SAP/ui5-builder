@@ -63,6 +63,13 @@ test.serial("visitResource: path", (t) => {
 	t.is(t.context.logWarnSpy.getCall(0).args[0], "non-runtime resource mypath ignored");
 });
 
+test.serial("visitResource: library.source.less", (t) => {
+	const resourceCollector = new ResourceCollector();
+	t.is(resourceCollector.themePackages.size, 0, "initially there is no theme package");
+	resourceCollector.visitResource("/resources/themes/a/library.source.less", 13);
+	t.is(resourceCollector.themePackages.size, 1, "theme package was added");
+});
+
 test.serial("groupResourcesByComponents: debugBundles", (t) => {
 	const resourceCollector = new ResourceCollector();
 	resourceCollector.setExternalResources({
@@ -72,4 +79,83 @@ test.serial("groupResourcesByComponents: debugBundles", (t) => {
 	resourceCollector.visitResource("/resources/my/file.js", 13);
 	resourceCollector.groupResourcesByComponents({debugBundles: ".*-dbg.js"});
 	t.is(resourceCollector.resources.size, 0, "all resources were deleted");
+});
+
+test.serial("groupResourcesByComponents: theme", async (t) => {
+	const resourceCollector = new ResourceCollector();
+	resourceCollector.visitResource("/resources/themes/a/.theming", 13);
+	t.is(resourceCollector.themePackages.size, 1, "1 theme was added");
+	await resourceCollector.determineResourceDetails({});
+	resourceCollector.groupResourcesByComponents({});
+	t.is(resourceCollector.themePackages.get("themes/a/").resources.length, 1, "1 theme was grouped");
+});
+
+test.serial("determineResourceDetails: properties", async (t) => {
+	const resourceCollector = new ResourceCollector({
+		getModuleInfo: async (moduleInfo) => {
+			return {
+				name: "myName"
+			};
+		}
+	});
+	resourceCollector.visitResource("/resources/mylib/manifest.json", 13);
+	resourceCollector.visitResource("/resources/mylib/i18n/i18n_de.properties", 13);
+	resourceCollector.visitResource("/resources/mylib/i18n/i18n.properties", 13);
+	await resourceCollector.determineResourceDetails({});
+	resourceCollector.groupResourcesByComponents({});
+	const resources = resourceCollector.components.get("mylib/").resources;
+	t.deepEqual(resources.map((res) => res.i18nName), [null, "i18n/i18n.properties", "i18n/i18n.properties"], "i18nName was set");
+});
+
+test.serial("determineResourceDetails: view.xml", async (t) => {
+	const resourceCollector = new ResourceCollector({
+		getModuleInfo: async (moduleInfo) => {
+			return {
+				name: "myName"
+			};
+		}
+	});
+	const enrichWithDependencyInfoStub = sinon.stub(resourceCollector, "enrichWithDependencyInfo").returns(Promise.resolve());
+	resourceCollector.visitResource("/resources/mylib/my.view.xml", 13);
+	await resourceCollector.determineResourceDetails({});
+	t.is(enrichWithDependencyInfoStub.callCount, 1, "is called once");
+	t.is(enrichWithDependencyInfoStub.getCall(0).args[0].name, "mylib/my.view.xml", "is called with view");
+});
+
+test.serial("enrichWithDependencyInfo: add infos to resourceinfo", async (t) => {
+	const resourceCollector = new ResourceCollector({
+		getModuleInfo: async () => {
+			return {
+				name: "myname",
+				dynamicDependencies: true,
+				isConditionalDependency: (dep) => {
+					return dep.includes("conditional");
+				},
+				isImplicitDependency: (dep) => {
+					return dep.includes("implicit");
+				},
+				dependencies: [
+					"mydependency.conditional", "mydependency.implicit", "mydependency"
+				],
+				subModules: [
+					"mySubmodule"
+				],
+				requiresTopLevelScope: true,
+				exposedGlobals: ["myGlobal"],
+				rawModule: true
+			};
+		}
+	});
+	const resourceInfo = {};
+	await resourceCollector.enrichWithDependencyInfo(resourceInfo);
+	t.deepEqual(resourceInfo, {
+		condRequired: new Set(["mydependency.conditional"]),
+		dynRequired: true,
+		exposedGlobalNames: new Set(["myGlobal"]),
+		format: "raw",
+		included: new Set(["mySubmodule"]),
+		module: "myname",
+		required: new Set(["mydependency"]),
+		requiresTopLevelScope: true
+	}, "all information gets used for the resourceInfo");
 });
