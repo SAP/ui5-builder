@@ -178,7 +178,7 @@ test("Build application.a", (t) => {
 	return builder.build({
 		tree: applicationATree,
 		destPath,
-		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo", "generateResourcesJson"]
+		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo"]
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
@@ -208,7 +208,7 @@ test("Build application.a with dependencies", (t) => {
 	return builder.build({
 		tree: applicationATree,
 		destPath,
-		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo", "generateLibraryPreload", "escapeNonAsciiCharacters", "generateLibraryManifest", "generateResourcesJson"],
+		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo", "generateLibraryPreload", "escapeNonAsciiCharacters", "generateLibraryManifest"],
 		buildDependencies: true
 	}).then(() => {
 		return findFiles(expectedPath);
@@ -229,7 +229,7 @@ test("Build application.a with dependencies include", (t) => {
 	return builder.build({
 		tree: applicationATree,
 		destPath,
-		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo", "generateLibraryPreload", "escapeNonAsciiCharacters", "generateLibraryManifest", "generateResourcesJson"],
+		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo", "generateLibraryPreload", "escapeNonAsciiCharacters", "generateLibraryManifest"],
 		buildDependencies: true, includedDependencies: ["*"]
 	}).then(() => {
 		return findFiles(expectedPath);
@@ -250,7 +250,7 @@ test("Build application.a with dependencies exclude", (t) => {
 	return builder.build({
 		tree: applicationATree,
 		destPath,
-		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo", "generateLibraryPreload", "escapeNonAsciiCharacters", "generateLibraryManifest", "generateResourcesJson"],
+		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo", "generateLibraryPreload", "escapeNonAsciiCharacters", "generateLibraryManifest"],
 		buildDependencies: true, excludedDependencies: ["library.d"]
 	}).then(() => {
 		return findFiles(expectedPath);
@@ -271,7 +271,7 @@ test("Build application.a self-contained", (t) => {
 	return builder.build({
 		tree: applicationATree,
 		destPath,
-		excludedTasks: ["generateComponentPreload", "generateVersionInfo", "generateResourcesJson"],
+		excludedTasks: ["generateComponentPreload", "generateVersionInfo"],
 		selfContained: true
 	}).then(() => {
 		return findFiles(expectedPath);
@@ -292,7 +292,7 @@ test("Build application.a with dependencies self-contained", (t) => {
 	return builder.build({
 		tree: applicationATree,
 		destPath,
-		excludedTasks: ["generateComponentPreload", "generateVersionInfo", "escapeNonAsciiCharacters", "generateLibraryManifest", "generateResourcesJson"],
+		excludedTasks: ["generateComponentPreload", "generateVersionInfo", "escapeNonAsciiCharacters", "generateLibraryManifest"],
 		buildDependencies: true,
 		selfContained: true
 	}).then(() => {
