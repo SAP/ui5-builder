@@ -361,6 +361,9 @@ test("Build application.g", (t) => {
 	const expectedPath = path.join("test", "expected", "build", "application.g", "dest");
 
 	return builder.build({
+		includedTasks: [
+			"generateResourcesJson"
+		],
 		tree: applicationGTree,
 		destPath,
 		excludedTasks: ["generateStandaloneAppBundle", "generateVersionInfo"]
@@ -381,6 +384,9 @@ test("Build application.g with component preload paths", (t) => {
 	const expectedPath = path.join("test", "expected", "build", "application.g", "dest");
 
 	return builder.build({
+		includedTasks: [
+			"generateResourcesJson"
+		],
 		tree: applicationGTreeComponentPreloadPaths,
 		destPath,
 		excludedTasks: ["generateStandaloneAppBundle", "generateVersionInfo"]
@@ -424,6 +430,9 @@ test("Build application.h", (t) => {
 	return builder.build({
 		tree: applicationHTree,
 		destPath,
+		includedTasks: [
+			"generateResourcesJson"
+		],
 		excludedTasks: ["createDebugFiles", "generateComponentPreload",
 			"generateStandaloneAppBundle", "generateVersionInfo"]
 	}).then(() => {
@@ -443,6 +452,9 @@ test("Build application.i", (t) => {
 	const expectedPath = path.join("test", "expected", "build", "application.i", "dest");
 
 	return builder.build({
+		includedTasks: [
+			"generateResourcesJson"
+		],
 		tree: applicationITree,
 		destPath,
 		excludedTasks: ["createDebugFiles", "generateStandaloneAppBundle", "generateVersionInfo"]
@@ -463,7 +475,9 @@ test("Build application.j", (t) => {
 	const expectedPath = path.join("test", "expected", "build", "application.j", "dest");
 
 	return builder.build({
-		tree: applicationJTree,
+		includedTasks: [
+			"generateResourcesJson"
+		],		tree: applicationJTree,
 		destPath,
 		excludedTasks: ["createDebugFiles", "generateStandaloneAppBundle", "generateVersionInfo"]
 	}).then(() => {
@@ -483,6 +497,9 @@ test("Build library.d with copyright from .library file", (t) => {
 	const expectedPath = path.join("test", "expected", "build", "library.d", "dest");
 
 	return builder.build({
+		includedTasks: [
+			"generateResourcesJson"
+		],
 		tree: libraryDTree,
 		destPath,
 		excludedTasks: ["generateLibraryPreload"]
@@ -504,6 +521,9 @@ test("Build library.e with copyright from settings of ui5.yaml", (t) => {
 	const expectedPath = path.join("test", "expected", "build", "library.e", "dest");
 
 	return builder.build({
+		includedTasks: [
+			"generateResourcesJson"
+		],
 		tree: libraryETree,
 		destPath,
 		excludedTasks: ["generateLibraryPreload"]
@@ -525,6 +545,9 @@ test("Build library.h with custom bundles and component-preloads", (t) => {
 	const expectedPath = path.join("test", "expected", "build", "library.h", "dest");
 
 	return builder.build({
+		includedTasks: [
+			"generateResourcesJson"
+		],
 		tree: libraryHTree,
 		destPath,
 		excludedTasks: ["createDebugFiles", "generateLibraryPreload"]
@@ -546,6 +569,9 @@ test("Build library.i with manifest info taken from .library and library.js", (t
 	const expectedPath = path.join("test", "expected", "build", "library.i", "dest");
 
 	return builder.build({
+		includedTasks: [
+			"generateResourcesJson"
+		],
 		tree: libraryITree,
 		destPath,
 		excludedTasks: ["createDebugFiles", "generateLibraryPreload", "uglify"]
@@ -588,6 +614,9 @@ test("Build theme.j even without an library", (t) => {
 	const destPath = "./test/tmp/build/theme.j/dest";
 	const expectedPath = "./test/expected/build/theme.j/dest";
 	return builder.build({
+		includedTasks: [
+			"generateResourcesJson"
+		],
 		tree: themeJTree,
 		destPath
 	}).then(() => {
@@ -608,6 +637,9 @@ test("Build library.n", (t) => {
 	const expectedPath = path.join("test", "expected", "build", "library.n", "dest");
 
 	return builder.build({
+		includedTasks: [
+			"generateResourcesJson"
+		],
 		tree: libraryNTree,
 		destPath,
 		excludedTasks: ["generateLibraryPreload"]
@@ -629,6 +661,9 @@ test("Build collection library.a", (t) => {
 	const expectedPath = path.join("test", "expected", "build", "collection", "library.a", "dest");
 
 	return builder.build({
+		includedTasks: [
+			"generateResourcesJson"
+		],
 		tree: collectionLibraryATree,
 		destPath,
 		excludedTasks: ["generateLibraryPreload"]
