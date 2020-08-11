@@ -638,6 +638,24 @@ test("Build theme.j even without an library", (t) => {
 	const destPath = "./test/tmp/build/theme.j/dest";
 	const expectedPath = "./test/expected/build/theme.j/dest";
 	return builder.build({
+		tree: themeJTree,
+		destPath
+	}).then(() => {
+		return findFiles(expectedPath);
+	}).then((expectedFiles) => {
+		// Check for all directories and files
+		assert.directoryDeepEqual(destPath, expectedPath);
+
+		return checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath);
+	}).then(() => {
+		t.pass();
+	});
+});
+
+test("Build theme.j even without an library with resources.json", (t) => {
+	const destPath = "./test/tmp/build/theme.j/dest-resources-json";
+	const expectedPath = "./test/expected/build/theme.j/dest-resources-json";
+	return builder.build({
 		includedTasks: [
 			"generateResourcesJson"
 		],
@@ -648,7 +666,6 @@ test("Build theme.j even without an library", (t) => {
 	}).then((expectedFiles) => {
 		// Check for all directories and files
 		assert.directoryDeepEqual(destPath, expectedPath);
-
 
 		return checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath);
 	}).then(() => {
