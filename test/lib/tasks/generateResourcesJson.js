@@ -41,7 +41,7 @@ test("empty resources", async (t) => {
 	const generateResourcesJson = require("../../../lib/tasks/generateResourcesJson");
 
 	const result = await generateResourcesJson({workspace: createWorkspace(), dependencies: undefined, options: {projectName: "sap.ui.core"}});
-	t.deepEqual(result, [], "empty resources");
+	t.deepEqual(result, undefined, "no resources returned");
 	t.is(t.context.resourceListCreatorStub.callCount, 1);
 	const expectedOptions = {
 		externalResources: {

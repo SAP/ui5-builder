@@ -593,9 +593,6 @@ test("Build library.i with manifest info taken from .library and library.js", (t
 	const expectedPath = path.join("test", "expected", "build", "library.i", "dest");
 
 	return builder.build({
-		includedTasks: [
-			"generateResourcesJson"
-		],
 		tree: libraryITree,
 		destPath,
 		excludedTasks: ["createDebugFiles", "generateLibraryPreload", "uglify"]
