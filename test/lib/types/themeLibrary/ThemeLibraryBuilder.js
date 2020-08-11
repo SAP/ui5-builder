@@ -31,6 +31,11 @@ test("tasks", async (t) => {
 					}
 				};
 			}
+		},
+		taskUtil: {
+			isRootProject: () => {
+				return true;
+			}
 		}
 	});
 	const asyncTasks = Object.keys(themeLibraryBuilder.tasks).map((taskKey) => {
