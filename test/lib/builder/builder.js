@@ -715,31 +715,6 @@ test("Build library.n with resources.json", (t) => {
 	});
 });
 
-test("Build collection library.a", (t) => {
-	const destPath = path.join("test", "tmp", "build", "collection", "library.a", "dest");
-	const expectedPath = path.join("test", "expected", "build", "collection", "library.a", "dest");
-
-	return builder.build({
-		includedTasks: [
-			"generateResourcesJson"
-		],
-		tree: collectionLibraryATree,
-		destPath,
-		excludedTasks: ["generateLibraryPreload"]
-	}).then(() => {
-		return findFiles(expectedPath);
-	}).then((expectedFiles) => {
-		// Check for all directories and files
-		assert.directoryDeepEqual(destPath, expectedPath);
-
-		// Check for all file contents
-		return checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath);
-	}).then(() => {
-		t.pass();
-	});
-});
-
-
 test.serial("Cleanup", async (t) => {
 	const BuildContext = require("../../../lib/builder/BuildContext");
 	const createProjectContextStub = sinon.spy(BuildContext.prototype, "createProjectContext");
@@ -1506,58 +1481,3 @@ const libraryNTree = {
 		}
 	}
 };
-
-const collectionLibraryATree = {
-	"id": "library.a",
-	"version": "1.0.0",
-	"path": path.join(collectionPath, "library.a"),
-	"dependencies": [
-		libraryDTree,
-		{
-			"id": "sap.ui.core-evo",
-			"version": "1.0.0",
-			"path": libraryCore,
-			"dependencies": [],
-			"_level": 1,
-			"specVersion": "0.1",
-			"type": "library",
-			"metadata": {
-				"name": "sap.ui.core",
-				"namespace": "sap/ui/core",
-				"copyright": "Some fancy copyright"
-			},
-			"resources": {
-				"configuration": {
-					"paths": {
-						"src": "main/src"
-					}
-				},
-				"pathMappings": {
-					"/resources/": "main/src"
-				}
-			}
-		}
-	],
-	"_level": 1,
-	"specVersion": "0.1",
-	"type": "library",
-	"metadata": {
-		"name": "library.a",
-		"namespace": "library/a",
-		"copyright": "${copyright}"
-	},
-	"resources": {
-		"configuration": {
-			"paths": {
-				"src": "src",
-				"test": "test"
-			},
-			"propertiesFileSourceEncoding": "ISO-8859-1"
-		},
-		"pathMappings": {
-			"/resources/": "src",
-			"/test-resources/": "test"
-		}
-	}
-};
-
