@@ -56,34 +56,34 @@ test.serial("createOrphanFilters: filters", (t) => {
 	t.is(orphanFilters.size, 4, "4 filters");
 });
 
-test.serial("visitResource: path", (t) => {
+test.serial("visitResource: path", async (t) => {
 	const resourceCollector = new ResourceCollector();
-	resourceCollector.visitResource("mypath", 13);
+	await resourceCollector.visitResource({getPath: () => "mypath", getSize: async () => 13});
 	t.is(t.context.logWarnSpy.callCount, 1);
 	t.is(t.context.logWarnSpy.getCall(0).args[0], "non-runtime resource mypath ignored");
 });
 
-test.serial("visitResource: library.source.less", (t) => {
+test.serial("visitResource: library.source.less", async (t) => {
 	const resourceCollector = new ResourceCollector();
 	t.is(resourceCollector.themePackages.size, 0, "initially there is no theme package");
-	resourceCollector.visitResource("/resources/themes/a/library.source.less", 13);
+	await resourceCollector.visitResource({getPath: () => "/resources/themes/a/library.source.less", getSize: async () => 13});
 	t.is(resourceCollector.themePackages.size, 1, "theme package was added");
 });
 
-test.serial("groupResourcesByComponents: debugBundles", (t) => {
+test.serial("groupResourcesByComponents: debugBundles", async (t) => {
 	const resourceCollector = new ResourceCollector();
 	resourceCollector.setExternalResources({
 		"testcomp": ["my/file.js"]
 	});
-	resourceCollector.visitResource("/resources/testcomp/Component.js", 13);
-	resourceCollector.visitResource("/resources/my/file.js", 13);
-	resourceCollector.groupResourcesByComponents({debugBundles: ".*-dbg.js"});
+	await resourceCollector.visitResource({getPath: () => "/resources/testcomp/Component.js", getSize: async () => 13});
+	await resourceCollector.visitResource({getPath: () => "/resources/my/file.js", getSize: async () => 13});
+	resourceCollector.groupResourcesByComponents({debugBundles: [".*-dbg.js"]});
 	t.is(resourceCollector.resources.size, 0, "all resources were deleted");
 });
 
 test.serial("groupResourcesByComponents: theme", async (t) => {
 	const resourceCollector = new ResourceCollector();
-	resourceCollector.visitResource("/resources/themes/a/.theming", 13);
+	await resourceCollector.visitResource({getPath: () => "/resources/themes/a/.theming", getSize: async () => 13});
 	t.is(resourceCollector.themePackages.size, 1, "1 theme was added");
 	await resourceCollector.determineResourceDetails({});
 	resourceCollector.groupResourcesByComponents({});
@@ -98,9 +98,9 @@ test.serial("determineResourceDetails: properties", async (t) => {
 			};
 		}
 	});
-	resourceCollector.visitResource("/resources/mylib/manifest.json", 13);
-	resourceCollector.visitResource("/resources/mylib/i18n/i18n_de.properties", 13);
-	resourceCollector.visitResource("/resources/mylib/i18n/i18n.properties", 13);
+	await resourceCollector.visitResource({getPath: () => "/resources/mylib/manifest.json", getSize: async () => 13});
+	await resourceCollector.visitResource({getPath: () => "/resources/mylib/i18n/i18n_de.properties", getSize: async () => 13});
+	await resourceCollector.visitResource({getPath: () => "/resources/mylib/i18n/i18n.properties", getSize: async () => 13});
 	await resourceCollector.determineResourceDetails({});
 	resourceCollector.groupResourcesByComponents({});
 	const resources = resourceCollector.components.get("mylib/").resources;
@@ -116,7 +116,7 @@ test.serial("determineResourceDetails: view.xml", async (t) => {
 		}
 	});
 	const enrichWithDependencyInfoStub = sinon.stub(resourceCollector, "enrichWithDependencyInfo").returns(Promise.resolve());
-	resourceCollector.visitResource("/resources/mylib/my.view.xml", 13);
+	await resourceCollector.visitResource({getPath: () => "/resources/mylib/my.view.xml", getSize: async () => 13});
 	await resourceCollector.determineResourceDetails({});
 	t.is(enrichWithDependencyInfoStub.callCount, 1, "is called once");
 	t.is(enrichWithDependencyInfoStub.getCall(0).args[0].name, "mylib/my.view.xml", "is called with view");

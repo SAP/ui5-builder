@@ -62,7 +62,7 @@ test("empty resources", async (t) => {
 			"**/library-all-dbg.js",
 			"**/designtime/library-preload.designtime.js",
 			"**/library-preload.support.js"
-		].join(",")
+		]
 	};
 	t.deepEqual(t.context.resourceListCreatorStub.getCall(0).args[1], expectedOptions, "options match");
 });
