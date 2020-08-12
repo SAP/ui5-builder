@@ -1,7 +1,5 @@
 const test = require("ava");
-const chai = require("chai");
 const path = require("path");
-chai.use(require("chai-fs"));
 
 const parentLogger = require("@ui5/logger").getGroupLogger("mygroup");
 
