@@ -8,10 +8,9 @@
 		{
 			"name": "Button-dbg.js",
 			"module": "library/n/Button.js",
-			"size": 1417,
+			"size": 786,
 			"isDebug": true,
 			"required": [
-				"library/n/library.js",
 				"sap/ui/core/Control.js"
 			],
 			"condRequired": [
@@ -23,9 +22,8 @@
 		{
 			"name": "Button.js",
 			"module": "library/n/Button.js",
-			"size": 998,
+			"size": 516,
 			"required": [
-				"library/n/library.js",
 				"sap/ui/core/Control.js"
 			],
 			"condRequired": [
@@ -173,7 +171,7 @@
 		},
 		{
 			"name": "resources.json",
-			"size": 4298
+			"size": 4241
 		},
 		{
 			"name": "rules/Button-dbg.support.js",
