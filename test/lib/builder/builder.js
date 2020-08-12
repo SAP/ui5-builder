@@ -8,6 +8,7 @@ const readFile = promisify(fs.readFile);
 const assert = chai.assert;
 const sinon = require("sinon");
 const mock = require("mock-require");
+const resourceFactory = require("@ui5/fs").resourceFactory;
 
 const ui5Builder = require("../../../");
 const builder = ui5Builder.builder;
@@ -478,9 +479,31 @@ test("Build application.j", (t) => {
 	});
 });
 
-test("Build application.j with resources.json", (t) => {
+test("Build application.j with resources.json and version info", (t) => {
 	const destPath = "./test/tmp/build/application.j/dest-resources-json";
 	const expectedPath = path.join("test", "expected", "build", "application.j", "dest-resources-json");
+
+
+	const dummyVersionInfoGenerator = () => {
+		const versionJson = {
+			"name": "application.j",
+			"version": "1.0.0",
+			"buildTimestamp": "202008120917",
+			"scmRevision": "",
+			"libraries": []
+		};
+
+		return [resourceFactory.createResource({
+			path: "/resources/sap-ui-version.json",
+			string: JSON.stringify(versionJson, null, "\t")
+		})];
+	};
+
+	mock("../../../lib/processors/versionInfoGenerator", dummyVersionInfoGenerator);
+	mock.reRequire("../../../lib/tasks/generateVersionInfo");
+
+	const builder = mock.reRequire("../../../lib/builder/builder");
+
 
 	return builder.build({
 		includedTasks: [
@@ -488,7 +511,7 @@ test("Build application.j with resources.json", (t) => {
 		],
 		tree: applicationJTree,
 		destPath,
-		excludedTasks: ["createDebugFiles", "generateStandaloneAppBundle", "generateVersionInfo"]
+		excludedTasks: ["createDebugFiles", "generateStandaloneAppBundle"]
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
