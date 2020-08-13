@@ -3,12 +3,12 @@
 	"resources": [
 		{
 			"name": ".library",
-			"size": 564
+			"size": 411
 		},
 		{
 			"name": "Button-dbg.js",
 			"module": "library/n/Button.js",
-			"size": 727,
+			"size": 574,
 			"isDebug": true,
 			"required": [
 				"mylib/MyFirstClass.js"
@@ -22,7 +22,7 @@
 		{
 			"name": "Button.js",
 			"module": "library/n/Button.js",
-			"size": 469,
+			"size": 316,
 			"required": [
 				"mylib/MyFirstClass.js"
 			],
@@ -35,7 +35,7 @@
 		{
 			"name": "changeHandler/SplitButton-dbg.js",
 			"module": "library/n/changeHandler/SplitButton.js",
-			"size": 288,
+			"size": 135,
 			"isDebug": true,
 			"required": [
 				"mylib/util/myUtil.js"
@@ -44,7 +44,7 @@
 		{
 			"name": "changeHandler/SplitButton.js",
 			"module": "library/n/changeHandler/SplitButton.js",
-			"size": 261,
+			"size": 108,
 			"required": [
 				"mylib/util/myUtil.js"
 			]
@@ -52,7 +52,7 @@
 		{
 			"name": "designtime/Button-dbg.designtime.js",
 			"module": "library/n/designtime/Button.designtime.js",
-			"size": 249,
+			"size": 96,
 			"isDebug": true,
 			"designtime": true
 		},
@@ -68,7 +68,7 @@
 		{
 			"name": "designtime/Button.designtime.js",
 			"module": "library/n/designtime/Button.designtime.js",
-			"size": 237,
+			"size": 84,
 			"designtime": true
 		},
 		{
@@ -79,20 +79,20 @@
 		{
 			"name": "designtime/library-dbg.designtime.js",
 			"module": "library/n/designtime/library.designtime.js",
-			"size": 247,
+			"size": 94,
 			"isDebug": true,
 			"designtime": true
 		},
 		{
 			"name": "designtime/library.designtime.js",
 			"module": "library/n/designtime/library.designtime.js",
-			"size": 237,
+			"size": 84,
 			"designtime": true
 		},
 		{
 			"name": "flexibility/Button.flexibility-dbg.js",
 			"module": "library/n/flexibility/Button.flexibility.js",
-			"size": 376,
+			"size": 223,
 			"isDebug": true,
 			"required": [
 				"library/n/changeHandler/SplitButton.js",
@@ -102,7 +102,7 @@
 		{
 			"name": "flexibility/Button.flexibility.js",
 			"module": "library/n/flexibility/Button.flexibility.js",
-			"size": 309,
+			"size": 156,
 			"required": [
 				"library/n/changeHandler/SplitButton.js",
 				"mylib/MyRename.js"
@@ -111,7 +111,7 @@
 		{
 			"name": "library-dbg.js",
 			"module": "library/n/library.js",
-			"size": 359,
+			"size": 206,
 			"isDebug": true,
 			"required": [
 				"mob/library.js",
@@ -122,7 +122,7 @@
 		{
 			"name": "library-dbg.support.js",
 			"module": "library/n/library.support.js",
-			"size": 348,
+			"size": 195,
 			"isDebug": true,
 			"support": true,
 			"required": [
@@ -133,7 +133,7 @@
 		{
 			"name": "library.js",
 			"module": "library/n/library.js",
-			"size": 293,
+			"size": 140,
 			"required": [
 				"mob/library.js",
 				"mylib/MyClass.js",
@@ -143,7 +143,7 @@
 		{
 			"name": "library.support.js",
 			"module": "library/n/library.support.js",
-			"size": 291,
+			"size": 138,
 			"support": true,
 			"required": [
 				"library/n/rules/Button.support.js",
@@ -171,12 +171,12 @@
 		},
 		{
 			"name": "resources.json",
-			"size": 4077
+			"size": 4071
 		},
 		{
 			"name": "rules/Button-dbg.support.js",
 			"module": "library/n/rules/Button.support.js",
-			"size": 211,
+			"size": 58,
 			"format": "raw",
 			"isDebug": true,
 			"support": true
@@ -184,7 +184,7 @@
 		{
 			"name": "rules/Button.support.js",
 			"module": "library/n/rules/Button.support.js",
-			"size": 211,
+			"size": 58,
 			"format": "raw",
 			"support": true
 		}

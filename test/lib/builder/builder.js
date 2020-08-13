@@ -1488,7 +1488,7 @@ const libraryNTree = {
 	"metadata": {
 		"name": "library.n",
 		"namespace": "library/n",
-		"copyright": "UI development toolkit for HTML5 (OpenUI5)\n * (c) Copyright 2009-xxx SAP SE or an SAP affiliate company.\n * Licensed under the Apache License, Version 2.0 - see LICENSE.txt."
+		"copyright": "some fancy copyright"
 	},
 	"resources": {
 		"configuration": {

@@ -3,9 +3,7 @@
 
 	<name>library.n</name>
 	<vendor>The vendor</vendor>
-	<copyright>UI development toolkit for HTML5 (OpenUI5)
- * (c) Copyright 2009-xxx SAP SE or an SAP affiliate company.
- * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</copyright>
+	<copyright>some fancy copyright</copyright>
 	<version>1.0.0</version>
 
 	<documentation>Library N</documentation>
