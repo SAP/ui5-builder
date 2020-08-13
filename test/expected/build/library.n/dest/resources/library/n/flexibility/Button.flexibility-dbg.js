@@ -11,12 +11,7 @@ sap.ui.define([
 	"use strict";
 
 	return {
-		"prop1": "default",
 		"prop2": SplitButton,
-		"prop3": MyRename.doIt({
-			prop1: "val1",
-			prop2: "val2"
-		}),
-		"prop4": "val3"
+		"prop3": MyRename.doIt(),
 	};
 });

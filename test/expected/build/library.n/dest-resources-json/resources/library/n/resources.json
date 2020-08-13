@@ -35,7 +35,7 @@
 		{
 			"name": "changeHandler/SplitButton-dbg.js",
 			"module": "library/n/changeHandler/SplitButton.js",
-			"size": 383,
+			"size": 288,
 			"isDebug": true,
 			"required": [
 				"mylib/util/myUtil.js"
@@ -44,7 +44,7 @@
 		{
 			"name": "changeHandler/SplitButton.js",
 			"module": "library/n/changeHandler/SplitButton.js",
-			"size": 298,
+			"size": 261,
 			"required": [
 				"mylib/util/myUtil.js"
 			]
@@ -52,7 +52,7 @@
 		{
 			"name": "designtime/Button-dbg.designtime.js",
 			"module": "library/n/designtime/Button.designtime.js",
-			"size": 740,
+			"size": 249,
 			"isDebug": true,
 			"designtime": true
 		},
@@ -68,7 +68,7 @@
 		{
 			"name": "designtime/Button.designtime.js",
 			"module": "library/n/designtime/Button.designtime.js",
-			"size": 520,
+			"size": 237,
 			"designtime": true
 		},
 		{
@@ -92,7 +92,7 @@
 		{
 			"name": "flexibility/Button.flexibility-dbg.js",
 			"module": "library/n/flexibility/Button.flexibility.js",
-			"size": 456,
+			"size": 376,
 			"isDebug": true,
 			"required": [
 				"library/n/changeHandler/SplitButton.js",
@@ -102,7 +102,7 @@
 		{
 			"name": "flexibility/Button.flexibility.js",
 			"module": "library/n/flexibility/Button.flexibility.js",
-			"size": 365,
+			"size": 309,
 			"required": [
 				"library/n/changeHandler/SplitButton.js",
 				"mylib/MyRename.js"
@@ -111,18 +111,18 @@
 		{
 			"name": "library-dbg.js",
 			"module": "library/n/library.js",
-			"size": 399,
+			"size": 359,
 			"isDebug": true,
 			"required": [
 				"mob/library.js",
-				"mylib/Core.js",
+				"mylib/MyClass.js",
 				"mylib/library.js"
 			]
 		},
 		{
 			"name": "library-dbg.support.js",
 			"module": "library/n/library.support.js",
-			"size": 416,
+			"size": 348,
 			"isDebug": true,
 			"support": true,
 			"required": [
@@ -133,17 +133,17 @@
 		{
 			"name": "library.js",
 			"module": "library/n/library.js",
-			"size": 313,
+			"size": 293,
 			"required": [
 				"mob/library.js",
-				"mylib/Core.js",
+				"mylib/MyClass.js",
 				"mylib/library.js"
 			]
 		},
 		{
 			"name": "library.support.js",
 			"module": "library/n/library.support.js",
-			"size": 337,
+			"size": 291,
 			"support": true,
 			"required": [
 				"library/n/rules/Button.support.js",
@@ -171,7 +171,7 @@
 		},
 		{
 			"name": "resources.json",
-			"size": 4071
+			"size": 4077
 		},
 		{
 			"name": "rules/Button-dbg.support.js",

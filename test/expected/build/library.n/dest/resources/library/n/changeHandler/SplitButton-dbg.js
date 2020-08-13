@@ -10,12 +10,5 @@ sap.ui.define([
 	myUtil
 ) {
 	"use strict";
-
-	var SplitButton = {};
-
-	SplitButton.doIt = function(param1) {
-		return myUtil(param1);
-	};
-
-	return SplitButton;
+	return myUtil(47);
 });

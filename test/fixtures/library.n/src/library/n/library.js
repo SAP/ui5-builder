@@ -3,20 +3,14 @@
  */
 
 sap.ui.define([
-	'mylib/Core',
+	'mylib/MyClass',
 	'mylib/library',
 	'mob/library'
 ], function(
-	Core,
+	MyClass,
 	Library,
 	mobLibrary
 ) {
 	"use strict";
-
-	// comment
-	Core.doIt({
-		prop1 : "val1"
-	});
-
-	return Core(Library(mobLibrary));
+	return MyClass(Library(mobLibrary));
 });

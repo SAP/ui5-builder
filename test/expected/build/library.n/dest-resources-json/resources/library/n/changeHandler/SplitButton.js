@@ -3,4 +3,4 @@
  * (c) Copyright 2009-xxx SAP SE or an SAP affiliate company.
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
-sap.ui.define(["mylib/util/myUtil"],function(t){"use strict";var i={};i.doIt=function(i){return t(i)};return i});
+sap.ui.define(["mylib/util/myUtil"],function(i){"use strict";return i(47)});
