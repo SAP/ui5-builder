@@ -2,7 +2,7 @@
 <library xmlns="http://www.sap.com/sap.ui.library.xsd" >
 
 	<name>library.n</name>
-	<vendor>SAP SE</vendor>
+	<vendor>The vendor</vendor>
 	<copyright>${copyright}</copyright>
 	<version>${version}</version>
 

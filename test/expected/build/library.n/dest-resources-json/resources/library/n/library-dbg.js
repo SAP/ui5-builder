@@ -5,36 +5,20 @@
  */
 
 sap.ui.define([
-	'sap/ui/core/Core',
-	'sap/ui/core/library',
-	'sap/m/library'
+	'mylib/Core',
+	'mylib/library',
+	'mob/library'
 ], function(
 	Core,
-	coreLibrary,
-	mobileLibrary
+	Library,
+	mobLibrary
 ) {
 	"use strict";
 
-	// delegate further initialization of this library to the Core
-	sap.ui.getCore().initLibrary({
-		name : "library.n",
-		version: "1.0.0",
-		dependencies : ["sap.ui.core", "sap.m"],
-		designtime: "library/n/designtime/library.designtime",
-		types: [],
-		interfaces: [],
-		controls: [],
-		elements: [],
-		extensions: {
-			flChangeHandlers: {
-				"library.n.Button": "library/n/flexibility/Button"
-			},
-			"sap.ui.support": {
-				publicRules:true,
-				internalRules:false
-			}
-		}
+	// comment
+	Core.doIt({
+		prop1 : "val1"
 	});
 
-	return sap.m;
+	return Core(Library(mobLibrary));
 });

@@ -4,42 +4,42 @@
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
-// Provides the Design Time Metadata for the library.n.Button control
+// comment
 sap.ui.define([],
 	function () {
 		"use strict";
 
 		return {
-			palette: {
-				group: "ACTION",
+			prop1: {
+				val1: "string1",
 				icons: {
 					svg: "library/n/designtime/Button.icon.svg"
 				}
 			},
-			actions: {
-				combine: {
-					changeType: "combineButtons",
-					changeOnRelevantContainer : true,
-					isEnabled : true
+			prop2: {
+				val1: {
+					myaction: "string",
+					myboolean : true,
+					myboolean2 : true
 				},
-				remove: {
-					changeType: "hideControl"
+				val2: {
+					myaction: "string"
 				},
-				split: {
-					changeType: "split"
+				val3: {
+					myaction: "foo"
 				},
-				rename: {
-					changeType: "rename",
-					domRef: function (oControl) {
-						return oControl.$().find(".libNBtnContent")[0];
+				val4: {
+					myaction: "bar",
+					doIt: function (foo) {
+						return foo[0];
 					}
 				},
-				reveal: {
-					changeType: "unhideControl"
+				val5: {
+					myaction: "foo"
 				}
 			},
-			templates: {
-				create: "library/n/designtime/Button.create.fragment.xml"
+			prop3: {
+				first: "mystring"
 			}
 		};
 	});

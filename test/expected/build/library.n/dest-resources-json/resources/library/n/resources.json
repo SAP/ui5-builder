@@ -3,56 +3,56 @@
 	"resources": [
 		{
 			"name": ".library",
-			"size": 560
+			"size": 564
 		},
 		{
 			"name": "Button-dbg.js",
 			"module": "library/n/Button.js",
-			"size": 786,
+			"size": 727,
 			"isDebug": true,
 			"required": [
-				"sap/ui/core/Control.js"
+				"mylib/MyFirstClass.js"
 			],
 			"condRequired": [
 				"library/n/changeHandler/SplitButton.js",
-				"sap/ui/core/format/DateFormat.js"
+				"mylib/MyClass.js"
 			],
 			"dynRequired": true
 		},
 		{
 			"name": "Button.js",
 			"module": "library/n/Button.js",
-			"size": 516,
+			"size": 469,
 			"required": [
-				"sap/ui/core/Control.js"
+				"mylib/MyFirstClass.js"
 			],
 			"condRequired": [
 				"library/n/changeHandler/SplitButton.js",
-				"sap/ui/core/format/DateFormat.js"
+				"mylib/MyClass.js"
 			],
 			"dynRequired": true
 		},
 		{
 			"name": "changeHandler/SplitButton-dbg.js",
 			"module": "library/n/changeHandler/SplitButton.js",
-			"size": 701,
+			"size": 383,
 			"isDebug": true,
 			"required": [
-				"sap/ui/core/util/reflection/JsControlTreeModifier.js"
+				"mylib/util/myUtil.js"
 			]
 		},
 		{
 			"name": "changeHandler/SplitButton.js",
 			"module": "library/n/changeHandler/SplitButton.js",
-			"size": 533,
+			"size": 298,
 			"required": [
-				"sap/ui/core/util/reflection/JsControlTreeModifier.js"
+				"mylib/util/myUtil.js"
 			]
 		},
 		{
 			"name": "designtime/Button-dbg.designtime.js",
 			"module": "library/n/designtime/Button.designtime.js",
-			"size": 950,
+			"size": 740,
 			"isDebug": true,
 			"designtime": true
 		},
@@ -68,12 +68,12 @@
 		{
 			"name": "designtime/Button.designtime.js",
 			"module": "library/n/designtime/Button.designtime.js",
-			"size": 661,
+			"size": 520,
 			"designtime": true
 		},
 		{
 			"name": "designtime/Button.icon.svg",
-			"size": 1386,
+			"size": 52,
 			"designtime": true
 		},
 		{
@@ -92,62 +92,62 @@
 		{
 			"name": "flexibility/Button.flexibility-dbg.js",
 			"module": "library/n/flexibility/Button.flexibility.js",
-			"size": 540,
+			"size": 456,
 			"isDebug": true,
 			"required": [
 				"library/n/changeHandler/SplitButton.js",
-				"sap/ui/fl/changeHandler/BaseRename.js"
+				"mylib/MyRename.js"
 			]
 		},
 		{
 			"name": "flexibility/Button.flexibility.js",
 			"module": "library/n/flexibility/Button.flexibility.js",
-			"size": 445,
+			"size": 365,
 			"required": [
 				"library/n/changeHandler/SplitButton.js",
-				"sap/ui/fl/changeHandler/BaseRename.js"
+				"mylib/MyRename.js"
 			]
 		},
 		{
 			"name": "library-dbg.js",
 			"module": "library/n/library.js",
-			"size": 837,
+			"size": 399,
 			"isDebug": true,
 			"required": [
-				"sap/m/library.js",
-				"sap/ui/core/Core.js",
-				"sap/ui/core/library.js"
+				"mob/library.js",
+				"mylib/Core.js",
+				"mylib/library.js"
 			]
 		},
 		{
 			"name": "library-dbg.support.js",
 			"module": "library/n/library.support.js",
-			"size": 417,
+			"size": 416,
 			"isDebug": true,
 			"support": true,
 			"required": [
 				"library/n/rules/Button.support.js",
-				"sap/ui/support/library.js"
+				"mylib/support/library.js"
 			]
 		},
 		{
 			"name": "library.js",
 			"module": "library/n/library.js",
-			"size": 642,
+			"size": 313,
 			"required": [
-				"sap/m/library.js",
-				"sap/ui/core/Core.js",
-				"sap/ui/core/library.js"
+				"mob/library.js",
+				"mylib/Core.js",
+				"mylib/library.js"
 			]
 		},
 		{
 			"name": "library.support.js",
 			"module": "library/n/library.support.js",
-			"size": 338,
+			"size": 337,
 			"support": true,
 			"required": [
 				"library/n/rules/Button.support.js",
-				"sap/ui/support/library.js"
+				"mylib/support/library.js"
 			]
 		},
 		{
@@ -171,7 +171,7 @@
 		},
 		{
 			"name": "resources.json",
-			"size": 4241
+			"size": 4071
 		},
 		{
 			"name": "rules/Button-dbg.support.js",

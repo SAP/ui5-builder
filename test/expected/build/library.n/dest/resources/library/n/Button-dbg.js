@@ -6,25 +6,24 @@
 
 // Provides control library.N.Button.
 sap.ui.define([
-	'sap/ui/core/Control'
+	'mylib/MyFirstClass'
 ], function(
-	Control
+	MyFirstClass
 ) {
 	"use strict";
 
-	return Control.extend("library.n.Button", {
-		renderer: {
-			render: function(oRm, oButton) {
+	return MyFirstClass.doIt("library.n.Button", {
+		prop: {
+			value: function() {
 				// requireSync Dependency
 				sap.ui.requireSync("library/n/changeHandler/SplitButton");
 			}
 		},
-		helper: function(sCalendarType) {
-			var sCalendar = "sap/ui/core/date/" + sCalendarType;
+		helper: function(sParam) {
+			var sDynamicDependency = "mylib/dyn/" + sParam;
 			// dynamicDependency
-			sap.ui.require(["sap/ui/core/format/DateFormat", sCalendar], function(DateFormat, Calendar) {
-				DateFormat.getInstance();
-				new Calendar();
+			sap.ui.require(["mylib/MyClass", sDynamicDependency], function(MyClass, dynDep) {
+				new MyClass(dynDep);
 			});
 		}
 	});

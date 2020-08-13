@@ -2,7 +2,7 @@
  * ${copyright}
  */
 sap.ui.define([
-	"sap/ui/support/library",
+	"mylib/support/library",
 	"./rules/Button.support"
 ], function(
 		SupportLib,

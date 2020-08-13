@@ -3,18 +3,18 @@
  */
 
 sap.ui.define([
-	"sap/ui/fl/changeHandler/BaseRename",
+	"mylib/MyRename",
 	"../changeHandler/SplitButton"
-], function (BaseRename, SplitButton) {
+], function (MyRename, SplitButton) {
 	"use strict";
 
 	return {
-		"hideControl": "default",
-		"split": SplitButton,
-		"rename": BaseRename.createRenameChangeHandler({
-			propertyName: "text",
-			translationTextType: "XBUT"
+		"prop1": "default",
+		"prop2": SplitButton,
+		"prop3": MyRename.doIt({
+			prop1: "val1",
+			prop2: "val2"
 		}),
-		"unhideControl": "default"
+		"prop4": "val3"
 	};
 });

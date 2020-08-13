@@ -5,25 +5,17 @@
  */
 
 sap.ui.define([
-	"sap/ui/core/util/reflection/JsControlTreeModifier"
+	"mylib/util/myUtil"
 ], function (
-	JsControlTreeModifier
+	myUtil
 ) {
 	"use strict";
 
-	var ButtonCH = {};
+	var SplitButton = {};
 
-	SplitButton.applyChange = function(oChange, oControl, mPropertyBag) {
-		if (mPropertyBag.modifier.targets !== "jsControlTree") {
-			throw new Error("SplitButton change can't be applied on XML tree");
-		}
-		return true;
+	SplitButton.doIt = function(param1) {
+		return myUtil(param1);
 	};
 
-	SplitButton.revertChange = function(oChange, oControl, mPropertyBag) {
-		oChange.resetRevertData();
-		return true;
-	};
-
-	return ButtonCH;
+	return SplitButton;
 });
