@@ -36,9 +36,6 @@ steps:
 - script: npm ci
   displayName: Install Dependencies
 
-- script: npm run unit
-  displayName: Run Pre Tests
-
 - script: npm run test-azure
   displayName: Run Tests
 
@@ -48,6 +45,12 @@ steps:
   inputs:
     testResultsFormat: 'JUnit'
     testResultsFiles: '$(System.DefaultWorkingDirectory)/test-results.xml'
+
+- task: PublishPipelineArtifact@1
+  displayName: Publish test-results.xml artifact
+  inputs:
+    targetPath: '$(System.DefaultWorkingDirectory)/test-results.xml' 
+    artifactName: 'test-results.xml'
 
 - task: PublishCodeCoverageResults@1
   displayName: Publish Test Coverage Results
@@ -59,7 +62,3 @@ steps:
 - script: npm run test
   displayName: Run Test Natively in Case of Failures
   condition: failed()
-
-- task: ArchiveFiles@2
-  inputs:
-    rootFolderOrFile: '$(System.DefaultWorkingDirectory)/test-results.xml' 
