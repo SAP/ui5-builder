@@ -50,7 +50,7 @@ steps:
   displayName: Publish test-results.xml artifact
   inputs:
     targetPath: '$(System.DefaultWorkingDirectory)/test-results.xml' 
-    artifactName: 'test-results.xml'
+    artifactName: '$(System.JobName)-$(System.JobId)-$(System.StageName)-test-results.xml'
 
 - task: PublishCodeCoverageResults@1
   displayName: Publish Test Coverage Results
