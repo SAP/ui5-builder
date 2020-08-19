@@ -48,6 +48,7 @@ steps:
 
 - task: PublishPipelineArtifact@1
   displayName: Publish test-results.xml artifact
+  condition: succeededOrFailed()
   inputs:
     targetPath: '$(System.DefaultWorkingDirectory)/test-results.xml' 
     artifactName: '$(System.JobName)-$(System.JobId)-$(System.StageName)-test-results.xml'
