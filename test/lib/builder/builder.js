@@ -23,7 +23,6 @@ const libraryEPath = path.join(__dirname, "..", "..", "fixtures", "library.e");
 const libraryHPath = path.join(__dirname, "..", "..", "fixtures", "library.h");
 const libraryIPath = path.join(__dirname, "..", "..", "fixtures", "library.i");
 const libraryJPath = path.join(__dirname, "..", "..", "fixtures", "library.j");
-const libraryNPath = path.join(__dirname, "..", "..", "fixtures", "library.n");
 const libraryCore = path.join(__dirname, "..", "..", "fixtures", "sap.ui.core-evo");
 const themeJPath = path.join(__dirname, "..", "..", "fixtures", "theme.j");
 
@@ -687,51 +686,6 @@ test("Build theme.j even without an library with resources.json", (t) => {
 		// Check for all directories and files
 		assert.directoryDeepEqual(destPath, expectedPath);
 
-		return checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath);
-	}).then(() => {
-		t.pass();
-	});
-});
-
-test("Build library.n", (t) => {
-	const destPath = path.join("test", "tmp", "build", "library.n", "dest");
-	const expectedPath = path.join("test", "expected", "build", "library.n", "dest");
-
-	return builder.build({
-		tree: libraryNTree,
-		destPath,
-		excludedTasks: ["generateLibraryPreload"]
-	}).then(() => {
-		return findFiles(expectedPath);
-	}).then((expectedFiles) => {
-		// Check for all directories and files
-		assert.directoryDeepEqual(destPath, expectedPath);
-
-		// Check for all file contents
-		return checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath);
-	}).then(() => {
-		t.pass();
-	});
-});
-
-test("Build library.n with resources.json", (t) => {
-	const destPath = path.join("test", "tmp", "build", "library.n", "dest-resources-json");
-	const expectedPath = path.join("test", "expected", "build", "library.n", "dest-resources-json");
-
-	return builder.build({
-		includedTasks: [
-			"generateResourcesJson"
-		],
-		tree: libraryNTree,
-		destPath,
-		excludedTasks: ["generateLibraryPreload"]
-	}).then(() => {
-		return findFiles(expectedPath);
-	}).then((expectedFiles) => {
-		// Check for all directories and files
-		assert.directoryDeepEqual(destPath, expectedPath);
-
-		// Check for all file contents
 		return checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath);
 	}).then(() => {
 		t.pass();
@@ -1448,59 +1402,6 @@ const themeJTree = {
 		},
 		"pathMappings": {
 			"/resources/": "main/src"
-		}
-	}
-};
-
-const libraryNTree = {
-	"id": "library.n",
-	"version": "1.0.0",
-	"path": libraryNPath,
-	"dependencies": [
-		{
-			"id": "sap.ui.core-evo",
-			"version": "1.0.0",
-			"path": libraryCore,
-			"dependencies": [],
-			"_level": 1,
-			"specVersion": "0.1",
-			"type": "library",
-			"metadata": {
-				"name": "sap.ui.core",
-				"namespace": "sap/ui/core",
-				"copyright": "Some fancy copyright"
-			},
-			"resources": {
-				"configuration": {
-					"paths": {
-						"src": "main/src"
-					}
-				},
-				"pathMappings": {
-					"/resources/": "main/src"
-				}
-			}
-		}
-	],
-	"_level": 0,
-	"specVersion": "0.1",
-	"type": "library",
-	"metadata": {
-		"name": "library.n",
-		"namespace": "library/n",
-		"copyright": "some fancy copyright"
-	},
-	"resources": {
-		"configuration": {
-			"paths": {
-				"src": "src",
-				"test": "test"
-			},
-			"propertiesFileSourceEncoding": "ISO-8859-1"
-		},
-		"pathMappings": {
-			"/resources/": "src",
-			"/test-resources/": "test"
 		}
 	}
 };
