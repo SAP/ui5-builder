@@ -39,15 +39,20 @@ function analyze(file, name) {
 				reject(err);
 			}
 			try {
-				const ast = esprima.parseScript(buffer.toString(), {comment: true});
-				const info = new ModuleInfo(name);
-				new JSModuleAnalyzer().analyze(ast, name, info);
+				const info = analyzeString(buffer.toString(), name);
 				resolve(info);
 			} catch (execErr) {
 				reject(execErr);
 			}
 		});
 	});
+}
+
+function analyzeString(content, name) {
+	const ast = esprima.parseScript(content, {comment: true});
+	const info = new ModuleInfo(name);
+	new JSModuleAnalyzer().analyze(ast, name, info);
+	return info;
 }
 
 function assertModuleNamesEqual(t, actual, expected, msg) {
@@ -528,42 +533,90 @@ test("Dynamic import (define/requireSync)", (t) => {
 });
 
 test("Nested require", (t) => {
-	return analyze("modules/nestedRequire.js").then((info) => {
-		t.true(info.rawModule,
-			"raw module");
+	const content = `
+(function(deps, callback) {
+	function doIt(array, callback) {
+		callback();
+	}
+
+	var aArray = [];
+	doIt(aArray, function() {
+		doIt(["foo"], function() {
+			doIt(["bar"], function() {
+				// nested sap.ui.require
+				sap.ui.require(deps, callback);
+			});
+		});
 	});
+}([
+	"my/dependency"
+], function(myDep) {
+	console.log("done")
+}));`;
+	const info = analyzeString(content, "modules/nestedRequire.js");
+	t.true(info.rawModule, "raw module");
 });
 
 test("Toplevel define", (t) => {
-	return analyze("modules/functionDefine.js").then((info) => {
-		t.true(info.rawModule,
-			"raw module");
-	});
+	const content = `
+(function() {
+	function defineMyFile() {
+		sap.ui.define('def/MyFile', ['dep/myDep'],
+			function(myDep) {
+				return 47;
+			});
+	}
+
+	// conditional
+	if (!(window.sap && window.sap.ui && window.sap.ui.define)) {
+		var fnHandler = function() {
+			defineMyFile();
+		};
+		my.addEventListener("myevent", fnHandler);
+	} else {
+		defineMyFile();
+	}
+}()); `;
+	const info = analyzeString(content, "modules/functionDefine.js");
+	t.true(info.rawModule, "raw module");
 });
 
 test("Invalid ui5 bundle comment", (t) => {
-	return analyze("modules/bundle-evo_invalid_comment.js").then((info) => {
-		t.is(info.name, "my/module.js",
-			"module name matches");
-		t.deepEqual(info.subModules, [],
-			"no submodules");
-	});
+	const content = `/@ui5-bundles sap/ui/thirdparty/xxx.js
+if(!('xxx'in Node.prototype)){}
+//@ui5-bundle-raw-includes sap/ui/thirdparty/aaa.js
+(function(g,f){g.AAA=f();}(this,(function(){})));
+sap.ui.define("my/module", ["sap/ui/core/UIComponent"],function(n){"use strict";return 47+n});`;
+	const info = analyzeString(content, "modules/bundle-evo_invalid_comment.js");
+	t.is(info.name, "my/module.js",
+		"module name matches");
+	t.deepEqual(info.subModules, [],
+		"no submodules");
 });
 
 test("Declare two times", (t) => {
-	return analyze("modules/declare_times_two.js").then((info) => {
-		t.is(info.name, "sap/ui/testmodule.js",
-			"module name matches");
-		t.deepEqual(info.subModules, [],
-			"no submodules");
-	});
+	const content = `jQuery.sap.declare("sap.ui.testmodule");
+sap.ui.testmodule.load = function(modName) {
+	jQuery.sap.require(modName);
+};
+jQuery.sap.declare("sap.ui.testmodule");`;
+	const info = analyzeString(content, "modules/declare_times_two.js");
+	t.is(info.name, "sap/ui/testmodule.js",
+		"module name matches");
+	t.deepEqual(info.subModules, [],
+		"no submodules");
 });
 
-test("Declare unnamed", (t) => {
-	return analyze("modules/declare_unnamed.js").then((info) => {
-		t.is(info.name, "modules/declare_unnamed.js",
-			"module name matches");
-		t.deepEqual(info.subModules, [],
-			"no submodules");
-	});
+test("Declare dynamic name", (t) => {
+	const content = `var sCommonName = "sap.ui"
+jQuery.sap.declare(sCommonName + ".testmodule");
+
+sap.ui.testmodule.load = function(modName) {
+	jQuery.sap.require(modName);
+};`;
+	const info = analyzeString(content, "modules/dynamic_name.js");
+	t.is(info.name, "modules/dynamic_name.js",
+		"module name matches");
+	t.deepEqual(info.subModules, [],
+		"no submodules");
 });
