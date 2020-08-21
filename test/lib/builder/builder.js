@@ -1275,10 +1275,18 @@ const libraryHTree = {
 						"library/h/some.js",
 						"library/h/library.js",
 						"library/h/file.js",
-						"!library/h/not.js",
 						"!library/h/components/"
 					],
 					"resolve": false,
+					"renderer": false
+				}, {
+					"mode": "raw",
+					"filters": [
+						"library/h/not.js"
+					],
+					"resolve": true,
+					"declareModules": false,
+					"sort": true,
 					"renderer": false
 				}]
 			},

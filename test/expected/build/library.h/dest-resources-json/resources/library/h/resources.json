@@ -83,12 +83,14 @@
 		{
 			"name": "customBundle.js",
 			"module": "library/h/customBundle.js",
-			"size": 344,
+			"size": 495,
 			"merged": true,
 			"included": [
 				"library/h/file.js",
 				"library/h/library.js",
-				"library/h/some.js"
+				"library/h/some.js",
+				"library/h/other.js",
+				"library/h/not.js"
 			]
 		},
 		{
@@ -141,13 +143,17 @@
 		},
 		{
 			"name": "resources.json",
-			"size": 3383
+			"size": 3500
 		},
 		{
 			"name": "some.js",
 			"module": "library/h/some.js",
-			"size": 54,
-			"format": "raw"
+			"size": 99,
+			"format": "raw",
+			"merged": true,
+			"included": [
+				"library/h/other.js"
+			]
 		}
 	]
 }

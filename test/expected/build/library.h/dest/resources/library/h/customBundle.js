@@ -13,6 +13,12 @@ console.log(" Library ");
 	"library/h/some.js":function(){/*!
  * Some fancy copyright
  */
+//@ui5-bundle-raw-include library/h/other.js
 console.log(" Some ");
 }
 });
+//@ui5-bundle-raw-include library/h/not.js
+/*!
+ * Some fancy copyright
+ */
+console.log(" Not including ");
