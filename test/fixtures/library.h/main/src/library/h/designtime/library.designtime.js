@@ -3,9 +3,12 @@
  */
 
 /**
- * Initialization of designtime Code and shared classes for the library sap.ui.core.
+ * designtime and global export
  */
-sap.ui.define([], function() {
+var myexport = (function() {
+
 	"use strict";
-	return {};
-});
+
+	String("asd");
+
+}());

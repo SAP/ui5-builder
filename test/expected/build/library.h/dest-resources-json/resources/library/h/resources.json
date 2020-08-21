@@ -83,7 +83,7 @@
 		{
 			"name": "customBundle.js",
 			"module": "library/h/customBundle.js",
-			"size": 368,
+			"size": 344,
 			"merged": true,
 			"included": [
 				"library/h/file.js",
@@ -94,30 +94,33 @@
 		{
 			"name": "designtime/library.designtime.js",
 			"module": "library/h/designtime/library.designtime.js",
-			"size": 84,
+			"size": 86,
+			"requiresTopLevelScope": true,
+			"exposedGlobalNames": [
+				"myexport"
+			],
+			"format": "raw",
 			"designtime": true
-		},
-		{
-			"name": "designtime/messagebundle.properties",
-			"module": "library/h/designtime/messagebundle.properties",
-			"size": 3,
-			"designtime": true,
-			"locale": "",
-			"raw": "designtime/messagebundle.properties"
-		},
-		{
-			"name": "designtime/messagebundle_en.properties",
-			"module": "library/h/designtime/messagebundle_en.properties",
-			"size": 3,
-			"designtime": true,
-			"locale": "en",
-			"raw": "designtime/messagebundle.properties"
 		},
 		{
 			"name": "file.js",
 			"module": "library/h/file.js",
 			"size": 54,
 			"format": "raw"
+		},
+		{
+			"name": "i18n/messagebundle.properties",
+			"module": "library/h/i18n/messagebundle.properties",
+			"size": 3,
+			"locale": "",
+			"raw": "i18n/messagebundle.properties"
+		},
+		{
+			"name": "i18n/messagebundle_en.properties",
+			"module": "library/h/i18n/messagebundle_en.properties",
+			"size": 3,
+			"locale": "en",
+			"raw": "i18n/messagebundle.properties"
 		},
 		{
 			"name": "library.js",
@@ -138,16 +141,12 @@
 		},
 		{
 			"name": "resources.json",
-			"size": 3445
+			"size": 3383
 		},
 		{
 			"name": "some.js",
 			"module": "library/h/some.js",
-			"size": 86,
-			"requiresTopLevelScope": true,
-			"exposedGlobalNames": [
-				"myexport"
-			],
+			"size": 54,
 			"format": "raw"
 		}
 	]

@@ -1,4 +1,4 @@
 /*!
  * Some fancy copyright
  */
-sap.ui.define([],function(){"use strict";return{}});
+var myexport=function(){"use strict";String("asd")}();

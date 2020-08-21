@@ -1,10 +1,4 @@
 /*!
- * Some fancy copyright
+ * ${copyright}
  */
-var myexport = (function() {
-
-	"use strict";
-
-	String("asd");
-
-}());
+console.log(' Some ');
