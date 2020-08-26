@@ -24,7 +24,8 @@ test("Instantiation", (t) => {
 		"generateLibraryPreload",
 		"buildThemes",
 		"createDebugFiles",
-		"uglify"
+		"uglify",
+		"generateResourcesJson"
 	], "LibraryBuilder is instantiated with standard tasks");
 });
 
