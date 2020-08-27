@@ -126,7 +126,6 @@ test.serial("integration: Analysis of an xml view with core:require from databin
 	xmlns:mvc="sap.ui.core.mvc"
 	xmlns:core="sap.ui.core"
 	xmlns:template="http://schemas.sap.com/sapui5/extension/sap.ui.core.template/1"
-	controllerName="my.lib.theController"
 	>
 		<template:with path="entitySet>$Type" var="entityType">
 			<template:if test="{myCtx>myActions}">
@@ -149,7 +148,48 @@ test.serial("integration: Analysis of an xml view with core:require from databin
 	t.deepEqual(moduleInfo.dependencies,
 		[
 			"sap/ui/core/mvc/XMLView.js",
-			"my/lib/theController.controller.js",
+			"sap/m/Button.js"
+		], "Dependencies should come from the XML template");
+	t.true(moduleInfo.isImplicitDependency("sap/ui/core/mvc/XMLView.js"),
+		"Implicit dependency should be added since an XMLView is analyzed");
+
+	t.is(verboseLogStub.callCount, 2, "should be called 2 times");
+	t.is(verboseLogStub.getCall(0).args[0], "Ignoring core:require: Attribute contains an expression but is within a 'template' Node ", "first argument");
+	t.is(verboseLogStub.getCall(0).args[1], "Button", "second argument");
+});
+
+test.serial("integration: Analysis of an xml view with core:require from expression binding in template", async (t) => {
+	const logger = require("@ui5/logger");
+	const verboseLogStub = sinon.stub();
+	const myLoggerInstance = {
+		verbose: verboseLogStub
+	};
+	sinon.stub(logger, "getLogger").returns(myLoggerInstance);
+	const XMLTemplateAnalyzerWithStubbedLogger = mock.reRequire("../../../../lib/lbt/analyzer/XMLTemplateAnalyzer");
+
+	const xml = `<mvc:View
+	xmlns="sap.m"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:core="sap.ui.core"
+	xmlns:template="http://schemas.sap.com/sapui5/extension/sap.ui.core.template/1"
+	>
+		<template:if test="{myCtx>myActions}">
+			<Button
+				core:require="{= 'foo': true}"
+				id="myID"
+				text="{myAction>text}"
+				press="myMethod"
+			/>
+		</template:if>
+	</mvc:View>`;
+
+	const moduleInfo = new ModuleInfo();
+
+	const analyzer = new XMLTemplateAnalyzerWithStubbedLogger(fakeMockPool);
+	await analyzer.analyzeView(xml, moduleInfo);
+	t.deepEqual(moduleInfo.dependencies,
+		[
+			"sap/ui/core/mvc/XMLView.js",
 			"sap/m/Button.js"
 		], "Dependencies should come from the XML template");
 	t.true(moduleInfo.isImplicitDependency("sap/ui/core/mvc/XMLView.js"),
