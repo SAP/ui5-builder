@@ -63,6 +63,57 @@ test("integration: Analysis of an xml view with data binding in properties", asy
 
 test.serial("integration: Analysis of an xml view with core:require from databinding", async (t) => {
 	const logger = require("@ui5/logger");
+	const errorLogStub = sinon.stub();
+	const myLoggerInstance = {
+		error: errorLogStub
+	};
+	sinon.stub(logger, "getLogger").returns(myLoggerInstance);
+	const XMLTemplateAnalyzerWithStubbedLogger = mock.reRequire("../../../../lib/lbt/analyzer/XMLTemplateAnalyzer");
+
+	const xml = `<mvc:View
+	xmlns="sap.m"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:core="sap.ui.core"
+	xmlns:template="http://schemas.sap.com/sapui5/extension/sap.ui.core.template/1"
+	controllerName="my.lib.theController"
+	>
+		<HBox>
+			<template:with path="entitySet>$Type" var="entityType">
+				<template:if test="{myCtx>myActions}">
+				</template:if>
+			</template:with>
+		</HBox>
+		<HBox>
+			<Button
+					core:require="{= '{Handler: \\'' + \${myActions > handlerModule} + '\\'}'}"
+					id="myID"
+					text="{myAction>text}"
+					press="myMethod"
+				/>
+		</HBox>
+	</mvc:View>`;
+
+	const moduleInfo = new ModuleInfo();
+
+	const analyzer = new XMLTemplateAnalyzerWithStubbedLogger(fakeMockPool);
+	await analyzer.analyzeView(xml, moduleInfo);
+	t.deepEqual(moduleInfo.dependencies,
+		[
+			"sap/ui/core/mvc/XMLView.js",
+			"my/lib/theController.controller.js",
+			"sap/m/HBox.js",
+			"sap/m/Button.js"
+		], "Dependencies should come from the XML template");
+	t.true(moduleInfo.isImplicitDependency("sap/ui/core/mvc/XMLView.js"),
+		"Implicit dependency should be added since an XMLView is analyzed");
+
+	t.is(errorLogStub.callCount, 2, "should be called 2 times");
+	t.is(errorLogStub.getCall(0).args[0], "Ignoring core:require: Attribute can't be parsed on Node ", "first argument");
+	t.is(errorLogStub.getCall(0).args[1], "Button", "second argument");
+});
+
+test.serial("integration: Analysis of an xml view with core:require from databinding in template", async (t) => {
+	const logger = require("@ui5/logger");
 	const verboseLogStub = sinon.stub();
 	const myLoggerInstance = {
 		verbose: verboseLogStub
@@ -106,7 +157,7 @@ test.serial("integration: Analysis of an xml view with core:require from databin
 
 	t.is(verboseLogStub.callCount, 2, "should be called 2 times");
 	t.is(verboseLogStub.getCall(0).args[0], "Ignoring core:require: Attribute contains an expression but is within a 'template' Node ", "first argument");
-	t.is(verboseLogStub.getCall(0).args[1], "Button", "first argument");
+	t.is(verboseLogStub.getCall(0).args[1], "Button", "second argument");
 });
 
 test("integration: Analysis of an xml view with core:require", async (t) => {
@@ -164,7 +215,7 @@ test("integration: Analysis of an xml view with core:require (invalid module nam
 		"Implicit dependency should be added since an XMLView is analyzed");
 });
 
-test("integration: Analysis of an xml view with core:require (parsing error)", async (t) => {
+test("integration: Analysis of an xml view with core:require (missing comma, parsing error)", async (t) => {
 	const xml = `<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns="sap.m"
 		controllerName="myController"
 		core:require="{
