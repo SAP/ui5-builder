@@ -3,6 +3,14 @@ const XMLTemplateAnalyzer = require("../../../../lib/lbt/analyzer/XMLTemplateAna
 const ModuleInfo = require("../../../../lib/lbt/resources/ModuleInfo");
 const sinon = require("sinon");
 
+const mock = require("mock-require");
+
+test.afterEach.always((t) => {
+	mock.stopAll();
+	sinon.restore();
+});
+
+
 const fakeMockPool = {
 	findResource: () => Promise.resolve()
 };
@@ -51,6 +59,54 @@ test("integration: Analysis of an xml view with data binding in properties", asy
 		], "Dependencies should come from the XML template");
 	t.true(moduleInfo.isImplicitDependency("sap/ui/core/mvc/XMLView.js"),
 		"Implicit dependency should be added since an XMLView is analyzed");
+});
+
+test.serial("integration: Analysis of an xml view with core:require from databinding", async (t) => {
+	const logger = require("@ui5/logger");
+	const verboseLogStub = sinon.stub();
+	const myLoggerInstance = {
+		verbose: verboseLogStub
+	};
+	sinon.stub(logger, "getLogger").returns(myLoggerInstance);
+	const XMLTemplateAnalyzerWithStubbedLogger = mock.reRequire("../../../../lib/lbt/analyzer/XMLTemplateAnalyzer");
+
+	const xml = `<mvc:View
+	xmlns="sap.m"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:core="sap.ui.core"
+	xmlns:template="http://schemas.sap.com/sapui5/extension/sap.ui.core.template/1"
+	controllerName="my.lib.theController"
+	>
+		<template:with path="entitySet>$Type" var="entityType">
+			<template:if test="{myCtx>myActions}">
+				<template:repeat list="{myCtx>myActions}" var="myAction">
+					<Button
+						core:require="{= '{Handler: \\'' + \${myActions > handlerModule} + '\\'}'}"
+						id="myID"
+						text="{myAction>text}"
+						press="myMethod"
+					/>
+				</template:repeat>
+			</template:if>
+		</template:with>
+	</mvc:View>`;
+
+	const moduleInfo = new ModuleInfo();
+
+	const analyzer = new XMLTemplateAnalyzerWithStubbedLogger(fakeMockPool);
+	await analyzer.analyzeView(xml, moduleInfo);
+	t.deepEqual(moduleInfo.dependencies,
+		[
+			"sap/ui/core/mvc/XMLView.js",
+			"my/lib/theController.controller.js",
+			"sap/m/Button.js"
+		], "Dependencies should come from the XML template");
+	t.true(moduleInfo.isImplicitDependency("sap/ui/core/mvc/XMLView.js"),
+		"Implicit dependency should be added since an XMLView is analyzed");
+
+	t.is(verboseLogStub.callCount, 2, "should be called 2 times");
+	t.is(verboseLogStub.getCall(0).args[0], "Ignoring core:require: Attribute contains an expression but is within a 'template' Node ", "first argument");
+	t.is(verboseLogStub.getCall(0).args[1], "Button", "first argument");
 });
 
 test("integration: Analysis of an xml view with core:require", async (t) => {
