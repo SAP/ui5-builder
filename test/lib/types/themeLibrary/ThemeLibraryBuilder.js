@@ -27,7 +27,11 @@ test("tasks", async (t) => {
 			createSubLogger: () => {
 				return {
 					createTaskLogger: () => {
-
+						return {
+							addWork: () => undefined,
+							startWork: () => undefined,
+							completeWork: () => undefined
+						};
 					}
 				};
 			}
@@ -38,9 +42,14 @@ test("tasks", async (t) => {
 			}
 		}
 	});
-	const asyncTasks = Object.keys(themeLibraryBuilder.tasks).map((taskKey) => {
-		return themeLibraryBuilder.tasks[taskKey]();
-	});
 
-	t.is(asyncTasks.length, 4, "all tasks should be added");
+	const taskNames = Object.keys(themeLibraryBuilder.tasks);
+	t.deepEqual(taskNames, [
+		"replaceCopyright",
+		"replaceVersion",
+		"buildThemes",
+		"generateResourcesJson",
+	], "Expected tasks have been added");
+
+	await themeLibraryBuilder.build(taskNames);
 });
