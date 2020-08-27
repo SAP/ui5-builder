@@ -42,5 +42,5 @@ test("tasks", async (t) => {
 		return themeLibraryBuilder.tasks[taskKey]();
 	});
 
-	t.is(asyncTasks.length, 4, "all 3 tasks should be added");
+	t.is(asyncTasks.length, 4, "all tasks should be added");
 });
