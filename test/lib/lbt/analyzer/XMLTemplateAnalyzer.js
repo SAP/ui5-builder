@@ -154,8 +154,7 @@ test.serial("integration: Analysis of an xml view with core:require from databin
 		"Implicit dependency should be added since an XMLView is analyzed");
 
 	t.is(verboseLogStub.callCount, 2, "should be called 2 times");
-	t.is(verboseLogStub.getCall(0).args[0], "Ignoring core:require: Attribute contains an expression but is within a 'template' Node ", "first argument");
-	t.is(verboseLogStub.getCall(0).args[1], "Button", "second argument");
+	t.is(verboseLogStub.getCall(0).args[0], "Ignoring core:require: Attribute of Node Button contains an expression binding and is within a 'template' Node", "first argument");
 });
 
 test.serial("integration: Analysis of an xml view with core:require from expression binding in template", async (t) => {
@@ -196,8 +195,7 @@ test.serial("integration: Analysis of an xml view with core:require from express
 		"Implicit dependency should be added since an XMLView is analyzed");
 
 	t.is(verboseLogStub.callCount, 2, "should be called 2 times");
-	t.is(verboseLogStub.getCall(0).args[0], "Ignoring core:require: Attribute contains an expression but is within a 'template' Node ", "first argument");
-	t.is(verboseLogStub.getCall(0).args[1], "Button", "second argument");
+	t.is(verboseLogStub.getCall(0).args[0], "Ignoring core:require: Attribute of Node Button contains an expression binding and is within a 'template' Node", "first argument");
 });
 
 test("integration: Analysis of an xml view with core:require", async (t) => {
