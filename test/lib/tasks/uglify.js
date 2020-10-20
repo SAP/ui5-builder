@@ -23,7 +23,7 @@ test();`;
 		path: "/test.js",
 		string: content
 	});
-	const expected = "function test(t){var o=t;console.log(o)}test();";
+	const expected = `function test(t){var o=t;console.log(o)}test();`;
 
 	return reader.write(testResource)
 		.then(() => {
