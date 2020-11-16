@@ -156,3 +156,50 @@ test("integration: Library without i18n bundle file failure", async (t) => {
 		t.is(error.message, "[versionInfoGenerator]: Missing options parameters");
 	});
 });
+
+
+test("integration: Library without i18n bundle with manifest", async (t) => {
+	t.context.workspace = createWorkspace();
+	t.context.dependencies = createDependencies();
+
+	t.context.resources = [];
+	t.context.resources.push(resourceFactory.createResource({
+		path: "/resources/test/lib/.library",
+		string: `
+			<?xml version="1.0" encoding="UTF-8" ?>
+			<library xmlns="http://www.sap.com/sap.ui.library.xsd" >
+
+				<name>test.lib</name>
+				<vendor>SAP SE</vendor>
+				<copyright></copyright>
+				<version>2.0.0</version>
+
+				<documentation>Test Lib</documentation>
+
+			</library>
+		`,
+		project: t.context.workspace._project
+	}));
+
+	t.context.resources.push(resourceFactory.createResource({
+		path: "/resources/pony/manifest.json",
+		string: `
+			{
+				"sap.app": {}
+			}
+		`,
+		project: t.context.workspace._project
+	}));
+	const oOptions = await createOptions(t);
+	oOptions.options.namespace = "pony";
+	await assertCreatedVersionInfo(t, {
+		"libraries": [{
+			"name": "test.lib3",
+			"scmRevision": "",
+			"version": "3.0.0"
+		}],
+		"name": "myname",
+		"scmRevision": "",
+		"version": "1.33.7",
+	}, oOptions.options);
+});
