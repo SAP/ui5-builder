@@ -37,6 +37,18 @@ function createDependencies() {
 	});
 }
 
+function createDependenciesWithManifest() {
+	return resourceFactory.createAdapter({
+		fsBasePath: path.join(__dirname, "..", "..", "fixtures", "library.e", "src"),
+		virBasePath: "/resources/",
+		project: {
+			metadata: {
+				name: "library.e"
+			},
+			version: "3.0.0"}
+	});
+}
+
 async function createOptions(t, options) {
 	const {workspace, dependencies, resources} = t.context;
 
@@ -160,7 +172,7 @@ test("integration: Library without i18n bundle file failure", async (t) => {
 
 test("integration: Library without i18n bundle with manifest", async (t) => {
 	t.context.workspace = createWorkspace();
-	t.context.dependencies = createDependencies();
+	t.context.dependencies = createDependenciesWithManifest();
 
 	t.context.resources = [];
 	t.context.resources.push(resourceFactory.createResource({
@@ -182,7 +194,7 @@ test("integration: Library without i18n bundle with manifest", async (t) => {
 	}));
 
 	t.context.resources.push(resourceFactory.createResource({
-		path: "/resources/pony/manifest.json",
+		path: "/resources/test/lib/manifest.json",
 		string: `
 			{
 				"sap.app": {}
@@ -190,8 +202,16 @@ test("integration: Library without i18n bundle with manifest", async (t) => {
 		`,
 		project: t.context.workspace._project
 	}));
-	const oOptions = await createOptions(t);
-	oOptions.options.namespace = "pony";
+	const oOptions = await createOptions(t, {
+		projectName: "Test Lib",
+		pattern: "/resources/**/.library",
+		rootProject: {
+			metadata: {
+				name: "myname"
+			},
+			version: "1.33.7"
+		}
+	});
 	await assertCreatedVersionInfo(t, {
 		"libraries": [{
 			"name": "test.lib3",
