@@ -228,7 +228,7 @@ test.serial("getManifest: invalid JSON", async (t) => {
 
 	const error = await t.throwsAsync(libraryFormatter.getManifest());
 	t.deepEqual(error.message,
-		"Failed to read manifest.json for project application.b: " +
+		"Failed to read manifest.json or manifest.appdescr_variant for project application.b: " +
 		"Unexpected token p in JSON at position 0",
 		"Rejected with correct error message");
 	t.deepEqual(readFileStub.callCount, 1, "fs.read got called once");
@@ -246,7 +246,7 @@ test.serial("getManifest: fs read error", async (t) => {
 
 	const error = await t.throwsAsync(libraryFormatter.getManifest());
 	t.deepEqual(error.message,
-		"Failed to read manifest.json for project application.b: " +
+		"Failed to read manifest.json or manifest.appdescr_variant for project application.b: " +
 		"EPON: Pony Error",
 		"Rejected with correct error message");
 	t.deepEqual(readFileStub.callCount, 1, "fs.read got called once");
@@ -255,6 +255,74 @@ test.serial("getManifest: fs read error", async (t) => {
 });
 
 test.serial("getManifest: result is cached", async (t) => {
+	const myProject = clone(applicationBTree);
+
+	const readFileStub = sinon.stub(fs, "readFile").callsArgWithAsync(1, undefined,
+		`{"pony": "no unicorn"}`);
+
+	const ApplicationFormatter = mock.reRequire("../../../../lib/types/application/ApplicationFormatter");
+	const libraryFormatter = new ApplicationFormatter({project: myProject});
+	const expectedPath = path.join(applicationBPath, "webapp", "manifest.json");
+
+	const {content, fsPath} = await libraryFormatter.getManifest();
+	t.deepEqual(content, {pony: "no unicorn"}, "Correct result on first call");
+	t.deepEqual(fsPath, expectedPath, "Correct manifest.json path returned on first call");
+
+	const {content: content2, fsPath: fsPath2} = await libraryFormatter.getManifest();
+	t.deepEqual(content2, {pony: "no unicorn"}, "Correct result on second call");
+	t.deepEqual(fsPath2, expectedPath, "Correct manifest.json path returned on second call");
+
+	t.deepEqual(readFileStub.callCount, 1, "fs.read got called exactly once (and then cached)");
+});
+
+test("getManifest - appdescr_variant fallback: reads correctly", async (t) => {
+	const myProject = clone(applicationBTree);
+
+	const libraryFormatter = new ApplicationFormatter({project: myProject});
+
+	const {content, fsPath} = await libraryFormatter.getManifest();
+	t.deepEqual(content._version, "1.1.0", "manifest.json content has been read");
+	const expectedPath = path.join(applicationBPath, "webapp", "manifest.json");
+	t.deepEqual(fsPath, expectedPath, "Correct manifest.json path returned");
+});
+
+test.serial("getManifest - appdescr_variant fallback: invalid JSON", async (t) => {
+	const myProject = clone(applicationBTree);
+
+	const readFileStub = sinon.stub(fs, "readFile").callsArgWithAsync(1, undefined, "pony");
+
+	const ApplicationFormatter = mock.reRequire("../../../../lib/types/application/ApplicationFormatter");
+	const libraryFormatter = new ApplicationFormatter({project: myProject});
+
+	const error = await t.throwsAsync(libraryFormatter.getManifest());
+	t.deepEqual(error.message,
+		"Failed to read manifest.json or manifest.appdescr_variant for project application.b: " +
+		"Unexpected token p in JSON at position 0",
+		"Rejected with correct error message");
+	t.deepEqual(readFileStub.callCount, 1, "fs.read got called once");
+	const expectedPath = path.join(applicationBPath, "webapp", "manifest.json");
+	t.deepEqual(readFileStub.getCall(0).args[0], expectedPath, "fs.read got called with the correct argument");
+});
+
+test.serial("getManifest - appdescr_variant fallback: fs read error", async (t) => {
+	const myProject = clone(applicationBTree);
+
+	const readFileStub = sinon.stub(fs, "readFile").callsArgWithAsync(1, new Error("EPON: Pony Error"));
+
+	const ApplicationFormatter = mock.reRequire("../../../../lib/types/application/ApplicationFormatter");
+	const libraryFormatter = new ApplicationFormatter({project: myProject});
+
+	const error = await t.throwsAsync(libraryFormatter.getManifest());
+	t.deepEqual(error.message,
+		"Failed to read manifest.json or manifest.appdescr_variant for project application.b: " +
+		"EPON: Pony Error",
+		"Rejected with correct error message");
+	t.deepEqual(readFileStub.callCount, 1, "fs.read got called once");
+	const expectedPath = path.join(applicationBPath, "webapp", "manifest.json");
+	t.deepEqual(readFileStub.getCall(0).args[0], expectedPath, "fs.read got called with the correct argument");
+});
+
+test.serial("getManifest - appdescr_variant fallback: result is cached", async (t) => {
 	const myProject = clone(applicationBTree);
 
 	const readFileStub = sinon.stub(fs, "readFile").callsArgWithAsync(1, undefined,
