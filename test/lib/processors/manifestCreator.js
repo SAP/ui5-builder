@@ -16,14 +16,28 @@ const libraryContent = `<?xml version="1.0" encoding="UTF-8" ?>
 	      <libraryName>sap.ui.core</libraryName>
 	    </dependency>
 	</dependencies>
+	
+	<appData>
+		<manifest xmlns="http://www.sap.com/ui5/buildext/manifest">
+			<i18n>i18n/i18n.properties</i18n>
+		</manifest>
+	</appData>
 </library>`;
 
 const expectedManifestContent = `{
-  "_version": "1.9.0",
+  "_version": "1.21.0",
   "sap.app": {
     "id": "library.e",
     "type": "library",
     "embeds": [],
+    "i18n": {
+      "bundleUrl": "i18n/i18n.properties",
+      "supportedLocales": [
+        "",
+        "de",
+        "en"
+      ]
+    },
     "applicationVersion": {
       "version": "1.0.0"
     },
@@ -65,10 +79,10 @@ test.afterEach.always((t) => {
 
 test.serial("default manifest creation", async (t) => {
 	const {manifestCreator, errorLogStub} = t.context;
-
+	const prefix = "/resources/sap/ui/mine/";
 	const libraryResource = {
 		getPath: () => {
-			return "/resources/sap/ui/mine/.library";
+			return prefix + ".library";
 		},
 		getString: async () => {
 			return libraryContent;
@@ -81,15 +95,23 @@ test.serial("default manifest creation", async (t) => {
 			}]
 		}
 	};
-
+	const resources = ["", "_en", "_de"].map((lang) => {
+		return {
+			getPath: () => {
+				return `${prefix}i18n/i18n${lang}.properties`;
+			}
+		};
+	});
 	t.is(errorLogStub.callCount, 0);
 
-	const result = await manifestCreator({libraryResource, resources: [], options: {}});
+	const result = await manifestCreator({libraryResource, resources, options: {}});
 	t.is(await result.getString(), expectedManifestContent, "Correct result returned");
 });
 
 test.serial("manifest creation for sap/apf", async (t) => {
 	const {manifestCreator, errorLogStub, verboseLogStub} = t.context;
+
+	const prefix = "/resources/sap/apf/";
 
 	const libraryResource = {
 		getPath: () => {
@@ -109,85 +131,28 @@ test.serial("manifest creation for sap/apf", async (t) => {
 
 	const componentResource = {
 		getPath: () => {
-			return "/resources/sap/apf/Component.js";
+			return prefix + "Component.js";
 		}
 	};
-
+	const resources = ["", "_en", "_de"].map((lang) => {
+		return {
+			getPath: () => {
+				return `${prefix}i18n/i18n${lang}.properties`;
+			}
+		};
+	});
+	resources.push(componentResource);
 	const result = await manifestCreator({libraryResource, resources: [componentResource], options: {}});
 	t.is(await result.getString(), expectedManifestContent, "Correct result returned");
 
 	t.is(errorLogStub.callCount, 0);
 
 	t.is(verboseLogStub.callCount, 9);
+	t.is(verboseLogStub.getCall(0).args[0], "sap.app/i18n taken from .library appData: '%s'");
 	t.is(verboseLogStub.getCall(1).args[0],
 		"Package %s contains both '*.library' and 'Component.js'. " +
 		"This is a known issue but can't be solved due to backward compatibility.");
 	t.is(verboseLogStub.getCall(1).args[1], "/resources/sap/apf");
-});
-
-test.serial("manifest creation for sap/ui/core", async (t) => {
-	const {manifestCreator, errorLogStub, verboseLogStub} = t.context;
-
-	const expectedManifestContent = JSON.stringify({
-		"_version": "1.9.0",
-		"sap.app": {
-			"id": "sap.ui.core",
-			"type": "library",
-			"embeds": [],
-			"applicationVersion": {
-				"version": "1.0.0"
-			},
-			"title": "sap.ui.core",
-			"resources": "resources.json",
-			"offline": true
-		},
-		"sap.ui": {
-			"technology": "UI5",
-			"supportedThemes": []
-		},
-		"sap.ui5": {
-			"dependencies": {
-				"libs": {}
-			},
-			"library": {
-				"i18n": false
-			}
-		}
-	}, null, 2);
-
-	const libraryResource = {
-		getPath: () => {
-			return "/resources/sap/ui/core/.library";
-		},
-		getString: async () => {
-			return `<?xml version="1.0" encoding="UTF-8" ?>
-			<library xmlns="http://www.sap.com/sap.ui.library.xsd" >
-				<name>sap.ui.core</name>
-				<version>1.0.0</version>
-			</library>`;
-		},
-		_project: {
-			metadata: {
-				name: "sap.ui.core"
-			}
-		}
-	};
-
-	const componentResource = {
-		getPath: () => {
-			return "/resources/sap/ui/core/Component.js";
-		}
-	};
-
-	const result = await manifestCreator({libraryResource, resources: [componentResource], options: {}});
-	t.is(await result.getString(), expectedManifestContent, "Correct result returned");
-
-	t.is(errorLogStub.callCount, 0);
-
-	t.is(verboseLogStub.callCount, 8);
-	t.is(verboseLogStub.getCall(1).args[0],
-		"  sap.app/id taken from .library: '%s'");
-	t.is(verboseLogStub.getCall(1).args[1], "sap.ui.core");
 });
 
 test.serial("manifest creation with .library / Component.js at same namespace", async (t) => {
