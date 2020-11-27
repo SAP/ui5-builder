@@ -37,18 +37,6 @@ function createDependencies() {
 	});
 }
 
-function createDependenciesWithManifest() {
-	return resourceFactory.createAdapter({
-		fsBasePath: path.join(__dirname, "..", "..", "fixtures", "library.e", "src"),
-		virBasePath: "/resources/",
-		project: {
-			metadata: {
-				name: "library.e"
-			},
-			version: "3.0.0"}
-	});
-}
-
 async function createOptions(t, options) {
 	const {workspace, dependencies, resources} = t.context;
 
@@ -71,8 +59,12 @@ async function createOptions(t, options) {
 }
 
 
-async function assertCreatedVersionInfo(t, oExpectedVersionInfo, options) {
+async function assertCreatedVersionInfoAndCreateOptions(t, oExpectedVersionInfo, options) {
 	const oOptions = await createOptions(t, options);
+	await assertCreatedVersionInfo(t, oExpectedVersionInfo, oOptions);
+}
+
+async function assertCreatedVersionInfo(t, oExpectedVersionInfo, oOptions) {
 	await generateVersionInfo(oOptions);
 
 	const resource = await oOptions.workspace.byPath("/resources/sap-ui-version.json");
@@ -91,6 +83,12 @@ async function assertCreatedVersionInfo(t, oExpectedVersionInfo, options) {
 		t.is(lib.buildTimestamp.length, 12, "Timestamp should have length of 12 (yyyyMMddHHmm)");
 		delete lib.buildTimestamp; // removing to allow deep comparison
 	});
+
+	currentVersionInfo.libraries.sort((libraryA, libraryB) => {
+
+		return libraryA.name.localeCompare(libraryB.name);
+	});
+
 	t.deepEqual(currentVersionInfo, oExpectedVersionInfo, "Correct content");
 }
 
@@ -117,7 +115,7 @@ test("integration: Library without i18n bundle file", async (t) => {
 		project: t.context.workspace._project
 	}));
 
-	await assertCreatedVersionInfo(t, {
+	await assertCreatedVersionInfoAndCreateOptions(t, {
 		"libraries": [{
 			"name": "test.lib3",
 			"scmRevision": "",
@@ -171,11 +169,28 @@ test("integration: Library without i18n bundle file failure", async (t) => {
 
 
 test("integration: Library without i18n bundle with manifest", async (t) => {
-	t.context.workspace = createWorkspace();
-	t.context.dependencies = createDependenciesWithManifest();
+	const workspace = resourceFactory.createAdapter({
+		virBasePath: "/",
+		project: {
+			metadata: {
+				name: "test.lib",
+				namespace: "test/lib"
+			},
+			version: "2.0.0",
+			dependencies: [
+				{
+					metadata: {
+						name: "sap.ui.core"
+					},
+					version: "1.0.0"
+				}
+			]
+		}
+	});
 
-	t.context.resources = [];
-	t.context.resources.push(resourceFactory.createResource({
+	// TODO .library should not be required
+	// only use .library if manifest.json is not there
+	await workspace.write(resourceFactory.createResource({
 		path: "/resources/test/lib/.library",
 		string: `
 			<?xml version="1.0" encoding="UTF-8" ?>
@@ -190,36 +205,276 @@ test("integration: Library without i18n bundle with manifest", async (t) => {
 
 			</library>
 		`,
-		project: t.context.workspace._project
+		project: workspace._project
 	}));
 
-	t.context.resources.push(resourceFactory.createResource({
+	await workspace.write(resourceFactory.createResource({
 		path: "/resources/test/lib/manifest.json",
 		string: `
 			{
-				"sap.app": {}
+				"sap.app": {
+					"embeds": ["subcomp"]
+				},
+				"sap.ui5": {
+				    "dependencies": {
+				      "minUI5Version": "1.84",
+				      "libs": {
+				        "lib.a": {
+				          "minVersion": "1.84.0"
+				        },
+				        "lib.b": {
+				          "minVersion": "1.84.0",
+				          "lazy": true
+				        }
+				      }
+				    }
+				}
 			}
 		`,
-		project: t.context.workspace._project
+		project: workspace._project
 	}));
-	const oOptions = await createOptions(t, {
-		projectName: "Test Lib",
-		pattern: "/resources/**/.library",
-		rootProject: {
+
+	await workspace.write(resourceFactory.createResource({
+		path: "/resources/test/lib/subcomp/manifest.json",
+		string: `
+			{
+				"sap.app": {
+					"embeds": []
+				},
+				"sap.ui5": {
+				    "dependencies": {
+				      "minUI5Version": "1.84",
+				      "libs": {
+				        "libY": {
+				          "minVersion": "1.84.0"
+				        },
+				        "libX": {
+				          "minVersion": "1.84.0",
+				          "lazy": true
+				        }
+				      }
+				    }
+				}
+			}
+		`,
+		project: workspace._project
+	}));
+
+	// dependencies
+	const createProjectMetadata = (nameArray) => {
+		return {
 			metadata: {
-				name: "myname"
+				name: nameArray.join("."),
+				namespace: nameArray.join("/")
+			}
+		};
+	};
+	const dependencies = resourceFactory.createAdapter({
+		virBasePath: "/",
+		project: {
+			metadata: {
+				name: "lib.a",
+				namespace: "lib/a"
 			},
-			version: "1.33.7"
+			version: "2.0.0",
+			dependencies: [
+				{
+					metadata: {
+						name: "sap.ui.core"
+					},
+					version: "1.0.0"
+				}
+			]
 		}
 	});
+
+	// lib.a
+	await dependencies.write(resourceFactory.createResource({
+		path: "/resources/lib/a/.library",
+		string: `
+			<?xml version="1.0" encoding="UTF-8" ?>
+			<library xmlns="http://www.sap.com/sap.ui.library.xsd" >
+				<name>lib.a</name>
+				<vendor>SAP SE</vendor>
+				<copyright></copyright>
+				<version>2.0.0</version>
+
+				<documentation>Library A</documentation>
+			</library>
+		`,
+		project: createProjectMetadata(["lib", "a"])
+	}));
+	await dependencies.write(resourceFactory.createResource({
+		path: "/resources/lib/a/manifest.json",
+		string: `
+			{
+				"sap.app": {
+					"embeds": []
+				},
+				"sap.ui5": {
+				    "dependencies": {
+				      "minUI5Version": "1.84",
+				      "libs": {
+				        "lib.c": {
+				          "minVersion": "1.84.0"
+				        },
+				        "lib.b": {
+				            "minVersion": "1.84.0"
+				        }
+				      }
+				    }
+				}
+			}
+		`,
+		project: createProjectMetadata(["lib", "a"])
+	}));
+
+	// lib.c
+	await dependencies.write(resourceFactory.createResource({
+		path: "/resources/lib/c/.library",
+		string: `
+			<?xml version="1.0" encoding="UTF-8" ?>
+			<library xmlns="http://www.sap.com/sap.ui.library.xsd" >
+				<name>lib.c</name>
+				<vendor>SAP SE</vendor>
+				<copyright></copyright>
+				<version>2.0.0</version>
+
+				<documentation>Library C</documentation>
+			</library>
+		`,
+		project: createProjectMetadata(["lib", "c"])
+	}));
+	await dependencies.write(resourceFactory.createResource({
+		path: "/resources/lib/c/manifest.json",
+		string: `
+			{
+				"sap.app": {
+					"embeds": []
+				},
+				"sap.ui5": {
+				    "dependencies": {
+				      "minUI5Version": "1.84",
+				      "libs": {
+				      }
+				    }
+				}
+			}
+		`,
+		project: createProjectMetadata(["lib", "c"])
+	}));
+
+	// lib.b
+	await dependencies.write(resourceFactory.createResource({
+		path: "/resources/lib/b/.library",
+		string: `
+			<?xml version="1.0" encoding="UTF-8" ?>
+			<library xmlns="http://www.sap.com/sap.ui.library.xsd" >
+				<name>lib.b</name>
+				<vendor>SAP SE</vendor>
+				<copyright></copyright>
+				<version>2.0.0</version>
+
+				<documentation>Library B</documentation>
+			</library>
+		`,
+		project: createProjectMetadata(["lib", "b"])
+	}));
+	await dependencies.write(resourceFactory.createResource({
+		path: "/resources/lib/b/manifest.json",
+		string: `
+			{
+				"sap.app": {
+					"embeds": []
+				},
+				"sap.ui5": {
+				    "dependencies": {
+				      "minUI5Version": "1.84",
+				      "libs": {
+				        "lib.d": {
+				          "minVersion": "1.84.0"
+				        }
+				      }
+				    }
+				}
+			}
+		`,
+		project: createProjectMetadata(["lib", "b"])
+	}));
+
+	// lib.d
+	await dependencies.write(resourceFactory.createResource({
+		path: "/resources/lib/d/.library",
+		string: `
+			<?xml version="1.0" encoding="UTF-8" ?>
+			<library xmlns="http://www.sap.com/sap.ui.library.xsd" >
+				<name>lib.d</name>
+				<vendor>SAP SE</vendor>
+				<copyright></copyright>
+				<version>2.0.0</version>
+
+				<documentation>Library D</documentation>
+			</library>
+		`,
+		project: createProjectMetadata(["lib", "d"])
+	}));
+	await dependencies.write(resourceFactory.createResource({
+		path: "/resources/lib/d/manifest.json",
+		string: `
+			{
+				"sap.app": {
+					"embeds": []
+				},
+				"sap.ui5": {
+				    "dependencies": {
+				      "minUI5Version": "1.84",
+				      "libs": {
+				      }
+				    }
+				}
+			}
+		`,
+		project: createProjectMetadata(["lib", "d"])
+	}));
+
+	const oOptions = {
+		options: {
+			projectName: "Test Lib",
+			pattern: "/resources/**/.library",
+			rootProject: {
+				metadata: {
+					name: "myname"
+				},
+				version: "1.33.7"
+			}
+		},
+		workspace,
+		dependencies
+	};
 	await assertCreatedVersionInfo(t, {
+		"components": [],
 		"libraries": [{
-			"name": "test.lib3",
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.b": {},
+						"lib.c": {}
+					}
+				}
+			},
+			"name": "lib.a",
 			"scmRevision": "",
-			"version": "3.0.0"
+		},
+		{
+			"name": "lib.b",
+			"scmRevision": "",
+		},
+		{
+			"name": "lib.c",
+			"scmRevision": "",
 		}],
 		"name": "myname",
 		"scmRevision": "",
 		"version": "1.33.7",
-	}, oOptions.options);
+	}, oOptions);
 });
