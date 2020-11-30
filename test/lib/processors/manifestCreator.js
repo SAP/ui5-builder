@@ -116,3 +116,89 @@ test.serial("manifest creation for sap/apf", async (t) => {
 		"This is a known issue but can't be solved due to backward compatibility.");
 	t.is(verboseLogStub.firstCall.args[1], "/resources/sap/apf/Component.js");
 });
+
+test.serial("manifest creation with embedded component", async (t) => {
+	const expectedManifestContent = JSON.stringify({
+		"_version": "1.9.0",
+		"sap.app": {
+			"id": "sap.lib1",
+			"type": "library",
+			"embeds": [],
+			"applicationVersion": {
+				"version": "1.0.0"
+			},
+			"title": "sap.lib1",
+			"resources": "resources.json",
+			"offline": true
+		},
+		"sap.ui": {
+			"technology": "UI5",
+			"supportedThemes": []
+		},
+		"sap.ui5": {
+			"dependencies": {
+				"libs": {}
+			},
+			"library": {
+				"i18n": false
+			}
+		}
+	}, null, 2);
+
+	// const logger = require("@ui5/logger");
+	// const verboseLogStub = sinon.stub();
+	// const myLoggerInstance = {
+	// 	verbose: verboseLogStub
+	// };
+	// sinon.stub(logger, "getLogger").returns(myLoggerInstance);
+	const manifestCreatorWithStub = mock.reRequire("../../../lib/processors/manifestCreator");
+
+	const libraryResource = {
+		getPath: () => {
+			return "/resources/sap/lib1/.library";
+		},
+		getString: async () => {
+			return `<?xml version="1.0" encoding="UTF-8" ?>
+			<library xmlns="http://www.sap.com/sap.ui.library.xsd" >
+				<name>sap.lib1</name>
+				<version>1.0.0</version>
+			</library>`;
+		},
+		_project: {
+			dependencies: [{
+				metadata: {
+					name: "sap.ui.core"
+				}
+			}]
+		}
+	};
+
+	const componentResource = {
+		getPath: () => {
+			return "/resources/sap/lib1/component1/Component.js";
+		}
+	};
+	const componentManifestResource = {
+		getPath: () => {
+			return "/resources/sap/lib1/component1/manifest.json";
+		},
+		getString: async () => {
+			return JSON.stringify({
+				"sap.app": {
+					"embeddedBy": "../"
+				}
+			});
+		}
+	};
+
+	const result = await manifestCreatorWithStub({
+		libraryResource,
+		resources: [
+			componentResource,
+			componentManifestResource
+		]
+	});
+	t.is(await result.getString(), expectedManifestContent, "Correct result returned");
+
+	// t.is(verboseLogStub.callCount, 8);
+});
