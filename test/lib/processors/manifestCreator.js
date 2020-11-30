@@ -413,9 +413,7 @@ test.serial("manifest creation with embedded component (Missing 'embeddedBy')", 
 			return "/resources/sap/lib1/component1/manifest.json";
 		},
 		getString: async () => {
-			return JSON.stringify({
-				"sap.app": {}
-			});
+			return JSON.stringify({});
 		}
 	};
 
