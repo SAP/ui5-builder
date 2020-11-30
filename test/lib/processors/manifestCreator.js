@@ -110,11 +110,11 @@ test.serial("manifest creation for sap/apf", async (t) => {
 	const result = await manifestCreatorWithStub({libraryResource, resources: [componentResource], options: {}});
 	t.is(await result.getString(), expectedManifestContent, "Correct result returned");
 
-	t.is(verboseLogStub.callCount, 8);
-	t.is(verboseLogStub.firstCall.args[0],
+	t.is(verboseLogStub.callCount, 9);
+	t.is(verboseLogStub.getCall(1).args[0],
 		"Package %s contains both '*.library' and 'Component.js'. " +
 		"This is a known issue but can't be solved due to backward compatibility.");
-	t.is(verboseLogStub.firstCall.args[1], "/resources/sap/apf/Component.js");
+	t.is(verboseLogStub.getCall(1).args[1], "/resources/sap/apf");
 });
 
 test.serial("manifest creation with embedded component", async (t) => {
@@ -123,7 +123,9 @@ test.serial("manifest creation with embedded component", async (t) => {
 		"sap.app": {
 			"id": "sap.lib1",
 			"type": "library",
-			"embeds": [],
+			"embeds": [
+				"component1"
+			],
 			"applicationVersion": {
 				"version": "1.0.0"
 			},
@@ -145,12 +147,14 @@ test.serial("manifest creation with embedded component", async (t) => {
 		}
 	}, null, 2);
 
-	// const logger = require("@ui5/logger");
-	// const verboseLogStub = sinon.stub();
-	// const myLoggerInstance = {
-	// 	verbose: verboseLogStub
-	// };
-	// sinon.stub(logger, "getLogger").returns(myLoggerInstance);
+	const logger = require("@ui5/logger");
+	const verboseLogStub = sinon.stub();
+	const errorLogStub = sinon.stub();
+	const myLoggerInstance = {
+		verbose: verboseLogStub,
+		error: errorLogStub
+	};
+	sinon.stub(logger, "getLogger").returns(myLoggerInstance);
 	const manifestCreatorWithStub = mock.reRequire("../../../lib/processors/manifestCreator");
 
 	const libraryResource = {
@@ -200,5 +204,13 @@ test.serial("manifest creation with embedded component", async (t) => {
 	});
 	t.is(await result.getString(), expectedManifestContent, "Correct result returned");
 
-	// t.is(verboseLogStub.callCount, 8);
+	t.is(errorLogStub.callCount, 0);
+
+	t.true(verboseLogStub.callCount >= 2, "There should be at least 2 verbose log calls");
+	t.deepEqual(verboseLogStub.getCall(0).args, [
+		"checking component at %s", "/resources/sap/lib1/component1"
+	]);
+	t.deepEqual(verboseLogStub.getCall(1).args, [
+		"  component's 'sap.app/embeddedBy' property points to library, list it as 'embedded'"
+	]);
 });
