@@ -416,7 +416,6 @@ test("integration: Library without i18n bundle with manifest", async (t) => {
 	}));
 
 
-
 	const oOptions = {
 		options: {
 			projectName: "Test Lib",
@@ -432,13 +431,12 @@ test("integration: Library without i18n bundle with manifest", async (t) => {
 		dependencies
 	};
 	await assertCreatedVersionInfo(t, {
-		"components": [],
+		"components": {},
 		"libraries": [{
 			"manifestHints": {
 				"dependencies": {
 					"libs": {
 						"lib.b": {},
-						"lib.d": {},
 						"lib.c": {}
 					}
 				}
@@ -447,35 +445,20 @@ test("integration: Library without i18n bundle with manifest", async (t) => {
 			"scmRevision": "",
 		},
 		{
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
-						"lib.d": {}
-					}
-				}
-			},
 			"name": "lib.b",
 			"scmRevision": "",
 		},
 		{
-			"name": "lib.c",
-			"scmRevision": "",
-		},
-		{
 			"manifestHints": {
 				"dependencies": {
 					"libs": {
-						"lib.e": {
-							lazy: true
+						"lib.b": {
+							"lazy": true
 						}
 					}
 				}
 			},
-			"name": "lib.d",
-			"scmRevision": "",
-		},
-		{
-			"name": "lib.e",
+			"name": "lib.c",
 			"scmRevision": "",
 		}],
 		"name": "myname",
@@ -485,6 +468,25 @@ test("integration: Library without i18n bundle with manifest", async (t) => {
 });
 
 test("integration: Library without i18n bundle with manifest max", async (t) => {
+	// 	// top level libraries
+	// 	//  // lib.a => lib.c, lib.b
+	// 	// 	// lib.b => lib.d
+	// 	// 	// lib.c => lib.e, lib.b (true)
+	// 	// 	// lib.d => lib.e (true)
+	// 	// 	// lib.e =>
+	// 	// TODO optimize duplicate resolve (e.g. cache)
+	//
+	// 	// lib.a
+	// 	// :processing: lib.c
+	// 	// :processing: lib.e
+	// 	//   setting lib.e ==>
+	// 	// :processing: lib.b
+	// 	// :processing: lib.d
+	// 	// :processing: lib.e
+	// 	//   setting lib.e ==>
+	// 	//   setting lib.d ==> lib.e
+	// 	//   setting lib.b ==> lib.d
+	// 	//   setting lib.c ==> lib.e, lib.b
 	const workspace = resourceFactory.createAdapter({
 		virBasePath: "/",
 		project: {
@@ -826,7 +828,7 @@ test("integration: Library without i18n bundle with manifest max", async (t) => 
 		dependencies
 	};
 	await assertCreatedVersionInfo(t, {
-		"components": [],
+		"components": {},
 		"libraries": [{
 			"manifestHints": {
 				"dependencies": {
@@ -834,50 +836,59 @@ test("integration: Library without i18n bundle with manifest max", async (t) => 
 						"lib.b": {},
 						"lib.d": {},
 						"lib.c": {},
-						"lib.e": {
-							lazy: true
-						}
+						"lib.e": {}
 					}
 				}
 			},
 			"name": "lib.a",
 			"scmRevision": "",
 		},
-			{
-				"manifestHints": {
-					"dependencies": {
-						"libs": {
-							"lib.d": {},
-							"lib.e": {
-								lazy: true
-							}
+		{
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.d": {},
+						"lib.e": {
+							lazy: true
 						}
 					}
-				},
-				"name": "lib.b",
-				"scmRevision": "",
+				}
 			},
-			{
-				"name": "lib.c",
-				"scmRevision": "",
-			},
-			{
-				"manifestHints": {
-					"dependencies": {
-						"libs": {
-							"lib.e": {
-								lazy: true
-							}
+			"name": "lib.b",
+			"scmRevision": "",
+		},
+		{
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.e": {},
+						"lib.d": {},
+						"lib.b": {
+							lazy: true
 						}
 					}
-				},
-				"name": "lib.d",
-				"scmRevision": "",
+				}
 			},
-			{
-				"name": "lib.e",
-				"scmRevision": "",
-			}],
+			"name": "lib.c",
+			"scmRevision": "",
+		},
+		{
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.e": {
+							lazy: true
+						}
+					}
+				}
+			},
+			"name": "lib.d",
+			"scmRevision": "",
+		},
+		{
+			"name": "lib.e",
+			"scmRevision": "",
+		}],
 		"name": "myname",
 		"scmRevision": "",
 		"version": "1.33.7",
