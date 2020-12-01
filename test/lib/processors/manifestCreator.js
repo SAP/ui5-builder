@@ -142,24 +142,27 @@ test.serial("manifest creation for sap/apf", async (t) => {
 		};
 	});
 	resources.push(componentResource);
-	const result = await manifestCreator({libraryResource, resources: [componentResource], options: {}});
+	const result = await manifestCreator({libraryResource, resources, options: {}});
 	t.is(await result.getString(), expectedManifestContent, "Correct result returned");
 
 	t.is(errorLogStub.callCount, 0);
 
-	t.is(verboseLogStub.callCount, 9);
+	t.is(verboseLogStub.callCount, 10);
 	t.is(verboseLogStub.getCall(0).args[0], "sap.app/i18n taken from .library appData: '%s'");
 	t.is(verboseLogStub.getCall(1).args[0],
+		"checking component at %s");
+	t.is(verboseLogStub.getCall(1).args[1], "/resources/sap/apf");
+	t.is(verboseLogStub.getCall(2).args[0],
 		"Package %s contains both '*.library' and 'Component.js'. " +
 		"This is a known issue but can't be solved due to backward compatibility.");
-	t.is(verboseLogStub.getCall(1).args[1], "/resources/sap/apf");
+	t.is(verboseLogStub.getCall(2).args[1], "/resources/sap/apf");
 });
 
 test.serial("manifest creation with .library / Component.js at same namespace", async (t) => {
 	const {manifestCreator, errorLogStub, verboseLogStub} = t.context;
 
 	const expectedManifestContent = JSON.stringify({
-		"_version": "1.9.0",
+		"_version": "1.21.0",
 		"sap.app": {
 			"id": "sap.lib1",
 			"type": "library",
@@ -232,7 +235,7 @@ test.serial("manifest creation with embedded component", async (t) => {
 	const {manifestCreator, errorLogStub, verboseLogStub} = t.context;
 
 	const expectedManifestContent = JSON.stringify({
-		"_version": "1.9.0",
+		"_version": "1.21.0",
 		"sap.app": {
 			"id": "sap.lib1",
 			"type": "library",
@@ -322,7 +325,7 @@ test.serial("manifest creation with embedded component (Missing 'embeddedBy')", 
 	const {manifestCreator, errorLogStub, verboseLogStub} = t.context;
 
 	const expectedManifestContent = JSON.stringify({
-		"_version": "1.9.0",
+		"_version": "1.21.0",
 		"sap.app": {
 			"id": "sap.lib1",
 			"type": "library",
@@ -406,7 +409,7 @@ test.serial("manifest creation with embedded component ('embeddedBy' doesn't poi
 	const {manifestCreator, errorLogStub, verboseLogStub} = t.context;
 
 	const expectedManifestContent = JSON.stringify({
-		"_version": "1.9.0",
+		"_version": "1.21.0",
 		"sap.app": {
 			"id": "sap.lib1",
 			"type": "library",
@@ -495,7 +498,7 @@ test.serial("manifest creation with embedded component ('embeddedBy' absolute pa
 	const {manifestCreator, errorLogStub, verboseLogStub} = t.context;
 
 	const expectedManifestContent = JSON.stringify({
-		"_version": "1.9.0",
+		"_version": "1.21.0",
 		"sap.app": {
 			"id": "sap.lib1",
 			"type": "library",
@@ -584,7 +587,7 @@ test.serial("manifest creation with embedded component ('embeddedBy' empty strin
 	const {manifestCreator, errorLogStub} = t.context;
 
 	const expectedManifestContent = JSON.stringify({
-		"_version": "1.9.0",
+		"_version": "1.21.0",
 		"sap.app": {
 			"id": "sap.lib1",
 			"type": "library",
@@ -669,7 +672,7 @@ test.serial("manifest creation with embedded component ('embeddedBy' object)", a
 	const {manifestCreator, errorLogStub} = t.context;
 
 	const expectedManifestContent = JSON.stringify({
-		"_version": "1.9.0",
+		"_version": "1.21.0",
 		"sap.app": {
 			"id": "sap.lib1",
 			"type": "library",
@@ -757,7 +760,7 @@ test.serial("manifest creation with embedded component (no manifest.json)", asyn
 	const {manifestCreator, errorLogStub, verboseLogStub} = t.context;
 
 	const expectedManifestContent = JSON.stringify({
-		"_version": "1.9.0",
+		"_version": "1.21.0",
 		"sap.app": {
 			"id": "sap.lib1",
 			"type": "library",
@@ -833,7 +836,7 @@ test.serial("manifest creation with embedded component (invalid manifest.json)",
 	const {manifestCreator, errorLogStub} = t.context;
 
 	const expectedManifestContent = JSON.stringify({
-		"_version": "1.9.0",
+		"_version": "1.21.0",
 		"sap.app": {
 			"id": "sap.lib1",
 			"type": "library",
