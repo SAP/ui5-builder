@@ -85,7 +85,6 @@ async function assertCreatedVersionInfo(t, oExpectedVersionInfo, oOptions) {
 	});
 
 	currentVersionInfo.libraries.sort((libraryA, libraryB) => {
-
 		return libraryA.name.localeCompare(libraryB.name);
 	});
 
@@ -235,42 +234,12 @@ test("integration: Library without i18n bundle with manifest", async (t) => {
 	}));
 
 	// lib.a => lib.c, lib.b
-	// lib.b => lib.d
-	// lib.c => lib.e, lib.b (true)
-	// lib.d => lib.e (true)
-	// lib.e =>
-
-	// lib.b => lib.d, lib.e (true)
+	// lib.b => lib.c (true)
 	// lib.c =>
-	// lib.a => lib.c, lib.b, lib.d, lib.e (true)
-	// lib.d => lib.e (true)
-	// lib.e =>
 
-	await workspace.write(resourceFactory.createResource({
-		path: "/resources/test/lib/subcomp/manifest.json",
-		string: `
-			{
-				"sap.app": {
-					"embeds": []
-				},
-				"sap.ui5": {
-				    "dependencies": {
-				      "minUI5Version": "1.84",
-				      "libs": {
-				        "libY": {
-				          "minVersion": "1.84.0"
-				        },
-				        "libX": {
-				          "minVersion": "1.84.0",
-				          "lazy": true
-				        }
-				      }
-				    }
-				}
-			}
-		`,
-		project: workspace._project
-	}));
+	// lib.a => lib.c, lib.b
+	// lib.b => lib.c (true)
+	// lib.c =>
 
 	// dependencies
 	const createProjectMetadata = (nameArray) => {
@@ -506,25 +475,28 @@ test("integration: Library without i18n bundle with manifest", async (t) => {
 });
 
 test("integration: Library without i18n bundle with manifest max", async (t) => {
-	// 	// top level libraries
-	// 	//  // lib.a => lib.c, lib.b
-	// 	// 	// lib.b => lib.d
-	// 	// 	// lib.c => lib.e, lib.b (true)
-	// 	// 	// lib.d => lib.e (true)
-	// 	// 	// lib.e =>
-	// 	// TODO optimize duplicate resolve (e.g. cache)
+	// top level libraries
+
+
+	// haus (a) => dach (c), Wände (b)
+	// Wände (b) => grundplatte (d)
+	// grundplatte (d) => grundstück (e)
+	// dach (c) => wände (b), grundstück(e)
+	// grundstück (e) =>
+
+	// lib.house => lib.roof, lib.walls
+	// lib.walls => lib.baseplate
+	// lib.roof => lib.land, lib.walls (true)
+	// lib.baseplate => lib.land (true)
+	// lib.land =>
+
+	// lib.house => lib.roof, lib.walls, lib.baseplate, lib.land (true)
+	// lib.walls => lib.baseplate, lib.land (true)
+	// lib.roof => lib.walls, lib.land
+	// lib.baseplate => lib.land (true)
+	// lib.land =>
 	//
-	// 	// lib.a
-	// 	// :processing: lib.c
-	// 	// :processing: lib.e
-	// 	//   setting lib.e ==>
-	// 	// :processing: lib.b
-	// 	// :processing: lib.d
-	// 	// :processing: lib.e
-	// 	//   setting lib.e ==>
-	// 	//   setting lib.d ==> lib.e
-	// 	//   setting lib.b ==> lib.d
-	// 	//   setting lib.c ==> lib.e, lib.b
+
 	const workspace = resourceFactory.createAdapter({
 		virBasePath: "/",
 		project: {
@@ -569,54 +541,16 @@ test("integration: Library without i18n bundle with manifest max", async (t) => 
 		string: `
 			{
 				"sap.app": {
-					"embeds": ["subcomp"]
-				},
-				"sap.ui5": {
-				    "dependencies": {
-				      "minUI5Version": "1.84",
-				      "libs": {
-				        "lib.a": {
-				          "minVersion": "1.84.0"
-				        },
-				        "lib.b": {
-				          "minVersion": "1.84.0",
-				          "lazy": true
-				        }
-				      }
-				    }
-				}
-			}
-		`,
-		project: workspace._project
-	}));
-
-	// lib.a => lib.c, lib.b
-	// lib.b => lib.d
-	// lib.c => lib.e, lib.b (true)
-	// lib.d => lib.e (true)
-	// lib.e =>
-
-	// lib.b => lib.d, lib.e (true)
-	// lib.c =>
-	// lib.a => lib.c, lib.b, lib.d, lib.e (true)
-	// lib.d => lib.e (true)
-	// lib.e =>
-
-	await workspace.write(resourceFactory.createResource({
-		path: "/resources/test/lib/subcomp/manifest.json",
-		string: `
-			{
-				"sap.app": {
 					"embeds": []
 				},
 				"sap.ui5": {
 				    "dependencies": {
 				      "minUI5Version": "1.84",
 				      "libs": {
-				        "libY": {
+				        "lib.house": {
 				          "minVersion": "1.84.0"
 				        },
-				        "libX": {
+				        "lib.walls": {
 				          "minVersion": "1.84.0",
 				          "lazy": true
 				        }
@@ -641,8 +575,8 @@ test("integration: Library without i18n bundle with manifest max", async (t) => 
 		virBasePath: "/",
 		project: {
 			metadata: {
-				name: "lib.a",
-				namespace: "lib/a"
+				name: "lib.house",
+				namespace: "lib/house"
 			},
 			version: "2.0.0",
 			dependencies: [
@@ -656,37 +590,37 @@ test("integration: Library without i18n bundle with manifest max", async (t) => 
 		}
 	});
 
-	// lib.a
+	// lib.house
 	await dependencies.write(resourceFactory.createResource({
-		path: "/resources/lib/a/.library",
+		path: "/resources/lib/house/.library",
 		string: `
 			<?xml version="1.0" encoding="UTF-8" ?>
 			<library xmlns="http://www.sap.com/sap.ui.library.xsd" >
-				<name>lib.a</name>
+				<name>lib.house</name>
 				<vendor>SAP SE</vendor>
 				<copyright></copyright>
 				<version>2.0.0</version>
 
-				<documentation>Library A</documentation>
+				<documentation>Library House</documentation>
 			</library>
 		`,
-		project: createProjectMetadata(["lib", "a"])
+		project: createProjectMetadata(["lib", "house"])
 	}));
 	await dependencies.write(resourceFactory.createResource({
-		path: "/resources/lib/a/manifest.json",
+		path: "/resources/lib/house/manifest.json",
 		string: `
 			{
 				"sap.app": {
-					"embeds": ["sub"]
+					"embeds": ["garden"]
 				},
 				"sap.ui5": {
 				    "dependencies": {
 				      "minUI5Version": "1.84",
 				      "libs": {
-				        "lib.c": {
+				        "lib.roof": {
 				          "minVersion": "1.84.0"
 				        },
-				        "lib.b": {
+				        "lib.walls": {
 				            "minVersion": "1.84.0"
 				        }
 				      }
@@ -694,22 +628,22 @@ test("integration: Library without i18n bundle with manifest max", async (t) => 
 				}
 			}
 		`,
-		project: createProjectMetadata(["lib", "a"])
+		project: createProjectMetadata(["lib", "house"])
 	}));
 
 	await dependencies.write(resourceFactory.createResource({
-		path: "/resources/lib/a/sub/manifest.json",
+		path: "/resources/lib/house/garden/manifest.json",
 		string: `
 			{
 				"sap.app": {
 					"embeds": [],
-					"id": "lib.a.sub"
+					"id": "lib.house.garden"
 				},
 				"sap.ui5": {
 				    "dependencies": {
 				      "minUI5Version": "1.84",
 				      "libs": {
-				        "lib.c": {
+				        "lib.baseplate": {
 				          "minVersion": "1.84.0"
 				        }
 				      }
@@ -717,27 +651,27 @@ test("integration: Library without i18n bundle with manifest max", async (t) => 
 				}
 			}
 		`,
-		project: createProjectMetadata(["lib", "a", "sub"])
+		project: createProjectMetadata(["lib", "house", "garden"])
 	}));
 
-	// lib.c
+	// lib.roof
 	await dependencies.write(resourceFactory.createResource({
-		path: "/resources/lib/c/.library",
+		path: "/resources/lib/roof/.library",
 		string: `
 			<?xml version="1.0" encoding="UTF-8" ?>
 			<library xmlns="http://www.sap.com/sap.ui.library.xsd" >
-				<name>lib.c</name>
+				<name>lib.roof</name>
 				<vendor>SAP SE</vendor>
 				<copyright></copyright>
 				<version>2.0.0</version>
 
-				<documentation>Library C</documentation>
+				<documentation>Library Roof</documentation>
 			</library>
 		`,
-		project: createProjectMetadata(["lib", "c"])
+		project: createProjectMetadata(["lib", "roof"])
 	}));
 	await dependencies.write(resourceFactory.createResource({
-		path: "/resources/lib/c/manifest.json",
+		path: "/resources/lib/roof/manifest.json",
 		string: `
 			{
 				"sap.app": {
@@ -747,10 +681,10 @@ test("integration: Library without i18n bundle with manifest max", async (t) => 
 				    "dependencies": {
 				      "minUI5Version": "1.84",
 				      "libs": {
-				        "lib.e": {
+				        "lib.land": {
 				          "minVersion": "1.84.0"
 				        },
-				        "lib.b": {
+				        "lib.walls": {
 				          "minVersion": "1.84.0",
 				          "lazy": true
 				        }
@@ -759,16 +693,16 @@ test("integration: Library without i18n bundle with manifest max", async (t) => 
 				}
 			}
 		`,
-		project: createProjectMetadata(["lib", "c"])
+		project: createProjectMetadata(["lib", "roof"])
 	}));
 
-	// lib.b
+	// lib.walls
 	await dependencies.write(resourceFactory.createResource({
-		path: "/resources/lib/b/.library",
+		path: "/resources/lib/walls/.library",
 		string: `
 			<?xml version="1.0" encoding="UTF-8" ?>
 			<library xmlns="http://www.sap.com/sap.ui.library.xsd" >
-				<name>lib.b</name>
+				<name>lib.walls</name>
 				<vendor>SAP SE</vendor>
 				<copyright></copyright>
 				<version>2.0.0</version>
@@ -776,10 +710,10 @@ test("integration: Library without i18n bundle with manifest max", async (t) => 
 				<documentation>Library B</documentation>
 			</library>
 		`,
-		project: createProjectMetadata(["lib", "b"])
+		project: createProjectMetadata(["lib", "walls"])
 	}));
 	await dependencies.write(resourceFactory.createResource({
-		path: "/resources/lib/b/manifest.json",
+		path: "/resources/lib/walls/manifest.json",
 		string: `
 			{
 				"sap.app": {
@@ -789,7 +723,7 @@ test("integration: Library without i18n bundle with manifest max", async (t) => 
 				    "dependencies": {
 				      "minUI5Version": "1.84",
 				      "libs": {
-				        "lib.d": {
+				        "lib.baseplate": {
 				          "minVersion": "1.84.0"
 				        }
 				      }
@@ -797,27 +731,27 @@ test("integration: Library without i18n bundle with manifest max", async (t) => 
 				}
 			}
 		`,
-		project: createProjectMetadata(["lib", "b"])
+		project: createProjectMetadata(["lib", "walls"])
 	}));
 
-	// lib.d
+	// lib.baseplate
 	await dependencies.write(resourceFactory.createResource({
-		path: "/resources/lib/d/.library",
+		path: "/resources/lib/baseplate/.library",
 		string: `
 			<?xml version="1.0" encoding="UTF-8" ?>
 			<library xmlns="http://www.sap.com/sap.ui.library.xsd" >
-				<name>lib.d</name>
+				<name>lib.baseplate</name>
 				<vendor>SAP SE</vendor>
 				<copyright></copyright>
 				<version>2.0.0</version>
 
-				<documentation>Library D</documentation>
+				<documentation>Library Baseplate</documentation>
 			</library>
 		`,
-		project: createProjectMetadata(["lib", "d"])
+		project: createProjectMetadata(["lib", "baseplate"])
 	}));
 	await dependencies.write(resourceFactory.createResource({
-		path: "/resources/lib/d/manifest.json",
+		path: "/resources/lib/baseplate/manifest.json",
 		string: `
 			{
 				"sap.app": {
@@ -827,7 +761,7 @@ test("integration: Library without i18n bundle with manifest max", async (t) => 
 				    "dependencies": {
 				      "minUI5Version": "1.84",
 				      "libs": {
-					      "lib.e": {
+					      "lib.land": {
 					          "minVersion": "1.84.0",
 					          "lazy": true
 					        }
@@ -836,27 +770,27 @@ test("integration: Library without i18n bundle with manifest max", async (t) => 
 				}
 			}
 		`,
-		project: createProjectMetadata(["lib", "d"])
+		project: createProjectMetadata(["lib", "baseplate"])
 	}));
 
-	// lib.e
+	// lib.land
 	await dependencies.write(resourceFactory.createResource({
-		path: "/resources/lib/e/.library",
+		path: "/resources/lib/land/.library",
 		string: `
 			<?xml version="1.0" encoding="UTF-8" ?>
 			<library xmlns="http://www.sap.com/sap.ui.library.xsd" >
-				<name>lib.e</name>
+				<name>lib.land</name>
 				<vendor>SAP SE</vendor>
 				<copyright></copyright>
 				<version>2.0.0</version>
 
-				<documentation>Library E</documentation>
+				<documentation>Library Land</documentation>
 			</library>
 		`,
-		project: createProjectMetadata(["lib", "e"])
+		project: createProjectMetadata(["lib", "land"])
 	}));
 	await dependencies.write(resourceFactory.createResource({
-		path: "/resources/lib/e/manifest.json",
+		path: "/resources/lib/land/manifest.json",
 		string: `
 			{
 				"sap.app": {
@@ -871,7 +805,7 @@ test("integration: Library without i18n bundle with manifest max", async (t) => 
 				}
 			}
 		`,
-		project: createProjectMetadata(["lib", "e"])
+		project: createProjectMetadata(["lib", "land"])
 	}));
 
 	const oOptions = {
@@ -890,82 +824,82 @@ test("integration: Library without i18n bundle with manifest max", async (t) => 
 	};
 	await assertCreatedVersionInfo(t, {
 		"components": {
-			"lib.a.sub": {
-				"library": "lib.a",
+			"lib.house.garden": {
+				"library": "lib.house",
 				"manifestHints": {
 					"dependencies": {
 						"libs": {
-							"lib.b": {
+							"lib.baseplate": {},
+							"lib.land": {
 								"lazy": true
-							},
-							"lib.d": {},
-							"lib.c": {},
-							"lib.e": {}
+							}
 						}
 					}
 				}
 			}
 		},
-		"libraries": [{
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
-						"lib.b": {},
-						"lib.d": {},
-						"lib.c": {},
-						"lib.e": {}
-					}
-				}
-			},
-			"name": "lib.a",
-			"scmRevision": "",
-		},
-		{
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
-						"lib.d": {},
-						"lib.e": {
-							lazy: true
+		"libraries": [
+			{
+				"manifestHints": {
+					"dependencies": {
+						"libs": {
+							"lib.land": {
+								lazy: true
+							}
 						}
 					}
-				}
+				},
+				"name": "lib.baseplate",
+				"scmRevision": "",
 			},
-			"name": "lib.b",
-			"scmRevision": "",
-		},
-		{
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
-						"lib.e": {},
-						"lib.d": {},
-						"lib.b": {
-							lazy: true
+			{
+				"manifestHints": {
+					"dependencies": {
+						"libs": {
+							"lib.walls": {},
+							"lib.baseplate": {},
+							"lib.roof": {},
+							"lib.land": {}
 						}
 					}
-				}
+				},
+				"name": "lib.house",
+				"scmRevision": "",
 			},
-			"name": "lib.c",
-			"scmRevision": "",
-		},
-		{
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
-						"lib.e": {
-							lazy: true
+			{
+				"name": "lib.land",
+				"scmRevision": "",
+			},
+			{
+				"manifestHints": {
+					"dependencies": {
+						"libs": {
+							"lib.land": {},
+							"lib.baseplate": {},
+							"lib.walls": {
+								lazy: true
+							}
 						}
 					}
-				}
+				},
+				"name": "lib.roof",
+				"scmRevision": "",
 			},
-			"name": "lib.d",
-			"scmRevision": "",
-		},
-		{
-			"name": "lib.e",
-			"scmRevision": "",
-		}],
+			{
+				"manifestHints": {
+					"dependencies": {
+						"libs": {
+							"lib.baseplate": {},
+							"lib.land": {
+								lazy: true
+							}
+						}
+					}
+				},
+				"name": "lib.walls",
+				"scmRevision": "",
+			}
+		],
 		"name": "myname",
 		"scmRevision": "",
 		"version": "1.33.7",
