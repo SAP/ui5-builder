@@ -321,7 +321,7 @@ test("integration: Library without i18n bundle with manifest", async (t) => {
 		string: `
 			{
 				"sap.app": {
-					"embeds": []
+					"embeds": ["sub/fold"]
 				},
 				"sap.ui5": {
 				    "dependencies": {
@@ -339,6 +339,30 @@ test("integration: Library without i18n bundle with manifest", async (t) => {
 			}
 		`,
 		project: createProjectMetadata(["lib", "a"])
+	}));
+
+	// sub
+	await dependencies.write(resourceFactory.createResource({
+		path: "/resources/lib/a/sub/fold/manifest.json",
+		string: `
+			{
+				"sap.app": {
+					"id": "lib.a.sub.fold",
+					"embeds": []
+				},
+				"sap.ui5": {
+				    "dependencies": {
+				      "minUI5Version": "1.84",
+				      "libs": {
+				        "lib.c": {
+				          "minVersion": "1.84.0"
+				        }
+				      }
+				    }
+				}
+			}
+		`,
+		project: createProjectMetadata(["lib", "a", "sub", "fold"])
 	}));
 
 	// lib.c
@@ -431,7 +455,21 @@ test("integration: Library without i18n bundle with manifest", async (t) => {
 		dependencies
 	};
 	await assertCreatedVersionInfo(t, {
-		"components": {},
+		"components": {
+			"lib.a.sub.fold": {
+				"library": "lib.a",
+				"manifestHints": {
+					"dependencies": {
+						"libs": {
+							"lib.b": {
+								"lazy": true
+							},
+							"lib.c": {}
+						}
+					}
+				}
+			}
+		},
 		"libraries": [{
 			"manifestHints": {
 				"dependencies": {
@@ -639,7 +677,7 @@ test("integration: Library without i18n bundle with manifest max", async (t) => 
 		string: `
 			{
 				"sap.app": {
-					"embeds": []
+					"embeds": ["sub"]
 				},
 				"sap.ui5": {
 				    "dependencies": {
@@ -657,6 +695,29 @@ test("integration: Library without i18n bundle with manifest max", async (t) => 
 			}
 		`,
 		project: createProjectMetadata(["lib", "a"])
+	}));
+
+	await dependencies.write(resourceFactory.createResource({
+		path: "/resources/lib/a/sub/manifest.json",
+		string: `
+			{
+				"sap.app": {
+					"embeds": [],
+					"id": "lib.a.sub"
+				},
+				"sap.ui5": {
+				    "dependencies": {
+				      "minUI5Version": "1.84",
+				      "libs": {
+				        "lib.c": {
+				          "minVersion": "1.84.0"
+				        }
+				      }
+				    }
+				}
+			}
+		`,
+		project: createProjectMetadata(["lib", "a", "sub"])
 	}));
 
 	// lib.c
@@ -828,7 +889,23 @@ test("integration: Library without i18n bundle with manifest max", async (t) => 
 		dependencies
 	};
 	await assertCreatedVersionInfo(t, {
-		"components": {},
+		"components": {
+			"lib.a.sub": {
+				"library": "lib.a",
+				"manifestHints": {
+					"dependencies": {
+						"libs": {
+							"lib.b": {
+								"lazy": true
+							},
+							"lib.d": {},
+							"lib.c": {},
+							"lib.e": {}
+						}
+					}
+				}
+			}
+		},
 		"libraries": [{
 			"manifestHints": {
 				"dependencies": {
