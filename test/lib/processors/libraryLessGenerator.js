@@ -110,7 +110,6 @@ test("LibraryLessGenerator: File with multiple imports", async (t) => {
 	t.is(output, expectedOutput);
 });
 
-
 test("LibraryLessGenerator: File with nested imports", async (t) => {
 	const input = `// Content of input\n` +
 	`@import "Foo.less";`;
@@ -152,4 +151,85 @@ test("LibraryLessGenerator: File with nested imports", async (t) => {
 	const output = await (new LibraryLessGenerator({librarySourceLessResource, fs})).generate();
 
 	t.is(output, expectedOutput);
+});
+
+test("LibraryLessGenerator: No re-write for sap.ui.core global.less/css", async (t) => {
+	const input = `@import "global.less";\n` +
+		`@import (less) "global.css";`;
+	const expectedOutput = `${FILE_HEADER}\n\n` +
+	`@import "global.less";\n` +
+	`@import (less) "global.css";`;
+
+	const librarySourceLessResource = {
+		async getString() {
+			return input;
+		},
+		getPath() {
+			return "/resources/sap/ui/core/themes/base/library.source.less";
+		}
+	};
+	const fs = {
+		readFile: sinon.stub().callsFake((filePath, options, cb) => {
+			cb(new Error("File not found: " + filePath));
+		})
+	};
+
+	const output = await (new LibraryLessGenerator({librarySourceLessResource, fs})).generate();
+
+	t.is(output, expectedOutput);
+	t.is(fs.readFile.callCount, 0, "fs.readFile should not be called");
+});
+
+test("LibraryLessGenerator: Re-write for base.less", async (t) => {
+	const input = `@import "../base/base.less";\n` +
+		`@import "base.less";`;
+	const expectedOutput = `${FILE_HEADER}\n\n` +
+	`@import "../../../../../../Base/baseLib/baseTheme/base.less"; ` +
+		`/* ORIGINAL IMPORT PATH: "../base/base.less" */\n\n` +
+	`@import "../../../../../../Base/baseLib/sap_fiori_3/base.less"; ` +
+		`/* ORIGINAL IMPORT PATH: "base.less" */\n`;
+
+	const librarySourceLessResource = {
+		async getString() {
+			return input;
+		},
+		getPath() {
+			return "/resources/sap/ui/core/themes/sap_fiori_3/library.source.less";
+		}
+	};
+	const fs = {
+		readFile: sinon.stub().callsFake((filePath, options, cb) => {
+			cb(new Error("File not found: " + filePath));
+		})
+	};
+
+	const output = await (new LibraryLessGenerator({librarySourceLessResource, fs})).generate();
+
+	t.is(output, expectedOutput);
+	t.is(fs.readFile.callCount, 0, "fs.readFile should not be called");
+});
+
+test("LibraryLessGenerator: Re-write for library.source.less", async (t) => {
+	const input = `@import "../base/library.source.less";`;
+	const expectedOutput = `${FILE_HEADER}\n\n` +
+	`@import "../base/library.less";`;
+
+	const librarySourceLessResource = {
+		async getString() {
+			return input;
+		},
+		getPath() {
+			return "/resources/sap/ui/core/themes/sap_fiori_3/library.source.less";
+		}
+	};
+	const fs = {
+		readFile: sinon.stub().callsFake((filePath, options, cb) => {
+			cb(new Error("File not found: " + filePath));
+		})
+	};
+
+	const output = await (new LibraryLessGenerator({librarySourceLessResource, fs})).generate();
+
+	t.is(output, expectedOutput);
+	t.is(fs.readFile.callCount, 0, "fs.readFile should not be called");
 });
