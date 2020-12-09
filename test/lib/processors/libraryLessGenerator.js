@@ -13,6 +13,9 @@ test("LibraryLessGenerator: File without imports", async (t) => {
 	const librarySourceLessResource = {
 		async getString() {
 			return input;
+		},
+		getPath() {
+			return "/resources/sap/foo/themes/base/library.source.less";
 		}
 	};
 	const fs = {readFile: sinon.stub()};
@@ -32,12 +35,15 @@ test("LibraryLessGenerator: File with normal import", async (t) => {
 	const librarySourceLessResource = {
 		async getString() {
 			return input;
+		},
+		getPath() {
+			return "/resources/sap/foo/themes/base/library.source.less";
 		}
 	};
 	const fs = {
 		readFile: sinon.stub().callsFake((filePath, options, cb) => {
 			switch (filePath) {
-			case "Foo.less":
+			case "/resources/sap/foo/themes/base/Foo.less":
 				cb(null, `// Content of foo.less\n`);
 				return;
 			default:
@@ -64,23 +70,23 @@ test("LibraryLessGenerator: File with multiple imports", async (t) => {
 
 
 /* START "File1.less" */
-// Content of File1.less
+// Content of /resources/sap/foo/themes/base/File1.less
 /* END "File1.less" */
 
 /* START "File2.less" */
-// Content of File2.less
+// Content of /resources/sap/foo/themes/base/File2.less
 /* END "File2.less" */
 
 /* START "File3.less" */
-// Content of File3.less
+// Content of /resources/sap/foo/themes/base/File3.less
 /* END "File3.less" */
 
 /* START "File4.less" */
-// Content of File4.less
+// Content of /resources/sap/foo/themes/base/File4.less
 /* END "File4.less" */
 
 /* START "File5.less" */
-// Content of File5.less
+// Content of /resources/sap/foo/themes/base/File5.less
 /* END "File5.less" */
 
 `;
@@ -88,6 +94,9 @@ test("LibraryLessGenerator: File with multiple imports", async (t) => {
 	const librarySourceLessResource = {
 		async getString() {
 			return input;
+		},
+		getPath() {
+			return "/resources/sap/foo/themes/base/library.source.less";
 		}
 	};
 	const fs = {
@@ -117,17 +126,20 @@ test("LibraryLessGenerator: File with nested imports", async (t) => {
 	const librarySourceLessResource = {
 		async getString() {
 			return input;
+		},
+		getPath() {
+			return "/resources/sap/foo/themes/base/library.source.less";
 		}
 	};
 	const fs = {
 		readFile: sinon.stub().callsFake((filePath, options, cb) => {
 			switch (filePath) {
-			case "Foo.less":
+			case "/resources/sap/foo/themes/base/Foo.less":
 				cb(null, `// Content of Foo.less\n` +
 				`@import "Bar.less";`
 				);
 				return;
-			case "Bar.less":
+			case "/resources/sap/foo/themes/base/Bar.less":
 				cb(null, `// Content of Bar.less\n`);
 				return;
 			default:
