@@ -9,10 +9,12 @@ const EXPECTED_MODULE_NAME = "sap/ui/testmodule.js";
 
 const EXPECTED_DECLARE_DEPENDENCIES = [
 	"jquery.sap.global.js",
-	"top/require/void.js", "top/require/var.js", "top/require/assign.js", "top/requireSync/var.js", "top/requireSync/assign.js",
-	"block/require/void.js", "block/require/var.js", "block/require/assign.js", "block/requireSync/var.js", "block/requireSync/assign.js",
-	"nested/scope/require/void.js", "nested/scope/require/var.js", "nested/scope/require/assign.js", "nested/scope/requireSync/var.js", "nested/scope/requireSync/assign.js",
-	"nested/scope2/require/void.js", "nested/scope2/require/var.js", "nested/scope2/require/assign.js", "nested/scope2/requireSync/var.js", "nested/scope2/requireSync/assign.js"
+	"top/require/void.js", "top/require/var.js", "top/require/assign.js", "top/requireSync/var.js",
+	"top/requireSync/assign.js", "block/require/void.js", "block/require/var.js", "block/require/assign.js",
+	"block/requireSync/var.js", "block/requireSync/assign.js", "nested/scope/require/void.js",
+	"nested/scope/require/var.js", "nested/scope/require/assign.js", "nested/scope/requireSync/var.js",
+	"nested/scope/requireSync/assign.js", "nested/scope2/require/void.js", "nested/scope2/require/var.js",
+	"nested/scope2/require/assign.js", "nested/scope2/requireSync/var.js", "nested/scope2/requireSync/assign.js"
 ];
 
 const EXPECTED_DEFINE_DEPENDENCIES_NO_LEGACY = [
@@ -39,15 +41,20 @@ function analyze(file, name) {
 				reject(err);
 			}
 			try {
-				const ast = esprima.parseScript(buffer.toString(), {comment: true});
-				const info = new ModuleInfo(name);
-				new JSModuleAnalyzer().analyze(ast, name, info);
+				const info = analyzeString(buffer.toString(), name);
 				resolve(info);
 			} catch (execErr) {
 				reject(execErr);
 			}
 		});
 	});
+}
+
+function analyzeString(content, name) {
+	const ast = esprima.parseScript(content, {comment: true});
+	const info = new ModuleInfo(name);
+	new JSModuleAnalyzer().analyze(ast, name, info);
+	return info;
 }
 
 function assertModuleNamesEqual(t, actual, expected, msg) {
@@ -67,7 +74,8 @@ function analyzeModule(
 	expectedDependencies,
 	expectedConditionalDependencies,
 	expectedSubmodules,
-	ignoreImplicitDependencies
+	ignoreImplicitDependencies,
+	rawModule
 ) {
 	//
 	analyze(file, name).then( (info) => {
@@ -94,24 +102,41 @@ function analyzeModule(
 				expectedSubmodules,
 				"submodules should match");
 		}
-	}).then(() => t.end(), () => t.end());
+		t.false(info.dynamicDependencies,
+			"no use of dynamic dependencies should have been detected");
+		if (rawModule) {
+			t.true(info.rawModule,
+				"raw module");
+		} else {
+			t.false(info.rawModule,
+				"ui5 module");
+		}
+	}).then(() => t.end(), (e) => t.fail(`failed to analyze module with error: ${e.message}`));
 }
 
-test.cb("DeclareToplevel", analyzeModule, "modules/declare_toplevel.js", EXPECTED_MODULE_NAME, EXPECTED_DECLARE_DEPENDENCIES);
+test.cb("DeclareToplevel", analyzeModule,
+	"modules/declare_toplevel.js", EXPECTED_MODULE_NAME, EXPECTED_DECLARE_DEPENDENCIES);
 
-test.cb("DeclareFunctionExprScope", analyzeModule, "modules/declare_function_expr_scope.js", EXPECTED_MODULE_NAME, EXPECTED_DECLARE_DEPENDENCIES);
+test.cb("DeclareFunctionExprScope", analyzeModule,
+	"modules/declare_function_expr_scope.js", EXPECTED_MODULE_NAME, EXPECTED_DECLARE_DEPENDENCIES);
 
-test.cb("DeclareFunctionInvocationScope", analyzeModule, "modules/declare_function_invocation_scope.js", EXPECTED_MODULE_NAME, EXPECTED_DECLARE_DEPENDENCIES);
+test.cb("DeclareFunctionInvocationScope", analyzeModule,
+	"modules/declare_function_invocation_scope.js", EXPECTED_MODULE_NAME, EXPECTED_DECLARE_DEPENDENCIES);
 
-test.cb("DefineToplevelNamed", analyzeModule, "modules/define_toplevel_named.js", EXPECTED_MODULE_NAME, EXPECTED_DEFINE_DEPENDENCIES_NO_LEGACY);
+test.cb("DefineToplevelNamed", analyzeModule,
+	"modules/define_toplevel_named.js", EXPECTED_MODULE_NAME, EXPECTED_DEFINE_DEPENDENCIES_NO_LEGACY);
 
-test.cb("DefineToplevelUnnamed", analyzeModule, "modules/define_toplevel_unnamed.js", "modules/define_toplevel_unnamed.js", EXPECTED_DEFINE_DEPENDENCIES_NO_LEGACY);
+test.cb("DefineToplevelUnnamed", analyzeModule,
+	"modules/define_toplevel_unnamed.js", "modules/define_toplevel_unnamed.js", EXPECTED_DEFINE_DEPENDENCIES_NO_LEGACY);
 
-test.cb("DefineWithLegacyCalls", analyzeModule, "modules/define_with_legacy_calls.js", "modules/define_with_legacy_calls.js", EXPECTED_DEFINE_DEPENDENCIES_WITH_LEGACY);
+test.cb("DefineWithLegacyCalls", analyzeModule,
+	"modules/define_with_legacy_calls.js", "modules/define_with_legacy_calls.js",
+	EXPECTED_DEFINE_DEPENDENCIES_WITH_LEGACY);
 
 test.cb("OldStyleModuleWithoutDeclare", function(t) {
 	analyze("modules/no_declare_but_requires.js", null).then((info) => {
 		t.is(info.name, null, "module name should be null");
+		t.true(info.rawModule, "raw module");
 		assertModuleNamesEqual(t,
 			info.dependencies,
 			["dependency1.js", "dependency2.js", "jquery.sap.global.js"],
@@ -120,7 +145,9 @@ test.cb("OldStyleModuleWithoutDeclare", function(t) {
 	});
 });
 
-test.cb("NotAnUI5Module", analyzeModule, "modules/not_a_module.js", "modules/not_a_module.js", NO_DEPENDENCIES);
+test.cb("NotAnUI5Module", analyzeModule,
+	"modules/not_a_module.js", "modules/not_a_module.js",
+	NO_DEPENDENCIES, NO_DEPENDENCIES, NO_DEPENDENCIES, NO_DEPENDENCIES, true);
 
 test.cb("AMDSpecialDependenciesShouldBeIgnored", (t) => {
 	analyzeModule(t,
@@ -237,7 +264,42 @@ test.cb("OldStyleBundle", (t) => {
 	analyzeModule(t,
 		"modules/bundle-oldstyle.js",
 		"sap-ui-core.js",
-		[],
+		[
+			"jquery.sap.dom.js",
+			"jquery.sap.script.js",
+			"sap/ui/base/Object.js",
+			"sap/ui/base/BindingParser.js",
+			"sap/ui/base/EventProvider.js",
+			"sap/ui/base/ManagedObjectMetadata.js",
+			"sap/ui/model/BindingMode.js",
+			"sap/ui/model/CompositeBinding.js",
+			"sap/ui/model/Context.js",
+			"sap/ui/model/FormatException.js",
+			"sap/ui/model/ListBinding.js",
+			"sap/ui/model/Model.js",
+			"sap/ui/model/ParseException.js",
+			"sap/ui/model/TreeBinding.js",
+			"sap/ui/model/Type.js",
+			"sap/ui/model/ValidateException.js",
+			"jquery.sap.strings.js",
+			"sap/ui/Global.js",
+			"sap/ui/base/Interface.js",
+			"sap/ui/core/Component.js",
+			"sap/ui/core/Configuration.js",
+			"sap/ui/core/Control.js",
+			"sap/ui/core/Element.js",
+			"sap/ui/core/ElementMetadata.js",
+			"sap/ui/core/FocusHandler.js",
+			"sap/ui/core/RenderManager.js",
+			"sap/ui/core/ResizeHandler.js",
+			"sap/ui/core/ThemeCheck.js",
+			"sap/ui/core/UIArea.js",
+			"sap/ui/core/message/MessageManager.js",
+			"jquery.sap.mobile.js",
+			"jquery.sap.properties.js",
+			"jquery.sap.resources.js",
+			"jquery.sap.sjax.js"
+		],
 		[],
 		[
 			"sap/ui/Device.js",
@@ -264,7 +326,42 @@ test.cb("OldStyleBundleV2", (t) => {
 	analyzeModule(t,
 		"modules/bundle-oldstyle-v2.js",
 		"sap-ui-core.js",
-		[],
+		[
+			"jquery.sap.dom.js",
+			"jquery.sap.script.js",
+			"sap/ui/base/Object.js",
+			"sap/ui/base/BindingParser.js",
+			"sap/ui/base/EventProvider.js",
+			"sap/ui/base/ManagedObjectMetadata.js",
+			"sap/ui/model/BindingMode.js",
+			"sap/ui/model/CompositeBinding.js",
+			"sap/ui/model/Context.js",
+			"sap/ui/model/FormatException.js",
+			"sap/ui/model/ListBinding.js",
+			"sap/ui/model/Model.js",
+			"sap/ui/model/ParseException.js",
+			"sap/ui/model/TreeBinding.js",
+			"sap/ui/model/Type.js",
+			"sap/ui/model/ValidateException.js",
+			"jquery.sap.strings.js",
+			"sap/ui/Global.js",
+			"sap/ui/base/Interface.js",
+			"sap/ui/core/Component.js",
+			"sap/ui/core/Configuration.js",
+			"sap/ui/core/Control.js",
+			"sap/ui/core/Element.js",
+			"sap/ui/core/ElementMetadata.js",
+			"sap/ui/core/FocusHandler.js",
+			"sap/ui/core/RenderManager.js",
+			"sap/ui/core/ResizeHandler.js",
+			"sap/ui/core/ThemeCheck.js",
+			"sap/ui/core/UIArea.js",
+			"sap/ui/core/message/MessageManager.js",
+			"jquery.sap.mobile.js",
+			"jquery.sap.properties.js",
+			"jquery.sap.resources.js",
+			"jquery.sap.sjax.js"
+		],
 		[],
 		[
 			"sap/ui/Device.js",
@@ -287,13 +384,64 @@ test.cb("OldStyleBundleV2", (t) => {
 	);
 });
 
-// Note: this test still fails as the evo-style bundles don't declare the names of the
-// contained raw-modules any longer.
 test.cb("EvoBundle", (t) => {
 	analyzeModule(t,
 		"modules/bundle-evo.js",
 		"sap-ui-core.js",
-		[],
+		[
+			"sap/base/util/now.js",
+			"sap/base/util/Version.js",
+			"sap/ui/dom/getComputedStyleFix.js",
+			"sap/ui/dom/activeElementFix.js",
+			"sap/ui/dom/includeScript.js",
+			"sap/ui/dom/includeStylesheet.js",
+			"sap/ui/core/support/Hotkeys.js",
+			"sap/ui/security/FrameOptions.js",
+			"sap/ui/performance/Measurement.js",
+			"sap/ui/performance/trace/Interaction.js",
+			"sap/ui/base/syncXHRFix.js",
+			"sap/base/util/LoaderExtensions.js",
+			"sap/base/util/defineLazyProperty.js",
+			"sap/base/util/ObjectPath.js",
+			"sap/base/util/isPlainObject.js",
+			"sap/ui/base/Object.js",
+			"sap/ui/base/BindingParser.js",
+			"sap/ui/base/EventProvider.js",
+			"sap/ui/base/ManagedObjectMetadata.js",
+			"sap/ui/model/BindingMode.js",
+			"sap/ui/model/StaticBinding.js",
+			"sap/ui/model/CompositeBinding.js",
+			"sap/ui/model/Context.js",
+			"sap/ui/model/FormatException.js",
+			"sap/ui/model/ParseException.js",
+			"sap/ui/model/Type.js",
+			"sap/ui/model/ValidateException.js",
+			"sap/ui/base/SyncPromise.js",
+			"sap/ui/util/ActivityDetection.js",
+			"sap/base/util/deepClone.js",
+			"sap/base/util/deepEqual.js",
+			"sap/base/util/uid.js",
+			"sap/ui/Global.js",
+			"sap/ui/base/Interface.js",
+			"sap/ui/core/Component.js",
+			"sap/ui/core/Configuration.js",
+			"sap/ui/core/Control.js",
+			"sap/ui/core/Element.js",
+			"sap/ui/core/ElementMetadata.js",
+			"sap/ui/core/FocusHandler.js",
+			"sap/ui/core/RenderManager.js",
+			"sap/ui/core/ResizeHandler.js",
+			"sap/ui/core/ThemeCheck.js",
+			"sap/ui/core/UIArea.js",
+			"sap/ui/core/message/MessageManager.js",
+			"sap/ui/dom/getScrollbarSize.js",
+			"sap/base/i18n/ResourceBundle.js",
+			"sap/base/util/array/uniqueSort.js",
+			"sap/ui/performance/trace/initTraces.js",
+			"sap/base/util/isEmptyObject.js",
+			"sap/base/util/each.js",
+			"sap/ui/events/jquery/EventSimulation.js"
+		],
 		[],
 		[
 			"sap/ui/thirdparty/baseuri.js",
@@ -332,7 +480,10 @@ test("Bundle", (t) => {
 			"todo/view/App.view.xml"
 		];
 		t.deepEqual(info.subModules, expected, "module dependencies should match");
-		t.truthy(info.dependencies.every((dep) => !info.isConditionalDependency(dep)), "none of the dependencies must be 'conditional'");
+		t.truthy(info.dependencies.every((dep) => !info.isConditionalDependency(dep)),
+			"none of the dependencies must be 'conditional'");
+		t.false(info.rawModule,
+			"ui5 module");
 	});
 });
 
@@ -358,7 +509,177 @@ test("ES6 Syntax", (t) => {
 				"only dependencies to 'conditional/*' modules should be conditional");
 			t.is(info.isImplicitDependency(dep), !/^(?:conditional|static)\//.test(dep),
 				"all dependencies other than 'conditional/*' and 'static/*' should be implicit");
+			t.false(info.dynamicDependencies,
+				"no use of dynamic dependencies should have been detected");
+			t.false(info.rawModule,
+				"ui5 module");
 		});
 	});
 });
 
+test("Dynamic import (declare/require)", (t) => {
+	return analyze("modules/declare_dynamic_require.js").then((info) => {
+		t.true(info.dynamicDependencies,
+			"the use of dynamic dependencies should have been detected");
+		t.false(info.rawModule,
+			"ui5 module");
+	});
+});
+
+test("Dynamic import (define/require)", (t) => {
+	return analyze("modules/amd_dynamic_require.js").then((info) => {
+		t.true(info.dynamicDependencies,
+			"the use of dynamic dependencies should have been detected");
+		t.false(info.rawModule,
+			"ui5 module");
+	});
+});
+
+test("Dynamic import (define/requireSync)", (t) => {
+	return analyze("modules/amd_dynamic_require_sync.js").then((info) => {
+		t.true(info.dynamicDependencies,
+			"the use of dynamic dependencies should have been detected");
+		t.false(info.rawModule,
+			"ui5 module");
+	});
+});
+
+test("Nested require", (t) => {
+	const content = `
+(function(deps, callback) {
+	function doIt(array, callback) {
+		callback();
+	}
+
+	var aArray = [];
+	doIt(aArray, function() {
+		doIt(["foo"], function() {
+			doIt(["bar"], function() {
+				// nested sap.ui.require
+				sap.ui.require(deps, callback);
+			});
+		});
+	});
+}([
+	"my/dependency"
+], function(myDep) {
+	console.log("done")
+}));`;
+	const info = analyzeString(content, "modules/nestedRequire.js");
+	t.true(info.rawModule, "raw module");
+});
+
+test("Toplevel define", (t) => {
+	const content = `
+(function() {
+	function defineMyFile() {
+		sap.ui.define('def/MyFile', ['dep/myDep'],
+			function(myDep) {
+				return 47;
+			});
+	}
+
+	// conditional
+	if (!(window.sap && window.sap.ui && window.sap.ui.define)) {
+		var fnHandler = function() {
+			defineMyFile();
+		};
+		my.addEventListener("myevent", fnHandler);
+	} else {
+		defineMyFile();
+	}
+}()); `;
+	const info = analyzeString(content, "modules/functionDefine.js");
+	t.true(info.rawModule, "raw module");
+});
+
+test("Invalid ui5 bundle comment", (t) => {
+	const content = `/@ui5-bundles sap/ui/thirdparty/xxx.js
+if(!('xxx'in Node.prototype)){}
+//@ui5-bundle-raw-includes sap/ui/thirdparty/aaa.js
+(function(g,f){g.AAA=f();}(this,(function(){})));
+sap.ui.define("my/module", ["sap/ui/core/UIComponent"],function(n){"use strict";return 47+n});`;
+	const info = analyzeString(content, "modules/bundle-evo_invalid_comment.js");
+	t.is(info.name, "my/module.js",
+		"module name matches");
+	t.deepEqual(info.subModules, [],
+		"no submodules");
+});
+
+test("Declare two times", (t) => {
+	const content = `jQuery.sap.declare("sap.ui.testmodule");
+sap.ui.testmodule.load = function(modName) {
+	jQuery.sap.require(modName);
+};
+jQuery.sap.declare("sap.ui.testmodule");`;
+	const info = analyzeString(content, "modules/declare_times_two.js");
+	t.is(info.name, "sap/ui/testmodule.js",
+		"module name matches");
+	t.deepEqual(info.subModules, [],
+		"no submodules");
+});
+
+test("Declare dynamic name", (t) => {
+	const content = `var sCommonName = "sap.ui"
+jQuery.sap.declare(sCommonName + ".testmodule");
+
+sap.ui.testmodule.load = function(modName) {
+	jQuery.sap.require(modName);
+};`;
+	const info = analyzeString(content, "modules/dynamic_name.js");
+	t.is(info.name, "modules/dynamic_name.js",
+		"module name matches");
+	t.deepEqual(info.subModules, [],
+		"no submodules");
+});
+
+test("jQuery.sap.registerPreloadedModules (with Identifier)", (t) => {
+	const content = `
+var data = {};
+jQuery.sap.registerPreloadedModules(data);
+`;
+	const info = analyzeString(content, "modules/registerPreloadedModules-Identifier.js");
+	t.deepEqual(info.subModules, [],
+		"no submodules");
+});
+
+test("jQuery.sap.registerPreloadedModules (with ObjectExpression)", (t) => {
+	const content = `
+jQuery.sap.registerPreloadedModules({
+	"modules": {
+		"foo.bar": ""
+	}
+});
+`;
+	const info = analyzeString(content, "modules/registerPreloadedModules-ObjectExpression.js");
+	t.deepEqual(info.subModules, ["foo/bar.js"],
+		"submodule from jQuery.sap.registerPreloadedModules");
+});
+
+test("jQuery.sap.registerPreloadedModules (with ObjectExpression, version 1.0)", (t) => {
+	const content = `
+jQuery.sap.registerPreloadedModules({
+	"modules": {
+		"foo.bar": ""
+	},
+	"version": "1.0"
+});
+`;
+	const info = analyzeString(content, "modules/registerPreloadedModules-ObjectExpression.js");
+	t.deepEqual(info.subModules, ["foo/bar.js"],
+		"submodule from jQuery.sap.registerPreloadedModules");
+});
+
+test("jQuery.sap.registerPreloadedModules (with ObjectExpression, version 2.0)", (t) => {
+	const content = `
+jQuery.sap.registerPreloadedModules({
+	"modules": {
+		"foo/bar.js": ""
+	},
+	"version": "2.0"
+});
+`;
+	const info = analyzeString(content, "modules/registerPreloadedModules-ObjectExpression.js");
+	t.deepEqual(info.subModules, ["foo/bar.js"],
+		"submodule from jQuery.sap.registerPreloadedModules");
+});

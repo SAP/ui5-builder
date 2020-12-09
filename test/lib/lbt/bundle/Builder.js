@@ -1,8 +1,111 @@
 const test = require("ava");
+const sinon = require("sinon");
+const mock = require("mock-require");
 
 const Builder = require("../../../../lib/lbt/bundle/Builder");
 const ResourcePool = require("../../../../lib/lbt/resources/ResourcePool");
 
+test.afterEach.always((t) => {
+	mock.stopAll();
+	sinon.restore();
+});
+
+test.serial("writePreloadModule: with invalid json content", async (t) => {
+	const writeStub = sinon.stub();
+	const logger = require("@ui5/logger");
+	const verboseLogStub = sinon.stub();
+	const myLoggerInstance = {
+		verbose: verboseLogStub
+	};
+	sinon.stub(logger, "getLogger").returns(myLoggerInstance);
+	const BuilderWithStub = mock.reRequire("../../../../lib/lbt/bundle/Builder");
+	const invalidJsonContent = `{
+	"a": 47,
+	"b": {{include: asd}}
+	}`;
+
+	const builder = new BuilderWithStub({});
+	builder.optimize = true;
+	builder.outW = {
+		write: writeStub
+	};
+	const invalidJsonResource = {
+		buffer: async () => {
+			return invalidJsonContent;
+		}
+	};
+	const result = await builder.writePreloadModule("invalid.json", undefined, invalidJsonResource);
+
+
+	t.is(verboseLogStub.callCount, 2, "called 2 times");
+	t.is(verboseLogStub.firstCall.args[0], "Failed to parse JSON file %s. Ignoring error, skipping compression.",
+		"first verbose log argument 0 is correct");
+	t.is(verboseLogStub.firstCall.args[1], "invalid.json", "first verbose log argument 1 is correct");
+	t.deepEqual(verboseLogStub.secondCall.args[0], new SyntaxError("Unexpected token { in JSON at position 19"),
+		"second verbose log");
+
+	t.true(result, "result is true");
+	t.is(writeStub.callCount, 1, "Writer is called once");
+});
+
+test("integration: createBundle with exposedGlobals", async (t) => {
+	const pool = new ResourcePool();
+	pool.addResource({
+		name: "a.js",
+		buffer: async () => "function One(){return 1;}"
+	});
+	pool.addResource({
+		name: "ui5loader.js",
+		buffer: async () => ""
+	});
+	pool.addResource({
+		name: "a.library",
+		buffer: async () => `<?xml version="1.0" encoding="UTF-8" ?>
+<library xmlns="http://www.sap.com/sap.ui.library.xsd" >
+	<appData>
+		<packaging xmlns="http://www.sap.com/ui5/buildext/packaging" version="2.0" >
+			  <module-infos>
+				<raw-module name="a.js"
+					requiresTopLevelScope="false" />
+			</module-infos>
+		</packaging>
+	</appData>
+</library>`
+	});
+
+	const bundleDefinition = {
+		name: `library-preload.js`,
+		defaultFileTypes: [".js"],
+		sections: [{
+			mode: "preload",
+			name: "preload-section",
+			filters: ["a.js"]
+		}, {
+			mode: "require",
+			filters: ["ui5loader.js"]
+		}]
+	};
+
+	const builder = new Builder(pool);
+	const oResult = await builder.createBundle(bundleDefinition, {numberOfParts: 1, decorateBootstrapModule: true});
+	t.deepEqual(oResult.name, "library-preload.js");
+	const expectedContent = `//@ui5-bundle library-preload.js
+sap.ui.require.preload({
+	"a.js":function(){function One(){return 1;}
+this.One=One;
+}
+},"preload-section");
+sap.ui.requireSync("ui5loader");
+`;
+	t.deepEqual(oResult.content, expectedContent, "EVOBundleFormat " +
+		"should contain:" +
+		" preload part from a.js" +
+		" require part from ui5loader.js");
+	t.deepEqual(oResult.bundleInfo.name, "library-preload.js", "bundle info name is correct");
+	t.deepEqual(oResult.bundleInfo.size, expectedContent.length, "bundle info size is correct");
+	t.deepEqual(oResult.bundleInfo.subModules, ["a.js"],
+		"bundle info subModules are correct");
+});
 
 test("integration: createBundle EVOBundleFormat (ui5loader.js)", async (t) => {
 	const pool = new ResourcePool();
@@ -127,7 +230,8 @@ sap.ui.requireSync("ui5loader");
 		" require part from ui5loader.js");
 	t.deepEqual(oResult.bundleInfo.name, "Component-preload.js", "bundle info name is correct");
 	t.deepEqual(oResult.bundleInfo.size, expectedContent.length, "bundle info size is correct");
-	t.deepEqual(oResult.bundleInfo.subModules, ["jquery.sap.global.js", "myModuleUsingGlobalScope.js", "myRawModule.js"],
+	t.deepEqual(oResult.bundleInfo.subModules,
+		["jquery.sap.global.js", "myModuleUsingGlobalScope.js", "myRawModule.js"],
 		"bundle info subModules are correct");
 });
 

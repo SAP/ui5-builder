@@ -1,7 +1,6 @@
 const test = require("ava");
 
-const ui5Builder = require("../../../");
-const tasks = ui5Builder.builder.tasks;
+const generateLibraryManifest = require("../../../lib/tasks/generateLibraryManifest");
 const path = require("path");
 const ui5Fs = require("@ui5/fs");
 const resourceFactory = ui5Fs.resourceFactory;
@@ -38,9 +37,9 @@ async function assertCreatedManifest(t, oExpectedManifest) {
 
 	await Promise.all(resources.map((resource) => workspace.write(resource)));
 
-	await tasks.generateLibraryManifest({
-		workspace: workspace,
-		dependencies: dependencies,
+	await generateLibraryManifest({
+		workspace,
+		dependencies,
 		options: {
 			projectName: "Test Lib"
 		}

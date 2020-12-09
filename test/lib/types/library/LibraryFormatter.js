@@ -17,7 +17,8 @@ const libraryETree = {
 	path: libraryEPath,
 	dependencies: [],
 	_level: 0,
-	specVersion: "0.1",
+	_isRoot: true,
+	specVersion: "2.0",
 	type: "library",
 	metadata: {
 		name: "library.e",
@@ -94,7 +95,41 @@ test("validate: empty encoding", async (t) => {
 	const libraryFormatter = new LibraryFormatter({project: myProject});
 
 	await libraryFormatter.validate(myProject);
-	t.deepEqual(myProject.resources.configuration.propertiesFileSourceEncoding, "ISO-8859-1", "default resources encoding is set");
+	t.deepEqual(myProject.resources.configuration.propertiesFileSourceEncoding, "UTF-8",
+		"default resources encoding is set");
+});
+
+test("validate: empty encoding - legacy specVersions 0.1", async (t) => {
+	const myProject = clone(libraryETree);
+	myProject.specVersion = "0.1";
+	delete myProject.resources.configuration.propertiesFileSourceEncoding;
+	const libraryFormatter = new LibraryFormatter({project: myProject});
+
+	await libraryFormatter.validate(myProject);
+	t.deepEqual(myProject.resources.configuration.propertiesFileSourceEncoding, "ISO-8859-1",
+		"default resources encoding is set");
+});
+
+test("validate: empty encoding - legacy specVersions 1.0", async (t) => {
+	const myProject = clone(libraryETree);
+	myProject.specVersion = "1.0";
+	delete myProject.resources.configuration.propertiesFileSourceEncoding;
+	const libraryFormatter = new LibraryFormatter({project: myProject});
+
+	await libraryFormatter.validate(myProject);
+	t.deepEqual(myProject.resources.configuration.propertiesFileSourceEncoding, "ISO-8859-1",
+		"default resources encoding is set");
+});
+
+test("validate: empty encoding - legacy specVersions 1.1", async (t) => {
+	const myProject = clone(libraryETree);
+	myProject.specVersion = "1.1";
+	delete myProject.resources.configuration.propertiesFileSourceEncoding;
+	const libraryFormatter = new LibraryFormatter({project: myProject});
+
+	await libraryFormatter.validate(myProject);
+	t.deepEqual(myProject.resources.configuration.propertiesFileSourceEncoding, "ISO-8859-1",
+		"default resources encoding is set");
 });
 
 test("validate: src directory does not exist", async (t) => {
@@ -127,8 +162,8 @@ test("validate: test invalid encoding", async (t) => {
 	const libraryFormatter = new LibraryFormatter({project: myProject});
 
 	const error = await t.throwsAsync(libraryFormatter.validate(myProject));
-	t.is(error.message, `Invalid properties file encoding specified for project library.e.id: encoding provided: test. Must be either "ISO-8859-1" or "UTF-8".`,
-		"Missing source directory caused error");
+	t.is(error.message, `Invalid properties file encoding specified for project library.e.id. Encoding provided: ` +
+		`test. Must be either "ISO-8859-1" or "UTF-8".`, "Missing source directory caused error");
 });
 
 test("format: copyright already configured", async (t) => {
@@ -138,6 +173,34 @@ test("format: copyright already configured", async (t) => {
 
 	await libraryFormatter.format();
 	t.deepEqual(myProject.metadata.copyright, libraryETree.metadata.copyright, "Copyright was not altered");
+});
+
+test.serial("format: copyright retrieval fails", async (t) => {
+	const myProject = clone(libraryETree);
+
+	const log = require("@ui5/logger");
+	const loggerInstance = log.getLogger("types:library:LibraryFormatter");
+
+	mock("@ui5/logger", {
+		getLogger: () => loggerInstance
+	});
+	mock.reRequire("@ui5/logger");
+	const loggerVerboseSpy = sinon.spy(loggerInstance, "verbose");
+
+	const LibraryFormatter = mock.reRequire("../../../../lib/types/library/LibraryFormatter");
+
+	const libraryFormatter = new LibraryFormatter({project: myProject});
+	sinon.stub(libraryFormatter, "validate").resolves();
+	sinon.stub(libraryFormatter, "getCopyright").rejects(Error("my-pony"));
+
+	await libraryFormatter.format();
+	t.deepEqual(myProject.metadata.copyright, libraryETree.metadata.copyright, "Copyright was not altered");
+
+
+	t.is(loggerVerboseSpy.callCount, 7, "calls to verbose");
+	t.is(loggerVerboseSpy.getCall(6).args[0], "my-pony", "message from rejection");
+
+	mock.stop("@ui5/logger");
 });
 
 test("format: formats correctly", async (t) => {
@@ -153,6 +216,44 @@ test("format: formats correctly", async (t) => {
 		path: libraryEPath,
 		dependencies: [],
 		_level: 0,
+		_isRoot: true,
+		specVersion: "2.0",
+		type: "library",
+		metadata: {
+			name: "library.e",
+			copyright: "${copyright}",
+			namespace: "library/e"
+		},
+		resources: {
+			configuration: {
+				paths: {
+					src: "src",
+					test: "test"
+				}
+			},
+			pathMappings: {
+				"/resources/": "src",
+				"/test-resources/": "test"
+			}
+		}
+	}, "Project got formatted correctly");
+});
+
+test("format: formats legacy specVersion correctly", async (t) => {
+	const myProject = clone(libraryETree);
+	myProject.specVersion = "0.1";
+	myProject.metadata.copyright = undefined;
+	const libraryFormatter = new LibraryFormatter({project: myProject});
+	sinon.stub(libraryFormatter, "validate").resolves();
+
+	await libraryFormatter.format();
+	t.deepEqual(myProject, {
+		id: "library.e.id",
+		version: "1.0.0",
+		path: libraryEPath,
+		dependencies: [],
+		_level: 0,
+		_isRoot: true,
 		specVersion: "0.1",
 		type: "library",
 		metadata: {
@@ -194,7 +295,6 @@ test.serial("format: namespace resolution fails", async (t) => {
 	});
 	mock.reRequire("@ui5/logger");
 	const loggerVerboseSpy = sinon.spy(loggerInstance, "verbose");
-	const loggerWarnSpy = sinon.spy(loggerInstance, "warn");
 
 	const LibraryFormatter = mock.reRequire("../../../../lib/types/library/LibraryFormatter");
 
@@ -202,12 +302,15 @@ test.serial("format: namespace resolution fails", async (t) => {
 	sinon.stub(libraryFormatter, "validate").resolves();
 
 
-	await libraryFormatter.format();
+	const error = await t.throwsAsync(libraryFormatter.format());
+	t.deepEqual(error.message, "Failed to detect namespace or namespace is empty for project library.e." +
+		" Check verbose log for details.");
+
 	t.deepEqual(globbyStub.callCount, 3, "globby got called three times");
 	t.deepEqual(globbyStub.getCall(0).args[0], "**/manifest.json", "First glob is for manifest.json files");
 	t.deepEqual(globbyStub.getCall(1).args[0], "**/.library", "Second glob is for .library files");
 	t.deepEqual(globbyStub.getCall(2).args[0], "**/library.js", "Third glob for library.js files");
-	t.deepEqual(loggerVerboseSpy.callCount, 7, "7 calls to log.verbose should be done");
+	t.deepEqual(loggerVerboseSpy.callCount, 5, "5 calls to log.verbose should be done");
 	const logVerboseCalls = loggerVerboseSpy.getCalls().map((call) => call.args[0]);
 
 	t.true(logVerboseCalls.includes(
@@ -224,12 +327,6 @@ test.serial("format: namespace resolution fails", async (t) => {
 		"Namespace resolution from library.js file path failed for project library.e: " +
 		"Could not find library.js file for project library.e"),
 	"should contain message for missing library.js");
-
-	t.deepEqual(loggerWarnSpy.callCount, 1, "1 calls to log.warn should be done");
-	const logWarnCalls = loggerWarnSpy.getCalls().map((call) => call.args[0]);
-	t.true(logWarnCalls.includes(
-		"Failed to detect namespace or namespace is empty for project library.e. Check verbose log for details."),
-	"should contain message for .library");
 
 	mock.stop("globby");
 	mock.stop("@ui5/logger");
@@ -313,7 +410,6 @@ test.serial("getDotLibrary: result is cached", async (t) => {
 	mock.reRequire("globby");
 
 	const LibraryFormatter = mock.reRequire("../../../../lib/types/library/LibraryFormatter");
-
 	const libraryFormatter = new LibraryFormatter({project: myProject});
 
 	const {content, fsPath} = await libraryFormatter.getDotLibrary();
@@ -321,6 +417,13 @@ test.serial("getDotLibrary: result is cached", async (t) => {
 	const expectedPath = path.join(myProject.path,
 		myProject.resources.configuration.paths.src, "library", "e", ".library");
 	t.deepEqual(fsPath, expectedPath, ".library fsPath is correct");
+
+	const {content: contentSecondCall, fsPath: fsPathSecondCall} = await libraryFormatter.getDotLibrary();
+	t.deepEqual(contentSecondCall.library.name, "library.e", ".library content has been read," +
+		"but should be cached now.");
+	const expectedPathSecondCall = path.join(myProject.path,
+		myProject.resources.configuration.paths.src, "library", "e", ".library");
+	t.deepEqual(fsPathSecondCall, expectedPathSecondCall, ".library fsPath is correct");
 
 	t.deepEqual(globbySpy.callCount, 1,
 		"globby got called exactly once (and then cached)");
@@ -402,6 +505,11 @@ test.serial("getLibraryJsPath: result is cached", async (t) => {
 		myProject.resources.configuration.paths.src, "library", "e", "library.js");
 	t.deepEqual(fsPath, expectedPath, ".library fsPath is correct");
 
+	const fsPathSecondCall = await libraryFormatter.getLibraryJsPath();
+	const expectedPathSecondCall = path.join(myProject.path,
+		myProject.resources.configuration.paths.src, "library", "e", "library.js");
+	t.deepEqual(fsPathSecondCall, expectedPathSecondCall, ".library fsPath is correct");
+
 	t.deepEqual(globbySpy.callCount, 1,
 		"globby got called exactly once (and then cached)");
 	mock.stop("globby");
@@ -462,7 +570,7 @@ test("getCopyright: no copyright available", async (t) => {
 		"Rejected with correct error message");
 });
 
-test("getNamespace: from manifest.json", async (t) => {
+test("getNamespace: from manifest.json with .library on same level", async (t) => {
 	const myProject = clone(libraryETree);
 
 	const libraryFormatter = new LibraryFormatter({project: myProject});
@@ -474,11 +582,53 @@ test("getNamespace: from manifest.json", async (t) => {
 		},
 		fsPath: path.normalize("/some/path/mani-pony/manifest.json") // normalize for windows
 	});
+	sinon.stub(libraryFormatter, "getDotLibrary").resolves({
+		content: {
+			library: {name: "dot-pony"}
+		},
+		fsPath: path.normalize("/some/path/mani-pony/.library") // normalize for windows
+	});
 	const getSourceBasePathStub = sinon.stub(libraryFormatter, "getSourceBasePath").returns("/some/path/");
 	const res = await libraryFormatter.getNamespace();
+	t.deepEqual(getSourceBasePathStub.callCount, 1,
+		"getSourceBasePath got called once");
 	t.deepEqual(getSourceBasePathStub.getCall(0).args[0], true,
 		"getSourceBasePath called with correct argument");
 	t.deepEqual(res, "mani-pony", "Returned correct namespace");
+});
+
+test("getNamespace: from manifest.json with .library on same level but different directory", async (t) => {
+	const myProject = clone(libraryETree);
+
+	const manifestFsPath = path.normalize("/some/path/mani-pony/manifest.json"); // normalize for windows
+	const dotLibraryFsPath = path.normalize("/some/path/different-pony/.library");
+
+	const libraryFormatter = new LibraryFormatter({project: myProject});
+	sinon.stub(libraryFormatter, "getManifest").resolves({
+		content: {
+			"sap.app": {
+				id: "mani-pony"
+			}
+		},
+		fsPath: manifestFsPath
+	});
+	sinon.stub(libraryFormatter, "getDotLibrary").resolves({
+		content: {
+			library: {name: "dot-pony"}
+		},
+		fsPath: dotLibraryFsPath
+	});
+	sinon.stub(libraryFormatter, "getSourceBasePath").returns("/some/path/");
+
+	const err = await t.throwsAsync(libraryFormatter.getNamespace());
+
+	t.deepEqual(err.message,
+		`Failed to detect namespace for project library.e: Found a manifest.json on the same directory level ` +
+		`but in a different directory than the .library file. They should be in the same directory.\n` +
+		`  manifest.json path: ${manifestFsPath}\n` +
+		`  is different to\n` +
+		`  .library path: ${dotLibraryFsPath}`,
+		"Rejected with correct error message");
 });
 
 test("getNamespace: from manifest.json with not matching file path", async (t) => {
@@ -493,12 +643,56 @@ test("getNamespace: from manifest.json with not matching file path", async (t) =
 		},
 		fsPath: path.normalize("/some/path/different/namespace/manifest.json") // normalize for windows
 	});
+	sinon.stub(libraryFormatter, "getDotLibrary").resolves({
+		content: {
+			library: {name: "dot-pony"}
+		},
+		fsPath: path.normalize("/some/path/different/namespace/.library") // normalize for windows
+	});
 	sinon.stub(libraryFormatter, "getSourceBasePath").returns("/some/path/");
 	const err = await t.throwsAsync(libraryFormatter.getNamespace());
 
 	t.deepEqual(err.message, `Detected namespace "mani-pony" does not match detected directory structure ` +
-		`"different/namespace" for project library.e`,
-	"Rejected with correct error message");
+		`"different/namespace" for project library.e`, "Rejected with correct error message");
+});
+
+test.serial("getNamespace: from manifest.json without sap.app id", async (t) => {
+	const myProject = clone(libraryETree);
+
+	const log = require("@ui5/logger");
+	const loggerInstance = log.getLogger("types:library:LibraryFormatter");
+
+	mock("@ui5/logger", {
+		getLogger: () => loggerInstance
+	});
+	mock.reRequire("@ui5/logger");
+
+	const LibraryFormatter = mock.reRequire("../../../../lib/types/library/LibraryFormatter");
+
+	const libraryFormatter = new LibraryFormatter({project: myProject});
+	const manifestPath = path.normalize("/some/path/different/namespace/manifest.json"); // normalize for windows
+	sinon.stub(libraryFormatter, "getManifest").resolves({
+		content: {
+			"sap.app": {
+			}
+		},
+		fsPath: manifestPath
+	});
+	sinon.stub(libraryFormatter, "getSourceBasePath").returns("/some/path/");
+
+	const loggerSpy = sinon.spy(loggerInstance, "verbose");
+	const err = await t.throwsAsync(libraryFormatter.getNamespace());
+
+	t.deepEqual(err.message,
+		`Failed to detect namespace or namespace is empty for project library.e. Check verbose log for details.`,
+		"Rejected with correct error message");
+	t.is(loggerSpy.callCount, 4, "calls to verbose");
+
+
+	t.is(loggerSpy.getCall(0).args[0],
+		`No sap.app/id configuration found in manifest.json of project library.e at ${manifestPath}`,
+		"correct verbose message");
+	mock.stop("@ui5/logger");
 });
 
 test("getNamespace: from .library", async (t) => {
@@ -515,6 +709,64 @@ test("getNamespace: from .library", async (t) => {
 	sinon.stub(libraryFormatter, "getSourceBasePath").returns("/some/path/");
 	const res = await libraryFormatter.getNamespace();
 	t.deepEqual(res, "dot-pony", "Returned correct namespace");
+});
+
+test("getNamespace: from .library with ignored manifest.json on lower level", async (t) => {
+	const myProject = clone(libraryETree);
+
+	const libraryFormatter = new LibraryFormatter({project: myProject});
+	sinon.stub(libraryFormatter, "getManifest").resolves({
+		content: {
+			"sap.app": {
+				id: "mani-pony"
+			}
+		},
+		fsPath: path.normalize("/some/path/namespace/somedir/manifest.json") // normalize for windows
+	});
+	sinon.stub(libraryFormatter, "getDotLibrary").resolves({
+		content: {
+			library: {name: "dot-pony"}
+		},
+		fsPath: path.normalize("/some/path/dot-pony/.library") // normalize for windows
+	});
+	sinon.stub(libraryFormatter, "getSourceBasePath").returns("/some/path/");
+	const res = await libraryFormatter.getNamespace();
+	t.deepEqual(res, "dot-pony", "Returned correct namespace");
+});
+
+test("getNamespace: manifest.json on higher level than .library", async (t) => {
+	const myProject = clone(libraryETree);
+
+	const manifestFsPath = path.normalize("/some/path/namespace/manifest.json"); // normalize for windows
+	const dotLibraryFsPath = path.normalize("/some/path/namespace/morenamespace/.library");
+
+	const libraryFormatter = new LibraryFormatter({project: myProject});
+	sinon.stub(libraryFormatter, "getManifest").resolves({
+		content: {
+			"sap.app": {
+				id: "mani-pony"
+			}
+		},
+		fsPath: manifestFsPath
+	});
+	sinon.stub(libraryFormatter, "getDotLibrary").resolves({
+		content: {
+			library: {name: "dot-pony"}
+		},
+		fsPath: dotLibraryFsPath
+	});
+	sinon.stub(libraryFormatter, "getSourceBasePath").returns("/some/path/");
+	const err = await t.throwsAsync(libraryFormatter.getNamespace());
+
+	t.deepEqual(err.message,
+		`Failed to detect namespace for project library.e: ` +
+		`Found a manifest.json on a higher directory level than the .library file. ` +
+		`It should be on the same or a lower level. ` +
+		`Note that a manifest.json on a lower level will be ignored.\n` +
+		`  manifest.json path: ${manifestFsPath}\n` +
+		`  is higher than\n` +
+		`  .library path: ${dotLibraryFsPath}`,
+		"Rejected with correct error message");
 });
 
 test("getNamespace: from .library with maven placeholder", async (t) => {

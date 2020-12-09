@@ -8,21 +8,21 @@ trigger:
 
 strategy:
   matrix:
-    linux_node_8:
-      imageName: 'ubuntu-16.04'
-      node_version: 8.x
     linux_node_10:
-      imageName: 'ubuntu-16.04'
+      imageName: 'ubuntu-18.04'
       node_version: 10.x
+    linux_node_lts:
+      imageName: 'ubuntu-18.04'
+      node_version: 12.x
     linux_node_latest:
-      imageName: 'ubuntu-16.04'
-      node_version: 11.x
+      imageName: 'ubuntu-18.04'
+      node_version: 14.x
     mac_node_latest:
-      imageName: 'macos-10.13'
-      node_version: 11.x
+      imageName: 'macOS-10.15'
+      node_version: 14.x
     windows_node_latest:
-      imageName: 'vs2017-win2016'
-      node_version: 11.x
+      imageName: 'windows-2019'
+      node_version: 14.x
 
 pool:
   vmImage: $(imageName)
@@ -31,20 +31,31 @@ steps:
 - task: NodeTool@0
   inputs:
     versionSpec: $(node_version)
-  displayName: 'Install Node.js'
+  displayName: Install Node.js
 
 - script: npm ci
+  displayName: Install Dependencies
+
+- script: npm ls
+  displayName: Check for missing / extraneous Dependencies
+
 - script: npm run test-azure
+  displayName: Run Tests
 
 - task: PublishTestResults@2
+  displayName: Publish Test Results
   condition: succeededOrFailed()
   inputs:
     testResultsFormat: 'JUnit'
     testResultsFiles: '$(System.DefaultWorkingDirectory)/test-results.xml'
 
 - task: PublishCodeCoverageResults@1
+  displayName: Publish Test Coverage Results
   condition: succeededOrFailed()
   inputs:
     codeCoverageTool: 'cobertura'
     summaryFileLocation: '$(System.DefaultWorkingDirectory)/coverage/cobertura-coverage.xml'
 
+- script: npm run test
+  displayName: Run Test Natively in Case of Failures
+  condition: failed()

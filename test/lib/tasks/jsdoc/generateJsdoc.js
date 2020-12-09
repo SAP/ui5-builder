@@ -224,11 +224,11 @@ test.serial("generateJsdoc", async (t) => {
 	};
 
 	const registerCleanupTaskStub = sinon.stub();
-	const buildContext = {
+	const taskUtil = {
 		registerCleanupTask: registerCleanupTaskStub
 	};
 	await generateJsdoc({
-		buildContext,
+		taskUtil,
 		workspace,
 		dependencies: "dependencies",
 		options: {
@@ -306,11 +306,11 @@ test.serial("generateJsdoc with missing resources", async (t) => {
 		write: writeStub
 	};
 	const registerCleanupTaskStub = sinon.stub();
-	const buildContext = {
+	const taskUtil = {
 		registerCleanupTask: registerCleanupTaskStub
 	};
 	await generateJsdoc({
-		buildContext,
+		taskUtil,
 		workspace,
 		dependencies: "dependencies",
 		options: {
@@ -335,8 +335,14 @@ test.serial("generateJsdoc with missing resources", async (t) => {
 	mock.stop("../../../../lib/processors/jsdoc/jsdocGenerator");
 });
 
+test.serial("generateJsdoc no parameters", async (t) => {
+	await t.throwsAsync(generateJsdoc(), {
+		instanceOf: TypeError
+	}, "TypeError thrown");
+});
+
 test.serial("generateJsdoc missing parameters", async (t) => {
-	const error = await t.throwsAsync(generateJsdoc());
+	const error = await t.throwsAsync(generateJsdoc({}));
 	t.deepEqual(error.message, "[generateJsdoc]: One or more mandatory options not provided",
 		"Correct error message thrown");
 });

@@ -1,8 +1,12 @@
 {
 	"name": "@ui5/builder",
-	"version": "1.5.3",
+	"version": "2.4.5",
 	"description": "UI5 Tooling - Builder",
-	"author": "SAP SE (https://www.sap.com)",
+	"author": {
+		"name": "SAP SE",
+		"email": "openui5@sap.com",
+		"url": "https://www.sap.com"
+	},
 	"license": "Apache-2.0",
 	"keywords": [
 		"openui5",
@@ -14,42 +18,44 @@
 	],
 	"main": "index.js",
 	"engines": {
-		"node": ">= 8.5",
+		"node": ">= 10",
 		"npm": ">= 5"
 	},
 	"scripts": {
-		"test": "npm run lint && npm run jsdoc-generate && npm run coverage",
-		"test-azure": "npm run lint && npm run jsdoc-generate && npm run coverage-xunit",
+		"test": "npm run lint && npm run jsdoc-generate && npm run coverage && npm run depcheck",
+		"test-azure": "npm run coverage-xunit",
 		"lint": "eslint ./",
 		"unit": "rimraf test/tmp && ava",
 		"unit-verbose": "rimraf test/tmp && cross-env UI5_LOG_LVL=verbose ava --verbose --serial",
 		"unit-watch": "rimraf test/tmp && ava --watch",
 		"unit-nyan": "rimraf test/tmp && ava --tap | tnyan",
-		"unit-xunit": "rimraf test/tmp && ava --tap | tap-xunit --dontUseCommentsAsTestNames=true > test-results.xml",
-		"unit-inspect": "cross-env UI5_LOG_LVL=verbose node --inspect-brk node_modules/ava/profile.js",
+		"unit-xunit": "rimraf test/tmp && ava --tap --timeout=1m | tap-xunit --dontUseCommentsAsTestNames=true > test-results.xml",
+		"unit-inspect": "cross-env UI5_LOG_LVL=verbose ava debug --break",
 		"coverage": "nyc npm run unit",
 		"coverage-xunit": "nyc --reporter=text --reporter=text-summary --reporter=cobertura npm run unit-xunit",
 		"jsdoc": "npm run jsdoc-generate && open-cli jsdocs/index.html",
 		"jsdoc-generate": "node_modules/.bin/jsdoc -c ./jsdoc.json ./lib/ || (echo 'Error during JSDoc generation! Check log.' && exit 1)",
+		"jsdoc-watch": "npm run jsdoc && chokidar \"./lib/**/*.js\" -c \"npm run jsdoc-generate\"",
 		"preversion": "npm test",
 		"version": "git-chglog --next-tag v$npm_package_version -o CHANGELOG.md && git add CHANGELOG.md",
 		"postversion": "git push --follow-tags",
 		"release-note": "git-chglog -c .chglog/release-config.yml v$npm_package_version",
-		"report-coveralls": "nyc report --reporter=text-lcov | COVERALLS_PARALLEL=true coveralls"
+		"depcheck": "depcheck --ignores docdash"
 	},
 	"files": [
 		"index.js",
 		"CONTRIBUTING.md",
 		"jsdoc.json",
-		"lib/**"
+		"lib/**",
+		"LICENSES/**",
+		".reuse/**"
 	],
 	"ava": {
 		"files": [
 			"test/lib/**/*.js"
 		],
-		"sources": [
-			"lib/**/*.js",
-			"test/lib/**/*.js"
+		"ignoredByWatcher": [
+			"test/tmp/**"
 		]
 	},
 	"nyc": {
@@ -59,12 +65,13 @@
 			"text-summary"
 		],
 		"exclude": [
-			".eslintrc.js",
+			"lib/processors/jsdoc/lib/**",
 			"docs/**",
 			"jsdocs/**",
 			"coverage/**",
 			"test/**",
-			"lib/processors/jsdoc/lib/**"
+			".eslintrc.js",
+			"jsdoc-plugin.js"
 		],
 		"check-coverage": true,
 		"statements": 85,
@@ -97,45 +104,46 @@
 		"url": "git@github.com:SAP/ui5-builder.git"
 	},
 	"dependencies": {
-		"@ui5/fs": "^1.1.2",
-		"@ui5/logger": "^1.0.2",
+		"@ui5/fs": "^2.0.5",
+		"@ui5/logger": "^2.0.1",
 		"cheerio": "^0.22.0",
 		"escape-unicode": "^0.2.0",
-		"escodegen": "^1.12.0",
+		"escodegen": "^2.0.0",
 		"escope": "^3.6.0",
 		"esprima": "^4.0.1",
-		"estraverse": "^4.3.0",
-		"globby": "^10.0.1",
-		"graceful-fs": "^4.2.2",
-		"jsdoc": "3.5.5",
-		"less-openui5": "^0.6.0",
-		"make-dir": "^3.0.0",
+		"estraverse": "5.1.0",
+		"globby": "^11.0.1",
+		"graceful-fs": "^4.2.4",
+		"jsdoc": "^3.6.6",
+		"less-openui5": "^0.9.0",
+		"make-dir": "^3.1.0",
 		"pretty-data": "^0.40.0",
 		"pretty-hrtime": "^1.0.3",
 		"replacestream": "^4.0.3",
-		"rimraf": "^3.0.0",
-		"semver": "^6.3.0",
+		"rimraf": "^3.0.2",
+		"semver": "^7.3.4",
 		"slash": "^3.0.0",
-		"terser": "^4.3.8",
-		"xml2js": "^0.4.22",
+		"terser": "^5.5.1",
+		"xml2js": "^0.4.23",
 		"yazl": "^2.5.1"
 	},
 	"devDependencies": {
-		"ava": "^2.4.0",
+		"ava": "^3.13.0",
 		"chai": "^4.1.2",
 		"chai-fs": "^2.0.0",
-		"coveralls": "^3.0.7",
-		"cross-env": "^6.0.3",
-		"docdash": "^1.1.1",
-		"eslint": "^5.16.0",
-		"eslint-config-google": "^0.13.0",
-		"eslint-plugin-jsdoc": "^4.8.4",
-		"extract-zip": "^1.6.7",
+		"chokidar-cli": "^2.1.0",
+		"cross-env": "^7.0.3",
+		"depcheck": "^1.3.1",
+		"docdash": "^1.2.0",
+		"eslint": "^7.15.0",
+		"eslint-config-google": "^0.14.0",
+		"eslint-plugin-jsdoc": "^30.7.8",
+		"extract-zip": "^2.0.1",
 		"mock-require": "^3.0.3",
-		"nyc": "^14.1.1",
-		"open-cli": "^5.0.0",
+		"nyc": "^15.1.0",
+		"open-cli": "^6.0.1",
 		"recursive-readdir": "^2.1.1",
-		"sinon": "^7.5.0",
+		"sinon": "^9.2.1",
 		"tap-nyan": "^1.1.0",
 		"tap-xunit": "^2.4.1"
 	}
