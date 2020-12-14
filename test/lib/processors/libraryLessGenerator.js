@@ -11,43 +11,85 @@ test.afterEach(() => {
 	sinon.restore();
 });
 
-test.serial("processor: Creates LibraryLessGenerator and calls it for every resource", async (t) => {
+test.serial("processor", async (t) => {
 	const resources = [
 		{
 			getPath() {
-				return "/foo/library.source.less";
+				return "/resources/sap/foo/themes/base/library.source.less";
 			},
 			getString() {
-				return "// Content of /foo/library.source.less";
+				return `@import "../../../../sap/ui/core/themes/base/base.less";\n` +
+				`@import "../../../../sap/ui/core/themes/base/global.less";\n` +
+				`@import "Foo.less";`;
 			}
 		},
 		{
 			getPath() {
-				return "/bar/library.source.less";
+				return "/resources/sap/foo/themes/my_theme/library.source.less";
 			},
 			getString() {
-				return "// Content of /bar/library.source.less";
+				return `@import "../base/library.source.less";\n` +
+				`@import "../../../../sap/ui/core/themes/my_theme/base.less";\n` +
+				`@import "../../../../sap/ui/core/themes/my_theme/global.less";\n` +
+				`@import "Foo.less";`;
 			}
 		}
 	];
-	const fs = {readFile: sinon.stub()};
+	const fs = {
+		readFile: sinon.stub().callsFake((filePath, options, cb) => {
+			switch (filePath) {
+			case "/resources/sap/foo/themes/base/Foo.less":
+				cb(null, `// Content of Foo.less\n` +
+				`@import "Bar.less";`
+				);
+				return;
+			case "/resources/sap/foo/themes/base/Bar.less":
+				cb(null, `// Content of Bar.less\n`);
+				return;
+			case "/resources/sap/foo/themes/my_theme/Foo.less":
+				cb(null, `// Content of Foo.less\n`);
+				return;
+			default:
+				cb(new Error("File not found: " + filePath));
+				return;
+			}
+		})
+	};
 
-	const outputResources = await processor({
-		resources, fs
-	});
+	const outputResources = await processor({resources, fs});
 
 	t.is(resources.length, outputResources.length, "Processor returns same amount of resources");
-	t.is(outputResources[0].getPath(), "/foo/library.less", "Processor returns new library.less resource");
-	t.is(await outputResources[0].getString(),
-		`/* NOTE: This file was generated as an optimized version ` +
-		`of "library.source.less" for the Theme Designer. */\n\n` +
-		`// Content of /foo/library.source.less`,
+	t.is(outputResources[0].getPath(), `/resources/sap/foo/themes/base/library.less`,
 		"Processor returns new library.less resource");
-	t.is(outputResources[1].getPath(), "/bar/library.less", "Processor returns new library.less resource");
+	t.is(await outputResources[0].getString(),
+		`/* NOTE: This file was generated as an optimized version of "library.source.less" for the Theme Designer. */
+
+@import "../../../../../../Base/baseLib/baseTheme/base.less"; \
+/* ORIGINAL IMPORT PATH: "../../../../sap/ui/core/themes/base/base.less" */
+
+@import "../../../../sap/ui/core/themes/base/global.less";
+/* START "Foo.less" */
+// Content of Foo.less
+/* START "Bar.less" */
+// Content of Bar.less
+/* END "Bar.less" */
+/* END "Foo.less" */
+`,
+		"Processor returns new library.less resource");
+	t.is(outputResources[1].getPath(), `/resources/sap/foo/themes/my_theme/library.less`,
+		"Processor returns new library.less resource");
 	t.is(await outputResources[1].getString(),
-		`/* NOTE: This file was generated as an optimized version ` +
-			`of "library.source.less" for the Theme Designer. */\n\n` +
-			`// Content of /bar/library.source.less`,
+		`/* NOTE: This file was generated as an optimized version of "library.source.less" for the Theme Designer. */
+
+@import "../base/library.less";
+@import "../../../../../../Base/baseLib/my_theme/base.less"; \
+/* ORIGINAL IMPORT PATH: "../../../../sap/ui/core/themes/my_theme/base.less" */
+
+@import "../../../../sap/ui/core/themes/my_theme/global.less";
+/* START "Foo.less" */
+// Content of Foo.less
+/* END "Foo.less" */
+`,
 		"Processor returns new library.less resource");
 });
 
