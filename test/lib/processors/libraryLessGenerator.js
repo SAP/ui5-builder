@@ -135,6 +135,34 @@ test.serial("LibraryLessGenerator: File with normal import", async (t) => {
 	t.is(output, expectedOutput);
 });
 
+test.serial("LibraryLessGenerator: File with absolute import", async (t) => {
+	const input = `@import "/resources/sap/foo/themes/base/Foo.less";`;
+	const expectedOutput = `${FILE_HEADER}\n\n` +
+	`/* START "/resources/sap/foo/themes/base/Foo.less" */\n` +
+	`// Content of foo.less\n` +
+	`/* END "/resources/sap/foo/themes/base/Foo.less" */\n`;
+
+	const fs = {
+		readFile: sinon.stub().callsFake((filePath, options, cb) => {
+			switch (filePath) {
+			case "/resources/sap/foo/themes/base/Foo.less":
+				cb(null, `// Content of foo.less\n`);
+				return;
+			default:
+				cb(new Error("File not found: " + filePath));
+				return;
+			}
+		})
+	};
+
+	const output = await (new LibraryLessGenerator({fs})).generate({
+		filePath: "/resources/sap/foo/themes/base/library.source.less",
+		fileContent: input
+	});
+
+	t.is(output, expectedOutput);
+});
+
 test.serial("LibraryLessGenerator: File with multiple imports", async (t) => {
 	const input = `
 @import "File1.less";
@@ -286,10 +314,8 @@ test.serial("LibraryLessGenerator: Rewrite for library.source.less", async (t) =
 	t.is(fs.readFile.callCount, 0, "fs.readFile should not be called");
 });
 
-test.serial("LibraryLessGenerator: No rewrite for file in sub-folder", async (t) => {
+test.serial("LibraryLessGenerator: Throw error for file in sub-directory", async (t) => {
 	const input = `@import "foo/bar.less";`;
-	const expectedOutput = `${FILE_HEADER}\n\n` +
-	`@import "foo/bar.less";`;
 
 	const fs = {
 		readFile: sinon.stub().callsFake((filePath, options, cb) => {
@@ -297,19 +323,21 @@ test.serial("LibraryLessGenerator: No rewrite for file in sub-folder", async (t)
 		})
 	};
 
-	const output = await (new LibraryLessGenerator({fs})).generate({
+	await t.throwsAsync((new LibraryLessGenerator({fs})).generate({
 		filePath: "/resources/sap/ui/core/themes/sap_fiori_3/library.source.less",
 		fileContent: input
+	}), {
+		message:
+		"libraryLessGenerator: Unsupported import of file '/resources/sap/ui/core/themes/sap_fiori_3/foo/bar.less'. " +
+		"Stylesheets must be located in the theme directory '/resources/sap/ui/core/themes/sap_fiori_3' " +
+		"(no sub-directories)"
 	});
 
-	t.is(output, expectedOutput);
 	t.is(fs.readFile.callCount, 0, "fs.readFile should not be called");
 });
 
-test.serial("LibraryLessGenerator: No rewrite for file outside of theme folder", async (t) => {
-	const input = `@import "../../foo.less";`;
-	const expectedOutput = `${FILE_HEADER}\n\n` +
-	`@import "../../foo.less";`;
+test.serial("LibraryLessGenerator: Throw error for file outside of theme directory", async (t) => {
+	const input = `@import "../foo/bar.less";`;
 
 	const fs = {
 		readFile: sinon.stub().callsFake((filePath, options, cb) => {
@@ -317,11 +345,37 @@ test.serial("LibraryLessGenerator: No rewrite for file outside of theme folder",
 		})
 	};
 
-	const output = await (new LibraryLessGenerator({fs})).generate({
+	await t.throwsAsync((new LibraryLessGenerator({fs})).generate({
 		filePath: "/resources/sap/ui/core/themes/sap_fiori_3/library.source.less",
 		fileContent: input
+	}), {
+		message:
+		"libraryLessGenerator: Unsupported import of file '/resources/sap/ui/core/themes/foo/bar.less'. " +
+		"Stylesheets must be located in the theme directory '/resources/sap/ui/core/themes/sap_fiori_3' " +
+		"(no sub-directories)"
 	});
 
-	t.is(output, expectedOutput);
+	t.is(fs.readFile.callCount, 0, "fs.readFile should not be called");
+});
+
+test.serial("LibraryLessGenerator: Throw error for absolute import outside of theme directory", async (t) => {
+	const input = `@import "/foo/bar.less";`;
+
+	const fs = {
+		readFile: sinon.stub().callsFake((filePath, options, cb) => {
+			cb(new Error("File not found: " + filePath));
+		})
+	};
+
+	await t.throwsAsync((new LibraryLessGenerator({fs})).generate({
+		filePath: "/resources/sap/ui/core/themes/sap_fiori_3/library.source.less",
+		fileContent: input
+	}), {
+		message:
+		"libraryLessGenerator: Unsupported import of file '/foo/bar.less'. " +
+		"Stylesheets must be located in the theme directory '/resources/sap/ui/core/themes/sap_fiori_3' " +
+		"(no sub-directories)"
+	});
+
 	t.is(fs.readFile.callCount, 0, "fs.readFile should not be called");
 });
