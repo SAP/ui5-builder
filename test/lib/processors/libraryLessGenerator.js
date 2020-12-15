@@ -2,7 +2,7 @@ const test = require("ava");
 const sinon = require("sinon");
 
 const processor = require("../../../lib/processors/libraryLessGenerator");
-const {LibraryLessGenerator} = processor;
+const {_LibraryLessGenerator: LibraryLessGenerator} = processor;
 
 const FILE_HEADER = `/* NOTE: This file was generated as an optimized version of ` +
 	`"library.source.less" for the Theme Designer. */`;
