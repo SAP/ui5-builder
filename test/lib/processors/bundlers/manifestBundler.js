@@ -145,3 +145,65 @@ test.serial("manifestBundler with manifest with i18n object", async (t) => {
 	t.deepEqual(t.context.addBufferSpy.getCall(2).args, ["A=C", "i18n/i18n_en.properties"],
 		"should be called with correct arguments");
 });
+
+test.serial("manifestBundler with manifest with i18n enhanceWith", async (t) => {
+	const resources = [];
+	const manifestString = JSON.stringify({
+		"sap.app": {
+			"i18n": {
+				"bundleUrl": "i18n/i18n.properties",
+				"enhanceWith": [
+					{
+						"bundleUrl": "enhancement1/i18n.properties"
+					},
+					{
+						"bundleUrl": "enhancement2/i18n.properties"
+					}
+				]
+			}
+		}
+	});
+	resources.push({
+		name: "manifest.json",
+		getPath: () => "/resources/pony/manifest.json",
+		getBuffer: async () => manifestString
+	});
+	resources.push({
+		name: "i18n_de.properties",
+		getPath: () => "/resources/pony/i18n/i18n_de.properties",
+		getBuffer: async () => "A=B"
+	});
+	resources.push({
+		name: "i18n_en.properties",
+		getPath: () => "/resources/pony/i18n/i18n_en.properties",
+		getBuffer: async () => "A=C"
+	});
+	resources.push({
+		name: "i18n.properties",
+		getPath: () => "/resources/pony/enhancement1/i18n.properties",
+		getBuffer: async () => "A=enhancement1"
+	});
+	resources.push({
+		name: "i18n.properties",
+		getPath: () => "/resources/pony/enhancement2/i18n.properties",
+		getBuffer: async () => "A=enhancement2"
+	});
+	const options = {
+		descriptor: "manifest.json",
+		namespace: "pony",
+		propertiesExtension: ".properties"
+	};
+	await manifestBundler({resources, options});
+	t.deepEqual(t.context.addBufferSpy.callCount, 5, "should be called 3 times");
+	t.deepEqual(t.context.logVerboseSpy.callCount, 0, "should not be called");
+	t.deepEqual(t.context.addBufferSpy.getCall(0).args, [manifestString, "manifest.json"],
+		"should be called with correct arguments");
+	t.deepEqual(t.context.addBufferSpy.getCall(1).args, ["A=B", "i18n/i18n_de.properties"],
+		"should be called with correct arguments");
+	t.deepEqual(t.context.addBufferSpy.getCall(2).args, ["A=C", "i18n/i18n_en.properties"],
+		"should be called with correct arguments");
+	t.deepEqual(t.context.addBufferSpy.getCall(3).args, ["A=enhancement1", "enhancement1/i18n.properties"],
+		"should be called with correct arguments");
+	t.deepEqual(t.context.addBufferSpy.getCall(4).args, ["A=enhancement2", "enhancement2/i18n.properties"],
+		"should be called with correct arguments");
+});
