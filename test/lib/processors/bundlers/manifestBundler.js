@@ -150,6 +150,7 @@ test.serial("manifestBundler with manifest with i18n enhanceWith", async (t) => 
 	const resources = [];
 	const manifestString = JSON.stringify({
 		"sap.app": {
+			"id": "pony",
 			"i18n": {
 				"bundleUrl": "i18n/i18n.properties",
 				"enhanceWith": [
@@ -157,7 +158,7 @@ test.serial("manifestBundler with manifest with i18n enhanceWith", async (t) => 
 						"bundleUrl": "enhancement1/i18n.properties"
 					},
 					{
-						"bundleUrl": "enhancement2/i18n.properties"
+						"bundleName": "pony.enhancement2.i18n"
 					}
 				]
 			}
