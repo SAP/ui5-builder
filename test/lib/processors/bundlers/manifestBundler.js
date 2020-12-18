@@ -133,12 +133,60 @@ test.serial("manifestBundler with manifest with i18n string", async (t) => {
 	t.is(t.context.logErrorSpy.callCount, 0);
 });
 
-test.serial("manifestBundler with manifest with i18n object", async (t) => {
+test.serial("manifestBundler with manifest with i18n object (bundleUrl)", async (t) => {
 	const resources = [];
 	const manifestString = JSON.stringify({
 		"sap.app": {
 			"i18n": {
 				"bundleUrl": "i18n/i18n.properties",
+				"supportedLocales": ["en", "de"],
+				"fallbackLocale": "en"
+			}
+		}
+	});
+	resources.push({
+		name: "manifest.json",
+		getPath: () => "/resources/pony/manifest.json",
+		getBuffer: async () => manifestString
+	});
+	resources.push({
+		name: "i18n_de.properties",
+		getPath: () => "/resources/pony/i18n/i18n_de.properties",
+		getBuffer: async () => "A=B"
+	});
+	resources.push({
+		name: "i18n_en.properties",
+		getPath: () => "/resources/pony/i18n/i18n_en.properties",
+		getBuffer: async () => "A=C"
+	});
+	const options = {
+		descriptor: "manifest.json",
+		namespace: "pony",
+		propertiesExtension: ".properties"
+	};
+
+	await manifestBundler({resources, options});
+
+	t.is(t.context.addBufferSpy.callCount, 3, "should be called 3 times");
+	t.deepEqual(t.context.addBufferSpy.getCall(0).args, [manifestString, "manifest.json"],
+		"should be called with correct arguments");
+	t.deepEqual(t.context.addBufferSpy.getCall(1).args, ["A=B", "i18n/i18n_de.properties"],
+		"should be called with correct arguments");
+	t.deepEqual(t.context.addBufferSpy.getCall(2).args, ["A=C", "i18n/i18n_en.properties"],
+		"should be called with correct arguments");
+
+	t.is(t.context.logVerboseSpy.callCount, 0);
+	t.is(t.context.logWarnSpy.callCount, 0);
+	t.is(t.context.logErrorSpy.callCount, 0);
+});
+
+test.serial("manifestBundler with manifest with i18n object (bundleName)", async (t) => {
+	const resources = [];
+	const manifestString = JSON.stringify({
+		"sap.app": {
+			"id": "pony",
+			"i18n": {
+				"bundleName": "pony.i18n.i18n",
 				"supportedLocales": ["en", "de"],
 				"fallbackLocale": "en"
 			}
