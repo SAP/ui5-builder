@@ -64,7 +64,9 @@ test.serial("manifestBundler with manifest path not starting with '/resources'",
 	t.deepEqual(t.context.logVerboseSpy.getCall(0).args,
 		["Not bundling resource with path pony/manifest.json since it is not based on path /resources/pony/"],
 		"should be called with correct arguments");
-	t.is(t.context.logWarnSpy.callCount, 0);
+	t.is(t.context.logWarnSpy.callCount, 1);
+	t.deepEqual(t.context.logWarnSpy.getCall(0).args,
+		["Could not find any resources for i18n bundle 'pony/i18n'"]);
 	t.is(t.context.logErrorSpy.callCount, 0);
 });
 
@@ -89,7 +91,9 @@ test.serial("manifestBundler with manifest without i18n section in sap.app", asy
 		"should be called with correct arguments");
 
 	t.is(t.context.logVerboseSpy.callCount, 0);
-	t.is(t.context.logWarnSpy.callCount, 0);
+	t.is(t.context.logWarnSpy.callCount, 1);
+	t.deepEqual(t.context.logWarnSpy.getCall(0).args,
+		["Could not find any resources for i18n bundle '/resources/pony/i18n'"]);
 	t.is(t.context.logErrorSpy.callCount, 0);
 });
 
@@ -100,9 +104,14 @@ test.serial("manifestBundler with manifest with i18n string", async (t) => {
 		getPath: () => "/resources/pony/manifest.json",
 		getBuffer: async () => JSON.stringify({
 			"sap.app": {
-				"i18n": "i18n/i18n.properties"
+				"i18n": "i18n-bundle/i18n.properties"
 			}
 		})
+	});
+	resources.push({
+		name: "i18n.properties",
+		getPath: () => "/resources/pony/i18n-bundle/i18n.properties",
+		getBuffer: async () => "A=B"
 	});
 	const options = {
 		descriptor: "manifest.json",
@@ -111,9 +120,12 @@ test.serial("manifestBundler with manifest with i18n string", async (t) => {
 
 	await manifestBundler({resources, options});
 
-	t.deepEqual(t.context.addBufferSpy.callCount, 1, "should be called once");
+	t.deepEqual(t.context.addBufferSpy.callCount, 2);
 	t.deepEqual(t.context.addBufferSpy.getCall(0).args,
-		["{\"sap.app\":{\"i18n\":\"i18n/i18n.properties\"}}", "manifest.json"],
+		["{\"sap.app\":{\"i18n\":\"i18n-bundle/i18n.properties\"}}", "manifest.json"],
+		"should be called with correct arguments");
+	t.deepEqual(t.context.addBufferSpy.getCall(1).args,
+		["A=B", "i18n-bundle/i18n.properties"],
 		"should be called with correct arguments");
 
 	t.is(t.context.logVerboseSpy.callCount, 0);
@@ -272,7 +284,17 @@ test.serial("manifestBundler with manifest with missing i18n files", async (t) =
 		"should be called with correct arguments");
 
 	t.is(t.context.logVerboseSpy.callCount, 0);
-	t.is(t.context.logWarnSpy.callCount, 0);
+	t.is(t.context.logWarnSpy.callCount, 3);
+	t.deepEqual(t.context.logWarnSpy.getCall(0).args, [
+		`Could not find any resources for i18n bundle '/resources/pony/i18n'`
+	]);
+	t.deepEqual(t.context.logWarnSpy.getCall(1).args, [
+		`Could not find any resources for i18n bundle '/resources/pony/enhancement1'`
+	]);
+	t.deepEqual(t.context.logWarnSpy.getCall(2).args, [
+		`Could not find any resources for i18n bundle '/resources/pony/enhancement2'`
+	]);
+
 	t.is(t.context.logErrorSpy.callCount, 0);
 });
 
