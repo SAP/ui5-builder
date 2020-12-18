@@ -15,6 +15,7 @@ test.beforeEach((t) => {
 	});
 	mock.reRequire("@ui5/logger");
 	t.context.logVerboseSpy = sinon.stub(loggerInstance, "verbose");
+	t.context.logWarnSpy = sinon.stub(loggerInstance, "warn");
 	t.context.logErrorSpy = sinon.stub(loggerInstance, "error");
 
 	// Re-require tested module
@@ -37,6 +38,7 @@ test.serial("manifestBundler with empty resources", async (t) => {
 	await manifestBundler({resources, options});
 	t.is(t.context.addBufferSpy.callCount, 0);
 	t.is(t.context.logVerboseSpy.callCount, 0);
+	t.is(t.context.logWarnSpy.callCount, 0);
 	t.is(t.context.logErrorSpy.callCount, 0);
 });
 
@@ -62,6 +64,7 @@ test.serial("manifestBundler with manifest path not starting with '/resources'",
 	t.deepEqual(t.context.logVerboseSpy.getCall(0).args,
 		["Not bundling resource with path pony/manifest.json since it is not based on path /resources/pony/"],
 		"should be called with correct arguments");
+	t.is(t.context.logWarnSpy.callCount, 0);
 	t.is(t.context.logErrorSpy.callCount, 0);
 });
 
@@ -86,6 +89,7 @@ test.serial("manifestBundler with manifest without i18n section in sap.app", asy
 		"should be called with correct arguments");
 
 	t.is(t.context.logVerboseSpy.callCount, 0);
+	t.is(t.context.logWarnSpy.callCount, 0);
 	t.is(t.context.logErrorSpy.callCount, 0);
 });
 
@@ -113,6 +117,7 @@ test.serial("manifestBundler with manifest with i18n string", async (t) => {
 		"should be called with correct arguments");
 
 	t.is(t.context.logVerboseSpy.callCount, 0);
+	t.is(t.context.logWarnSpy.callCount, 0);
 	t.is(t.context.logErrorSpy.callCount, 0);
 });
 
@@ -159,6 +164,7 @@ test.serial("manifestBundler with manifest with i18n object", async (t) => {
 		"should be called with correct arguments");
 
 	t.is(t.context.logVerboseSpy.callCount, 0);
+	t.is(t.context.logWarnSpy.callCount, 0);
 	t.is(t.context.logErrorSpy.callCount, 0);
 });
 
@@ -226,6 +232,7 @@ test.serial("manifestBundler with manifest with i18n enhanceWith", async (t) => 
 		"should be called with correct arguments");
 
 	t.is(t.context.logVerboseSpy.callCount, 0);
+	t.is(t.context.logWarnSpy.callCount, 0);
 	t.is(t.context.logErrorSpy.callCount, 0);
 });
 
@@ -265,6 +272,7 @@ test.serial("manifestBundler with manifest with missing i18n files", async (t) =
 		"should be called with correct arguments");
 
 	t.is(t.context.logVerboseSpy.callCount, 0);
+	t.is(t.context.logWarnSpy.callCount, 0);
 	t.is(t.context.logErrorSpy.callCount, 0);
 });
 
@@ -306,9 +314,10 @@ test.serial("manifestBundler with manifest with ui5:// url", async (t) => {
 		"should be called with correct arguments");
 
 	t.is(t.context.logVerboseSpy.callCount, 0);
-	t.is(t.context.logErrorSpy.callCount, 1);
-	t.deepEqual(t.context.logErrorSpy.getCall(0).args, [
+	t.is(t.context.logWarnSpy.callCount, 1);
+	t.deepEqual(t.context.logWarnSpy.getCall(0).args, [
 		`Using the ui5:// protocol for i18n bundles is currently not supported ` +
 		`('ui5://pony/i18n/i18n.properties' in /resources/pony/manifest.json)`
 	]);
+	t.is(t.context.logErrorSpy.callCount, 0);
 });
