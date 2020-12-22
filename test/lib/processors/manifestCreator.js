@@ -24,6 +24,27 @@ const libraryContent = `<?xml version="1.0" encoding="UTF-8" ?>
 	</appData>
 </library>`;
 
+const libraryContentSpecialChars = `<?xml version="1.0" encoding="UTF-8" ?>
+<library xmlns="http://www.sap.com/sap.ui.library.xsd" >
+	<name>library.e</name>
+	<vendor>SAP SE</vendor>
+	<copyright>my copyright</copyright>
+	<version>1.0.0</version>
+	<documentation>Library E</documentation>
+
+	<dependencies>
+	    <dependency>
+	      <libraryName>sap.ui.core</libraryName>
+	    </dependency>
+	</dependencies>
+	
+	<appData>
+		<manifest xmlns="http://www.sap.com/ui5/buildext/manifest">
+			<i18n>i18n(.*)./i18n(.*).properties</i18n>
+		</manifest>
+	</appData>
+</library>`;
+
 const expectedManifestContent = `{
   "_version": "1.21.0",
   "sap.app": {
@@ -32,6 +53,43 @@ const expectedManifestContent = `{
     "embeds": [],
     "i18n": {
       "bundleUrl": "i18n/i18n.properties",
+      "supportedLocales": [
+        "",
+        "de",
+        "en"
+      ]
+    },
+    "applicationVersion": {
+      "version": "1.0.0"
+    },
+    "title": "Library E",
+    "description": "Library E",
+    "resources": "resources.json",
+    "offline": true
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "supportedThemes": []
+  },
+  "sap.ui5": {
+    "dependencies": {
+      "libs": {
+        "sap.ui.core": {}
+      }
+    },
+    "library": {
+      "i18n": false
+    }
+  }
+}`;
+const expectedManifestContentSpecialChars = `{
+  "_version": "1.21.0",
+  "sap.app": {
+    "id": "library.e",
+    "type": "library",
+    "embeds": [],
+    "i18n": {
+      "bundleUrl": "i18n(.*)./i18n(.*).properties",
       "supportedLocales": [
         "",
         "de",
@@ -106,6 +164,37 @@ test.serial("default manifest creation", async (t) => {
 
 	const result = await manifestCreator({libraryResource, resources, options: {}});
 	t.is(await result.getString(), expectedManifestContent, "Correct result returned");
+});
+
+test.serial("default manifest creation with special characters", async (t) => {
+	const {manifestCreator, errorLogStub} = t.context;
+	const prefix = "/resources/sap/ui/mine/";
+	const libraryResource = {
+		getPath: () => {
+			return prefix + ".library";
+		},
+		getString: async () => {
+			return libraryContentSpecialChars;
+		},
+		_project: {
+			dependencies: [{
+				metadata: {
+					name: "sap.ui.core"
+				}
+			}]
+		}
+	};
+	const resources = ["", "_en", "_de"].map((lang) => {
+		return {
+			getPath: () => {
+				return `${prefix}i18n(.*)./i18n(.*)${lang}.properties`;
+			}
+		};
+	});
+	t.is(errorLogStub.callCount, 0);
+
+	const result = await manifestCreator({libraryResource, resources, options: {}});
+	t.is(await result.getString(), expectedManifestContentSpecialChars, "Correct result returned");
 });
 
 test.serial("manifest creation for sap/apf", async (t) => {
