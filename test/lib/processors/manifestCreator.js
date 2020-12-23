@@ -2,6 +2,7 @@ const test = require("ava");
 const sinon = require("sinon");
 const mock = require("mock-require");
 const logger = require("@ui5/logger");
+const {SemVer: Version} = require("semver");
 
 const libraryContent = `<?xml version="1.0" encoding="UTF-8" ?>
 <library xmlns="http://www.sap.com/sap.ui.library.xsd" >
@@ -45,80 +46,50 @@ const libraryContentSpecialChars = `<?xml version="1.0" encoding="UTF-8" ?>
 	</appData>
 </library>`;
 
-const expectedManifestContent = `{
-  "_version": "1.21.0",
-  "sap.app": {
-    "id": "library.e",
-    "type": "library",
-    "embeds": [],
-    "i18n": {
-      "bundleUrl": "i18n/i18n.properties",
-      "supportedLocales": [
-        "",
-        "de",
-        "en"
-      ]
-    },
-    "applicationVersion": {
-      "version": "1.0.0"
-    },
-    "title": "Library E",
-    "description": "Library E",
-    "resources": "resources.json",
-    "offline": true
-  },
-  "sap.ui": {
-    "technology": "UI5",
-    "supportedThemes": []
-  },
-  "sap.ui5": {
-    "dependencies": {
-      "libs": {
-        "sap.ui.core": {}
-      }
-    },
-    "library": {
-      "i18n": false
-    }
-  }
-}`;
-const expectedManifestContentSpecialChars = `{
-  "_version": "1.21.0",
-  "sap.app": {
-    "id": "library.e",
-    "type": "library",
-    "embeds": [],
-    "i18n": {
-      "bundleUrl": "i18n(.*)./i18n(.*).properties",
-      "supportedLocales": [
-        "",
-        "de",
-        "en"
-      ]
-    },
-    "applicationVersion": {
-      "version": "1.0.0"
-    },
-    "title": "Library E",
-    "description": "Library E",
-    "resources": "resources.json",
-    "offline": true
-  },
-  "sap.ui": {
-    "technology": "UI5",
-    "supportedThemes": []
-  },
-  "sap.ui5": {
-    "dependencies": {
-      "libs": {
-        "sap.ui.core": {}
-      }
-    },
-    "library": {
-      "i18n": false
-    }
-  }
-}`;
+const expectedManifestContentObject = () => {
+	return {
+		"_version": "1.21.0",
+		"sap.app": {
+			"id": "library.e",
+			"type": "library",
+			"embeds": [],
+			"i18n": {
+				"bundleUrl": "i18n/i18n.properties",
+				"supportedLocales": [
+					"",
+					"de",
+					"en"
+				]
+			},
+			"applicationVersion": {
+				"version": "1.0.0"
+			},
+			"title": "Library E",
+			"description": "Library E",
+			"resources": "resources.json",
+			"offline": true
+		},
+		"sap.ui": {
+			"technology": "UI5",
+			"supportedThemes": []
+		},
+		"sap.ui5": {
+			"dependencies": {
+				"libs": {
+					"sap.ui.core": {}
+				}
+			},
+			"library": {
+				"i18n": false
+			}
+		}
+	};
+};
+
+const expectedManifestContent = JSON.stringify(expectedManifestContentObject(), null, 2);
+const expectedManifestContentSpecialCharsObject = expectedManifestContentObject();
+expectedManifestContentSpecialCharsObject["sap.app"]["i18n"]["bundleUrl"] = "i18n(.*)./i18n(.*).properties";
+const expectedManifestContentSpecialChars = JSON.stringify(expectedManifestContentSpecialCharsObject, null, 2);
 
 test.beforeEach((t) => {
 	t.context.verboseLogStub = sinon.stub();
@@ -191,10 +162,53 @@ test.serial("default manifest creation with special characters", async (t) => {
 			}
 		};
 	});
+
+	// additional non-i18n resource
+	resources.push({
+		getPath: () => {
+			return `${prefix}model/data.json`;
+		}
+	});
 	t.is(errorLogStub.callCount, 0);
 
 	const result = await manifestCreator({libraryResource, resources, options: {}});
 	t.is(await result.getString(), expectedManifestContentSpecialChars, "Correct result returned");
+});
+
+test.serial("default manifest creation with special characters small app descriptor version", async (t) => {
+	const {manifestCreator, errorLogStub} = t.context;
+	const prefix = "/resources/sap/ui/mine/";
+	const libraryResource = {
+		getPath: () => {
+			return prefix + ".library";
+		},
+		getString: async () => {
+			return libraryContent;
+		},
+		_project: {
+			dependencies: [{
+				metadata: {
+					name: "sap.ui.core"
+				}
+			}]
+		}
+	};
+	const resources = ["", "_en", "_de"].map((lang) => {
+		return {
+			getPath: () => {
+				return `${prefix}i18n/i18n${lang}.properties`;
+			}
+		};
+	});
+	t.is(errorLogStub.callCount, 0);
+
+	const options = {descriptorVersion: new Version("1.9.0")};
+	const result = await manifestCreator({libraryResource, resources, options});
+	const expectedManifestContentSmallVersion = expectedManifestContentObject();
+	expectedManifestContentSmallVersion["_version"] = "1.9.0";
+	expectedManifestContentSmallVersion["sap.app"]["i18n"] = "i18n/i18n.properties";
+	const expectedManifestContentSmallVersionString = JSON.stringify(expectedManifestContentSmallVersion, null, 2);
+	t.is(await result.getString(), expectedManifestContentSmallVersionString, "Correct result returned");
 });
 
 test.serial("manifest creation for sap/apf", async (t) => {
