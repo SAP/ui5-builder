@@ -177,7 +177,7 @@ const createProjectMetadata = (nameArray) => {
 	};
 };
 
-const createManifestResource = async (dependencies, resourceFactory, names, deps, embeds) => {
+const createManifestResource = async (dependencies, resourceFactory, names, deps, embeds, embeddedBy) => {
 	const content = {
 		"sap.app": {
 			"id": names.join("."),
@@ -203,6 +203,9 @@ const createManifestResource = async (dependencies, resourceFactory, names, deps
 	content["sap.ui5"]["dependencies"]["libs"] = libs;
 	if (embeds) {
 		content["sap.app"]["embeds"] = embeds;
+	}
+	if (embeddedBy) {
+		content["sap.app"]["embeddedBy"] = embeddedBy;
 	}
 	await dependencies.write(resourceFactory.createResource({
 		path: `/resources/${names.join("/")}/manifest.json`,
@@ -714,6 +717,103 @@ test("integration: Library without i18n bundle with manifest simple", async (t) 
 	await assertCreatedVersionInfo(t, {
 		"components": {
 			"lib.a.sub.fold": {
+				"library": "lib.a",
+				"manifestHints": {
+					"dependencies": {
+						"libs": {
+							"lib.b": {
+								"lazy": true
+							},
+							"lib.c": {}
+						}
+					}
+				}
+			}
+		},
+		"libraries": [{
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.b": {},
+						"lib.c": {}
+					}
+				}
+			},
+			"name": "lib.a",
+			"scmRevision": "",
+		},
+		{
+			"name": "lib.b",
+			"scmRevision": "",
+		},
+		{
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.b": {
+							"lazy": true
+						}
+					}
+				}
+			},
+			"name": "lib.c",
+			"scmRevision": "",
+		}],
+		"name": "myname",
+		"scmRevision": "",
+		"version": "1.33.7",
+	}, oOptions);
+});
+
+test("integration: Library without i18n bundle with manifest simple embeddedBy", async (t) => {
+	const workspace = createWorkspace();
+
+	await createDotLibrary(workspace, resourceFactory, ["test", "lib"]);
+
+
+	// lib.a => lib.c, lib.b
+	// lib.b => lib.c (true)
+	// lib.c =>
+
+	// lib.a => lib.c, lib.b
+	// lib.b => lib.c (true)
+	// lib.c =>
+
+	// dependencies
+
+	const dependencies = createDependencies({virBasePath: "/"});
+
+	// lib.a
+	const embeds = ["sub/fold"];
+	await createResources(dependencies, resourceFactory, ["lib", "a"], [{name: "lib.b"}, {name: "lib.c"}], embeds);
+	// sub
+	await createManifestResource(dependencies, resourceFactory, ["lib", "a", "sub", "fold"], [{name: "lib.c"}],
+		undefined, "../../");
+
+	// lib.c
+	await createResources(dependencies, resourceFactory, ["lib", "c"], [{name: "lib.b", lazy: true}]);
+
+	// lib.b
+	await createResources(dependencies, resourceFactory, ["lib", "b"], []);
+
+	const oOptions = {
+		options: {
+			projectName: "Test Lib",
+			pattern: "/resources/**/.library",
+			rootProject: {
+				metadata: {
+					name: "myname"
+				},
+				version: "1.33.7"
+			}
+		},
+		workspace,
+		dependencies
+	};
+	await assertCreatedVersionInfo(t, {
+		"components": {
+			"lib.a.sub.fold": {
+				"hasOwnPreload": true,
 				"library": "lib.a",
 				"manifestHints": {
 					"dependencies": {
