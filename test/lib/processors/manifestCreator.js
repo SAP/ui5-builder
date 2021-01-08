@@ -1129,3 +1129,26 @@ test.serial("manifest creation with embedded component (invalid manifest.json)",
 	]);
 	t.true(errorLogStub.getCall(0).args[2].startsWith("SyntaxError: Unexpected token"));
 });
+
+test.serial("manifest creation for invalid .library content", async (t) => {
+	const {manifestCreator} = t.context;
+
+	const libraryResource = {
+		getPath: () => {
+			return "/resources/sap/lib1/.library";
+		},
+		getString: async () => {
+			return `<?xml version="1.0" encoding="UTF-8" ?>
+			<<>`;
+		}
+	};
+
+	const error = await t.throwsAsync(manifestCreator({
+		libraryResource,
+		resources: []
+	}));
+	t.deepEqual(error.message, `Unencoded <
+Line: 1
+Column: 5
+Char: <`, "error message for unencoded <");
+});
