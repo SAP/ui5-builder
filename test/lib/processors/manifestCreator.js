@@ -183,6 +183,171 @@ test.serial("default manifest creation i18n empty string", async (t) => {
 	t.is(await result.getString(), expectedManifestContent, "Correct result returned");
 });
 
+test.serial("default manifest creation with invalid version", async (t) => {
+	const {manifestCreator, errorLogStub} = t.context;
+	const prefix = "/resources/sap/ui/mine/";
+	const libraryResource = {
+		getPath: () => {
+			return prefix + ".library";
+		},
+		getString: async () => {
+			return `<?xml version="1.0" encoding="UTF-8" ?>
+				<library xmlns="http://www.sap.com/sap.ui.library.xsd" >
+					<name>library.e</name>
+					<vendor>SAP SE</vendor>
+					<version>@version@</version>
+					<documentation>Library E</documentation>
+				
+					<dependencies>
+					    <dependency>
+					      <libraryName>sap.ui.core</libraryName>
+					    </dependency>
+					</dependencies>
+
+				</library>`;
+		},
+		_project: {
+			dependencies: [{
+				metadata: {
+					name: "sap.ui.core"
+				}
+			}],
+			version: "1.2.3"
+		}
+	};
+
+	t.is(errorLogStub.callCount, 0);
+	const expectedManifestContentObjectModified = expectedManifestContentObject();
+	expectedManifestContentObjectModified["sap.app"]["i18n"] = undefined;
+	expectedManifestContentObjectModified["sap.app"]["applicationVersion"]["version"] = "1.2.3";
+	const expectedManifestContent = JSON.stringify(expectedManifestContentObjectModified, null, 2);
+	const result = await manifestCreator({libraryResource, resources: [], options: {}});
+	t.is(await result.getString(), expectedManifestContent, "Correct result returned");
+});
+
+test.serial("default manifest creation with sourceTemplate and thirdparty", async (t) => {
+	const {manifestCreator, errorLogStub} = t.context;
+	const prefix = "/resources/sap/ui/mine/";
+	const libraryResource = {
+		getPath: () => {
+			return prefix + ".library";
+		},
+		getString: async () => {
+			return `<?xml version="1.0" encoding="UTF-8" ?>
+				<library xmlns="http://www.sap.com/sap.ui.library.xsd" >
+					<name>library.e</name>
+					<vendor>SAP SE</vendor>
+					<version>@version@</version>
+					<documentation>Library E</documentation>
+				
+					<dependencies>
+					    <dependency>
+					      <libraryName>sap.ui.core</libraryName>
+					    </dependency>
+					    <dependency>
+					      <libraryName>my.lib</libraryName>
+					      <version>4.5.6</version>
+					    </dependency>
+					</dependencies>
+					
+					<appData>
+						<manifest xmlns="http://www.sap.com/ui5/buildext/manifest">
+							<sourceTemplate>
+								<id>myid</id>
+								<version>1.2.3</version>
+							</sourceTemplate>
+						</manifest>
+						<thirdparty xmlns="http://www.sap.com/ui5/buildext/thirdparty">
+							<lib name="jquery-3" displayName="jQuery 3" version="3.5.1" homepage="https://jquery.com"></lib>
+							<lib name="jquery-2" displayName="jQuery 2" version="2.2.3" homepage="https://jquery.com"></lib>
+						</thirdparty>
+					</appData>
+
+				</library>`;
+		},
+		_project: {
+			dependencies: [{
+				metadata: {
+					name: "sap.ui.core"
+				}
+			}, {
+				metadata: {
+					name: "my.lib"
+				}
+			}],
+			version: "1.2.3"
+		}
+	};
+
+	t.is(errorLogStub.callCount, 0);
+	const expectedManifestContentObjectModified = expectedManifestContentObject();
+	expectedManifestContentObjectModified["sap.app"]["i18n"] = undefined;
+	expectedManifestContentObjectModified["sap.app"]["applicationVersion"]["version"] = "1.2.3";
+	expectedManifestContentObjectModified["sap.app"]["sourceTemplate"]= {
+		id: "myid",
+		version: "1.2.3"
+	};
+	expectedManifestContentObjectModified["sap.app"]["openSourceComponents"]= [{
+		"name": "jquery-3",
+		"packagedWithMySelf": true,
+		"version": "3.5.1"
+	}, {
+		"name": "jquery-2",
+		"packagedWithMySelf": true,
+		"version": "2.2.3"
+	}];
+	expectedManifestContentObjectModified["sap.ui5"]["dependencies"]["libs"]["my.lib"] = {
+		"minVersion": "4.5.6"
+	};
+	const expectedManifestContent = JSON.stringify(expectedManifestContentObjectModified, null, 2);
+	const result = await manifestCreator({libraryResource, resources: [], options: {}});
+	t.is(await result.getString(), expectedManifestContent, "Correct result returned");
+});
+
+test.serial("default manifest creation no dependency version", async (t) => {
+	const {manifestCreator, errorLogStub} = t.context;
+	const prefix = "/resources/sap/ui/mine/";
+	const libraryResource = {
+		getPath: () => {
+			return prefix + ".library";
+		},
+		getString: async () => {
+			return `<?xml version="1.0" encoding="UTF-8" ?>
+				<library xmlns="http://www.sap.com/sap.ui.library.xsd" >
+					<name>library.e</name>
+					<vendor>SAP SE</vendor>
+					<documentation>Library E</documentation>
+				
+					<dependencies>
+					    <dependency>
+					      <libraryName>sap.ui.core</libraryName>
+					    </dependency>
+					    <dependency>
+					      <libraryName>my.lib</libraryName>
+					    </dependency>
+					</dependencies>
+
+				</library>`;
+		},
+		_project: {
+			dependencies: [{
+				metadata: {
+					name: "sap.ui.core"
+				}
+			}]
+		}
+	};
+
+	t.is(errorLogStub.callCount, 0);
+
+	const error = await t.throwsAsync(manifestCreator({
+		libraryResource,
+		resources: []
+	}));
+	t.deepEqual(error.message,
+		"Couldn't find version for library 'my.lib', project dependency missing?", "error message correct");
+});
+
 test.serial("default manifest creation with special characters", async (t) => {
 	const {manifestCreator, errorLogStub} = t.context;
 	const prefix = "/resources/sap/ui/mine/";
