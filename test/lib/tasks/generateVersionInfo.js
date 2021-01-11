@@ -1,9 +1,12 @@
 const test = require("ava");
 
-const generateVersionInfo = require("../../../lib/tasks/generateVersionInfo");
+let generateVersionInfo = require("../../../lib/tasks/generateVersionInfo");
 const path = require("path");
 const ui5Fs = require("@ui5/fs");
 const resourceFactory = ui5Fs.resourceFactory;
+const sinon = require("sinon");
+const mock = require("mock-require");
+const logger = require("@ui5/logger");
 
 function createWorkspace() {
 	return resourceFactory.createAdapter({
@@ -93,7 +96,24 @@ async function assertCreatedVersionInfo(t, oExpectedVersionInfo, oOptions) {
 	t.deepEqual(currentVersionInfo, oExpectedVersionInfo, "Correct content");
 }
 
-test("integration: Library without i18n bundle file", async (t) => {
+test.beforeEach((t) => {
+	t.context.verboseLogStub = sinon.stub();
+	t.context.errorLogStub = sinon.stub();
+	sinon.stub(logger, "getLogger").returns({
+		verbose: t.context.verboseLogStub,
+		error: t.context.errorLogStub,
+		isLevelEnabled: () => true
+	});
+	mock.reRequire("../../../lib/processors/versionInfoGenerator");
+	generateVersionInfo = mock.reRequire("../../../lib/tasks/generateVersionInfo");
+});
+
+test.afterEach.always((t) => {
+	mock.stopAll();
+	sinon.restore();
+});
+
+test.serial("integration: Library without i18n bundle file", async (t) => {
 	t.context.workspace = createWorkspace();
 	t.context.dependencies = createDependencies();
 
@@ -128,7 +148,7 @@ test("integration: Library without i18n bundle file", async (t) => {
 	});
 });
 
-test("integration: Library without i18n bundle file failure", async (t) => {
+test.serial("integration: Library without i18n bundle file failure", async (t) => {
 	t.context.workspace = createWorkspace();
 	t.context.dependencies = createDependencies();
 
@@ -201,10 +221,10 @@ const createManifestResource = async (dependencies, resourceFactory, names, deps
 		}
 	});
 	content["sap.ui5"]["dependencies"]["libs"] = libs;
-	if (embeds) {
+	if (embeds !== undefined) {
 		content["sap.app"]["embeds"] = embeds;
 	}
-	if (embeddedBy) {
+	if (embeddedBy !== undefined) {
 		content["sap.app"]["embeddedBy"] = embeddedBy;
 	}
 	await dependencies.write(resourceFactory.createResource({
@@ -246,7 +266,7 @@ const createResources = async (dependencies, resourceFactory, names, deps, embed
 };
 
 
-test("integration: Library without i18n bundle with manifest minimal", async (t) => {
+test.serial("integration: Library without i18n bundle with manifest minimal", async (t) => {
 	const workspace = createWorkspace();
 
 	// only use .library
@@ -391,7 +411,7 @@ test("integration: Library without i18n bundle with manifest minimal", async (t)
 	}, oOptions);
 });
 
-test("integration: Library without i18n bundle with manifest minimal1", async (t) => {
+test.serial("integration: Library without i18n bundle with manifest minimal1", async (t) => {
 	const workspace = createWorkspace();
 
 	await createDotLibrary(workspace, resourceFactory, ["test", "lib"]);
@@ -534,7 +554,7 @@ test("integration: Library without i18n bundle with manifest minimal1", async (t
 	}, oOptions);
 });
 
-test("integration: Library without i18n bundle with manifest minimal2", async (t) => {
+test.serial("integration: Library without i18n bundle with manifest minimal2", async (t) => {
 	const workspace = createWorkspace();
 
 	await createDotLibrary(workspace, resourceFactory, ["test", "lib"]);
@@ -670,7 +690,7 @@ test("integration: Library without i18n bundle with manifest minimal2", async (t
 });
 
 
-test("integration: Library without i18n bundle with manifest simple", async (t) => {
+test.serial("integration: Library without i18n bundle with manifest simple", async (t) => {
 	const workspace = createWorkspace();
 
 	await createDotLibrary(workspace, resourceFactory, ["test", "lib"]);
@@ -765,36 +785,20 @@ test("integration: Library without i18n bundle with manifest simple", async (t) 
 	}, oOptions);
 });
 
-test("integration: Library without i18n bundle with manifest simple embeddedBy", async (t) => {
+test.serial("integration: Library without i18n bundle with manifest simple embeddedBy", async (t) => {
 	const workspace = createWorkspace();
 
 	await createDotLibrary(workspace, resourceFactory, ["test", "lib"]);
 
-
-	// lib.a => lib.c, lib.b
-	// lib.b => lib.c (true)
-	// lib.c =>
-
-	// lib.a => lib.c, lib.b
-	// lib.b => lib.c (true)
-	// lib.c =>
-
 	// dependencies
-
 	const dependencies = createDependencies({virBasePath: "/"});
 
 	// lib.a
 	const embeds = ["sub/fold"];
-	await createResources(dependencies, resourceFactory, ["lib", "a"], [{name: "lib.b"}, {name: "lib.c"}], embeds);
+	await createResources(dependencies, resourceFactory, ["lib", "a"], [], embeds);
 	// sub
-	await createManifestResource(dependencies, resourceFactory, ["lib", "a", "sub", "fold"], [{name: "lib.c"}],
+	await createManifestResource(dependencies, resourceFactory, ["lib", "a", "sub", "fold"], [],
 		undefined, "../../");
-
-	// lib.c
-	await createResources(dependencies, resourceFactory, ["lib", "c"], [{name: "lib.b", lazy: true}]);
-
-	// lib.b
-	await createResources(dependencies, resourceFactory, ["lib", "b"], []);
 
 	const oOptions = {
 		options: {
@@ -814,46 +818,11 @@ test("integration: Library without i18n bundle with manifest simple embeddedBy",
 		"components": {
 			"lib.a.sub.fold": {
 				"hasOwnPreload": true,
-				"library": "lib.a",
-				"manifestHints": {
-					"dependencies": {
-						"libs": {
-							"lib.b": {
-								"lazy": true
-							},
-							"lib.c": {}
-						}
-					}
-				}
+				"library": "lib.a"
 			}
 		},
 		"libraries": [{
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
-						"lib.b": {},
-						"lib.c": {}
-					}
-				}
-			},
 			"name": "lib.a",
-			"scmRevision": "",
-		},
-		{
-			"name": "lib.b",
-			"scmRevision": "",
-		},
-		{
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
-						"lib.b": {
-							"lazy": true
-						}
-					}
-				}
-			},
-			"name": "lib.c",
 			"scmRevision": "",
 		}],
 		"name": "myname",
@@ -862,7 +831,7 @@ test("integration: Library without i18n bundle with manifest simple embeddedBy",
 	}, oOptions);
 });
 
-test("integration: Library without i18n bundle with manifest house sample", async (t) => {
+test.serial("integration: Library without i18n bundle with manifest house sample", async (t) => {
 	// top level libraries
 
 	// lib.house => lib.roof, lib.walls
@@ -1004,4 +973,206 @@ test("integration: Library without i18n bundle with manifest house sample", asyn
 		"scmRevision": "",
 		"version": "1.33.7",
 	}, oOptions);
+});
+
+test.serial("integration: Library without i18n bundle with manifest simple embeddedBy undefined", async (t) => {
+	const {verboseLogStub} = t.context;
+	const workspace = createWorkspace();
+
+	await createDotLibrary(workspace, resourceFactory, ["test", "lib"]);
+
+	// dependencies
+	const dependencies = createDependencies({virBasePath: "/"});
+
+	// lib.a
+	const embeds = ["sub/fold"];
+	await createResources(dependencies, resourceFactory, ["lib", "a"], [], embeds);
+	// sub
+	await createManifestResource(dependencies, resourceFactory, ["lib", "a", "sub", "fold"], [],
+		undefined, undefined);
+
+	const oOptions = {
+		options: {
+			projectName: "Test Lib",
+			pattern: "/resources/**/.library",
+			rootProject: {
+				metadata: {
+					name: "myname"
+				},
+				version: "1.33.7"
+			}
+		},
+		workspace,
+		dependencies
+	};
+	await assertCreatedVersionInfo(t, {
+		"components": {
+			"lib.a.sub.fold": {
+				"library": "lib.a"
+			}
+		},
+		"libraries": [{
+			"name": "lib.a",
+			"scmRevision": "",
+		}],
+		"name": "myname",
+		"scmRevision": "",
+		"version": "1.33.7",
+	}, oOptions);
+
+	t.is(verboseLogStub.callCount, 5);
+	t.is(verboseLogStub.firstCall.args[0],
+		"  component doesn't declare 'sap.app/embeddedBy', don't list it as 'embedded'");
+});
+
+test.serial("integration: Library without i18n bundle with manifest simple embeddedBy not a string", async (t) => {
+	const {errorLogStub} = t.context;
+	const workspace = createWorkspace();
+
+	await createDotLibrary(workspace, resourceFactory, ["test", "lib"]);
+
+	// dependencies
+	const dependencies = createDependencies({virBasePath: "/"});
+
+	// lib.a
+	const embeds = ["sub/fold"];
+	await createResources(dependencies, resourceFactory, ["lib", "a"], [], embeds);
+	// sub
+	await createManifestResource(dependencies, resourceFactory, ["lib", "a", "sub", "fold"], [],
+		undefined, {});
+
+	const oOptions = {
+		options: {
+			projectName: "Test Lib",
+			pattern: "/resources/**/.library",
+			rootProject: {
+				metadata: {
+					name: "myname"
+				},
+				version: "1.33.7"
+			}
+		},
+		workspace,
+		dependencies
+	};
+	await assertCreatedVersionInfo(t, {
+		"components": {
+			"lib.a.sub.fold": {
+				"library": "lib.a"
+			}
+		},
+		"libraries": [{
+			"name": "lib.a",
+			"scmRevision": "",
+		}],
+		"name": "myname",
+		"scmRevision": "",
+		"version": "1.33.7",
+	}, oOptions);
+
+	t.is(errorLogStub.callCount, 1);
+	t.is(errorLogStub.firstCall.args[0],
+		"  component '%s': property 'sap.app/embeddedBy' is of type '%s' (expected 'string'), " +
+		"it won't be listed as 'embedded'");
+});
+
+test.serial("integration: Library without i18n bundle with manifest simple embeddedBy empty string", async (t) => {
+	const {errorLogStub} = t.context;
+	const workspace = createWorkspace();
+
+	await createDotLibrary(workspace, resourceFactory, ["test", "lib"]);
+
+	// dependencies
+	const dependencies = createDependencies({virBasePath: "/"});
+
+	// lib.a
+	const embeds = ["sub/fold"];
+	await createResources(dependencies, resourceFactory, ["lib", "a"], [], embeds);
+	// sub
+	await createManifestResource(dependencies, resourceFactory, ["lib", "a", "sub", "fold"], [],
+		undefined, "");
+
+	const oOptions = {
+		options: {
+			projectName: "Test Lib",
+			pattern: "/resources/**/.library",
+			rootProject: {
+				metadata: {
+					name: "myname"
+				},
+				version: "1.33.7"
+			}
+		},
+		workspace,
+		dependencies
+	};
+	await assertCreatedVersionInfo(t, {
+		"components": {
+			"lib.a.sub.fold": {
+				"library": "lib.a"
+			}
+		},
+		"libraries": [{
+			"name": "lib.a",
+			"scmRevision": "",
+		}],
+		"name": "myname",
+		"scmRevision": "",
+		"version": "1.33.7",
+	}, oOptions);
+
+	t.is(errorLogStub.callCount, 1);
+	t.is(errorLogStub.firstCall.args[0],
+		"  component '%s': property 'sap.app/embeddedBy' has an empty string value (which is invalid), " +
+		"it won't be listed as 'embedded'");
+});
+
+test.serial("integration: Library without i18n bundle with manifest simple embeddedBy path not correct", async (t) => {
+	const {verboseLogStub} = t.context;
+	const workspace = createWorkspace();
+
+	await createDotLibrary(workspace, resourceFactory, ["test", "lib"]);
+
+	// dependencies
+	const dependencies = createDependencies({virBasePath: "/"});
+
+	// lib.a
+	const embeds = ["sub/fold"];
+	await createResources(dependencies, resourceFactory, ["lib", "a"], [], embeds);
+	// sub
+	await createManifestResource(dependencies, resourceFactory, ["lib", "a", "sub", "fold"], [],
+		undefined, "../");
+
+	const oOptions = {
+		options: {
+			projectName: "Test Lib",
+			pattern: "/resources/**/.library",
+			rootProject: {
+				metadata: {
+					name: "myname"
+				},
+				version: "1.33.7"
+			}
+		},
+		workspace,
+		dependencies
+	};
+	await assertCreatedVersionInfo(t, {
+		"components": {
+			"lib.a.sub.fold": {
+				"library": "lib.a"
+			}
+		},
+		"libraries": [{
+			"name": "lib.a",
+			"scmRevision": "",
+		}],
+		"name": "myname",
+		"scmRevision": "",
+		"version": "1.33.7",
+	}, oOptions);
+
+	t.is(verboseLogStub.callCount, 5);
+	t.is(verboseLogStub.firstCall.args[0],
+		"  component's 'sap.app/embeddedBy' points to '%s', don't list it as 'embedded'");
 });
