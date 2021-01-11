@@ -1176,3 +1176,52 @@ test.serial("integration: Library without i18n bundle with manifest simple embed
 	t.is(verboseLogStub.firstCall.args[0],
 		"  component's 'sap.app/embeddedBy' points to '%s', don't list it as 'embedded'");
 });
+
+test.serial("integration: manifest with invalid dependency", async (t) => {
+	const {errorLogStub} = t.context;
+	const workspace = createWorkspace();
+
+	await createDotLibrary(workspace, resourceFactory, ["test", "lib"]);
+
+	// dependencies
+	const dependencies = createDependencies({virBasePath: "/"});
+
+	// lib.a
+	await createResources(dependencies, resourceFactory, ["lib", "a"], [{name: "non.existing"}]);
+
+
+	const oOptions = {
+		options: {
+			projectName: "Test Lib",
+			pattern: "/resources/**/.library",
+			rootProject: {
+				metadata: {
+					name: "myname"
+				},
+				version: "1.33.7"
+			}
+		},
+		workspace,
+		dependencies
+	};
+	await assertCreatedVersionInfo(t, {
+		"libraries": [{
+			"name": "lib.a",
+			"scmRevision": "",
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"non.existing": {},
+					},
+				},
+			}
+		}],
+		"name": "myname",
+		"scmRevision": "",
+		"version": "1.33.7",
+	}, oOptions);
+
+	t.is(errorLogStub.callCount, 1);
+	t.is(errorLogStub.firstCall.args[0],
+		"Cannot find dependency 'non.existing' for 'lib.a'");
+});
