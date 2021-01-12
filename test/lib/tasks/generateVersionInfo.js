@@ -758,7 +758,7 @@ test.serial("integration: Library without dependencies and embeddedBy undefined"
 		"version": "1.33.7",
 	}, oOptions);
 
-	t.is(verboseLogStub.callCount, 5);
+	t.is(verboseLogStub.callCount, 1);
 	t.is(verboseLogStub.firstCall.args[0],
 		"  component doesn't declare 'sap.app/embeddedBy', don't list it as 'embedded'");
 });
@@ -910,7 +910,7 @@ test.serial("integration: Library without dependencies and embeddedBy path not c
 		"version": "1.33.7",
 	}, oOptions);
 
-	t.is(verboseLogStub.callCount, 5);
+	t.is(verboseLogStub.callCount, 1);
 	t.is(verboseLogStub.firstCall.args[0],
 		"  component's 'sap.app/embeddedBy' points to '%s', don't list it as 'embedded'");
 });
