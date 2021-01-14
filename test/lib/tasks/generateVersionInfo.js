@@ -93,9 +93,11 @@ async function assertCreatedVersionInfo(t, oExpectedVersionInfo, oOptions) {
 test.beforeEach((t) => {
 	t.context.verboseLogStub = sinon.stub();
 	t.context.errorLogStub = sinon.stub();
+	t.context.warnLogStub = sinon.stub();
 	sinon.stub(logger, "getLogger").returns({
 		verbose: t.context.verboseLogStub,
 		error: t.context.errorLogStub,
+		warn: t.context.warnLogStub,
 		isLevelEnabled: () => true
 	});
 	mock.reRequire("../../../lib/processors/versionInfoGenerator");
@@ -141,6 +143,10 @@ test.serial("integration: Library without i18n bundle file", async (t) => {
 		"scmRevision": "",
 		"version": "1.33.7",
 	}, oOptions);
+
+	t.is(t.context.warnLogStub.callCount, 1);
+	t.is(t.context.warnLogStub.getCall(0).args[0],
+		"Cannot add meta information for library 'test.lib3'. The manifest.json file cannot be found");
 });
 
 test.serial("integration: Library without i18n bundle file failure", async (t) => {
