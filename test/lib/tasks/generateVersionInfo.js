@@ -345,6 +345,75 @@ test.serial("integration: Library with dependencies and subcomponent", async (t)
 		dependencies
 	};
 	await assertCreatedVersionInfo(t, {
+		"name": "myname",
+		"scmRevision": "",
+		"version": "1.33.7",
+		"libraries": [{
+			"name": "lib.a",
+			"scmRevision": "",
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.b": {},
+						"lib.c": {},
+						"lib.d": {},
+						"lib.e": {
+							"lazy": true
+						}
+					}
+				}
+			},
+		},
+		{
+			"name": "lib.b",
+			"scmRevision": "",
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.c": {
+							"lazy": true
+						},
+						"lib.d": {
+							"lazy": true
+						},
+						"lib.e": {
+							"lazy": true
+						}
+					}
+				}
+			},
+		},
+		{
+			"name": "lib.c",
+			"scmRevision": "",
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.d": {},
+						"lib.e": {
+							"lazy": true
+						}
+					}
+				}
+			},
+		},
+		{
+			"name": "lib.d",
+			"scmRevision": "",
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.e": {
+							"lazy": true
+						}
+					}
+				}
+			},
+		},
+		{
+			"name": "lib.e",
+			"scmRevision": "",
+		}],
 		"components": {
 			"lib.a.sub.fold": {
 				"library": "lib.a",
@@ -361,75 +430,6 @@ test.serial("integration: Library with dependencies and subcomponent", async (t)
 				}
 			}
 		},
-		"libraries": [{
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
-						"lib.b": {},
-						"lib.c": {},
-						"lib.d": {},
-						"lib.e": {
-							"lazy": true
-						}
-					}
-				}
-			},
-			"name": "lib.a",
-			"scmRevision": "",
-		},
-		{
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
-						"lib.c": {
-							"lazy": true
-						},
-						"lib.d": {
-							"lazy": true
-						},
-						"lib.e": {
-							"lazy": true
-						}
-					}
-				}
-			},
-			"name": "lib.b",
-			"scmRevision": "",
-		},
-		{
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
-						"lib.d": {},
-						"lib.e": {
-							"lazy": true
-						}
-					}
-				}
-			},
-			"name": "lib.c",
-			"scmRevision": "",
-		},
-		{
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
-						"lib.e": {
-							"lazy": true
-						}
-					}
-				}
-			},
-			"name": "lib.d",
-			"scmRevision": "",
-		},
-		{
-			"name": "lib.e",
-			"scmRevision": "",
-		}],
-		"name": "myname",
-		"scmRevision": "",
-		"version": "1.33.7",
 	}, oOptions);
 });
 
@@ -492,6 +492,73 @@ test.serial("integration: Library with dependencies and subcomponent mixed", asy
 		dependencies
 	};
 	await assertCreatedVersionInfo(t, {
+		"name": "myname",
+		"scmRevision": "",
+		"version": "1.33.7",
+		"libraries": [{
+			"name": "lib.a",
+			"scmRevision": "",
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.b": {},
+						"lib.c": {},
+						"lib.d": {},
+						"lib.e": {}
+					}
+				}
+			},
+		},
+		{
+			"name": "lib.b",
+			"scmRevision": "",
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.c": {
+							"lazy": true
+						},
+						"lib.d": {
+							"lazy": true
+						},
+						"lib.e": {
+							"lazy": true
+						}
+					}
+				}
+			},
+		},
+		{
+			"name": "lib.c",
+			"scmRevision": "",
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.d": {},
+						"lib.e": {
+							"lazy": true
+						}
+					}
+				}
+			},
+		},
+		{
+			"name": "lib.d",
+			"scmRevision": "",
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.e": {
+							"lazy": true
+						}
+					}
+				}
+			},
+		},
+		{
+			"name": "lib.e",
+			"scmRevision": "",
+		}],
 		"components": {
 			"lib.a.sub.fold": {
 				"library": "lib.a",
@@ -508,73 +575,6 @@ test.serial("integration: Library with dependencies and subcomponent mixed", asy
 				}
 			}
 		},
-		"libraries": [{
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
-						"lib.b": {},
-						"lib.c": {},
-						"lib.d": {},
-						"lib.e": {}
-					}
-				}
-			},
-			"name": "lib.a",
-			"scmRevision": "",
-		},
-		{
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
-						"lib.c": {
-							"lazy": true
-						},
-						"lib.d": {
-							"lazy": true
-						},
-						"lib.e": {
-							"lazy": true
-						}
-					}
-				}
-			},
-			"name": "lib.b",
-			"scmRevision": "",
-		},
-		{
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
-						"lib.d": {},
-						"lib.e": {
-							"lazy": true
-						}
-					}
-				}
-			},
-			"name": "lib.c",
-			"scmRevision": "",
-		},
-		{
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
-						"lib.e": {
-							"lazy": true
-						}
-					}
-				}
-			},
-			"name": "lib.d",
-			"scmRevision": "",
-		},
-		{
-			"name": "lib.e",
-			"scmRevision": "",
-		}],
-		"name": "myname",
-		"scmRevision": "",
-		"version": "1.33.7",
 	}, oOptions);
 });
 
@@ -623,6 +623,38 @@ test.serial("integration: Library with simple dependencies and subcomponent", as
 		dependencies
 	};
 	await assertCreatedVersionInfo(t, {
+		"name": "myname",
+		"scmRevision": "",
+		"version": "1.33.7",
+		"libraries": [{
+			"name": "lib.a",
+			"scmRevision": "",
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.b": {},
+						"lib.c": {}
+					}
+				}
+			},
+		},
+		{
+			"name": "lib.b",
+			"scmRevision": "",
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.c": {
+							"lazy": true
+						}
+					}
+				}
+			},
+		},
+		{
+			"name": "lib.c",
+			"scmRevision": "",
+		}],
 		"components": {
 			"lib.a.sub.fold": {
 				"library": "lib.a",
@@ -638,38 +670,6 @@ test.serial("integration: Library with simple dependencies and subcomponent", as
 				}
 			}
 		},
-		"libraries": [{
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
-						"lib.b": {},
-						"lib.c": {}
-					}
-				}
-			},
-			"name": "lib.a",
-			"scmRevision": "",
-		},
-		{
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
-						"lib.c": {
-							"lazy": true
-						}
-					}
-				}
-			},
-			"name": "lib.b",
-			"scmRevision": "",
-		},
-		{
-			"name": "lib.c",
-			"scmRevision": "",
-		}],
-		"name": "myname",
-		"scmRevision": "",
-		"version": "1.33.7",
 	}, oOptions);
 });
 
@@ -703,19 +703,19 @@ test.serial("integration: Library without dependencies and embeds and embeddedBy
 		dependencies
 	};
 	await assertCreatedVersionInfo(t, {
+		"name": "myname",
+		"scmRevision": "",
+		"version": "1.33.7",
+		"libraries": [{
+			"name": "lib.a",
+			"scmRevision": "",
+		}],
 		"components": {
 			"lib.a.sub.fold": {
 				"hasOwnPreload": true,
 				"library": "lib.a"
 			}
 		},
-		"libraries": [{
-			"name": "lib.a",
-			"scmRevision": "",
-		}],
-		"name": "myname",
-		"scmRevision": "",
-		"version": "1.33.7",
 	}, oOptions);
 });
 
@@ -750,18 +750,18 @@ test.serial("integration: Library without dependencies and embeddedBy undefined"
 		dependencies
 	};
 	await assertCreatedVersionInfo(t, {
+		"name": "myname",
+		"scmRevision": "",
+		"version": "1.33.7",
+		"libraries": [{
+			"name": "lib.a",
+			"scmRevision": "",
+		}],
 		"components": {
 			"lib.a.sub.fold": {
 				"library": "lib.a"
 			}
 		},
-		"libraries": [{
-			"name": "lib.a",
-			"scmRevision": "",
-		}],
-		"name": "myname",
-		"scmRevision": "",
-		"version": "1.33.7",
 	}, oOptions);
 
 	t.is(verboseLogStub.callCount, 1);
@@ -800,18 +800,18 @@ test.serial("integration: Library without dependencies and embeddedBy not a stri
 		dependencies
 	};
 	await assertCreatedVersionInfo(t, {
+		"name": "myname",
+		"scmRevision": "",
+		"version": "1.33.7",
+		"libraries": [{
+			"name": "lib.a",
+			"scmRevision": "",
+		}],
 		"components": {
 			"lib.a.sub.fold": {
 				"library": "lib.a"
 			}
 		},
-		"libraries": [{
-			"name": "lib.a",
-			"scmRevision": "",
-		}],
-		"name": "myname",
-		"scmRevision": "",
-		"version": "1.33.7",
 	}, oOptions);
 
 	t.is(errorLogStub.callCount, 1);
@@ -851,18 +851,18 @@ test.serial("integration: Library without dependencies and embeddedBy empty stri
 		dependencies
 	};
 	await assertCreatedVersionInfo(t, {
+		"name": "myname",
+		"scmRevision": "",
+		"version": "1.33.7",
+		"libraries": [{
+			"name": "lib.a",
+			"scmRevision": "",
+		}],
 		"components": {
 			"lib.a.sub.fold": {
 				"library": "lib.a"
 			}
 		},
-		"libraries": [{
-			"name": "lib.a",
-			"scmRevision": "",
-		}],
-		"name": "myname",
-		"scmRevision": "",
-		"version": "1.33.7",
 	}, oOptions);
 
 	t.is(errorLogStub.callCount, 1);
@@ -902,18 +902,18 @@ test.serial("integration: Library without dependencies and embeddedBy path not c
 		dependencies
 	};
 	await assertCreatedVersionInfo(t, {
+		"name": "myname",
+		"scmRevision": "",
+		"version": "1.33.7",
+		"libraries": [{
+			"name": "lib.a",
+			"scmRevision": "",
+		}],
 		"components": {
 			"lib.a.sub.fold": {
 				"library": "lib.a"
 			}
 		},
-		"libraries": [{
-			"name": "lib.a",
-			"scmRevision": "",
-		}],
-		"name": "myname",
-		"scmRevision": "",
-		"version": "1.33.7",
 	}, oOptions);
 
 	t.is(verboseLogStub.callCount, 1);
@@ -949,6 +949,9 @@ test.serial("integration: Library with manifest with invalid dependency", async 
 		dependencies
 	};
 	await assertCreatedVersionInfo(t, {
+		"name": "myname",
+		"scmRevision": "",
+		"version": "1.33.7",
 		"libraries": [{
 			"name": "lib.a",
 			"scmRevision": "",
@@ -960,9 +963,6 @@ test.serial("integration: Library with manifest with invalid dependency", async 
 				},
 			}
 		}],
-		"name": "myname",
-		"scmRevision": "",
-		"version": "1.33.7",
 	}, oOptions);
 
 	t.is(errorLogStub.callCount, 1);
