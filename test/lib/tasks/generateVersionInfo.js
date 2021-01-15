@@ -94,10 +94,12 @@ test.beforeEach((t) => {
 	t.context.verboseLogStub = sinon.stub();
 	t.context.errorLogStub = sinon.stub();
 	t.context.warnLogStub = sinon.stub();
+	t.context.infoLogStub = sinon.stub();
 	sinon.stub(logger, "getLogger").returns({
 		verbose: t.context.verboseLogStub,
 		error: t.context.errorLogStub,
 		warn: t.context.warnLogStub,
+		info: t.context.infoLogStub,
 		isLevelEnabled: () => true
 	});
 	mock.reRequire("../../../lib/processors/versionInfoGenerator");
@@ -287,459 +289,26 @@ const createResources = async (dependencies, resourceFactory, names, deps, embed
 	await createManifestResource(dependencies, resourceFactory, names, deps, embeds);
 };
 
-
-test.serial("integration: Library with dependencies and subcomponent", async (t) => {
+test.serial("integration: sibling eager to lazy", async (t) => {
 	const workspace = createWorkspace();
 
 	await createDotLibrary(workspace, resourceFactory, ["test", "lib"]);
 
 	// input
-	// lib.a => lib.c, lib.b
-	// lib.b => lib.c (true)
-	// lib.c => lib.d
-	// lib.d => lib.e
-	// lib.e =>
-	// lib.a.sub.fold => lib.c
-
-	// expected outcome
-	// lib.a => lib.c, lib.b, lib.d
-	// lib.b => lib.c (true), lib.d (true)
-	// lib.c => lib.d
-	// lib.d => lib.e
-	// lib.e =>
-	// lib.a.sub.fold => lib.c, lib.d, lib.e
-
-	// dependencies
-	const dependencies = createDependencies({virBasePath: "/"});
-
-	// lib.a
-	const embeds = ["sub/fold"];
-	await createResources(dependencies, resourceFactory, ["lib", "a"], [{name: "lib.b"}, {name: "lib.c"}], embeds);
-	// sub
-	await createManifestResource(dependencies, resourceFactory, ["lib", "a", "sub", "fold"], [{name: "lib.c"}]);
-
-	// lib.b
-	await createResources(dependencies, resourceFactory, ["lib", "b"], [{name: "lib.c", lazy: true}]);
-
-	// lib.c
-	await createResources(dependencies, resourceFactory, ["lib", "c"], [{name: "lib.d"}]);
-
-	// lib.d
-	await createResources(dependencies, resourceFactory, ["lib", "d"], [{name: "lib.e", lazy: true}]);
-
-	// lib.e
-	await createResources(dependencies, resourceFactory, ["lib", "e"], []);
-
-	const oOptions = {
-		options: {
-			projectName: "Test Lib",
-			pattern: "/resources/**/.library",
-			rootProject: {
-				metadata: {
-					name: "myname"
-				},
-				version: "1.33.7"
-			}
-		},
-		workspace,
-		dependencies
-	};
-	await assertCreatedVersionInfo(t, {
-		"name": "myname",
-		"scmRevision": "",
-		"version": "1.33.7",
-		"libraries": [{
-			"name": "lib.a",
-			"scmRevision": "",
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
-						"lib.b": {},
-						"lib.c": {},
-						"lib.d": {},
-						"lib.e": {
-							"lazy": true
-						}
-					}
-				}
-			},
-		},
-		{
-			"name": "lib.b",
-			"scmRevision": "",
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
-						"lib.c": {
-							"lazy": true
-						},
-						"lib.d": {
-							"lazy": true
-						},
-						"lib.e": {
-							"lazy": true
-						}
-					}
-				}
-			},
-		},
-		{
-			"name": "lib.c",
-			"scmRevision": "",
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
-						"lib.d": {},
-						"lib.e": {
-							"lazy": true
-						}
-					}
-				}
-			},
-		},
-		{
-			"name": "lib.d",
-			"scmRevision": "",
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
-						"lib.e": {
-							"lazy": true
-						}
-					}
-				}
-			},
-		},
-		{
-			"name": "lib.e",
-			"scmRevision": "",
-		}],
-		"components": {
-			"lib.a.sub.fold": {
-				"library": "lib.a",
-				"manifestHints": {
-					"dependencies": {
-						"libs": {
-							"lib.c": {},
-							"lib.d": {},
-							"lib.e": {
-								"lazy": true
-							}
-						}
-					}
-				}
-			}
-		},
-	}, oOptions);
-});
-
-test.serial("integration: Library with dependencies and subcomponent3", async (t) => {
-	const workspace = createWorkspace();
-
-	await createDotLibrary(workspace, resourceFactory, ["test", "lib"]);
-
-	// input
-	// lib.a => lib.b, lib.c, lib.e (true)
-	// lib.b => lib.c (true), lib.e
-	// lib.c => lib.d, lib.e
-	// lib.d => lib.e (true)
-	// lib.e =>
-	// lib.a.sub.fold => lib.c, lib.e (true)
-
-	// expected outcome
-	// lib.a => lib.c, lib.b, lib.d, lib.e (true)
-	// lib.b => lib.c (true), lib.d (true), lib.e
-	// lib.c => lib.d, lib.e
-	// lib.d => lib.e (true)
-	// lib.e =>
-	// lib.a.sub.fold => lib.c, lib.d, lib.e
-
-	// dependencies
-	const dependencies = createDependencies({virBasePath: "/"});
-
-	// lib.a
-	const embeds = ["sub/fold"];
-	await createResources(dependencies, resourceFactory, ["lib", "a"],
-		[{name: "lib.b"}, {name: "lib.c"}, {name: "lib.e", lazy: true}], embeds);
-	// sub
-	await createManifestResource(dependencies, resourceFactory, ["lib", "a", "sub", "fold"],
-		[{name: "lib.e", lazy: true}, {name: "lib.c"}]);
-
-	// lib.b
-	await createResources(dependencies, resourceFactory, ["lib", "b"], [{name: "lib.c", lazy: true}, {name: "lib.e"}]);
-
-	// lib.c
-	await createResources(dependencies, resourceFactory, ["lib", "c"], [{name: "lib.d"}, {name: "lib.e"}]);
-
-	// lib.d
-	await createResources(dependencies, resourceFactory, ["lib", "d"], [{name: "lib.e", lazy: true}]);
-
-	// lib.e
-	await createResources(dependencies, resourceFactory, ["lib", "e"], []);
-
-	const oOptions = {
-		options: {
-			projectName: "Test Lib",
-			pattern: "/resources/**/.library",
-			rootProject: {
-				metadata: {
-					name: "myname"
-				},
-				version: "1.33.7"
-			}
-		},
-		workspace,
-		dependencies
-	};
-	await assertCreatedVersionInfo(t, {
-		"name": "myname",
-		"scmRevision": "",
-		"version": "1.33.7",
-		"libraries": [{
-			"name": "lib.a",
-			"scmRevision": "",
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
-						"lib.b": {},
-						"lib.c": {},
-						"lib.d": {},
-						"lib.e": {}
-					}
-				}
-			},
-		},
-		{
-			"name": "lib.b",
-			"scmRevision": "",
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
-						"lib.c": {
-							"lazy": true
-						},
-						"lib.d": {
-							"lazy": true
-						},
-						"lib.e": {}
-					}
-				}
-			},
-		},
-		{
-			"name": "lib.c",
-			"scmRevision": "",
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
-						"lib.d": {},
-						"lib.e": {}
-					}
-				}
-			},
-		},
-		{
-			"name": "lib.d",
-			"scmRevision": "",
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
-						"lib.e": {
-							"lazy": true
-						}
-					}
-				}
-			},
-		},
-		{
-			"name": "lib.e",
-			"scmRevision": "",
-		}],
-		"components": {
-			"lib.a.sub.fold": {
-				"library": "lib.a",
-				"manifestHints": {
-					"dependencies": {
-						"libs": {
-							"lib.c": {},
-							"lib.d": {},
-							"lib.e": {}
-						}
-					}
-				}
-			}
-		},
-	}, oOptions);
-});
-
-test.serial("integration: Library with dependencies and subcomponent mixed", async (t) => {
-	const workspace = createWorkspace();
-
-	await createDotLibrary(workspace, resourceFactory, ["test", "lib"]);
-
-	// input
-	// lib.a => lib.b, lib.c, lib.e
-	// lib.b => lib.c (true)
-	// lib.c => lib.d
-	// lib.d => lib.e (true)
-	// lib.e =>
-	// lib.a.sub.fold => lib.c
-
-	// outcome
-	// lib.a => lib.b, lib.c, lib.d, lib.e
-	// lib.b => lib.c (true), lib.d (true), lib.e (true)
-	// lib.c => lib.d, lib.e (true)
-	// lib.d => lib.e (true)
-	// lib.e =>
-	// lib.a.sub.fold => lib.c, lib.d, lib.e (true)
-
-	// dependencies
-
-	const dependencies = createDependencies({virBasePath: "/"});
-
-	// lib.a
-	const embeds = ["sub/fold"];
-	await createResources(dependencies, resourceFactory, ["lib", "a"],
-		[{name: "lib.b"}, {name: "lib.c"}, {name: "lib.e"}], embeds);
-	// sub
-	await createManifestResource(dependencies, resourceFactory,
-		["lib", "a", "sub", "fold"], [{name: "lib.c"}]);
-
-	// lib.b
-	await createResources(dependencies, resourceFactory, ["lib", "b"], [{name: "lib.c", lazy: true}]);
-
-	// lib.c
-	await createResources(dependencies, resourceFactory, ["lib", "c"], [{name: "lib.d"}]);
-
-	// lib.d
-	await createResources(dependencies, resourceFactory, ["lib", "d"], [{name: "lib.e", lazy: true}]);
-	// lib.e
-	await createResources(dependencies, resourceFactory, ["lib", "e"], []);
-
-	const oOptions = {
-		options: {
-			projectName: "Test Lib",
-			pattern: "/resources/**/.library",
-			rootProject: {
-				metadata: {
-					name: "myname"
-				},
-				version: "1.33.7"
-			}
-		},
-		workspace,
-		dependencies
-	};
-	await assertCreatedVersionInfo(t, {
-		"name": "myname",
-		"scmRevision": "",
-		"version": "1.33.7",
-		"libraries": [{
-			"name": "lib.a",
-			"scmRevision": "",
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
-						"lib.b": {},
-						"lib.c": {},
-						"lib.d": {},
-						"lib.e": {}
-					}
-				}
-			},
-		},
-		{
-			"name": "lib.b",
-			"scmRevision": "",
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
-						"lib.c": {
-							"lazy": true
-						},
-						"lib.d": {
-							"lazy": true
-						},
-						"lib.e": {
-							"lazy": true
-						}
-					}
-				}
-			},
-		},
-		{
-			"name": "lib.c",
-			"scmRevision": "",
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
-						"lib.d": {},
-						"lib.e": {
-							"lazy": true
-						}
-					}
-				}
-			},
-		},
-		{
-			"name": "lib.d",
-			"scmRevision": "",
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
-						"lib.e": {
-							"lazy": true
-						}
-					}
-				}
-			},
-		},
-		{
-			"name": "lib.e",
-			"scmRevision": "",
-		}],
-		"components": {
-			"lib.a.sub.fold": {
-				"library": "lib.a",
-				"manifestHints": {
-					"dependencies": {
-						"libs": {
-							"lib.c": {},
-							"lib.d": {},
-							"lib.e": {
-								"lazy": true
-							}
-						}
-					}
-				}
-			}
-		},
-	}, oOptions);
-});
-
-test.serial("integration: Library with simple dependencies and subcomponent simple", async (t) => {
-	const workspace = createWorkspace();
-
-	await createDotLibrary(workspace, resourceFactory, ["test", "lib"]);
-
-
 	// lib.a => lib.b, lib.c
 	// lib.b => lib.c (true)
 	// lib.c =>
 
+	// expected outcome
 	// lib.a => lib.b, lib.c
 	// lib.b => lib.c (true)
 	// lib.c =>
 
 	// dependencies
-
 	const dependencies = createDependencies({virBasePath: "/"});
 
 	// lib.a
-	const embeds = ["sub/fold"];
-	await createResources(dependencies, resourceFactory, ["lib", "a"], [{name: "lib.b"}, {name: "lib.c"}], embeds);
-	// sub
-	await createManifestResource(dependencies, resourceFactory, ["lib", "a", "sub", "fold"], [{name: "lib.b"}]);
+	await createResources(dependencies, resourceFactory, ["lib", "a"], [{name: "lib.b"}, {name: "lib.c"}]);
 
 	// lib.b
 	await createResources(dependencies, resourceFactory, ["lib", "b"], [{name: "lib.c", lazy: true}]);
@@ -792,61 +361,284 @@ test.serial("integration: Library with simple dependencies and subcomponent simp
 		},
 		{
 			"name": "lib.c",
-			"scmRevision": "",
+			"scmRevision": ""
 		}],
-		"components": {
-			"lib.a.sub.fold": {
-				"library": "lib.a",
-				"manifestHints": {
-					"dependencies": {
-						"libs": {
-							"lib.b": {},
-							"lib.c": {
-								"lazy": true
-							}
-						}
-					}
-				}
-			}
-		},
 	}, oOptions);
 });
 
-
-test.serial("integration: Library with simple dependencies and subcomponent special case", async (t) => {
+test.serial("integration: sibling lazy to eager", async (t) => {
 	const workspace = createWorkspace();
 
 	await createDotLibrary(workspace, resourceFactory, ["test", "lib"]);
 
-
-	// lib.a => lib.b (true), lib.d
+	// input
+	// lib.a => lib.b, lib.c (true)
 	// lib.b => lib.c
-	// lib.c => lib.d
-	// lib.d => lib.e
-	// lib.e =>
+	// lib.c =>
 
-	// lib.a => lib.b (true), lib.c (true), lib.d, lib.e
-	// lib.b => lib.c, lib.d, lib.e
-	// lib.c => lib.d, lib.e
-	// lib.d => lib.e
-	// lib.e =>
+	// expected outcome
+	// lib.a => lib.b, lib.c
+	// lib.b => lib.c
+	// lib.c =>
 
 	// dependencies
-
 	const dependencies = createDependencies({virBasePath: "/"});
 
 	// lib.a
-	const embeds = ["sub/fold"];
 	await createResources(dependencies, resourceFactory, ["lib", "a"],
-		[{name: "lib.b", lazy: true}, {name: "lib.d"}], embeds);
-	// sub
-	await createManifestResource(dependencies, resourceFactory, ["lib", "a", "sub", "fold"], [{name: "lib.b"}]);
+		[{name: "lib.b"}, {name: "lib.c", lazy: true}]);
 
 	// lib.b
 	await createResources(dependencies, resourceFactory, ["lib", "b"], [{name: "lib.c"}]);
 
 	// lib.c
-	await createResources(dependencies, resourceFactory, ["lib", "c"], [{name: "lib.d"}]);
+	await createResources(dependencies, resourceFactory, ["lib", "c"], []);
+
+	const oOptions = {
+		options: {
+			projectName: "Test Lib",
+			pattern: "/resources/**/.library",
+			rootProject: {
+				metadata: {
+					name: "myname"
+				},
+				version: "1.33.7"
+			}
+		},
+		workspace,
+		dependencies
+	};
+	await assertCreatedVersionInfo(t, {
+		"name": "myname",
+		"scmRevision": "",
+		"version": "1.33.7",
+		"libraries": [{
+			"name": "lib.a",
+			"scmRevision": "",
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.b": {},
+						"lib.c": {}
+					}
+				}
+			},
+		},
+		{
+			"name": "lib.b",
+			"scmRevision": "",
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.c": {}
+					}
+				}
+			},
+		},
+		{
+			"name": "lib.c",
+			"scmRevision": ""
+		}],
+	}, oOptions);
+});
+
+test.serial("integration: children eager to lazy", async (t) => {
+	const workspace = createWorkspace();
+
+	await createDotLibrary(workspace, resourceFactory, ["test", "lib"]);
+
+	// input
+	// lib.a => lib.b
+	// lib.b => lib.c (true)
+	// lib.c =>
+
+	// expected outcome
+	// lib.a => lib.b, lib.c (true)
+	// lib.b => lib.c (true)
+	// lib.c =>
+
+	// dependencies
+	const dependencies = createDependencies({virBasePath: "/"});
+
+	// lib.a
+	await createResources(dependencies, resourceFactory, ["lib", "a"],
+		[{name: "lib.b"}]);
+
+	// lib.b
+	await createResources(dependencies, resourceFactory, ["lib", "b"],
+		[{name: "lib.c", lazy: true}]);
+
+	// lib.c
+	await createResources(dependencies, resourceFactory, ["lib", "c"], []);
+
+	const oOptions = {
+		options: {
+			projectName: "Test Lib",
+			pattern: "/resources/**/.library",
+			rootProject: {
+				metadata: {
+					name: "myname"
+				},
+				version: "1.33.7"
+			}
+		},
+		workspace,
+		dependencies
+	};
+	await assertCreatedVersionInfo(t, {
+		"name": "myname",
+		"scmRevision": "",
+		"version": "1.33.7",
+		"libraries": [{
+			"name": "lib.a",
+			"scmRevision": "",
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.b": {},
+						"lib.c": {
+							"lazy": true
+						}
+					}
+				}
+			},
+		},
+		{
+			"name": "lib.b",
+			"scmRevision": "",
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.c": {
+							"lazy": true
+						}
+					}
+				}
+			},
+		},
+		{
+			"name": "lib.c",
+			"scmRevision": ""
+		}],
+	}, oOptions);
+});
+
+test.serial("integration: children lazy to eager", async (t) => {
+	const workspace = createWorkspace();
+
+	await createDotLibrary(workspace, resourceFactory, ["test", "lib"]);
+
+	// input
+	// lib.a => lib.b (true)
+	// lib.b => lib.c
+	// lib.c =>
+
+	// expected outcome
+	// lib.a => lib.b (true), lib.c (true)
+	// lib.b => lib.c
+	// lib.c =>
+
+	// dependencies
+	const dependencies = createDependencies({virBasePath: "/"});
+
+	// lib.a
+	await createResources(dependencies, resourceFactory, ["lib", "a"],
+		[{name: "lib.b", lazy: true}]);
+
+	// lib.b
+	await createResources(dependencies, resourceFactory, ["lib", "b"],
+		[{name: "lib.c"}]);
+
+	// lib.c
+	await createResources(dependencies, resourceFactory, ["lib", "c"], []);
+
+	const oOptions = {
+		options: {
+			projectName: "Test Lib",
+			pattern: "/resources/**/.library",
+			rootProject: {
+				metadata: {
+					name: "myname"
+				},
+				version: "1.33.7"
+			}
+		},
+		workspace,
+		dependencies
+	};
+	await assertCreatedVersionInfo(t, {
+		"name": "myname",
+		"scmRevision": "",
+		"version": "1.33.7",
+		"libraries": [{
+			"name": "lib.a",
+			"scmRevision": "",
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.b": {
+							"lazy": true
+						},
+						"lib.c": {
+							"lazy": true
+						}
+					}
+				}
+			},
+		},
+		{
+			"name": "lib.b",
+			"scmRevision": "",
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.c": {}
+					}
+				}
+			},
+		},
+		{
+			"name": "lib.c",
+			"scmRevision": ""
+		}],
+	}, oOptions);
+});
+
+test.serial("integration: Library with dependencies and subcomponent complex scenario", async (t) => {
+	const workspace = createWorkspace();
+
+	await createDotLibrary(workspace, resourceFactory, ["test", "lib"]);
+
+	// input
+	// lib.a => lib.b, lib.c
+	// lib.b => lib.c (true)
+	// lib.c => lib.d, lib.e (true)
+	// lib.d => lib.e
+	// lib.e =>
+	// lib.a.sub.fold => lib.c
+
+	// expected outcome
+	// lib.a => lib.b, lib.c, lib.d, lib.e
+	// lib.b => lib.c (true), lib.d (true), lib.e (true)
+	// lib.c => lib.d, lib.e
+	// lib.d => lib.e
+	// lib.e =>
+	// lib.a.sub.fold => lib.c, lib.d, lib.e
+
+	// dependencies
+	const dependencies = createDependencies({virBasePath: "/"});
+
+	// lib.a
+	const embeds = ["sub/fold"];
+	await createResources(dependencies, resourceFactory, ["lib", "a"], [{name: "lib.b"}, {name: "lib.c"}], embeds);
+	// sub
+	await createManifestResource(dependencies, resourceFactory, ["lib", "a", "sub", "fold"], [{name: "lib.c"}]);
+
+	// lib.b
+	await createResources(dependencies, resourceFactory, ["lib", "b"], [{name: "lib.c", lazy: true}]);
+
+	// lib.c
+	await createResources(dependencies, resourceFactory, ["lib", "c"], [{name: "lib.d"}, {name: "lib.e", lazy: true}]);
 
 	// lib.d
 	await createResources(dependencies, resourceFactory, ["lib", "d"], [{name: "lib.e"}]);
@@ -878,12 +670,8 @@ test.serial("integration: Library with simple dependencies and subcomponent spec
 			"manifestHints": {
 				"dependencies": {
 					"libs": {
-						"lib.b": {
-							"lazy": true
-						},
-						"lib.c": {
-							"lazy": true
-						},
+						"lib.b": {},
+						"lib.c": {},
 						"lib.d": {},
 						"lib.e": {}
 					}
@@ -896,9 +684,15 @@ test.serial("integration: Library with simple dependencies and subcomponent spec
 			"manifestHints": {
 				"dependencies": {
 					"libs": {
-						"lib.c": {},
-						"lib.d": {},
-						"lib.e": {}
+						"lib.c": {
+							"lazy": true
+						},
+						"lib.d": {
+							"lazy": true
+						},
+						"lib.e": {
+							"lazy": true
+						}
 					}
 				}
 			},
@@ -936,7 +730,143 @@ test.serial("integration: Library with simple dependencies and subcomponent spec
 				"manifestHints": {
 					"dependencies": {
 						"libs": {
-							"lib.b": {},
+							"lib.c": {},
+							"lib.d": {},
+							"lib.e": {}
+						}
+					}
+				}
+			}
+		},
+	}, oOptions);
+});
+
+test.serial("integration: Library with dependencies and subcomponent bigger scenario", async (t) => {
+	const workspace = createWorkspace();
+
+	await createDotLibrary(workspace, resourceFactory, ["test", "lib"]);
+
+	// input
+	// lib.a => lib.b, lib.c
+	// lib.b => lib.c (true)
+	// lib.c => lib.d, lib.e (true)
+	// lib.d => lib.e
+	// lib.e =>
+	// lib.a.sub.fold => lib.c
+
+	// expected outcome
+	// lib.a => lib.b, lib.c, lib.d, lib.e
+	// lib.b => lib.c (true), lib.d (true), lib.e (true)
+	// lib.c => lib.d, lib.e
+	// lib.d => lib.e
+	// lib.e =>
+	// lib.a.sub.fold => lib.c, lib.d, lib.e
+
+	// dependencies
+	const dependencies = createDependencies({virBasePath: "/"});
+
+	// lib.a
+	const embeds = ["sub/fold"];
+	await createResources(dependencies, resourceFactory, ["lib", "a"], [{name: "lib.b"}, {name: "lib.c"}], embeds);
+	// sub
+	await createManifestResource(dependencies, resourceFactory, ["lib", "a", "sub", "fold"], [{name: "lib.c"}]);
+
+	// lib.b
+	await createResources(dependencies, resourceFactory, ["lib", "b"], [{name: "lib.c", lazy: true}]);
+
+	// lib.c
+	await createResources(dependencies, resourceFactory, ["lib", "c"], [{name: "lib.d"}, {name: "lib.e", lazy: true}]);
+
+	// lib.d
+	await createResources(dependencies, resourceFactory, ["lib", "d"], [{name: "lib.e"}]);
+
+	// lib.e
+	await createResources(dependencies, resourceFactory, ["lib", "e"], []);
+
+	const oOptions = {
+		options: {
+			projectName: "Test Lib",
+			pattern: "/resources/**/.library",
+			rootProject: {
+				metadata: {
+					name: "myname"
+				},
+				version: "1.33.7"
+			}
+		},
+		workspace,
+		dependencies
+	};
+	await assertCreatedVersionInfo(t, {
+		"name": "myname",
+		"scmRevision": "",
+		"version": "1.33.7",
+		"libraries": [{
+			"name": "lib.a",
+			"scmRevision": "",
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.b": {},
+						"lib.c": {},
+						"lib.d": {},
+						"lib.e": {}
+					}
+				}
+			},
+		},
+		{
+			"name": "lib.b",
+			"scmRevision": "",
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.c": {
+							"lazy": true
+						},
+						"lib.d": {
+							"lazy": true
+						},
+						"lib.e": {
+							"lazy": true
+						}
+					}
+				}
+			},
+		},
+		{
+			"name": "lib.c",
+			"scmRevision": "",
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.d": {},
+						"lib.e": {}
+					}
+				}
+			},
+		},
+		{
+			"name": "lib.d",
+			"scmRevision": "",
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.e": {}
+					}
+				}
+			},
+		},
+		{
+			"name": "lib.e",
+			"scmRevision": "",
+		}],
+		"components": {
+			"lib.a.sub.fold": {
+				"library": "lib.a",
+				"manifestHints": {
+					"dependencies": {
+						"libs": {
 							"lib.c": {},
 							"lib.d": {},
 							"lib.e": {}
@@ -1197,7 +1127,7 @@ test.serial("integration: Library without dependencies and embeddedBy path not c
 });
 
 test.serial("integration: Library with manifest with invalid dependency", async (t) => {
-	const {errorLogStub} = t.context;
+	const {infoLogStub} = t.context;
 	const workspace = createWorkspace();
 
 	await createDotLibrary(workspace, resourceFactory, ["test", "lib"]);
@@ -1240,7 +1170,9 @@ test.serial("integration: Library with manifest with invalid dependency", async 
 		}],
 	}, oOptions);
 
-	t.is(errorLogStub.callCount, 1);
-	t.is(errorLogStub.firstCall.args[0],
-		"Cannot find dependency 'non.existing' for 'lib.a'");
+	t.is(infoLogStub.callCount, 1);
+	t.is(infoLogStub.firstCall.args[0],
+		"Cannot find dependency 'non.existing' defined in the manifest.json or .library file of project 'lib.a'. " +
+		"This might prevent some UI5 runtime performance optimizations from taking effect. " +
+		"Please double check your project's dependency configuration.");
 });
