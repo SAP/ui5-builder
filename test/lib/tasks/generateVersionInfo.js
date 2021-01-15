@@ -433,6 +433,145 @@ test.serial("integration: Library with dependencies and subcomponent", async (t)
 	}, oOptions);
 });
 
+test.serial("integration: Library with dependencies and subcomponent3", async (t) => {
+	const workspace = createWorkspace();
+
+	await createDotLibrary(workspace, resourceFactory, ["test", "lib"]);
+
+	// input
+	// lib.a => lib.b, lib.c, lib.e (true)
+	// lib.b => lib.c (true), lib.e
+	// lib.c => lib.d, lib.e
+	// lib.d => lib.e (true)
+	// lib.e =>
+	// lib.a.sub.fold => lib.c, lib.e (true)
+
+	// expected outcome
+	// lib.a => lib.c, lib.b, lib.d, lib.e (true)
+	// lib.b => lib.c (true), lib.d (true), lib.e
+	// lib.c => lib.d, lib.e
+	// lib.d => lib.e (true)
+	// lib.e =>
+	// lib.a.sub.fold => lib.c, lib.d, lib.e
+
+	// dependencies
+	const dependencies = createDependencies({virBasePath: "/"});
+
+	// lib.a
+	const embeds = ["sub/fold"];
+	await createResources(dependencies, resourceFactory, ["lib", "a"],
+		[{name: "lib.b"}, {name: "lib.c"}, {name: "lib.e", lazy: true}], embeds);
+	// sub
+	await createManifestResource(dependencies, resourceFactory, ["lib", "a", "sub", "fold"],
+		[{name: "lib.e", lazy: true}, {name: "lib.c"}]);
+
+	// lib.b
+	await createResources(dependencies, resourceFactory, ["lib", "b"], [{name: "lib.c", lazy: true}, {name: "lib.e"}]);
+
+	// lib.c
+	await createResources(dependencies, resourceFactory, ["lib", "c"], [{name: "lib.d"}, {name: "lib.e"}]);
+
+	// lib.d
+	await createResources(dependencies, resourceFactory, ["lib", "d"], [{name: "lib.e", lazy: true}]);
+
+	// lib.e
+	await createResources(dependencies, resourceFactory, ["lib", "e"], []);
+
+	const oOptions = {
+		options: {
+			projectName: "Test Lib",
+			pattern: "/resources/**/.library",
+			rootProject: {
+				metadata: {
+					name: "myname"
+				},
+				version: "1.33.7"
+			}
+		},
+		workspace,
+		dependencies
+	};
+	await assertCreatedVersionInfo(t, {
+		"name": "myname",
+		"scmRevision": "",
+		"version": "1.33.7",
+		"libraries": [{
+			"name": "lib.a",
+			"scmRevision": "",
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.b": {},
+						"lib.c": {},
+						"lib.d": {},
+						"lib.e": {}
+					}
+				}
+			},
+		},
+		{
+			"name": "lib.b",
+			"scmRevision": "",
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.c": {
+							"lazy": true
+						},
+						"lib.d": {
+							"lazy": true
+						},
+						"lib.e": {}
+					}
+				}
+			},
+		},
+		{
+			"name": "lib.c",
+			"scmRevision": "",
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.d": {},
+						"lib.e": {}
+					}
+				}
+			},
+		},
+		{
+			"name": "lib.d",
+			"scmRevision": "",
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.e": {
+							"lazy": true
+						}
+					}
+				}
+			},
+		},
+		{
+			"name": "lib.e",
+			"scmRevision": "",
+		}],
+		"components": {
+			"lib.a.sub.fold": {
+				"library": "lib.a",
+				"manifestHints": {
+					"dependencies": {
+						"libs": {
+							"lib.c": {},
+							"lib.d": {},
+							"lib.e": {}
+						}
+					}
+				}
+			}
+		},
+	}, oOptions);
+});
+
 test.serial("integration: Library with dependencies and subcomponent mixed", async (t) => {
 	const workspace = createWorkspace();
 
@@ -578,7 +717,7 @@ test.serial("integration: Library with dependencies and subcomponent mixed", asy
 	}, oOptions);
 });
 
-test.serial("integration: Library with simple dependencies and subcomponent", async (t) => {
+test.serial("integration: Library with simple dependencies and subcomponent simple", async (t) => {
 	const workspace = createWorkspace();
 
 	await createDotLibrary(workspace, resourceFactory, ["test", "lib"]);
@@ -665,6 +804,142 @@ test.serial("integration: Library with simple dependencies and subcomponent", as
 							"lib.c": {
 								"lazy": true
 							}
+						}
+					}
+				}
+			}
+		},
+	}, oOptions);
+});
+
+
+test.serial("integration: Library with simple dependencies and subcomponent special case", async (t) => {
+	const workspace = createWorkspace();
+
+	await createDotLibrary(workspace, resourceFactory, ["test", "lib"]);
+
+
+	// lib.a => lib.b (true), lib.d
+	// lib.b => lib.c
+	// lib.c => lib.d
+	// lib.d => lib.e
+	// lib.e =>
+
+	// lib.a => lib.b (true), lib.c (true), lib.d, lib.e
+	// lib.b => lib.c, lib.d, lib.e
+	// lib.c => lib.d, lib.e
+	// lib.d => lib.e
+	// lib.e =>
+
+	// dependencies
+
+	const dependencies = createDependencies({virBasePath: "/"});
+
+	// lib.a
+	const embeds = ["sub/fold"];
+	await createResources(dependencies, resourceFactory, ["lib", "a"],
+		[{name: "lib.b", lazy: true}, {name: "lib.d"}], embeds);
+	// sub
+	await createManifestResource(dependencies, resourceFactory, ["lib", "a", "sub", "fold"], [{name: "lib.b"}]);
+
+	// lib.b
+	await createResources(dependencies, resourceFactory, ["lib", "b"], [{name: "lib.c"}]);
+
+	// lib.c
+	await createResources(dependencies, resourceFactory, ["lib", "c"], [{name: "lib.d"}]);
+
+	// lib.d
+	await createResources(dependencies, resourceFactory, ["lib", "d"], [{name: "lib.e"}]);
+
+	// lib.e
+	await createResources(dependencies, resourceFactory, ["lib", "e"], []);
+
+	const oOptions = {
+		options: {
+			projectName: "Test Lib",
+			pattern: "/resources/**/.library",
+			rootProject: {
+				metadata: {
+					name: "myname"
+				},
+				version: "1.33.7"
+			}
+		},
+		workspace,
+		dependencies
+	};
+	await assertCreatedVersionInfo(t, {
+		"name": "myname",
+		"scmRevision": "",
+		"version": "1.33.7",
+		"libraries": [{
+			"name": "lib.a",
+			"scmRevision": "",
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.b": {
+							"lazy": true
+						},
+						"lib.c": {
+							"lazy": true
+						},
+						"lib.d": {},
+						"lib.e": {}
+					}
+				}
+			},
+		},
+		{
+			"name": "lib.b",
+			"scmRevision": "",
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.c": {},
+						"lib.d": {},
+						"lib.e": {}
+					}
+				}
+			},
+		},
+		{
+			"name": "lib.c",
+			"scmRevision": "",
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.d": {},
+						"lib.e": {}
+					}
+				}
+			},
+		},
+		{
+			"name": "lib.d",
+			"scmRevision": "",
+			"manifestHints": {
+				"dependencies": {
+					"libs": {
+						"lib.e": {}
+					}
+				}
+			},
+		},
+		{
+			"name": "lib.e",
+			"scmRevision": "",
+		}],
+		"components": {
+			"lib.a.sub.fold": {
+				"library": "lib.a",
+				"manifestHints": {
+					"dependencies": {
+						"libs": {
+							"lib.b": {},
+							"lib.c": {},
+							"lib.d": {},
+							"lib.e": {}
 						}
 					}
 				}
