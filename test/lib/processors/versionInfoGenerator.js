@@ -13,7 +13,6 @@ test("versionInfoGenerator missing parameters", async (t) => {
 });
 
 test.beforeEach((t) => {
-	t.context.clock = sinon.useFakeTimers(1610642400000);
 	t.context.warnLogStub = sinon.stub();
 	sinon.stub(logger, "getLogger").returns({
 		warn: t.context.warnLogStub,
@@ -23,10 +22,24 @@ test.beforeEach((t) => {
 });
 
 test.afterEach.always((t) => {
-	t.context.clock.restore();
 	mock.stopAll();
 	sinon.restore();
 });
+
+const assertVersionInfoContent = (t, oExpectedVersionInfo, sActualContent) => {
+	const currentVersionInfo = JSON.parse(sActualContent);
+
+	t.is(currentVersionInfo.buildTimestamp.length, 12, "Timestamp should have length of 12 (yyyyMMddHHmm)");
+
+	delete currentVersionInfo.buildTimestamp; // removing to allow deep comparison
+	currentVersionInfo.libraries.forEach((lib) => {
+		t.is(lib.buildTimestamp.length, 12, "Timestamp should have length of 12 (yyyyMMddHHmm)");
+		delete lib.buildTimestamp; // removing to allow deep comparison
+	});
+
+
+	t.deepEqual(currentVersionInfo, oExpectedVersionInfo, "Correct content");
+};
 
 test.serial("versionInfoGenerator empty libraryInfos parameter", async (t) => {
 	const versionInfos = await versionInfoGenerator({options: {
@@ -35,14 +48,13 @@ test.serial("versionInfoGenerator empty libraryInfos parameter", async (t) => {
 	const resource = versionInfos[0];
 	const result = await resource.getString();
 
-	const expected = `{
-	"name": "myname",
-	"version": "1.33.7",
-	"buildTimestamp": "202101141740",
-	"scmRevision": "",
-	"libraries": []
-}`;
-	t.is(result, expected);
+	const oExpected = {
+		"name": "myname",
+		"version": "1.33.7",
+		"scmRevision": "",
+		"libraries": []
+	};
+	assertVersionInfoContent(t, oExpected, result);
 });
 
 
@@ -56,21 +68,19 @@ test.serial("versionInfoGenerator simple library infos", async (t) => {
 	const resource = versionInfos[0];
 	const result = await resource.getString();
 
-	const expected = `{
-	"name": "myname",
-	"version": "1.33.7",
-	"buildTimestamp": "202101141740",
-	"scmRevision": "",
-	"libraries": [
-		{
-			"name": "my.lib",
-			"version": "1.2.3",
-			"buildTimestamp": "202101141740",
-			"scmRevision": ""
-		}
-	]
-}`;
-	t.is(result, expected);
+	const oExpected = {
+		"name": "myname",
+		"version": "1.33.7",
+		"scmRevision": "",
+		"libraries": [
+			{
+				"name": "my.lib",
+				"version": "1.2.3",
+				"scmRevision": ""
+			}
+		]
+	};
+	assertVersionInfoContent(t, oExpected, result);
 	t.is(t.context.warnLogStub.callCount, 1);
 	t.is(t.context.warnLogStub.getCall(0).args[0],
 		"Cannot add meta information for library 'my.lib'. The manifest.json file cannot be found");
