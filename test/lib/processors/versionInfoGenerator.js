@@ -106,7 +106,8 @@ test.serial("versionInfoGenerator library infos with dependencies", async (t) =>
 						"minUI5Version": "1.84",
 						"libs": {
 							"my.dep": {
-								"minVersion": "1.84.0"
+								"minVersion": "1.84.0",
+								"lazy": false
 							}
 						}
 					}
