@@ -85,8 +85,8 @@ test.serial("versionInfoGenerator simple library infos", async (t) => {
 		]
 	};
 	assertVersionInfoContent(t, oExpected, result);
-	t.is(t.context.warnLogStub.callCount, 1);
-	t.is(t.context.warnLogStub.getCall(0).args[0],
+	t.is(t.context.verboseLogStub.callCount, 1);
+	t.is(t.context.verboseLogStub.getCall(0).args[0],
 		"Cannot add meta information for library 'my.lib'. The manifest.json file cannot be found");
 });
 
