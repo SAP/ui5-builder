@@ -696,7 +696,7 @@ test.serial("manifest creation with embedded component", async (t) => {
 		"checking component at %s", "/resources/sap/lib1/component1"
 	]);
 	t.deepEqual(verboseLogStub.getCall(1).args, [
-		"  component's 'sap.app/embeddedBy' property points to library, list it as 'embedded'"
+		"  sap.app/id taken from .library: '%s'", "sap.lib1"
 	]);
 });
 
@@ -708,7 +708,9 @@ test.serial("manifest creation with embedded component (Missing 'embeddedBy')", 
 		"sap.app": {
 			"id": "sap.lib1",
 			"type": "library",
-			"embeds": [],
+			"embeds": [
+				"component1"
+			],
 			"applicationVersion": {
 				"version": "1.0.0"
 			},
@@ -780,7 +782,7 @@ test.serial("manifest creation with embedded component (Missing 'embeddedBy')", 
 		"checking component at %s", "/resources/sap/lib1/component1"
 	]);
 	t.deepEqual(verboseLogStub.getCall(1).args, [
-		"  component doesn't declare 'sap.app/embeddedBy', don't list it as 'embedded'"
+		"  sap.app/id taken from .library: '%s'", "sap.lib1"
 	]);
 });
 
@@ -792,7 +794,9 @@ test.serial("manifest creation with embedded component ('embeddedBy' doesn't poi
 		"sap.app": {
 			"id": "sap.lib1",
 			"type": "library",
-			"embeds": [],
+			"embeds": [
+				"component1"
+			],
 			"applicationVersion": {
 				"version": "1.0.0"
 			},
@@ -868,8 +872,7 @@ test.serial("manifest creation with embedded component ('embeddedBy' doesn't poi
 		"checking component at %s", "/resources/sap/lib1/component1"
 	]);
 	t.deepEqual(verboseLogStub.getCall(1).args, [
-		"  component's 'sap.app/embeddedBy' points to '%s', don't list it as 'embedded'",
-		"/resources/sap/lib1/foo/"
+		"  sap.app/id taken from .library: '%s'", "sap.lib1"
 	]);
 });
 
@@ -881,7 +884,9 @@ test.serial("manifest creation with embedded component ('embeddedBy' absolute pa
 		"sap.app": {
 			"id": "sap.lib1",
 			"type": "library",
-			"embeds": [],
+			"embeds": [
+				"component1"
+			],
 			"applicationVersion": {
 				"version": "1.0.0"
 			},
@@ -957,8 +962,7 @@ test.serial("manifest creation with embedded component ('embeddedBy' absolute pa
 		"checking component at %s", "/resources/sap/lib1/component1"
 	]);
 	t.deepEqual(verboseLogStub.getCall(1).args, [
-		"  component's 'sap.app/embeddedBy' points to '%s', don't list it as 'embedded'",
-		"/"
+		"  sap.app/id taken from .library: '%s'", "sap.lib1"
 	]);
 });
 
@@ -970,7 +974,9 @@ test.serial("manifest creation with embedded component ('embeddedBy' empty strin
 		"sap.app": {
 			"id": "sap.lib1",
 			"type": "library",
-			"embeds": [],
+			"embeds": [
+				"component1"
+			],
 			"applicationVersion": {
 				"version": "1.0.0"
 			},
@@ -1039,12 +1045,7 @@ test.serial("manifest creation with embedded component ('embeddedBy' empty strin
 	});
 	t.is(await result.getString(), expectedManifestContent, "Correct result returned");
 
-	t.is(errorLogStub.callCount, 1);
-	t.deepEqual(errorLogStub.getCall(0).args, [
-		"  component '%s': property 'sap.app/embeddedBy' has an empty string value (which is invalid), " +
-		"it won't be listed as 'embedded'",
-		"/resources/sap/lib1/component1"
-	]);
+	t.is(errorLogStub.callCount, 0);
 });
 
 test.serial("manifest creation with embedded component ('embeddedBy' object)", async (t) => {
@@ -1055,7 +1056,9 @@ test.serial("manifest creation with embedded component ('embeddedBy' object)", a
 		"sap.app": {
 			"id": "sap.lib1",
 			"type": "library",
-			"embeds": [],
+			"embeds": [
+				"component1"
+			],
 			"applicationVersion": {
 				"version": "1.0.0"
 			},
@@ -1126,13 +1129,7 @@ test.serial("manifest creation with embedded component ('embeddedBy' object)", a
 	});
 	t.is(await result.getString(), expectedManifestContent, "Correct result returned");
 
-	t.is(errorLogStub.callCount, 1);
-	t.deepEqual(errorLogStub.getCall(0).args, [
-		"  component '%s': property 'sap.app/embeddedBy' is of type '%s' (expected 'string'), " +
-		"it won't be listed as 'embedded'",
-		"/resources/sap/lib1/component1",
-		"object"
-	]);
+	t.is(errorLogStub.callCount, 0);
 });
 
 test.serial("manifest creation with embedded component (no manifest.json)", async (t) => {
@@ -1219,7 +1216,9 @@ test.serial("manifest creation with embedded component (invalid manifest.json)",
 		"sap.app": {
 			"id": "sap.lib1",
 			"type": "library",
-			"embeds": [],
+			"embeds": [
+				"component1"
+			],
 			"applicationVersion": {
 				"version": "1.0.0"
 			},
@@ -1284,15 +1283,7 @@ test.serial("manifest creation with embedded component (invalid manifest.json)",
 	});
 	t.is(await result.getString(), expectedManifestContent, "Correct result returned");
 
-	t.is(errorLogStub.callCount, 1);
-	t.is(errorLogStub.getCall(0).args.length, 3);
-	t.deepEqual(errorLogStub.getCall(0).args.slice(0, 2), [
-		"  component '%s': failed to read the component's manifest.json, " +
-		"it won't be listed as 'embedded'.\n" +
-		"Error details: %s",
-		"/resources/sap/lib1/component1"
-	]);
-	t.true(errorLogStub.getCall(0).args[2].startsWith("SyntaxError: Unexpected token"));
+	t.is(errorLogStub.callCount, 0);
 });
 
 test.serial("manifest creation for invalid .library content", async (t) => {
