@@ -305,3 +305,29 @@ test.serial("generateComponentPreload - multiple namespaces - excludes", async (
 	t.is(workspace.write.getCall(1).args[0], bundleResources2[0],
 		"workspace.write should have been called with exact resource returned by moduleBundler");
 });
+
+test.serial("generateComponentPreload - one namespace - invalid exclude", async (t) => {
+	const {
+		generateComponentPreload,
+		workspace, dependencies, comboByGlob
+	} = t.context;
+
+	const resources = [
+		{"fake": "resource"}
+	];
+	comboByGlob.resolves(resources);
+
+	await generateComponentPreload({
+		workspace,
+		dependencies,
+		options: {
+			projectName: "Test Application",
+			namespaces: ["my/app"],
+			excludes: [
+				"!**/" // re-include outside of namespace is not allowed
+			]
+		}
+	});
+
+	// TODO: check warn/error/error
+});
