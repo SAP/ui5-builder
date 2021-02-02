@@ -494,4 +494,17 @@ test.serial("generateComponentPreload - nested namespaces - excludes", async (t)
 		},
 		resources
 	}]);
+
+	t.is(log.warn.callCount, 0, "log.warn should not be called");
+	t.is(log.verbose.callCount, 3, "log.verbose should be called once");
+	t.deepEqual(log.verbose.getCall(0).args, [
+		"Generating my/project/component1/Component-preload.js..."
+	]);
+	t.deepEqual(log.verbose.getCall(1).args, [
+		"Generating my/project/Component-preload.js..."
+	]);
+	t.deepEqual(log.verbose.getCall(2).args, [
+		"Generating my/project/component2/Component-preload.js..."
+	]);
+	t.is(log.error.callCount, 0, "log.error should not be called");
 });
