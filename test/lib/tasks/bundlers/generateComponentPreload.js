@@ -1,8 +1,16 @@
 const test = require("ava");
 const sinon = require("sinon");
 const mock = require("mock-require");
+const logger = require("@ui5/logger");
 
 test.beforeEach((t) => {
+	t.context.log = {
+		warn: sinon.stub(),
+		verbose: sinon.stub(),
+		error: sinon.stub()
+	};
+	sinon.stub(logger, "getLogger").withArgs("builder:tasks:bundlers:generateComponentPreload").returns(t.context.log);
+
 	t.context.workspace = {
 		byGlob: sinon.stub().resolves([]),
 		write: sinon.stub().resolves()
@@ -309,7 +317,8 @@ test.serial("generateComponentPreload - multiple namespaces - excludes", async (
 test.serial("generateComponentPreload - one namespace - invalid exclude", async (t) => {
 	const {
 		generateComponentPreload,
-		workspace, dependencies, comboByGlob
+		workspace, dependencies, comboByGlob,
+		log
 	} = t.context;
 
 	const resources = [
@@ -329,5 +338,15 @@ test.serial("generateComponentPreload - one namespace - invalid exclude", async 
 		}
 	});
 
-	// TODO: check warn/error/error
+	t.is(log.warn.callCount, 1, "log.warn should be called once");
+	t.deepEqual(log.warn.getCall(0).args, [
+		"Unused exclude: **/"
+	]);
+
+	t.is(log.verbose.callCount, 1, "log.verbose should be called once");
+	t.deepEqual(log.verbose.getCall(0).args, [
+		"Generating my/app/Component-preload.js..."
+	]);
+
+	t.is(log.error.callCount, 0, "log.error should not be called");
 });
