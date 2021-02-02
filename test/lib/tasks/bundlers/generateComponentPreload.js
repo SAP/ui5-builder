@@ -350,3 +350,148 @@ test.serial("generateComponentPreload - one namespace - invalid exclude", async 
 
 	t.is(log.error.callCount, 0, "log.error should not be called");
 });
+
+test.serial("generateComponentPreload - nested namespaces - excludes", async (t) => {
+	const {
+		generateComponentPreload, moduleBundlerStub,
+		workspace, dependencies, comboByGlob,
+		log
+	} = t.context;
+
+	const resources = [
+		{"fake": "resource"}
+	];
+	comboByGlob.resolves(resources);
+
+	await generateComponentPreload({
+		workspace,
+		dependencies,
+		options: {
+			projectName: "Test Application",
+			namespaces: [
+				"my/project/component1",
+				"my/project",
+				"my/project/component2",
+			],
+			excludes: [
+				"my/project/component1/foo/",
+				"!my/project/test/",
+				"!my/project/component2/*.html"
+			]
+		}
+	});
+
+	t.is(moduleBundlerStub.callCount, 3, "moduleBundler should have been called 3 times");
+	t.deepEqual(moduleBundlerStub.getCall(0).args, [{
+		options: {
+			bundleDefinition: {
+				defaultFileTypes: [
+					".js",
+					".fragment.xml",
+					".view.xml",
+					".properties",
+					".json",
+				],
+				name: "my/project/component1/Component-preload.js",
+				sections: [
+					{
+						filters: [
+							"my/project/component1/",
+							"!my/project/component1/test/",
+							"!my/project/component1/*.html",
+
+							// via excludes config
+							"!my/project/component1/foo/"
+						],
+						mode: "preload",
+						renderer: false,
+						resolve: false,
+						resolveConditional: false,
+					}
+				]
+			},
+			bundleOptions: {
+				optimize: true,
+				ignoreMissingModules: true
+			}
+		},
+		resources
+	}]);
+	t.deepEqual(moduleBundlerStub.getCall(1).args, [{
+		options: {
+			bundleDefinition: {
+				defaultFileTypes: [
+					".js",
+					".fragment.xml",
+					".view.xml",
+					".properties",
+					".json",
+				],
+				name: "my/project/Component-preload.js",
+				sections: [
+					{
+						filters: [
+							"my/project/",
+							"!my/project/test/",
+							"!my/project/*.html",
+
+							// via excludes config
+							"!my/project/component1/foo/",
+							"my/project/test/",
+							"my/project/component2/*.html",
+
+							// sub-namespaces are excluded
+							"!my/project/component1/",
+							"!my/project/component2/",
+						],
+						mode: "preload",
+						renderer: false,
+						resolve: false,
+						resolveConditional: false,
+					}
+				]
+			},
+			bundleOptions: {
+				optimize: true,
+				ignoreMissingModules: true
+			}
+		},
+		resources
+	}]);
+	t.deepEqual(moduleBundlerStub.getCall(2).args, [{
+		options: {
+			bundleDefinition: {
+				defaultFileTypes: [
+					".js",
+					".fragment.xml",
+					".view.xml",
+					".properties",
+					".json",
+				],
+				name: "my/project/component2/Component-preload.js",
+				sections: [
+					{
+						filters: [
+							"my/project/component2/",
+							"!my/project/component2/test/",
+							"!my/project/component2/*.html",
+
+							// via excludes config
+							"!my/project/component1/foo/",
+							"my/project/component2/*.html"
+						],
+						mode: "preload",
+						renderer: false,
+						resolve: false,
+						resolveConditional: false,
+					}
+				]
+			},
+			bundleOptions: {
+				optimize: true,
+				ignoreMissingModules: true
+			}
+		},
+		resources
+	}]);
+});
