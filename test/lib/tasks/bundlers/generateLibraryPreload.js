@@ -731,3 +731,90 @@ test("generateLibraryPreload for sap.ui.core (/w ui5loader.js)", async (t) => {
 	t.true(ReaderCollectionPrioritizedStub.calledWithNew(),
 		"ReaderCollectionPrioritized should have been called with 'new'");
 });
+
+test.serial("generateLibraryPreload with excludes", async (t) => {
+	const {
+		generateLibraryPreload, moduleBundlerStub, ReaderCollectionPrioritizedStub,
+		workspace, dependencies, comboByGlob
+	} = t.context;
+
+	const resources = [
+		{getPath: sinon.stub().returns("/resources/my/lib/.library")}
+	];
+	comboByGlob.resolves(resources);
+
+	workspace.byGlob.resolves([
+		{getPath: sinon.stub().returns("/resources/my/lib/.library")}
+	]);
+
+	await generateLibraryPreload({
+		workspace,
+		dependencies,
+		options: {
+			projectName: "Test Library",
+			excludes: [
+				"my/lib/thirdparty/",
+				"!my/lib/thirdparty/NotExcluded.js"
+			]
+		}
+	});
+
+	t.is(moduleBundlerStub.callCount, 3, "moduleBundler should have been called 3 times");
+	t.deepEqual(moduleBundlerStub.getCall(0).args, [{
+		options: {
+			bundleDefinition: {
+				defaultFileTypes: [
+					".js",
+					".control.xml",
+					".fragment.html",
+					".fragment.json",
+					".fragment.xml",
+					".view.html",
+					".view.json",
+					".view.xml",
+					".properties",
+					".json"
+				],
+				name: "my/lib/library-preload.js",
+				sections: [
+					{
+						filters: [
+							"my/lib/",
+							"!my/lib/.library",
+							"!my/lib/*-preload.js",
+							"!my/lib/designtime/",
+							"!my/lib/**/*.designtime.js",
+							"!my/lib/**/*.support.js",
+							"!my/lib/themes/",
+							"!my/lib/messagebundle*",
+
+							// via excludes option
+							"!my/lib/thirdparty/",
+							"my/lib/thirdparty/NotExcluded.js"
+						],
+						mode: "preload",
+						renderer: true,
+						resolve: false,
+						resolveConditional: false,
+					}
+				]
+			},
+			bundleOptions: {
+				optimize: true,
+				usePredefineCalls: true,
+				ignoreMissingModules: true
+			}
+		},
+		resources
+	}]);
+
+	t.is(workspace.byGlob.callCount, 1,
+		"workspace.byGlob should have been called once");
+	t.deepEqual(workspace.byGlob.getCall(0).args, ["/resources/**/.library"],
+		"workspace.byGlob should have been called with expected pattern");
+
+	t.is(ReaderCollectionPrioritizedStub.callCount, 1,
+		"ReaderCollectionPrioritized should have been called once");
+	t.true(ReaderCollectionPrioritizedStub.calledWithNew(),
+		"ReaderCollectionPrioritized should have been called with 'new'");
+});
