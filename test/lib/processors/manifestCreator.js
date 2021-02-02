@@ -422,6 +422,38 @@ test.serial("default manifest creation with special characters small app descrip
 	t.is(await result.getString(), expectedManifestContentSmallVersionString, "Correct result returned");
 });
 
+test.serial("default manifest creation with special characters very small app descriptor version", async (t) => {
+	const {manifestCreator, errorLogStub} = t.context;
+	const prefix = "/resources/sap/ui/mine/";
+	const libraryResource = {
+		getPath: () => {
+			return prefix + ".library";
+		},
+		getString: async () => {
+			return libraryContent;
+		},
+		_project: {
+			dependencies: [{
+				metadata: {
+					name: "sap.ui.core"
+				}
+			}]
+		}
+	};
+	t.is(errorLogStub.callCount, 0);
+
+	const options = {descriptorVersion: new Version("1.1.0")};
+	const result = await manifestCreator({libraryResource, resources: [], options});
+	const expectedManifestContentSmallVersion = expectedManifestContentObject();
+	expectedManifestContentSmallVersion["_version"] = "1.1.0";
+	expectedManifestContentSmallVersion["sap.app"]["_version"] = "1.2.0";
+	expectedManifestContentSmallVersion["sap.ui"]["_version"] = "1.1.0";
+	expectedManifestContentSmallVersion["sap.ui5"]["_version"] = "1.1.0";
+	expectedManifestContentSmallVersion["sap.app"]["i18n"] = "i18n/i18n.properties";
+	const sResult = await result.getString();
+	t.deepEqual(JSON.parse(sResult), expectedManifestContentSmallVersion, "Correct result returned");
+});
+
 test.serial("manifest creation for sap/apf", async (t) => {
 	const {manifestCreator, errorLogStub, verboseLogStub} = t.context;
 
