@@ -414,7 +414,7 @@ test("getDotLibrary: reads correctly", async (t) => {
 	const libraryFormatter = new LibraryFormatter({project: myProject});
 
 	const {content, fsPath} = await libraryFormatter.getDotLibrary();
-	t.deepEqual(content.library.name, "library.e", ".library content has been read");
+	t.deepEqual(content.library.name._, "library.e", ".library content has been read");
 	const expectedPath = path.join(myProject.path,
 		myProject.resources.configuration.paths.src, "library", "e", ".library");
 	t.deepEqual(fsPath, expectedPath, ".library fsPath is correct");
@@ -476,13 +476,13 @@ test.serial("getDotLibrary: result is cached", async (t) => {
 	const libraryFormatter = new LibraryFormatter({project: myProject});
 
 	const {content, fsPath} = await libraryFormatter.getDotLibrary();
-	t.deepEqual(content.library.name, "library.e", ".library content has been read");
+	t.deepEqual(content.library.name._, "library.e", ".library content has been read");
 	const expectedPath = path.join(myProject.path,
 		myProject.resources.configuration.paths.src, "library", "e", ".library");
 	t.deepEqual(fsPath, expectedPath, ".library fsPath is correct");
 
 	const {content: contentSecondCall, fsPath: fsPathSecondCall} = await libraryFormatter.getDotLibrary();
-	t.deepEqual(contentSecondCall.library.name, "library.e", ".library content has been read," +
+	t.deepEqual(contentSecondCall.library.name._, "library.e", ".library content has been read, " +
 		"but should be cached now.");
 	const expectedPathSecondCall = path.join(myProject.path,
 		myProject.resources.configuration.paths.src, "library", "e", ".library");
@@ -606,7 +606,7 @@ test("getCopyright: takes copyright from stubbed .library", async (t) => {
 	const libraryFormatter = new LibraryFormatter({project: myProject});
 	sinon.stub(libraryFormatter, "getDotLibrary").resolves({
 		content: {
-			library: {copyright: "pony"}
+			library: {copyright: {_: "pony"}}
 		},
 		fsPath: "/some/path"
 	});
@@ -677,7 +677,7 @@ test("getNamespace: from manifest.json with .library on same level but different
 	});
 	sinon.stub(libraryFormatter, "getDotLibrary").resolves({
 		content: {
-			library: {name: "dot-pony"}
+			library: {name: {_: "dot-pony"}}
 		},
 		fsPath: dotLibraryFsPath
 	});
@@ -765,7 +765,7 @@ test("getNamespace: from .library", async (t) => {
 	sinon.stub(libraryFormatter, "getManifest").rejects("No manifest aint' here");
 	sinon.stub(libraryFormatter, "getDotLibrary").resolves({
 		content: {
-			library: {name: "dot-pony"}
+			library: {name: {_: "dot-pony"}}
 		},
 		fsPath: path.normalize("/some/path/dot-pony/.library") // normalize for windows
 	});
@@ -788,7 +788,7 @@ test("getNamespace: from .library with ignored manifest.json on lower level", as
 	});
 	sinon.stub(libraryFormatter, "getDotLibrary").resolves({
 		content: {
-			library: {name: "dot-pony"}
+			library: {name: {_: "dot-pony"}}
 		},
 		fsPath: path.normalize("/some/path/dot-pony/.library") // normalize for windows
 	});
@@ -814,7 +814,7 @@ test("getNamespace: manifest.json on higher level than .library", async (t) => {
 	});
 	sinon.stub(libraryFormatter, "getDotLibrary").resolves({
 		content: {
-			library: {name: "dot-pony"}
+			library: {name: {_: "dot-pony"}}
 		},
 		fsPath: dotLibraryFsPath
 	});
@@ -839,7 +839,7 @@ test("getNamespace: from .library with maven placeholder", async (t) => {
 	sinon.stub(libraryFormatter, "getManifest").rejects("No manifest aint' here");
 	sinon.stub(libraryFormatter, "getDotLibrary").resolves({
 		content: {
-			library: {name: "${mvn-pony}"}
+			library: {name: {_: "${mvn-pony}"}}
 		},
 		fsPath: path.normalize("/some/path/mvn-unicorn/.library") // normalize for windows
 	});
@@ -862,7 +862,7 @@ test("getNamespace: from .library with not matching file path", async (t) => {
 	sinon.stub(libraryFormatter, "getManifest").rejects("No manifest aint' here");
 	sinon.stub(libraryFormatter, "getDotLibrary").resolves({
 		content: {
-			library: {name: "mvn-pony"}
+			library: {name: {_: "mvn-pony"}}
 		},
 		fsPath: path.normalize("/some/path/different/namespace/.library") // normalize for windows
 	});
