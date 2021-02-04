@@ -340,7 +340,8 @@ test.serial("generateComponentPreload - one namespace - invalid exclude", async 
 
 	t.is(log.warn.callCount, 1, "log.warn should be called once");
 	t.deepEqual(log.warn.getCall(0).args, [
-		"Unused exclude: **/"
+		"Configured preload exclude contains invalid re-include: !**/. " +
+		"Re-includes must start with a component namespace (my/app)"
 	]);
 
 	t.is(log.verbose.callCount, 1, "log.verbose should be called once");
@@ -376,7 +377,10 @@ test.serial("generateComponentPreload - nested namespaces - excludes", async (t)
 			excludes: [
 				"my/project/component1/foo/",
 				"!my/project/test/",
-				"!my/project/component2/*.html"
+				"!my/project/component2/*.html",
+
+				// Invalid, should cause a warning
+				"!invalid/namespace/"
 			]
 		}
 	});
@@ -495,7 +499,13 @@ test.serial("generateComponentPreload - nested namespaces - excludes", async (t)
 		resources
 	}]);
 
-	t.is(log.warn.callCount, 0, "log.warn should not be called");
+	t.is(log.warn.callCount, 1, "log.warn should be called once");
+	t.deepEqual(log.warn.getCall(0).args, [
+		"Configured preload exclude contains invalid re-include: !invalid/namespace/. " +
+		"Re-includes must start with a component namespace " +
+		"(my/project/component1 or my/project or my/project/component2)"
+	]);
+
 	t.is(log.verbose.callCount, 3, "log.verbose should be called once");
 	t.deepEqual(log.verbose.getCall(0).args, [
 		"Generating my/project/component1/Component-preload.js..."

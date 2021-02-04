@@ -104,6 +104,86 @@ test.serial("generateLibraryPreload", async (t) => {
 		},
 		resources
 	}]);
+	t.deepEqual(moduleBundlerStub.getCall(1).args, [{
+		options: {
+			bundleDefinition: {
+				defaultFileTypes: [
+					".js",
+					".control.xml",
+					".fragment.html",
+					".fragment.json",
+					".fragment.xml",
+					".view.html",
+					".view.json",
+					".view.xml",
+					".properties",
+					".json"
+				],
+				name: "my/lib/designtime/library-preload.designtime.js",
+				sections: [
+					{
+						filters: [
+							"my/lib/**/*.designtime.js",
+							"my/lib/designtime/",
+							"!my/lib/**/*-preload.designtime.js",
+							"!my/lib/designtime/**/*.properties",
+							"!my/lib/designtime/**/*.svg",
+							"!my/lib/designtime/**/*.xml"
+						],
+						mode: "preload",
+						renderer: false,
+						resolve: false,
+						resolveConditional: false,
+					}
+				]
+			},
+			bundleOptions: {
+				optimize: true,
+				usePredefineCalls: true,
+				ignoreMissingModules: true,
+				skipIfEmpty: true
+			}
+		},
+		resources
+	}]);
+	t.deepEqual(moduleBundlerStub.getCall(2).args, [{
+		options: {
+			bundleDefinition: {
+				defaultFileTypes: [
+					".js",
+					".control.xml",
+					".fragment.html",
+					".fragment.json",
+					".fragment.xml",
+					".view.html",
+					".view.json",
+					".view.xml",
+					".properties",
+					".json"
+				],
+				name: "my/lib/library-preload.support.js",
+				sections: [
+					{
+						filters: [
+							"my/lib/**/*.support.js",
+							"!my/lib/**/*-preload.support.js"
+						],
+						mode: "preload",
+						renderer: false,
+						resolve: false,
+						resolveConditional: false,
+					}
+				]
+			},
+			bundleOptions: {
+				optimize: false,
+				usePredefineCalls: true,
+				ignoreMissingModules: true,
+				skipIfEmpty: true
+			}
+		},
+		resources
+	}]);
 
 	t.is(workspace.byGlob.callCount, 1,
 		"workspace.byGlob should have been called once");
@@ -137,7 +217,9 @@ test.serial("generateLibraryPreload for sap.ui.core (w/o ui5loader.js)", async (
 		workspace,
 		dependencies,
 		options: {
-			projectName: "sap.ui.core"
+			projectName: "sap.ui.core",
+			// Should be ignored for hardcoded sap.ui.core bundle configuration
+			excludes: ["sap/ui/core/**"]
 		}
 	});
 
@@ -410,11 +492,13 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js)", async (t
 		workspace,
 		dependencies,
 		options: {
-			projectName: "sap.ui.core"
+			projectName: "sap.ui.core",
+			// Should be ignored for hardcoded sap.ui.core bundle configuration
+			excludes: ["sap/ui/core/**"]
 		}
 	});
 
-	t.is(moduleBundlerStub.callCount, 7, "moduleBundler should have been called 5 times");
+	t.is(moduleBundlerStub.callCount, 7, "moduleBundler should have been called 7 times");
 	t.deepEqual(moduleBundlerStub.getCall(0).args, [{
 		options: {
 			bundleDefinition: {
@@ -902,10 +986,12 @@ test.serial("generateLibraryPreload with invalid excludes", async (t) => {
 
 	t.is(log.warn.callCount, 2, "log.warn should be called twice");
 	t.deepEqual(log.warn.getCall(0).args, [
-		"Unused exclude: **/foo/"
+		"Configured preload exclude contains invalid re-include: !**/foo/. " +
+		"Re-includes must start with the library's namespace my/lib"
 	]);
 	t.deepEqual(log.warn.getCall(1).args, [
-		"Unused exclude: my/other/lib/"
+		"Configured preload exclude contains invalid re-include: !my/other/lib/. " +
+		"Re-includes must start with the library's namespace my/lib"
 	]);
 
 	t.is(log.verbose.callCount, 0, "log.verbose should not be called");
