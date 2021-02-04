@@ -238,7 +238,7 @@ test.serial("generateComponentPreload - multiple namespaces - excludes", async (
 							"!my/app1/*.html",
 							"!my/app1/thirdparty1/",
 							"my/app1/thirdparty1/NotExcluded.js",
-							"!my/app2/thirdparty2/", // TODO: is this really expected?
+							"!my/app2/thirdparty2/",
 						],
 						mode: "preload",
 						renderer: false,
@@ -271,7 +271,7 @@ test.serial("generateComponentPreload - multiple namespaces - excludes", async (
 							"my/app2/",
 							"!my/app2/test/",
 							"!my/app2/*.html",
-							"!my/app1/thirdparty1/", // TODO: is this really expected?
+							"!my/app1/thirdparty1/",
 							"!my/app2/thirdparty2/",
 							"my/app2/thirdparty2/NotExcluded.js"
 						],
