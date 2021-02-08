@@ -882,7 +882,7 @@ test.serial("generateLibraryPreload with excludes", async (t) => {
 
 							// via excludes option
 							"!my/lib/thirdparty/",
-							"my/lib/thirdparty/NotExcluded.js"
+							"+my/lib/thirdparty/NotExcluded.js"
 						],
 						mode: "preload",
 						renderer: true,

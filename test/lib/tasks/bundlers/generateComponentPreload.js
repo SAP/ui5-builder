@@ -153,7 +153,7 @@ test.serial("generateComponentPreload - one namespace - excludes", async (t) => 
 							"!my/app/test/",
 							"!my/app/*.html",
 							"!my/app/thirdparty/",
-							"my/app/thirdparty/NotExcluded.js"
+							"+my/app/thirdparty/NotExcluded.js"
 						],
 						mode: "preload",
 						renderer: false,
@@ -237,7 +237,7 @@ test.serial("generateComponentPreload - multiple namespaces - excludes", async (
 							"!my/app1/test/",
 							"!my/app1/*.html",
 							"!my/app1/thirdparty1/",
-							"my/app1/thirdparty1/NotExcluded.js",
+							"+my/app1/thirdparty1/NotExcluded.js",
 							"!my/app2/thirdparty2/",
 						],
 						mode: "preload",
@@ -273,7 +273,7 @@ test.serial("generateComponentPreload - multiple namespaces - excludes", async (
 							"!my/app2/*.html",
 							"!my/app1/thirdparty1/",
 							"!my/app2/thirdparty2/",
-							"my/app2/thirdparty2/NotExcluded.js"
+							"+my/app2/thirdparty2/NotExcluded.js"
 						],
 						mode: "preload",
 						renderer: false,
@@ -441,8 +441,8 @@ test.serial("generateComponentPreload - nested namespaces - excludes", async (t)
 
 							// via excludes config
 							"!my/project/component1/foo/",
-							"my/project/test/",
-							"my/project/component2/*.html",
+							"+my/project/test/",
+							"+my/project/component2/*.html",
 
 							// sub-namespaces are excluded
 							"!my/project/component1/",
@@ -482,7 +482,7 @@ test.serial("generateComponentPreload - nested namespaces - excludes", async (t)
 
 							// via excludes config
 							"!my/project/component1/foo/",
-							"my/project/component2/*.html"
+							"+my/project/component2/*.html"
 						],
 						mode: "preload",
 						renderer: false,
