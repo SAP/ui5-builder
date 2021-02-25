@@ -13,15 +13,16 @@ test.beforeEach((t) => {
 		getLogger: () => loggerInstance
 	});
 	mock.reRequire("@ui5/logger");
-	t.context.logErrorSpy = sinon.spy(loggerInstance, "error");
+	t.context.logErrorSpy = sinon.stub(loggerInstance, "error");
+	t.context.logVerboseSpy = sinon.stub(loggerInstance, "verbose");
 
 	// Re-require tested module
 	resourceListCreator = mock.reRequire("../../../lib/processors/resourceListCreator");
 });
 
 test.afterEach.always((t) => {
-	mock.stop("@ui5/logger");
-	t.context.logErrorSpy.restore();
+	mock.stopAll();
+	sinon.restore();
 });
 
 test.serial("Empty resources", async (t) => {
@@ -53,6 +54,9 @@ test.serial("Orphaned resources", async (t) => {
 		resources: [resource]
 	});
 	t.is(t.context.logErrorSpy.callCount, 0);
+	t.is(t.context.logVerboseSpy.callCount, 1);
+	t.deepEqual(t.context.logVerboseSpy.getCall(0).args,
+		["\tfound 1 resources"]);
 });
 
 test.serial("Orphaned resources (failOnOrphans: true)", async (t) => {
@@ -76,8 +80,6 @@ test.serial("Orphaned resources (failOnOrphans: true)", async (t) => {
 		"resources.json generation failed because of unassigned resources: nomodule.foo");
 });
 
-// 114,134-168,174-175
-
 test.serial("components and themes", async (t) => {
 	const componentResource = resourceFactory.createResource({
 		path: "/resources/mylib/manifest.json",
@@ -90,6 +92,16 @@ test.serial("components and themes", async (t) => {
 	const resources = await resourceListCreator({
 		resources: [componentResource, themeResource]
 	});
+
+	t.is(t.context.logErrorSpy.callCount, 0);
+	t.is(t.context.logVerboseSpy.callCount, 3);
+	t.deepEqual(t.context.logVerboseSpy.getCall(0).args,
+		["\tfound 2 resources"]);
+	t.deepEqual(t.context.logVerboseSpy.getCall(1).args,
+		["\twriting 'mylib/resources.json'"]);
+	t.deepEqual(t.context.logVerboseSpy.getCall(2).args,
+		["\twriting 'themes/a/resources.json'"]);
+
 
 	t.is(resources.length, 2);
 	const libResourceJson = resources[0];
@@ -169,6 +181,13 @@ test.serial("XML View with control resource as dependency", async (t) => {
 		resources: [myAppManifestJsonResource, myAppXmlViewResource, myAppButtonResource],
 		dependencyResources: [myLibButtonResource]
 	});
+
+	t.is(t.context.logErrorSpy.callCount, 0);
+	t.is(t.context.logVerboseSpy.callCount, 2);
+	t.deepEqual(t.context.logVerboseSpy.getCall(0).args,
+		["\tfound 3 resources"]);
+	t.deepEqual(t.context.logVerboseSpy.getCall(1).args,
+		["\twriting 'my/app/resources.json'"]);
 
 	t.is(resourcesJson.length, 1, "One resources.json should be returned");
 	const myAppResourcesJson = resourcesJson[0];
@@ -257,6 +276,13 @@ sap.ui.require.preload({
 		resources: [myAppManifestJsonResource, myAppXmlViewResource, myAppButtonResource, myAppBundleResource],
 		dependencyResources: [myLibButtonResource]
 	});
+
+	t.is(t.context.logErrorSpy.callCount, 0);
+	t.is(t.context.logVerboseSpy.callCount, 2);
+	t.deepEqual(t.context.logVerboseSpy.getCall(0).args,
+		["\tfound 4 resources"]);
+	t.deepEqual(t.context.logVerboseSpy.getCall(1).args,
+		["\twriting 'my/app/resources.json'"]);
 
 	t.is(resourcesJson.length, 1, "One resources.json should be returned");
 	const myAppResourcesJson = resourcesJson[0];
