@@ -291,7 +291,8 @@ test.serial("Bundle containing an XML View with control resource as dependency",
 		path: "/resources/my/app/bundle.js",
 		string: `//@ui5-bundle my/app/bundle.js
 sap.ui.require.preload({
-	"my/app/view/Main.view.xml": '${bundledXmlView}'
+	"my/app/view/Main.view.xml": '${bundledXmlView}',
+	"my/app/controls/Button.js": ''
 });
 `
 	});
@@ -333,15 +334,15 @@ sap.ui.require.preload({
 		{
 			"name": "bundle.js",
 			"module": "my/app/bundle.js",
-			"size": 367,
+			"size": 401,
 			"merged": true,
 			"required": [
 				"my/app/controller/Main.controller.js",
-				"my/app/controls/Button.js",
 				"my/lib/Button.js"
 			],
 			"included": [
-				"my/app/view/Main.view.xml"
+				"my/app/view/Main.view.xml",
+				"my/app/controls/Button.js"
 			]
 		},
 		{
@@ -542,6 +543,123 @@ sap.ui.require.preload({
 		{
 			"name": "resources.json",
 			"size": 580
+		}
+	]
+}`);
+});
+
+test.serial("Bundle", async (t) => {
+	const {resourceListCreator, resourceListCreatorLog, ResourceCollectorLog} = t.context;
+
+	const myAppManifestJsonResource = resourceFactory.createResource({
+		path: "/resources/my/app/manifest.json",
+		string: JSON.stringify({"sap.app": {"id": "my.app"}})
+	});
+
+	const myAppBundleResource = resourceFactory.createResource({
+		path: "/resources/my/app/bundle.js",
+		string: `//@ui5-bundle my/app/bundle.js
+sap.ui.require.preload({
+	"my/app/module1.js": '',
+	"my/app/module2.js": ''
+});
+`
+	});
+
+	const module1Resource = resourceFactory.createResource({
+		path: "/resources/my/app/module1.js",
+		string: `sap.ui.define(['dep1'], function() {
+			return function(x) {
+				if (x === true) {
+					sap.ui.require(["dep2"]);
+				}
+			}
+		})`
+	});
+
+	const module2Resource = resourceFactory.createResource({
+		path: "/resources/my/app/module2.js",
+		string: `sap.ui.define(['dep2'], function() {
+			return function(x) {
+				if (x === true) {
+					sap.ui.require(["dep1", "dep3"]);
+				}
+			}
+		})`
+	});
+
+	const resourcesJson = await resourceListCreator({
+		resources: [myAppManifestJsonResource, myAppBundleResource, module1Resource, module2Resource],
+	});
+
+	t.is(resourceListCreatorLog.error.callCount, 0);
+	t.is(resourceListCreatorLog.verbose.callCount, 2);
+	t.deepEqual(resourceListCreatorLog.verbose.getCall(0).args,
+		["\tfound 4 resources"]);
+	t.deepEqual(resourceListCreatorLog.verbose.getCall(1).args,
+		["\twriting 'my/app/resources.json'"]);
+
+	t.is(ResourceCollectorLog.error.callCount, 0);
+	t.is(ResourceCollectorLog.warn.callCount, 0);
+	t.is(ResourceCollectorLog.verbose.callCount, 1);
+	t.deepEqual(ResourceCollectorLog.verbose.getCall(0).args,
+		["  configured external resources filters (resources outside the namespace): (none)"]);
+
+	t.is(resourcesJson.length, 1, "One resources.json should be returned");
+	const myAppResourcesJson = resourcesJson[0];
+	t.is(myAppResourcesJson.getPath(), "/resources/my/app/resources.json");
+	const myAppResourcesJsonContent = await myAppResourcesJson.getString();
+	t.is(myAppResourcesJsonContent, `{
+	"_version": "1.1.0",
+	"resources": [
+		{
+			"name": "bundle.js",
+			"module": "my/app/bundle.js",
+			"size": 111,
+			"merged": true,
+			"required": [
+				"dep1.js",
+				"dep2.js"
+			],
+			"condRequired": [
+				"dep3.js"
+			],
+			"included": [
+				"my/app/module1.js",
+				"my/app/module2.js"
+			]
+		},
+		{
+			"name": "manifest.json",
+			"module": "my/app/manifest.json",
+			"size": 27
+		},
+		{
+			"name": "module1.js",
+			"module": "my/app/module1.js",
+			"size": 129,
+			"required": [
+				"dep1.js"
+			],
+			"condRequired": [
+				"dep2.js"
+			]
+		},
+		{
+			"name": "module2.js",
+			"module": "my/app/module2.js",
+			"size": 137,
+			"required": [
+				"dep2.js"
+			],
+			"condRequired": [
+				"dep1.js",
+				"dep3.js"
+			]
+		},
+		{
+			"name": "resources.json",
+			"size": 786
 		}
 	]
 }`);
