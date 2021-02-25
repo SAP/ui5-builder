@@ -2,22 +2,27 @@ const test = require("ava");
 const sinon = require("sinon");
 const mock = require("mock-require");
 
-let resourceListCreator = require("../../../lib/processors/resourceListCreator");
 const resourceFactory = require("@ui5/fs").resourceFactory;
 
 test.beforeEach((t) => {
-	// Spying logger of processors/bootstrapHtmlTransformer
-	const log = require("@ui5/logger");
-	const loggerInstance = log.getLogger("builder:processors:resourceListCreator");
-	mock("@ui5/logger", {
-		getLogger: () => loggerInstance
-	});
-	mock.reRequire("@ui5/logger");
-	t.context.logErrorSpy = sinon.stub(loggerInstance, "error");
-	t.context.logVerboseSpy = sinon.stub(loggerInstance, "verbose");
+	t.context.resourceListCreatorLog = {
+		error: sinon.stub(),
+		verbose: sinon.stub()
+	};
+	t.context.ResourceCollectorLog = {
+		error: sinon.stub(),
+		warn: sinon.stub(),
+		verbose: sinon.stub()
+	};
+	const logger = require("@ui5/logger");
+	sinon.stub(logger, "getLogger")
+		.callThrough() // Ensures that other loggers are not affected
+		.withArgs("builder:processors:resourceListCreator").returns(t.context.resourceListCreatorLog)
+		.withArgs("lbt:resources:ResourceCollector").returns(t.context.ResourceCollectorLog);
 
-	// Re-require tested module
-	resourceListCreator = mock.reRequire("../../../lib/processors/resourceListCreator");
+	// Re-require tested modules
+	mock.reRequire("../../../lib/lbt/resources/ResourceCollector");
+	t.context.resourceListCreator = mock.reRequire("../../../lib/processors/resourceListCreator");
 });
 
 test.afterEach.always((t) => {
@@ -26,13 +31,21 @@ test.afterEach.always((t) => {
 });
 
 test.serial("Empty resources", async (t) => {
+	const {resourceListCreator, resourceListCreatorLog} = t.context;
+
 	const result = await resourceListCreator({
 		resources: []
 	});
 	t.deepEqual(result, []);
+	t.is(resourceListCreatorLog.error.callCount, 0);
+	t.is(resourceListCreatorLog.verbose.callCount, 1);
+	t.deepEqual(resourceListCreatorLog.verbose.getCall(0).args,
+		["\tfound 0 resources"]);
 });
 
 test.serial("Empty resources but options", async (t) => {
+	const {resourceListCreator, resourceListCreatorLog} = t.context;
+
 	const result = await resourceListCreator({
 		resources: [],
 		options: {
@@ -42,9 +55,15 @@ test.serial("Empty resources but options", async (t) => {
 		}
 	});
 	t.deepEqual(result, []);
+	t.is(resourceListCreatorLog.error.callCount, 0);
+	t.is(resourceListCreatorLog.verbose.callCount, 1);
+	t.deepEqual(resourceListCreatorLog.verbose.getCall(0).args,
+		["\tfound 0 resources"]);
 });
 
 test.serial("Orphaned resources", async (t) => {
+	const {resourceListCreator, resourceListCreatorLog} = t.context;
+
 	// Does not fail by default
 	const resource = resourceFactory.createResource({
 		path: "/resources/nomodule.foo",
@@ -53,13 +72,15 @@ test.serial("Orphaned resources", async (t) => {
 	await resourceListCreator({
 		resources: [resource]
 	});
-	t.is(t.context.logErrorSpy.callCount, 0);
-	t.is(t.context.logVerboseSpy.callCount, 1);
-	t.deepEqual(t.context.logVerboseSpy.getCall(0).args,
+	t.is(resourceListCreatorLog.error.callCount, 0);
+	t.is(resourceListCreatorLog.verbose.callCount, 1);
+	t.deepEqual(resourceListCreatorLog.verbose.getCall(0).args,
 		["\tfound 1 resources"]);
 });
 
 test.serial("Orphaned resources (failOnOrphans: true)", async (t) => {
+	const {resourceListCreator, resourceListCreatorLog} = t.context;
+
 	const resource = resourceFactory.createResource({
 		path: "/resources/nomodule.foo",
 		string: "bar content"
@@ -75,12 +96,17 @@ test.serial("Orphaned resources (failOnOrphans: true)", async (t) => {
 	t.is(errorObject.message,
 		"resources.json generation failed with error: " +
 		"There are 1 resources which could not be assigned to components.");
-	t.is(t.context.logErrorSpy.callCount, 1);
-	t.is(t.context.logErrorSpy.getCall(0).args[0],
+	t.is(resourceListCreatorLog.error.callCount, 1);
+	t.is(resourceListCreatorLog.error.getCall(0).args[0],
 		"resources.json generation failed because of unassigned resources: nomodule.foo");
+	t.is(resourceListCreatorLog.verbose.callCount, 1);
+	t.deepEqual(resourceListCreatorLog.verbose.getCall(0).args,
+		["\tfound 1 resources"]);
 });
 
-test.serial("components and themes", async (t) => {
+test.serial("Components and themes", async (t) => {
+	const {resourceListCreator, resourceListCreatorLog} = t.context;
+
 	const componentResource = resourceFactory.createResource({
 		path: "/resources/mylib/manifest.json",
 		string: "bar content"
@@ -93,13 +119,13 @@ test.serial("components and themes", async (t) => {
 		resources: [componentResource, themeResource]
 	});
 
-	t.is(t.context.logErrorSpy.callCount, 0);
-	t.is(t.context.logVerboseSpy.callCount, 3);
-	t.deepEqual(t.context.logVerboseSpy.getCall(0).args,
+	t.is(resourceListCreatorLog.error.callCount, 0);
+	t.is(resourceListCreatorLog.verbose.callCount, 3);
+	t.deepEqual(resourceListCreatorLog.verbose.getCall(0).args,
 		["\tfound 2 resources"]);
-	t.deepEqual(t.context.logVerboseSpy.getCall(1).args,
+	t.deepEqual(resourceListCreatorLog.verbose.getCall(1).args,
 		["\twriting 'mylib/resources.json'"]);
-	t.deepEqual(t.context.logVerboseSpy.getCall(2).args,
+	t.deepEqual(resourceListCreatorLog.verbose.getCall(2).args,
 		["\twriting 'themes/a/resources.json'"]);
 
 
@@ -142,6 +168,8 @@ test.serial("components and themes", async (t) => {
 });
 
 test.serial("XML View with control resource as dependency", async (t) => {
+	const {resourceListCreator, resourceListCreatorLog} = t.context;
+
 	const myAppManifestJsonResource = resourceFactory.createResource({
 		path: "/resources/my/app/manifest.json",
 		string: JSON.stringify({"sap.app": {"id": "my.app"}})
@@ -182,11 +210,11 @@ test.serial("XML View with control resource as dependency", async (t) => {
 		dependencyResources: [myLibButtonResource]
 	});
 
-	t.is(t.context.logErrorSpy.callCount, 0);
-	t.is(t.context.logVerboseSpy.callCount, 2);
-	t.deepEqual(t.context.logVerboseSpy.getCall(0).args,
+	t.is(resourceListCreatorLog.error.callCount, 0);
+	t.is(resourceListCreatorLog.verbose.callCount, 2);
+	t.deepEqual(resourceListCreatorLog.verbose.getCall(0).args,
 		["\tfound 3 resources"]);
-	t.deepEqual(t.context.logVerboseSpy.getCall(1).args,
+	t.deepEqual(resourceListCreatorLog.verbose.getCall(1).args,
 		["\twriting 'my/app/resources.json'"]);
 
 	t.is(resourcesJson.length, 1, "One resources.json should be returned");
@@ -225,7 +253,9 @@ test.serial("XML View with control resource as dependency", async (t) => {
 }`);
 });
 
-test.serial("bundle containing an XML View with control resource as dependency", async (t) => {
+test.serial("Bundle containing an XML View with control resource as dependency", async (t) => {
+	const {resourceListCreator, resourceListCreatorLog, ResourceCollectorLog} = t.context;
+
 	const myAppManifestJsonResource = resourceFactory.createResource({
 		path: "/resources/my/app/manifest.json",
 		string: JSON.stringify({"sap.app": {"id": "my.app"}})
@@ -277,12 +307,18 @@ sap.ui.require.preload({
 		dependencyResources: [myLibButtonResource]
 	});
 
-	t.is(t.context.logErrorSpy.callCount, 0);
-	t.is(t.context.logVerboseSpy.callCount, 2);
-	t.deepEqual(t.context.logVerboseSpy.getCall(0).args,
+	t.is(resourceListCreatorLog.error.callCount, 0);
+	t.is(resourceListCreatorLog.verbose.callCount, 2);
+	t.deepEqual(resourceListCreatorLog.verbose.getCall(0).args,
 		["\tfound 4 resources"]);
-	t.deepEqual(t.context.logVerboseSpy.getCall(1).args,
+	t.deepEqual(resourceListCreatorLog.verbose.getCall(1).args,
 		["\twriting 'my/app/resources.json'"]);
+
+	t.is(ResourceCollectorLog.error.callCount, 0);
+	t.is(ResourceCollectorLog.warn.callCount, 0);
+	t.is(ResourceCollectorLog.verbose.callCount, 1);
+	t.deepEqual(ResourceCollectorLog.verbose.getCall(0).args,
+		["  configured external resources filters (resources outside the namespace): (none)"]);
 
 	t.is(resourcesJson.length, 1, "One resources.json should be returned");
 	const myAppResourcesJson = resourcesJson[0];
@@ -329,6 +365,71 @@ sap.ui.require.preload({
 				"my/app/controls/Button.js",
 				"my/lib/Button.js"
 			]
+		}
+	]
+}`);
+});
+
+test.serial("Bundle containing subModule which is not available within provided resources", async (t) => {
+	const {resourceListCreator, resourceListCreatorLog, ResourceCollectorLog} = t.context;
+
+	const myAppManifestJsonResource = resourceFactory.createResource({
+		path: "/resources/my/app/manifest.json",
+		string: JSON.stringify({"sap.app": {"id": "my.app"}})
+	});
+
+	const myAppBundleResource = resourceFactory.createResource({
+		path: "/resources/my/app/bundle.js",
+		string: `//@ui5-bundle my/app/bundle.js
+sap.ui.require.preload({
+	"my/app/view/Main.view.xml": ''
+});
+`
+	});
+
+	const resourcesJson = await resourceListCreator({
+		resources: [myAppManifestJsonResource, myAppBundleResource]
+	});
+
+	t.is(resourceListCreatorLog.error.callCount, 0);
+	t.is(resourceListCreatorLog.verbose.callCount, 2);
+	t.deepEqual(resourceListCreatorLog.verbose.getCall(0).args,
+		["\tfound 2 resources"]);
+	t.deepEqual(resourceListCreatorLog.verbose.getCall(1).args,
+		["\twriting 'my/app/resources.json'"]);
+
+	t.is(ResourceCollectorLog.error.callCount, 0);
+	t.is(ResourceCollectorLog.warn.callCount, 0);
+	t.is(ResourceCollectorLog.verbose.callCount, 2);
+	t.deepEqual(ResourceCollectorLog.verbose.getCall(0).args,
+		["\tmissing submodule my/app/view/Main.view.xml included by my/app/bundle.js"]);
+	t.deepEqual(ResourceCollectorLog.verbose.getCall(1).args,
+		["  configured external resources filters (resources outside the namespace): (none)"]);
+
+	t.is(resourcesJson.length, 1, "One resources.json should be returned");
+	const myAppResourcesJson = resourcesJson[0];
+	t.is(myAppResourcesJson.getPath(), "/resources/my/app/resources.json");
+	const myAppResourcesJsonContent = await myAppResourcesJson.getString();
+	t.is(myAppResourcesJsonContent, `{
+	"_version": "1.1.0",
+	"resources": [
+		{
+			"name": "bundle.js",
+			"module": "my/app/bundle.js",
+			"size": 93,
+			"merged": true,
+			"included": [
+				"my/app/view/Main.view.xml"
+			]
+		},
+		{
+			"name": "manifest.json",
+			"module": "my/app/manifest.json",
+			"size": 27
+		},
+		{
+			"name": "resources.json",
+			"size": 338
 		}
 	]
 }`);
