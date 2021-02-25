@@ -20,6 +20,9 @@ test.beforeEach((t) => {
 		.withArgs("builder:processors:resourceListCreator").returns(t.context.resourceListCreatorLog)
 		.withArgs("lbt:resources:ResourceCollector").returns(t.context.ResourceCollectorLog);
 
+	const XMLTemplateAnalyzer = require("../../../lib/lbt/analyzer/XMLTemplateAnalyzer");
+	t.context.XMLTemplateAnalyzerAnalyzeViewSpy = sinon.spy(XMLTemplateAnalyzer.prototype, "analyzeView");
+
 	// Re-require tested modules
 	mock.reRequire("../../../lib/lbt/resources/ResourceCollector");
 	t.context.resourceListCreator = mock.reRequire("../../../lib/processors/resourceListCreator");
@@ -430,6 +433,115 @@ sap.ui.require.preload({
 		{
 			"name": "resources.json",
 			"size": 338
+		}
+	]
+}`);
+});
+
+test.serial("Bundles with subModules should not cause analyzing the same module multiple times", async (t) => {
+	const {
+		resourceListCreator, resourceListCreatorLog, ResourceCollectorLog, XMLTemplateAnalyzerAnalyzeViewSpy
+	} = t.context;
+
+	const myAppManifestJsonResource = resourceFactory.createResource({
+		path: "/resources/my/app/manifest.json",
+		string: JSON.stringify({"sap.app": {"id": "my.app"}})
+	});
+
+	const xmlView1content = "<mvc:View xmlns:mvc=\"sap.ui.core.mvc\"></mvc:View>";
+	const myAppViewResource1 = resourceFactory.createResource({
+		path: "/resources/my/app/View1.view.xml",
+		string: xmlView1content
+	});
+	// Delay getBuffer to cause situation where the xml resource hasn't been analyzed
+	// when processing the bundle subModules.
+	// This should not lead to multiple analysis of the same resource. Instead it should
+	// wait for the pending analysis to be finished
+	sinon.stub(myAppViewResource1, "getBuffer").callsFake(() => {
+		return new Promise((resolve) => {
+			setTimeout(() => {
+				resolve(Buffer.from(xmlView1content));
+			}, 10);
+		});
+	});
+
+	const myAppBundleResource1 = resourceFactory.createResource({
+		path: "/resources/my/app/bundle1.js",
+		string: `//@ui5-bundle my/app/bundle1.js
+sap.ui.require.preload({
+	"my/app/View1.view.xml": '${xmlView1content}'
+});
+`
+	});
+	const myAppBundleResource2 = resourceFactory.createResource({
+		path: "/resources/my/app/bundle2.js",
+		string: `//@ui5-bundle my/app/bundle2.js
+sap.ui.require.preload({
+	"my/app/View1.view.xml": '${xmlView1content}'
+});
+`
+	});
+
+	const resourcesJson = await resourceListCreator({
+		resources: [myAppManifestJsonResource, myAppBundleResource1, myAppBundleResource2, myAppViewResource1]
+	});
+
+	t.is(resourceListCreatorLog.error.callCount, 0);
+	t.is(resourceListCreatorLog.verbose.callCount, 2);
+	t.deepEqual(resourceListCreatorLog.verbose.getCall(0).args,
+		["\tfound 4 resources"]);
+	t.deepEqual(resourceListCreatorLog.verbose.getCall(1).args,
+		["\twriting 'my/app/resources.json'"]);
+
+	t.is(ResourceCollectorLog.error.callCount, 0);
+	t.is(ResourceCollectorLog.warn.callCount, 0);
+	t.is(ResourceCollectorLog.verbose.callCount, 1);
+	t.deepEqual(ResourceCollectorLog.verbose.getCall(0).args,
+		["  configured external resources filters (resources outside the namespace): (none)"]);
+
+	// XMLTemplateAnalyzer should only be called once, which means that the view was only analyzed once
+	t.is(XMLTemplateAnalyzerAnalyzeViewSpy.callCount, 1);
+	t.deepEqual(XMLTemplateAnalyzerAnalyzeViewSpy.getCall(0).args[1]._name,
+		"my/app/View1.view.xml");
+
+	t.is(resourcesJson.length, 1, "One resources.json should be returned");
+	const myAppResourcesJson = resourcesJson[0];
+	t.is(myAppResourcesJson.getPath(), "/resources/my/app/resources.json");
+	const myAppResourcesJsonContent = await myAppResourcesJson.getString();
+	t.is(myAppResourcesJsonContent, `{
+	"_version": "1.1.0",
+	"resources": [
+		{
+			"name": "View1.view.xml",
+			"module": "my/app/View1.view.xml",
+			"size": 49
+		},
+		{
+			"name": "bundle1.js",
+			"module": "my/app/bundle1.js",
+			"size": 139,
+			"merged": true,
+			"included": [
+				"my/app/View1.view.xml"
+			]
+		},
+		{
+			"name": "bundle2.js",
+			"module": "my/app/bundle2.js",
+			"size": 139,
+			"merged": true,
+			"included": [
+				"my/app/View1.view.xml"
+			]
+		},
+		{
+			"name": "manifest.json",
+			"module": "my/app/manifest.json",
+			"size": 27
+		},
+		{
+			"name": "resources.json",
+			"size": 580
 		}
 	]
 }`);
