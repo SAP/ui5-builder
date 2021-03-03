@@ -54,6 +54,8 @@ test.serial("execute module bundler and write results", async (t) => {
 	t.deepEqual(options.bundleDefinition.sections[1].filters, [
 		"some/project/namespace/",
 		"some/project/namespace/**/manifest.json",
+		"some/project/namespace/changes/changes-bundle.json",
+		"some/project/namespace/changes/flexibility-bundle.json",
 		"!some/project/namespace/test/",
 		"sap/ui/core/Core.js"
 	], "Correct filter in second bundle definition section");
@@ -102,6 +104,8 @@ test.serial("execute module bundler and write results without namespace", async 
 	t.deepEqual(options.bundleDefinition.sections[1].filters, [
 		"/",
 		"/**/manifest.json",
+		"/changes/changes-bundle.json",
+		"/changes/flexibility-bundle.json",
 		"!/test/",
 		"sap/ui/core/Core.js"
 	], "Correct filter in second bundle definition section");
@@ -141,6 +145,8 @@ test.serial("execute module bundler and write results in evo mode", async (t) =>
 	t.deepEqual(options.bundleDefinition.sections[1].filters, [
 		"some/project/namespace/",
 		"some/project/namespace/**/manifest.json",
+		"some/project/namespace/changes/changes-bundle.json",
+		"some/project/namespace/changes/flexibility-bundle.json",
 		"!some/project/namespace/test/",
 		"sap/ui/core/Core.js"
 	], "Correct filter in second bundle definition section");

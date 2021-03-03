@@ -78,6 +78,8 @@ test.serial("generateComponentPreload - one namespace", async (t) => {
 						filters: [
 							"my/app/",
 							"my/app/**/manifest.json",
+							"my/app/changes/changes-bundle.json",
+							"my/app/changes/flexibility-bundle.json",
 							"!my/app/test/",
 						],
 						mode: "preload",
@@ -159,6 +161,8 @@ test.serial("generateComponentPreload - one namespace - excludes", async (t) => 
 						filters: [
 							"my/app/",
 							"my/app/**/manifest.json",
+							"my/app/changes/changes-bundle.json",
+							"my/app/changes/flexibility-bundle.json",
 							"!my/app/test/",
 							"!my/app/thirdparty/",
 							"+my/app/thirdparty/NotExcluded.js"
@@ -242,6 +246,8 @@ test.serial("generateComponentPreload - one namespace - excludes w/o namespace",
 						filters: [
 							"my/app/",
 							"my/app/**/manifest.json",
+							"my/app/changes/changes-bundle.json",
+							"my/app/changes/flexibility-bundle.json",
 							"!my/app/test/",
 							"!thirdparty/",
 						],
@@ -329,6 +335,8 @@ test.serial("generateComponentPreload - multiple namespaces - excludes", async (
 						filters: [
 							"my/app1/",
 							"my/app1/**/manifest.json",
+							"my/app1/changes/changes-bundle.json",
+							"my/app1/changes/flexibility-bundle.json",
 							"!my/app1/test/",
 							"!my/app1/thirdparty1/",
 							"+my/app1/thirdparty1/NotExcluded.js",
@@ -368,6 +376,8 @@ test.serial("generateComponentPreload - multiple namespaces - excludes", async (
 						filters: [
 							"my/app2/",
 							"my/app2/**/manifest.json",
+							"my/app2/changes/changes-bundle.json",
+							"my/app2/changes/flexibility-bundle.json",
 							"!my/app2/test/",
 							"!my/app1/thirdparty1/",
 							"!my/app2/thirdparty2/",
@@ -504,6 +514,8 @@ test.serial("generateComponentPreload - nested namespaces - excludes", async (t)
 						filters: [
 							"my/project/component1/",
 							"my/project/component1/**/manifest.json",
+							"my/project/component1/changes/changes-bundle.json",
+							"my/project/component1/changes/flexibility-bundle.json",
 							"!my/project/component1/test/",
 
 							// via excludes config
@@ -543,6 +555,8 @@ test.serial("generateComponentPreload - nested namespaces - excludes", async (t)
 						filters: [
 							"my/project/",
 							"my/project/**/manifest.json",
+							"my/project/changes/changes-bundle.json",
+							"my/project/changes/flexibility-bundle.json",
 							"!my/project/test/",
 
 							// via excludes config
@@ -552,7 +566,9 @@ test.serial("generateComponentPreload - nested namespaces - excludes", async (t)
 
 							// sub-namespaces are excluded
 							"!my/project/component1/",
+							"!my/project/component1/**/manifest.json",
 							"!my/project/component2/",
+							"!my/project/component2/**/manifest.json",
 						],
 						mode: "preload",
 						renderer: false,
@@ -588,6 +604,8 @@ test.serial("generateComponentPreload - nested namespaces - excludes", async (t)
 						filters: [
 							"my/project/component2/",
 							"my/project/component2/**/manifest.json",
+							"my/project/component2/changes/changes-bundle.json",
+							"my/project/component2/changes/flexibility-bundle.json",
 							"!my/project/component2/test/",
 
 							// via excludes config
