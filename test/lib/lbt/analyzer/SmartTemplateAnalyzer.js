@@ -2,7 +2,7 @@ const test = require("ava");
 const SmartTemplateAnalyzer = require("../../../../lib/lbt/analyzer/SmartTemplateAnalyzer");
 const ModuleInfo = require("../../../../lib/lbt/resources/ModuleInfo");
 const sinon = require("sinon");
-const parseJS = require("../../../../lib/lbt/utils/parseJS");
+const parseJS = require("../../../../lib/lbt/utils/parseUtils");
 
 
 test("analyze: with Component.js", async (t) => {

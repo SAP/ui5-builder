@@ -1,7 +1,7 @@
 const test = require("ava");
 const fs = require("fs");
 const path = require("path");
-const {parseJS} = require("../../../../lib/lbt/utils/parseJS");
+const {parseJS} = require("../../../../lib/lbt/utils/parseUtils");
 const ModuleInfo = require("../../../../lib/lbt/resources/ModuleInfo");
 const JSModuleAnalyzer = require("../../../../lib/lbt/analyzer/JSModuleAnalyzer");
 

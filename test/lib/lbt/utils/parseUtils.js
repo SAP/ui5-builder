@@ -1,5 +1,5 @@
 const test = require("ava");
-const {parseJS, Syntax} = require("../../../../lib/lbt/utils/parseJS");
+const {parseJS, Syntax} = require("../../../../lib/lbt/utils/parseUtils");
 
 test("invalid options", (t) => {
 	t.throws(function() {

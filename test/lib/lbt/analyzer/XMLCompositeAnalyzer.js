@@ -1,5 +1,5 @@
 const test = require("ava");
-const {parseJS} = require("../../../../lib/lbt/utils/parseJS");
+const {parseJS} = require("../../../../lib/lbt/utils/parseUtils");
 const sinon = require("sinon");
 const XMLCompositeAnalyzer = require("../../../../lib/lbt/analyzer/XMLCompositeAnalyzer");
 const ModuleInfo = require("../../../../lib/lbt/resources/ModuleInfo");

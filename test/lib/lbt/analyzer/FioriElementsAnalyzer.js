@@ -1,7 +1,7 @@
 const test = require("ava");
 const FioriElementsAnalyzer = require("../../../../lib/lbt/analyzer/FioriElementsAnalyzer");
 const sinon = require("sinon");
-const parseJS = require("../../../../lib/lbt/utils/parseJS");
+const parseJS = require("../../../../lib/lbt/utils/parseUtils");
 
 test("analyze: with Component.js", async (t) => {
 	const emptyPool = {};

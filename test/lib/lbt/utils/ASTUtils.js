@@ -1,5 +1,5 @@
 const test = require("ava");
-const {parseJS} = require("../../../../lib/lbt/utils/parseJS");
+const {parseJS} = require("../../../../lib/lbt/utils/parseUtils");
 const ASTUtils = require("../../../../lib/lbt/utils/ASTUtils");
 
 /*
