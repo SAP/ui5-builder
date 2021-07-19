@@ -735,6 +735,28 @@ test.serial("Build library.j with JSDoc build only", (t) => {
 	});
 });
 
+test.serial("Build library.j with jsdoc flag set", (t) => {
+	const destPath = path.join("test", "tmp", "build", "library.j", "dest");
+	const expectedPath = path.join("test", "expected", "build", "library.j", "dest");
+
+	return builder.build({
+		tree: libraryJTree,
+		destPath,
+		jsdoc: true,
+		excludedTasks: ["*"]
+	}).then(() => {
+		return findFiles(expectedPath);
+	}).then((expectedFiles) => {
+		// Check for all directories and files
+		assert.directoryDeepEqual(destPath, expectedPath);
+
+		// Check for all file contents
+		return checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath);
+	}).then(() => {
+		t.pass();
+	});
+});
+
 test.serial("Build theme.j even without an library", (t) => {
 	const destPath = "./test/tmp/build/theme.j/dest";
 	const expectedPath = "./test/expected/build/theme.j/dest";
