@@ -158,6 +158,7 @@ test.serial("Build", async (t) => {
 	t.deepEqual(appBuildParams.tasks, [
 		"replaceCopyright",
 		"replaceVersion",
+		"replaceBuildtime",
 		"createDebugFiles",
 		"escapeNonAsciiCharacters",
 		"uglify",
