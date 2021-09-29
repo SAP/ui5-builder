@@ -8,4 +8,3 @@ resources:
     paths:
       src: main/src
       test: main/test
-
