@@ -800,15 +800,20 @@ test.serial("Build library.coreBuildtime: replaceBuildtime", (t) => {
 	const destPath = path.join("test", "tmp", "build", "library.coreBuildtime", "dest");
 	const expectedPath = path.join("test", "expected", "build", "sap.ui.core-buildtime", "dest");
 
-	const dateStub = sinon.stub(Date.prototype, "toISOString");
-	dateStub.returns("2022-06-20T16:30:11.123Z");
+	const dateStubs = [
+		sinon.stub(Date.prototype, "getFullYear").returns(2022),
+		sinon.stub(Date.prototype, "getMonth").returns(5),
+		sinon.stub(Date.prototype, "getDate").returns(20),
+		sinon.stub(Date.prototype, "getHours").returns(16),
+		sinon.stub(Date.prototype, "getMinutes").returns(30),
+	];
 
 	return builder.build({
 		tree: libraryCoreBuildtimeTree,
 		destPath,
 		excludedTasks: ["generateLibraryManifest", "generateLibraryPreload"]
 	}).then(() => {
-		dateStub.restore();
+		dateStubs.forEach((stub) => stub.restore());
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
 		// Check for all directories and files
