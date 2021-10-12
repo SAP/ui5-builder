@@ -348,7 +348,7 @@ test.serial("default manifest creation no dependency version", async (t) => {
 		"Couldn't find version for library 'my.lib', project dependency missing?", "error message correct");
 });
 
-test.serial("manifest creation no minUI5Version required", async (t) => {
+test.serial("manifest creation omitMinVersions=true", async (t) => {
 	const {manifestCreator, errorLogStub} = t.context;
 
 	const expectedManifestContent = JSON.stringify({
@@ -408,7 +408,7 @@ test.serial("manifest creation no minUI5Version required", async (t) => {
 		libraryResource,
 		resources: [],
 		options: {
-			minUI5VersionRequired: false
+			omitMinVersions: true
 		}
 	});
 
