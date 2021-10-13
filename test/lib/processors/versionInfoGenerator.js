@@ -247,30 +247,7 @@ test.serial("versionInfoGenerator library infos with dependencies; w/o minVersio
 		}
 	};
 	const libA = {name: "lib.a", version: "1.2.3", libraryManifest: libAManifest};
-	const myDepManifest = {
-		getPath: () => {
-			return "/resources/my/dep/manifest.json";
-		},
-		getString: async () => {
-			return JSON.stringify({
-				"sap.app": {
-					"id": "my.dep",
-					"embeds": []
-				},
-				"sap.ui5": {
-					"dependencies": {
-						"minUI5Version": "",
-						"libs": {}
-					}
-				}
-			});
-		}
-	};
-	const myDep = {name: "my.dep", version: "1.2.3", libraryManifest: myDepManifest};
-	const options = {
-		rootProjectName: "myname", rootProjectVersion: "1.33.7", libraryInfos: [
-			libA, myDep
-		]};
+	const options = {rootProjectName: "myname", rootProjectVersion: "1.33.7", libraryInfos: [libA]};
 	const versionInfos = await versionInfoGenerator({options});
 
 	const resource = versionInfos[0];
@@ -292,16 +269,16 @@ test.serial("versionInfoGenerator library infos with dependencies; w/o minVersio
 						}
 					}
 				}
-			},
-			{
-				"name": "my.dep",
-				"version": "1.2.3",
-				"scmRevision": ""
 			}
 		]
 	};
 	assertVersionInfoContent(t, oExpected, result);
-	t.is(t.context.infoLogStub.callCount, 0);
+	t.is(t.context.infoLogStub.callCount, 1);
+	t.is(t.context.infoLogStub.getCall(0).args[0],
+		"Cannot find dependency 'my.dep' " +
+		"defined in the manifest.json or .library file of project 'lib.a'. " +
+		"This might prevent some UI5 runtime performance optimizations from taking effect. " +
+		"Please double check your project's dependency configuration.");
 	t.is(t.context.warnLogStub.callCount, 0);
 });
 
