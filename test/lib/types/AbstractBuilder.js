@@ -541,13 +541,13 @@ test("enhancePatternWithExcludes", (t) => {
 	const patterns = ["/default/pattern"];
 	const excludes = ["a", "!b", "c", "!d"];
 
-	customBuilder.enhancePatternWithExcludes(patterns, excludes);
+	customBuilder.enhancePatternWithExcludes(patterns, excludes, "/prefix/");
 
 	t.deepEqual(patterns, [
 		"/default/pattern",
-		"!/resources/a",
-		"/resources/b",
-		"!/resources/c",
-		"/resources/d"
+		"!/prefix/a",
+		"/prefix/b",
+		"!/prefix/c",
+		"/prefix/d"
 	]);
 });
