@@ -1690,8 +1690,7 @@ const libraryJTree = {
 		"configuration": {
 			"paths": {
 				"src": "main/src"
-			},
-			"propertiesFileSourceEncoding": "ISO-8859-1"
+			}
 		},
 		"pathMappings": {
 			"/resources/": "main/src"
