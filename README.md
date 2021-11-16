@@ -22,3 +22,4 @@ Please report issues in the main [UI5 Tooling](https://github.com/SAP/ui5-toolin
 
 ## Release History
 See [CHANGELOG.md](CHANGELOG.md).
+.
