@@ -3,6 +3,7 @@ jQuery.sap.registerPreloadedModules({
 "version":"2.0",
 "modules":{
 	"sap/ui/core/Core.js":function(){
+//# sourceMappingURL=Core.js.map
 }
 }});
 sap.ui.requireSync("sap/ui/core/Core");
