@@ -5,7 +5,7 @@ const mock = require("mock-require");
 let Resource = require("../../../../lib/lbt/resources/Resource");
 
 test.serial("Resource: buffer", async (t) => {
-	const readFileStub = sinon.stub().callsArgWith(1, Buffer.from("content"));
+	const readFileStub = sinon.stub().callsArgWith(1, null, Buffer.from("content"));
 	mock("graceful-fs", {
 		readFile: readFileStub
 	});
@@ -24,7 +24,7 @@ test.serial("Resource: buffer", async (t) => {
 });
 
 test.serial("Resource: string", async (t) => {
-	const readFileStub = sinon.stub().callsArgWith(1, "content");
+	const readFileStub = sinon.stub().callsArgWith(1, null, Buffer.from("content"));
 	mock("graceful-fs", {
 		readFile: readFileStub
 	});

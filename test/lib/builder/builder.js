@@ -162,9 +162,8 @@ test.serial("Build", async (t) => {
 		"replaceCopyright",
 		"replaceVersion",
 		"replaceBuildtime",
-		"createDebugFiles",
 		"escapeNonAsciiCharacters",
-		"uglify",
+		"minify",
 		"buildThemes",
 		"generateLibraryManifest",
 		"generateVersionInfo",
@@ -448,7 +447,7 @@ test.serial("Build application.h", (t) => {
 	return builder.build({
 		tree: applicationHTree,
 		destPath,
-		excludedTasks: ["createDebugFiles", "generateComponentPreload",
+		excludedTasks: ["generateComponentPreload",
 			"generateStandaloneAppBundle", "generateVersionInfo"]
 	}).then(() => {
 		return findFiles(expectedPath);
@@ -469,7 +468,7 @@ test.serial("Build application.i", (t) => {
 	return builder.build({
 		tree: applicationITree,
 		destPath,
-		excludedTasks: ["createDebugFiles", "generateStandaloneAppBundle", "generateVersionInfo"]
+		excludedTasks: ["generateStandaloneAppBundle", "generateVersionInfo"]
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
@@ -489,7 +488,7 @@ test.serial("Build application.j", (t) => {
 	return builder.build({
 		tree: applicationJTree,
 		destPath,
-		excludedTasks: ["createDebugFiles", "generateStandaloneAppBundle", "generateVersionInfo"]
+		excludedTasks: ["generateStandaloneAppBundle", "generateVersionInfo"]
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
@@ -534,7 +533,7 @@ test.serial("Build application.j with resources.json and version info", (t) => {
 		],
 		tree: applicationJTree,
 		destPath,
-		excludedTasks: ["createDebugFiles", "generateStandaloneAppBundle"]
+		excludedTasks: ["generateStandaloneAppBundle"]
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
@@ -698,7 +697,7 @@ test.serial("Build library.h with custom bundles and component-preloads", (t) =>
 	return builder.build({
 		tree: libraryHTree,
 		destPath,
-		excludedTasks: ["createDebugFiles", "generateLibraryPreload"]
+		excludedTasks: ["generateLibraryPreload"]
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
@@ -722,7 +721,7 @@ test.serial("Build library.h with custom bundles and component-preloads with res
 		],
 		tree: libraryHTree,
 		destPath,
-		excludedTasks: ["createDebugFiles", "generateLibraryPreload"]
+		excludedTasks: ["generateLibraryPreload"]
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
@@ -743,7 +742,7 @@ test.serial("Build library.i with manifest info taken from .library and library.
 	return builder.build({
 		tree: libraryITree,
 		destPath,
-		excludedTasks: ["createDebugFiles", "generateLibraryPreload", "uglify"]
+		excludedTasks: ["generateLibraryPreload", "minify"]
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
