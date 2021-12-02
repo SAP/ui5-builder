@@ -26,7 +26,7 @@ test("index.js exports all expected modules", (t) => {
 	t.truthy(index.tasks.generateBundle, "Module exported");
 	t.truthy(index.tasks.generateCachebusterInfo, "Module exported");
 	t.truthy(index.tasks.buildThemes, "Module exported");
-	t.truthy(index.tasks.minifier, "Module exported");
+	t.truthy(index.tasks.minify, "Module exported");
 	t.truthy(index.tasks.executeJsdocSdkTransformation, "Module exported");
 	t.truthy(index.tasks.generateApiIndex, "Module exported");
 	t.truthy(index.tasks.generateJsdoc, "Module exported");
