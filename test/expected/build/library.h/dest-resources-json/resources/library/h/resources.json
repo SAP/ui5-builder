@@ -161,6 +161,20 @@
 			"isDebug": true
 		},
 		{
+			"name": "customBundle-dbg.js",
+			"module": "library/h/customBundle.js",
+			"size": 516,
+			"isDebug": true,
+			"merged": true,
+			"included": [
+				"library/h/file.js",
+				"library/h/library.js",
+				"library/h/some.js",
+				"library/h/other.js",
+				"library/h/not.js"
+			]
+		},
+		{
 			"name": "customBundle.js",
 			"module": "library/h/customBundle.js",
 			"size": 629,
@@ -277,7 +291,7 @@
 		},
 		{
 			"name": "resources.json",
-			"size": 6460
+			"size": 6749
 		},
 		{
 			"name": "some-dbg.js",
