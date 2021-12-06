@@ -95,7 +95,7 @@ test.serial("visitResource: ensure proper matching of indicator files", async (t
 	t.is(resourceCollector.components.size, 0, "No prefixes should be added");
 });
 
-test.serial("groupResourcesByComponents: debugBundles", async (t) => {
+test.serial("groupResourcesByComponents: external resources", async (t) => {
 	const resourceCollector = new ResourceCollector();
 	resourceCollector.setExternalResources({
 		"testcomp": ["my/file.js"]
@@ -155,9 +155,7 @@ test.serial("determineResourceDetails: Debug bundle", async (t) => {
 	const enrichWithDependencyInfoStub = sinon.stub(resourceCollector, "enrichWithDependencyInfo").resolves();
 	await resourceCollector.visitResource({getPath: () => "/resources/MyBundle-dbg.js", getSize: async () => 13});
 
-	await resourceCollector.determineResourceDetails({
-		debugBundles: ["MyBundle-dbg.js"]
-	});
+	await resourceCollector.determineResourceDetails({});
 	t.is(enrichWithDependencyInfoStub.callCount, 1, "enrichWithDependencyInfo is called once");
 	t.is(enrichWithDependencyInfoStub.getCall(0).args[0].name, "MyBundle-dbg.js",
 		"enrichWithDependencyInfo is called with debug bundle");
@@ -183,16 +181,15 @@ test.serial("determineResourceDetails: Debug files and non-debug files", async (
 	}));
 
 	await resourceCollector.determineResourceDetails({
-		debugResources: ["**/*-dbg.js"],
-		debugBundles: ["MyBundle-dbg.js"]
+		debugResources: ["**/*-dbg.js"]
 	});
 	t.is(enrichWithDependencyInfoStub.callCount, 3, "enrichWithDependencyInfo is called three times");
-	t.is(enrichWithDependencyInfoStub.getCall(0).args[0].name, "MyBundle-dbg.js",
-		"enrichWithDependencyInfo called with debug bundle");
-	t.is(enrichWithDependencyInfoStub.getCall(1).args[0].name, "mylib/MyControlA.js",
+	t.is(enrichWithDependencyInfoStub.getCall(0).args[0].name, "mylib/MyControlA.js",
 		"enrichWithDependencyInfo called with non-debug control A");
-	t.is(enrichWithDependencyInfoStub.getCall(2).args[0].name, "mylib/MyControlB.js",
+	t.is(enrichWithDependencyInfoStub.getCall(1).args[0].name, "mylib/MyControlB.js",
 		"enrichWithDependencyInfo called with non-debug control B");
+	t.is(enrichWithDependencyInfoStub.getCall(2).args[0].name, "MyBundle-dbg.js",
+		"enrichWithDependencyInfo called with debug bundle");
 
 	t.is(resourceCollector._resources.get("MyBundle-dbg.js").isDebug, true, "MyBundle-dbg is a debug file");
 	t.is(resourceCollector._resources.get("MyBundle-dbg.js").dynRequired, true,
