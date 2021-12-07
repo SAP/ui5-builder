@@ -163,7 +163,7 @@
 		{
 			"name": "customBundle-dbg.js",
 			"module": "library/h/customBundle.js",
-			"size": 516,
+			"size": 500,
 			"isDebug": true,
 			"merged": true,
 			"included": [

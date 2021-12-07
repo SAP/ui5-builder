@@ -1655,7 +1655,7 @@ const libraryHTree = {
 					"filters": [
 						"library/h/some.js",
 						"library/h/library.js",
-						"library/h/file.js",
+						"library/h/fi*.js",
 						"!library/h/components/"
 					],
 					"resolve": false,
@@ -1682,9 +1682,9 @@ const libraryHTree = {
 				"sections": [{
 					"mode": "preload",
 					"filters": [
-						"library/h/some-dbg.js",
-						"library/h/library-dbg.js",
-						"library/h/file-dbg.js",
+						"library/h/some.js",
+						"library/h/library.js",
+						"library/h/fi*.js",
 						"!library/h/components/"
 					],
 					"resolve": false,
@@ -1692,7 +1692,7 @@ const libraryHTree = {
 				}, {
 					"mode": "raw",
 					"filters": [
-						"library/h/not-dbg.js"
+						"library/h/not.js"
 					],
 					"resolve": true,
 					"declareModules": false,
