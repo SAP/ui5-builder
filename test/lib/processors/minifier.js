@@ -91,8 +91,12 @@ test4();`;
 //# sourceMappingURL=test2.fragment.js.map`;
 	const expectedMinified3 = `function test3(t){var o=t;console.log(o)}test3();
 //# sourceMappingURL=test3.designtime.js.map`;
-	const expectedMinified4 = `function test4(t){var o=t;console.log(o)}test4();
-//# sourceMappingURL=test4.support.js.map`;
+	const expectedMinified4 = `
+function test4(paramA) {
+	var variableA = paramA;
+	console.log(variableA);
+}
+test4();`; // Excluded from minification
 
 	const expectedSourceMap1 =
 		`{"version":3,"sources":["test1-dbg.controller.js"],"names":["test1","paramA","variableA","console","log"],` +
@@ -103,9 +107,6 @@ test4();`;
 	const expectedSourceMap3 =
 		`{"version":3,"sources":["test3-dbg.designtime.js"],"names":["test3","paramA","variableA","console","log"],` +
 		`"mappings":"AACA,SAASA,MAAMC,GACd,IAAIC,EAAYD,EAChBE,QAAQC,IAAIF,GAEbF","file":"test3.designtime.js"}`;
-	const expectedSourceMap4 =
-		`{"version":3,"sources":["test4-dbg.support.js"],"names":["test4","paramA","variableA","console","log"],` +
-		`"mappings":"AACA,SAASA,MAAMC,GACd,IAAIC,EAAYD,EAChBE,QAAQC,IAAIF,GAEbF","file":"test4.support.js"}`;
 
 	t.deepEqual(await resources[0].resource.getPath(), "/test1.controller.js",
 		"Correct resource path for minified content of resource 1");
@@ -146,10 +147,6 @@ test4();`;
 	t.deepEqual(await resources[3].dbgResource.getPath(), "/test4-dbg.support.js",
 		"Correct resource path for debug content of resource 4");
 	t.deepEqual(await resources[3].dbgResource.getString(), content4, "Correct debug content for resource 4");
-	t.deepEqual(await resources[3].sourceMapResource.getPath(), "/test4.support.js.map",
-		"Correct resource path for source map content of resource 4");
-	t.deepEqual(await resources[3].sourceMapResource.getString(), expectedSourceMap4,
-		"Correct source map content for resource 4");
 });
 
 test("Different copyright", async (t) => {
