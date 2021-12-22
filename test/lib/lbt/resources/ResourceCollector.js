@@ -149,23 +149,60 @@ test.serial("determineResourceDetails: view.xml", async (t) => {
 	t.is(enrichWithDependencyInfoStub.getCall(0).args[0].name, "mylib/my.view.xml", "is called with view");
 });
 
-test.serial("determineResourceDetails: Debug bundle", async (t) => {
+test.serial("determineResourceDetails: Debug bundle (without non-debug variant)", async (t) => {
 	const resourceCollector = new ResourceCollector();
 
 	const enrichWithDependencyInfoStub = sinon.stub(resourceCollector, "enrichWithDependencyInfo").resolves();
 	await resourceCollector.visitResource({getPath: () => "/resources/MyBundle-dbg.js", getSize: async () => 13});
 
-	await resourceCollector.determineResourceDetails({});
+	await resourceCollector.determineResourceDetails({
+		debugResources: ["**/*-dbg.js"], // MyBundle-dbg.js should be marked as "isDebug"
+	});
+
 	t.is(enrichWithDependencyInfoStub.callCount, 1, "enrichWithDependencyInfo is called once");
 	t.is(enrichWithDependencyInfoStub.getCall(0).args[0].name, "MyBundle-dbg.js",
 		"enrichWithDependencyInfo is called with debug bundle");
+});
+
+test.serial("determineResourceDetails: Debug bundle (with non-debug variant)", async (t) => {
+	const resourceCollector = new ResourceCollector();
+
+	const enrichWithDependencyInfoStub = sinon.stub(resourceCollector, "enrichWithDependencyInfo")
+		.onFirstCall().callsFake(async (resourceInfo) => {
+			resourceInfo.included = new Set(["SomeModule.js"]);
+			resourceInfo.required = new Set(["Boot.js"]);
+		})
+		.onSecondCall().callsFake(async (resourceInfo) => {
+			resourceInfo.required = new Set(["Boot.js"]);
+		});
+	await resourceCollector.visitResource({getPath: () => "/resources/MyBundle-dbg.js", getSize: async () => 13});
+	await resourceCollector.visitResource({getPath: () => "/resources/MyBundle.js", getSize: async () => 13});
+
+	await resourceCollector.determineResourceDetails({
+		debugResources: ["**/*-dbg.js"], // MyBundle-dbg.js should be marked as "isDebug"
+	});
+	t.is(enrichWithDependencyInfoStub.callCount, 2, "enrichWithDependencyInfo is called twice");
+	t.is(enrichWithDependencyInfoStub.getCall(0).args[0].name, "MyBundle.js",
+		"enrichWithDependencyInfo is called with non-debug bundle first");
+	t.is(enrichWithDependencyInfoStub.getCall(1).args[0].name, "MyBundle-dbg.js",
+		"enrichWithDependencyInfo is called with debug bundle on second run");
+
+	const bundleInfo = resourceCollector._resources.get("MyBundle.js");
+	t.deepEqual(bundleInfo.included, new Set(["SomeModule.js"]));
+	t.deepEqual(bundleInfo.required, new Set(["Boot.js"]));
+	t.is(bundleInfo.isDebug, false);
+
+	const debugBundleInfo = resourceCollector._resources.get("MyBundle-dbg.js");
+	t.is(debugBundleInfo.included, null);
+	t.deepEqual(debugBundleInfo.required, new Set(["Boot.js"]));
+	t.is(debugBundleInfo.isDebug, true);
 });
 
 test.serial("determineResourceDetails: Debug files and non-debug files", async (t) => {
 	const resourceCollector = new ResourceCollector();
 
 	const enrichWithDependencyInfoStub = sinon.stub(resourceCollector, "enrichWithDependencyInfo")
-		.callsFake((resourceInfo) => {
+		.callsFake(async (resourceInfo) => {
 			// Simulate enriching resource info with dependency info to test whether it gets shared
 			// with the dbg resource later on
 			resourceInfo.dynRequired = true;
