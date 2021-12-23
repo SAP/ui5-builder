@@ -55,12 +55,6 @@ function test3(paramA) {
 	console.log(variableA);
 }
 test3();`;
-	const content4 = `
-function test4(paramA) {
-	var variableA = paramA;
-	console.log(variableA);
-}
-test4();`;
 
 	const testResources = [
 		resourceFactory.createResource({
@@ -74,10 +68,6 @@ test4();`;
 		resourceFactory.createResource({
 			path: "/test3.designtime.js",
 			string: content3
-		}),
-		resourceFactory.createResource({
-			path: "/test4.support.js",
-			string: content4
 		})
 	];
 
@@ -91,12 +81,6 @@ test4();`;
 //# sourceMappingURL=test2.fragment.js.map`;
 	const expectedMinified3 = `function test3(t){var o=t;console.log(o)}test3();
 //# sourceMappingURL=test3.designtime.js.map`;
-	const expectedMinified4 = `
-function test4(paramA) {
-	var variableA = paramA;
-	console.log(variableA);
-}
-test4();`; // Excluded from minification
 
 	const expectedSourceMap1 =
 		`{"version":3,"sources":["test1-dbg.controller.js"],"names":["test1","paramA","variableA","console","log"],` +
@@ -108,45 +92,38 @@ test4();`; // Excluded from minification
 		`{"version":3,"sources":["test3-dbg.designtime.js"],"names":["test3","paramA","variableA","console","log"],` +
 		`"mappings":"AACA,SAASA,MAAMC,GACd,IAAIC,EAAYD,EAChBE,QAAQC,IAAIF,GAEbF","file":"test3.designtime.js"}`;
 
-	t.deepEqual(await resources[0].resource.getPath(), "/test1.controller.js",
+	t.deepEqual(resources[0].resource.getPath(), "/test1.controller.js",
 		"Correct resource path for minified content of resource 1");
 	t.deepEqual(await resources[0].resource.getString(), expectedMinified1, "Correct minified content for resource 1");
-	t.deepEqual(await resources[0].dbgResource.getPath(), "/test1-dbg.controller.js",
+	t.deepEqual(resources[0].dbgResource.getPath(), "/test1-dbg.controller.js",
 		"Correct resource path for debug content of resource 1");
 	t.deepEqual(await resources[0].dbgResource.getString(), content1, "Correct debug content for resource 1");
-	t.deepEqual(await resources[0].sourceMapResource.getPath(), "/test1.controller.js.map",
+	t.deepEqual(resources[0].sourceMapResource.getPath(), "/test1.controller.js.map",
 		"Correct resource path for source map content of resource 1");
 	t.deepEqual(await resources[0].sourceMapResource.getString(), expectedSourceMap1,
 		"Correct source map content for resource 1");
 
-	t.deepEqual(await resources[1].resource.getPath(), "/test2.fragment.js",
+	t.deepEqual(resources[1].resource.getPath(), "/test2.fragment.js",
 		"Correct resource path for minified content of resource 2");
 	t.deepEqual(await resources[1].resource.getString(), expectedMinified2, "Correct minified content for resource 2");
-	t.deepEqual(await resources[1].dbgResource.getPath(), "/test2-dbg.fragment.js",
+	t.deepEqual(resources[1].dbgResource.getPath(), "/test2-dbg.fragment.js",
 		"Correct resource path for debug content of resource 2");
 	t.deepEqual(await resources[1].dbgResource.getString(), content2, "Correct debug content for resource 2");
-	t.deepEqual(await resources[1].sourceMapResource.getPath(), "/test2.fragment.js.map",
+	t.deepEqual(resources[1].sourceMapResource.getPath(), "/test2.fragment.js.map",
 		"Correct resource path for source map content of resource 2");
 	t.deepEqual(await resources[1].sourceMapResource.getString(), expectedSourceMap2,
 		"Correct source map content for resource 2");
 
-	t.deepEqual(await resources[2].resource.getPath(), "/test3.designtime.js",
+	t.deepEqual(resources[2].resource.getPath(), "/test3.designtime.js",
 		"Correct resource path for minified content of resource 3");
 	t.deepEqual(await resources[2].resource.getString(), expectedMinified3, "Correct minified content for resource 3");
-	t.deepEqual(await resources[2].dbgResource.getPath(), "/test3-dbg.designtime.js",
+	t.deepEqual(resources[2].dbgResource.getPath(), "/test3-dbg.designtime.js",
 		"Correct resource path for debug content of resource 3");
 	t.deepEqual(await resources[2].dbgResource.getString(), content3, "Correct debug content for resource 3");
-	t.deepEqual(await resources[2].sourceMapResource.getPath(), "/test3.designtime.js.map",
+	t.deepEqual(resources[2].sourceMapResource.getPath(), "/test3.designtime.js.map",
 		"Correct resource path for source map content of resource 3");
 	t.deepEqual(await resources[2].sourceMapResource.getString(), expectedSourceMap3,
 		"Correct source map content for resource 3");
-
-	t.deepEqual(await resources[3].resource.getPath(), "/test4.support.js",
-		"Correct resource path for minified content of resource 4");
-	t.deepEqual(await resources[3].resource.getString(), expectedMinified4, "Correct minified content for resource 4");
-	t.deepEqual(await resources[3].dbgResource.getPath(), "/test4-dbg.support.js",
-		"Correct resource path for debug content of resource 4");
-	t.deepEqual(await resources[3].dbgResource.getString(), content4, "Correct debug content for resource 4");
 });
 
 test("Different copyright", async (t) => {
