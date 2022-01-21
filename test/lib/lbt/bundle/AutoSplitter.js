@@ -54,7 +54,7 @@ test("integration: AutoSplitter with numberOfParts 1", async (t) => {
 		defaultFileTypes: [".js", ".fragment.xml", ".view.xml", ".properties", ".json"],
 		sections: [{
 			mode: "preload",
-			filters: ["a.js", "b.json"],
+			filters: ["x.view.xml", "c.properties", "b.json"], // intentionally unsorted
 			resolve: false,
 			resolveConditional: false,
 			renderer: false
@@ -66,7 +66,7 @@ test("integration: AutoSplitter with numberOfParts 1", async (t) => {
 		name: `Component-preload-0.js`,
 		sections: [{
 			mode: "preload",
-			filters: ["a.js", "b.json"],
+			filters: ["b.json", "c.properties", "x.view.xml"], // preload section modules should be sorted
 			name: undefined
 		}]
 	});
