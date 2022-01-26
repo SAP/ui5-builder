@@ -99,7 +99,7 @@ test.serial("generateComponentPreload - one namespace", async (t) => {
 
 	t.is(comboByGlob.callCount, 1,
 		"combo.byGlob should have been called once");
-	t.deepEqual(comboByGlob.getCall(0).args, ["/resources/**/*.{js,json,xml,html,properties,library}"],
+	t.deepEqual(comboByGlob.getCall(0).args, ["/resources/**/*.{js,json,xml,html,properties,library,js.map}"],
 		"combo.byGlob should have been called with expected pattern");
 
 	t.is(ReaderCollectionPrioritizedStub.callCount, 1,
@@ -184,7 +184,7 @@ test.serial("generateComponentPreload - one namespace - excludes", async (t) => 
 
 	t.is(comboByGlob.callCount, 1,
 		"combo.byGlob should have been called once");
-	t.deepEqual(comboByGlob.getCall(0).args, ["/resources/**/*.{js,json,xml,html,properties,library}"],
+	t.deepEqual(comboByGlob.getCall(0).args, ["/resources/**/*.{js,json,xml,html,properties,library,js.map}"],
 		"combo.byGlob should have been called with expected pattern");
 
 	t.is(ReaderCollectionPrioritizedStub.callCount, 1,
@@ -268,7 +268,7 @@ test.serial("generateComponentPreload - one namespace - excludes w/o namespace",
 
 	t.is(comboByGlob.callCount, 1,
 		"combo.byGlob should have been called once");
-	t.deepEqual(comboByGlob.getCall(0).args, ["/resources/**/*.{js,json,xml,html,properties,library}"],
+	t.deepEqual(comboByGlob.getCall(0).args, ["/resources/**/*.{js,json,xml,html,properties,library,js.map}"],
 		"combo.byGlob should have been called with expected pattern");
 
 	t.is(ReaderCollectionPrioritizedStub.callCount, 1,
@@ -400,7 +400,7 @@ test.serial("generateComponentPreload - multiple namespaces - excludes", async (
 
 	t.is(comboByGlob.callCount, 1,
 		"combo.byGlob should have been called once");
-	t.deepEqual(comboByGlob.getCall(0).args, ["/resources/**/*.{js,json,xml,html,properties,library}"],
+	t.deepEqual(comboByGlob.getCall(0).args, ["/resources/**/*.{js,json,xml,html,properties,library,js.map}"],
 		"combo.byGlob should have been called with expected pattern");
 
 	t.is(ReaderCollectionPrioritizedStub.callCount, 1,
