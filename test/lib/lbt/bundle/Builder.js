@@ -1423,3 +1423,71 @@ sap.ui.predefine("jquery.sap.global", ["sap/base/util/now","sap/base/util/Versio
 	};
 	t.deepEqual(indexMap.sections[0].map, expectedSourceMap, "Section contains correct map");
 });
+
+test("rewriteDefine (without moduleSourceMap)", async (t) => {
+	const {rewriteDefine} = Builder.__localFunctions__;
+
+	const {content, sourceMap} = await rewriteDefine({
+		moduleName: "my/test/module.js",
+		moduleContent: "sap.ui.define([],(()=>1));",
+		moduleSourceMap: false
+	});
+
+	t.is(content, `sap.ui.predefine("my/test/module", [],(()=>1));`);
+	t.is(sourceMap, null);
+});
+
+test("rewriteDefine (with moduleSourceMap)", async (t) => {
+	const {rewriteDefine} = Builder.__localFunctions__;
+	const {encode: encodeMappings, decode: decodeMappings} = require("sourcemap-codec");
+
+	const inputMappings = [
+		[
+			[
+				0, 0, 0, 0, 0
+			],
+			[
+				4, 0, 0, 4, 1
+			],
+			[
+				7, 0, 0, 7, 2
+			],
+			[
+				14, 0, 0, 14
+			],
+			[
+				18, 0, 0, 18
+			],
+			[
+				22, 0, 1, 8
+			]
+		]
+	];
+
+	const {content, sourceMap} = await rewriteDefine({
+		moduleName: "my/test/module.js",
+		moduleContent: "sap.ui.define([],(()=>1));",
+		moduleSourceMap: JSON.stringify({
+			"version": 3,
+			"file": "module.js",
+			"sources": ["my/test/module-dbg.js"],
+			"names": ["sap", "ui", "define"],
+			"mappings": encodeMappings(inputMappings)
+		})
+	});
+
+	const expectedMappings = JSON.parse(JSON.stringify(inputMappings));
+	const expectedColumnDiff = `"my/test/module", `.length + "pre".length;
+	expectedMappings[0][3][0] += expectedColumnDiff;
+	expectedMappings[0][4][0] += expectedColumnDiff;
+	expectedMappings[0][5][0] += expectedColumnDiff;
+
+	t.is(content, `sap.ui.predefine("my/test/module", [],(()=>1));`);
+	t.deepEqual(decodeMappings(sourceMap.mappings), expectedMappings);
+	t.deepEqual(sourceMap, {
+		"version": 3,
+		"sources": ["my/test/module-dbg.js"],
+		"names": ["sap", "ui", "define"],
+		"mappings": encodeMappings(expectedMappings)
+	});
+});
