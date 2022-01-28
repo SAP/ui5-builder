@@ -1,13 +1,11 @@
 //@ui5-bundle library/ø/library-preload.support.js
-sap.ui.require.preload({
-	"library/ø/rules/MyControl.support.js":function(){
 /*!
  * Some fancy copyright
  */
 /**
  * Defines support rules
  */
- sap.ui.define(['sap/ui/support/library', 'sap/base/Log'],
+ sap.ui.predefine("library/ø/rules/MyControl.support", ['sap/ui/support/library', 'sap/base/Log'],
  function(SupportLib, Log) {
 	 'use strict';
 
@@ -37,5 +35,3 @@ sap.ui.require.preload({
 	 ];
 
  }, true);
-}
-});
