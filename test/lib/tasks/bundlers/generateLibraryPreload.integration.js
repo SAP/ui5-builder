@@ -46,7 +46,7 @@ test("integration: build library.d with library preload", async (t) => {
 		assert.directoryDeepEqual(destPath, expectedPath);
 
 		// Check for all file contents
-		t.deepEqual(expectedFiles.length, 5, "4 files are expected");
+		t.deepEqual(expectedFiles.length, 5, "5 files are expected");
 		expectedFiles.forEach((expectedFile) => {
 			const relativeFile = path.relative(expectedPath, expectedFile);
 			const destFile = path.join(destPath, relativeFile);
