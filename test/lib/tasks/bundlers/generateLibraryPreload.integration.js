@@ -99,7 +99,7 @@ test("integration: build sap.ui.core with library preload", async (t) => {
 		assert.directoryDeepEqual(destPath, expectedPath);
 
 		// Check for all file contents
-		t.deepEqual(expectedFiles.length, 20, "17 files are expected");
+		t.deepEqual(expectedFiles.length, 20, "20 files are expected");
 		expectedFiles.forEach((expectedFile) => {
 			const relativeFile = path.relative(expectedPath, expectedFile);
 			const destFile = path.join(destPath, relativeFile);
@@ -162,7 +162,8 @@ test("integration: generateLibraryPreload", async (t) => {
 
 	const writtenResources = await writer.byGlob(["**/**"]);
 	t.deepEqual(writtenResources.map((r) => r.getPath()).sort(), [
-		"/resources/my/test/lib/library-preload.js"
+		"/resources/my/test/lib/library-preload.js",
+		"/resources/my/test/lib/library-preload.js.map"
 	], "Expected preload files should be created");
 
 	const libraryPreload = await writer.byPath("/resources/my/test/lib/library-preload.js");
@@ -172,6 +173,12 @@ test("integration: generateLibraryPreload", async (t) => {
 		"library-preload should be a bundle");
 	t.regex(libraryPreloadContent, new RegExp("my/test/lib/library"),
 		"library-preload should include library.js module");
+
+	const libraryPreloadSourceMap = await writer.byPath("/resources/my/test/lib/library-preload.js.map");
+	const libraryPreloadSourceMapContent = await libraryPreloadSourceMap.getString();
+	t.notThrows(() => {
+		JSON.parse(libraryPreloadSourceMapContent);
+	}, "Source map file should have valid JSON content");
 });
 
 test("integration: generateLibraryPreload with designtime and support files", async (t) => {
@@ -222,8 +229,12 @@ test("integration: generateLibraryPreload with designtime and support files", as
 	const writtenResources = await writer.byGlob(["**/**"]);
 	t.deepEqual(writtenResources.map((r) => r.getPath()).sort(), [
 		"/resources/my/test/lib/designtime/library-preload.designtime.js",
+		"/resources/my/test/lib/designtime/library-preload.designtime.js.map",
 		"/resources/my/test/lib/library-preload.js",
-		"/resources/my/test/lib/library-preload.support.js"
+		"/resources/my/test/lib/library-preload.js.map",
+
+		// TODO: Create source maps for bundles with "optimize=false"
+		"/resources/my/test/lib/library-preload.support.js",
 	], "Expected preload files should be created");
 
 	const libraryPreload = await writer.byPath("/resources/my/test/lib/library-preload.js");
@@ -253,4 +264,17 @@ test("integration: generateLibraryPreload with designtime and support files", as
 		"library-preload.support should include some.support module");
 	t.regex(supportPreloadContent, new RegExp("my/test/lib/support/foo\\.support"),
 		"library-preload.support should include support/foo.support module");
+
+	const libraryPreloadSourceMap = await writer.byPath("/resources/my/test/lib/library-preload.js.map");
+	const libraryPreloadSourceMapContent = await libraryPreloadSourceMap.getString();
+	t.notThrows(() => {
+		JSON.parse(libraryPreloadSourceMapContent);
+	}, "Source map file should have valid JSON content");
+
+	const designtimePreloadSourceMap =
+		await writer.byPath("/resources/my/test/lib/designtime/library-preload.designtime.js.map");
+	const designtimePreloadSourceMapContent = await designtimePreloadSourceMap.getString();
+	t.notThrows(() => {
+		JSON.parse(designtimePreloadSourceMapContent);
+	}, "Source map file should have valid JSON content");
 });
