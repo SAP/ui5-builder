@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 const test = require("ava");
 const sinon = require("sinon");
 const mock = require("mock-require");
