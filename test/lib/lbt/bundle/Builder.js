@@ -103,7 +103,8 @@ test("integration: createBundle with exposedGlobals", async (t) => {
 	t.deepEqual(oResult.name, "library-preload.js");
 	const expectedContent = `//@ui5-bundle library-preload.js
 sap.ui.require.preload({
-	"a.js":function(){function One(){return 1;}
+	"a.js":function(){
+function One(){return 1;}
 this.One=One;
 }
 },"preload-section");
@@ -167,7 +168,8 @@ test("integration: createBundle EVOBundleFormat (ui5loader.js)", async (t) => {
 	const expectedContent = `//@ui5-bundle Component-preload.js
 window["sap-ui-optimized"] = true;
 sap.ui.require.preload({
-	"jquery.sap.global-dbg.js":function(){sap.ui.define([], function(){return {};});
+	"jquery.sap.global-dbg.js":function(){
+sap.ui.define([], function(){return {};});
 }
 },"preload-section");
 //@ui5-bundle-raw-include myModule.js
@@ -285,6 +287,7 @@ sap.ui.require.preload({
 //@ui5-bundle-raw-include myRawModule.js
 (function(){window.mine = {};}());
 sap.ui.requireSync("ui5loader");
+//# sourceMappingURL=Component-preload.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "EVOBundleFormat should start with optimization and " +
 		"should contain:" +
@@ -477,6 +480,7 @@ sap.ui.getCore().boot && sap.ui.getCore().boot();
 } catch(oError) {
 if (oError.name != "Restart") { throw oError; }
 }
+//# sourceMappingURL=bootstrap.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "EVOBundleFormat should start with optimization and " +
 		"should contain:" +
@@ -539,7 +543,8 @@ jQuery.sap.registerPreloadedModules({
 "name":"preload-section",
 "version":"2.0",
 "modules":{
-	"jquery.sap.global-dbg.js":function(){sap.ui.define([], function(){/* comment */ return {};});
+	"jquery.sap.global-dbg.js":function(){
+sap.ui.define([], function(){/* comment */ return {};});
 }
 }});
 //@ui5-bundle-raw-include myModule.js
@@ -624,6 +629,7 @@ sap.ui.getCore().boot && sap.ui.getCore().boot();
 } catch(oError) {
 if (oError.name != "Restart") { throw oError; }
 }
+//# sourceMappingURL=bootstrap.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "EVOBundleFormat should start with optimization and " +
 		"should contain:" +
@@ -720,7 +726,8 @@ test("integration: createBundle with bundleInfo", async (t) => {
 	t.deepEqual(oResult.name, "library-preload.js");
 	const expectedContent = `//@ui5-bundle library-preload.js
 sap.ui.require.preload({
-	"a.js":function(){function One(){return 1;}
+	"a.js":function(){
+function One(){return 1;}
 this.One=One;
 }
 },"preload-section");

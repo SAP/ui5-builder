@@ -70,8 +70,8 @@ test.serial("Builder returns single bundle", async (t) => {
 		}
 	});
 
-	t.deepEqual(outputResources, [expectedOutputResource]);
-	t.is(outputResources[0], expectedOutputResource);
+	t.deepEqual(outputResources, [{bundle: expectedOutputResource}]);
+	t.is(outputResources[0].bundle, expectedOutputResource);
 
 	t.is(LocatorResourcePool.callCount, 1, "LocatorResourcePool should be created once");
 	t.true(LocatorResourcePool.calledWithNew());
@@ -155,16 +155,20 @@ test.serial("Builder returns multiple bundles", async (t) => {
 
 	const expectedOutputResources = [
 		{
-			"output": "resource 1"
+			bundle: {
+				"output": "resource 1"
+			},
 		},
 		undefined,
 		{
-			"output": "resource 2"
+			bundle: {
+				"output": "resource 2"
+			}
 		},
 		undefined
 	];
-	Resource.onFirstCall().returns(expectedOutputResources[0]);
-	Resource.onSecondCall().returns(expectedOutputResources[2]);
+	Resource.onFirstCall().returns(expectedOutputResources[0].bundle);
+	Resource.onSecondCall().returns(expectedOutputResources[2].bundle);
 
 	const outputResources = await processor({
 		resources,
@@ -175,9 +179,9 @@ test.serial("Builder returns multiple bundles", async (t) => {
 	});
 
 	t.deepEqual(outputResources, expectedOutputResources);
-	t.is(outputResources[0], expectedOutputResources[0]);
+	t.is(outputResources[0].bundle, expectedOutputResources[0].bundle);
 	t.is(outputResources[1], expectedOutputResources[1]);
-	t.is(outputResources[2], expectedOutputResources[2]);
+	t.is(outputResources[2].bundle, expectedOutputResources[2].bundle);
 
 	t.is(LocatorResourcePool.callCount, 1, "LocatorResourcePool should be created once");
 	t.true(LocatorResourcePool.calledWithNew());
@@ -263,8 +267,8 @@ test.serial("bundleOptions default (no options passed)", async (t) => {
 		}
 	});
 
-	t.deepEqual(outputResources, [expectedOutputResource]);
-	t.is(outputResources[0], expectedOutputResource);
+	t.deepEqual(outputResources, [{bundle: expectedOutputResource}]);
+	t.is(outputResources[0].bundle, expectedOutputResource);
 
 	t.is(LocatorResourcePool.callCount, 1, "LocatorResourcePool should be created once");
 	t.true(LocatorResourcePool.calledWithNew());
@@ -464,8 +468,8 @@ test.serial("Passes ignoreMissingModules bundleOption to LocatorResourcePool", a
 		}
 	});
 
-	t.deepEqual(outputResources, [expectedOutputResource]);
-	t.is(outputResources[0], expectedOutputResource);
+	t.deepEqual(outputResources, [{bundle: expectedOutputResource}]);
+	t.is(outputResources[0].bundle, expectedOutputResource);
 
 	t.is(LocatorResourcePool.callCount, 1, "LocatorResourcePool should be created once");
 	t.true(LocatorResourcePool.calledWithNew());
