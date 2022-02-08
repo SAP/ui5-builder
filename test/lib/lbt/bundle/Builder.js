@@ -1330,6 +1330,185 @@ sap.ui.predefine("jquery.sap.global", ["sap/base/util/now","sap/base/util/Versio
 	t.deepEqual(indexMap.sections[1].map, expectedSourceMap2, "Section two contains correct map");
 });
 
+test("integration: createBundle using predefine calls with source maps and multiple sources 2", async (t) => {
+	const pool = new ResourcePool();
+
+	// jquery.sap.global-dbg.js:
+	// /*!
+	//  * OpenUI5
+	//  * (c) Copyright 2009-2021 SAP SE or an SAP affiliate company.
+	//  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+	//  */
+	// /*global XMLHttpRequest, localStorage, alert, document */
+	// /**
+	//  * @namespace jQuery
+	//  * @public
+	//  */
+	// sap.ui.define([
+	// 	// new sap/base/* modules
+	// 	"sap/base/util/now", "sap/base/util/Version", "sap/base/assert", "sap/base/Log"
+	// ], function(now, Version, assert, Log) {
+	// 	return now;
+	// });
+
+	const originalGlobalSourceMap = {
+		"version": 3,
+		"sources":
+		[
+			"jquery.sap.global-dbg.js"
+		],
+		"names":
+		[
+			"sap",
+			"ui",
+			"define",
+			"now",
+			"Version",
+			"assert",
+			"Log"
+		],
+		"mappings": ";;;;;AAYAA,IAAIC,GAAGC,OAAO,CAEb,oBAAqB,wBAAyB,kBAAmB,gBAC/D,SAASC,EAAKC,EAASC,EAAQC,GACjC,OAAOH",
+		"file": "jquery.sap.global.js"
+	};
+	pool.addResource({
+		name: "jquery.sap.global.js.map",
+		buffer: async () => JSON.stringify(originalGlobalSourceMap)
+	});
+	pool.addResource({
+		name: "jquery.sap.global.js",
+		buffer: async () => `/*!
+ * OpenUI5
+ * (c) Copyright 2009-2021 SAP SE or an SAP affiliate company.
+ * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+ */
+sap.ui.define(["sap/base/util/now","sap/base/util/Version","sap/base/assert","sap/base/Log"],function(s,a,e,i){return s});
+//# sourceMappingURL=jquery.sap.global.js.map`
+	});
+
+
+	pool.addResource({
+		name: "jquery.sap.xom.js",
+		buffer: async () => `/*!
+ * OpenUI5
+ * (c) Copyright 2009-2021 SAP SE or an SAP affiliate company.
+ * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+ */
+sap.ui.define(function() {
+	console.log("Test");
+});
+`
+	});
+
+	const bundleDefinition = {
+		name: `Component-preload.js`,
+		defaultFileTypes: [".js"],
+		sections: [{
+			mode: "preload",
+			name: "preload-section",
+			filters: [
+				"jquery.sap.global.js",
+				"jquery.sap.xom.js"
+			]
+		}]
+	};
+
+	const builder = new Builder(pool);
+	const oResult = await builder.createBundle(bundleDefinition, {
+		usePredefineCalls: true,
+		numberOfParts: 1,
+		decorateBootstrapModule: true,
+		optimize: false
+	});
+	t.deepEqual(oResult.name, "Component-preload.js");
+	const expectedContent = `//@ui5-bundle Component-preload.js
+/*!
+ * OpenUI5
+ * (c) Copyright 2009-2021 SAP SE or an SAP affiliate company.
+ * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+ */
+sap.ui.predefine("jquery.sap.global", ["sap/base/util/now","sap/base/util/Version","sap/base/assert","sap/base/Log"],function(s,a,e,i){return s});
+/*!
+ * OpenUI5
+ * (c) Copyright 2009-2021 SAP SE or an SAP affiliate company.
+ * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+ */
+sap.ui.predefine("jquery.sap.xom", function() {
+	console.log("Test");
+});
+//# sourceMappingURL=Component-preload.js.map
+`;
+	t.deepEqual(oResult.content, expectedContent, "Correct bundle content");
+	t.deepEqual(oResult.bundleInfo.name, "Component-preload.js", "bundle info name is correct");
+	t.deepEqual(oResult.bundleInfo.size, expectedContent.length, "bundle info size is correct");
+	t.deepEqual(oResult.bundleInfo.subModules,
+		[
+			"jquery.sap.global.js",
+			"jquery.sap.xom.js",
+		], "bundle info subModules are correct");
+	const indexMap = JSON.parse(oResult.sourceMap);
+	t.is(indexMap.sections.length, 2, "Bundle index source map contains two sections");
+	t.deepEqual(indexMap.sections[0].offset, {
+		line: 1,
+		column: 0
+	}, "Section one has correct offset");
+
+	const expectedSourceMap1 = {
+		"version": 3,
+		"sources":
+		[
+			"jquery.sap.dom-dbg.js"
+		],
+		"names":
+		[
+			"sap",
+			"ui",
+			"define",
+			"jQuery",
+			"domContainsOrEquals",
+			"fnSyncStyleClass",
+			"domGetOwnerWindow",
+			"domGetScrollbarSize",
+			"domDenormalizeScrollLeftRTL",
+			"domDenormalizeScrollBeginRTL",
+			"domUnitsRem",
+			"domById",
+			"sId",
+			"oWindow",
+			"window",
+			"document",
+			"getElementById"
+		],
+		"mappings": "AAAA;;;;;AAOAA,IAAIC,GAAGC,4BAAO,CACb,oBAAqB,8BACrB,6BAA8B,4BAA6B,8BAC3D,sCAAuC,uCACvC,uBAAwB,yBACxB,8BAA+B,2BAA4B,sCAC3D,8BAA+B,+BAAgC,oCAC/D,yBAA0B,iCAAkC,8BAC5D,gCAAiC,kCAAmC,mCAAoC,+BACtG,SAASC,OAAQC,EAAqBC,EAAkBC,EAC1DC,EAAqBC,EAA6BC,EAA8BC,GAiBhF,aAYAP,OAAOH,IAAIW,QAAU,SAASA,EAAQC,EAAKC,GAC1C,OAAOD,GAAOC,GAAWC,QAAQC,SAASC,eAAeJ,GAAO,MAGjE,OAAOT",
+		"sourceRoot": ""
+	};
+	t.deepEqual(indexMap.sections[0].map, expectedSourceMap1, "Section one contains correct map");
+	t.deepEqual(indexMap.sections[1].offset, {
+		line: 7,
+		column: 0
+	}, "Section two has correct offset");
+
+	const expectedSourceMap2 = {
+		"version": 3,
+		"sources":
+		[
+			"jquery.sap.global-dbg.js"
+		],
+		"names":
+		[
+			"sap",
+			"ui",
+			"define",
+			"now",
+			"Version",
+			"assert",
+			"Log"
+		],
+		"mappings": "AAAA;;;;;AAYAA,IAAIC,GAAGC,+BAAO,CAEb,oBAAqB,wBAAyB,kBAAmB,gBAC/D,SAASC,EAAKC,EAASC,EAAQC,GACjC,OAAOH",
+		"sourceRoot": ""
+	};
+	t.deepEqual(indexMap.sections[1].map, expectedSourceMap2, "Section two contains correct map");
+});
+
 test("integration: createBundle using predefine calls with inline source maps and a single source", async (t) => {
 	const pool = new ResourcePool();
 
@@ -1471,13 +1650,13 @@ test("rewriteDefine (with moduleSourceMap)", async (t) => {
 	const {content, sourceMap} = await rewriteDefine({
 		moduleName: "my/test/module.js",
 		moduleContent: "sap.ui.define([],(()=>1));",
-		moduleSourceMap: JSON.stringify({
+		moduleSourceMap: {
 			"version": 3,
 			"file": "module.js",
 			"sources": ["my/test/module-dbg.js"],
 			"names": ["sap", "ui", "define"],
 			"mappings": encodeMappings(inputMappings)
-		})
+		}
 	});
 
 	const expectedMappings = JSON.parse(JSON.stringify(inputMappings));
@@ -1492,6 +1671,45 @@ test("rewriteDefine (with moduleSourceMap)", async (t) => {
 		"version": 3,
 		"sources": ["my/test/module-dbg.js"],
 		"names": ["sap", "ui", "define"],
+		"mappings": encodeMappings(expectedMappings)
+	});
+});
+
+test.only("rewriteDefine (with empty moduleSourceMap)", async (t) => {
+	const {rewriteDefine} = Builder.__localFunctions__;
+	const {encode: encodeMappings, decode: decodeMappings} = require("sourcemap-codec");
+
+	const inputMappings = [
+		[
+			[
+				0, 0, 0, 0
+			]
+		]
+	];
+
+	const {content, sourceMap} = await rewriteDefine({
+		moduleName: "my/test/module.js",
+		moduleContent: `sap
+.ui.define([], () => {
+	return 1;
+});`,
+		moduleSourceMap: {
+			"version": 3,
+			"sources": ["my/test/module.js"],
+			"mappings": encodeMappings(inputMappings)
+		}
+	});
+
+	const expectedMappings = JSON.parse(JSON.stringify(inputMappings));
+
+	t.is(content, `sap
+.ui.predefine("my/test/module", [], () => {
+	return 1;
+});`);
+	t.deepEqual(decodeMappings(sourceMap.mappings), expectedMappings);
+	t.deepEqual(sourceMap, {
+		"version": 3,
+		"sources": ["my/test/module.js"],
 		"mappings": encodeMappings(expectedMappings)
 	});
 });
