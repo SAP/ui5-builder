@@ -17,7 +17,7 @@
 		{
 			"name": "Component-preload.js",
 			"module": "application/j/Component-preload.js",
-			"size": 3760,
+			"size": 3730,
 			"merged": true,
 			"required": [
 				"sap/m/library.js",
@@ -33,6 +33,11 @@
 				"application/j/changes/fragments/MyFragment.fragment.xml",
 				"application/j/manifest.json"
 			]
+		},
+		{
+			"name": "Component-preload.js.map",
+			"size": 587,
+			"isDebug": true
 		},
 		{
 			"name": "Component.js",
@@ -78,7 +83,7 @@
 		},
 		{
 			"name": "resources.json",
-			"size": 1923
+			"size": 2006
 		}
 	]
 }

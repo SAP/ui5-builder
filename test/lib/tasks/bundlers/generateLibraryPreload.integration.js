@@ -99,7 +99,6 @@ test("integration: build sap.ui.core with library preload", async (t) => {
 		assert.directoryDeepEqual(destPath, expectedPath);
 
 		// Check for all file contents
-		t.deepEqual(expectedFiles.length, 20, "20 files are expected");
 		expectedFiles.forEach((expectedFile) => {
 			const relativeFile = path.relative(expectedPath, expectedFile);
 			const destFile = path.join(destPath, relativeFile);
@@ -232,9 +231,8 @@ test("integration: generateLibraryPreload with designtime and support files", as
 		"/resources/my/test/lib/designtime/library-preload.designtime.js.map",
 		"/resources/my/test/lib/library-preload.js",
 		"/resources/my/test/lib/library-preload.js.map",
-
-		// TODO: Create source maps for bundles with "optimize=false"
 		"/resources/my/test/lib/library-preload.support.js",
+		"/resources/my/test/lib/library-preload.support.js.map",
 	], "Expected preload files should be created");
 
 	const libraryPreload = await writer.byPath("/resources/my/test/lib/library-preload.js");
@@ -276,5 +274,12 @@ test("integration: generateLibraryPreload with designtime and support files", as
 	const designtimePreloadSourceMapContent = await designtimePreloadSourceMap.getString();
 	t.notThrows(() => {
 		JSON.parse(designtimePreloadSourceMapContent);
+	}, "Source map file should have valid JSON content");
+
+	const supportPreloadSourceMap =
+		await writer.byPath("/resources/my/test/lib/library-preload.support.js.map");
+	const supportPreloadSourceMapContent = await supportPreloadSourceMap.getString();
+	t.notThrows(() => {
+		JSON.parse(supportPreloadSourceMapContent);
 	}, "Source map file should have valid JSON content");
 });
