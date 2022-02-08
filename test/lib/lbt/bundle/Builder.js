@@ -760,16 +760,15 @@ sap.ui.loader.config({bundlesUI5:{
 	]);
 });
 
-test.skip("integration: createBundle using predefine calls with source maps and a single, simple source", async (t) => {
+test("integration: createBundle using predefine calls with source maps and a single, simple source", async (t) => {
 	const pool = new ResourcePool();
-	pool.addResource({
-		name: "jquery.sap.global-dbg.js",
-		buffer: async () => `/* Some comment */
-sap.ui.define([], function (){
-	console.log("Put me on a map!");
-	return {};
-});`
-	});
+
+	// jquery.sap.global-dbg.js:
+	// /* Some comment */
+	// sap.ui.define([], function (){
+	// 	console.log("Put me on a map!");
+	// 	return {};
+	// });
 
 	const originalSourceMap = {
 		"version": 3,
@@ -813,8 +812,6 @@ sap.ui.define([], function (){
 	const builder = new Builder(pool);
 	const oResult = await builder.createBundle(bundleDefinition, {
 		usePredefineCalls: true,
-		numberOfParts: 1,
-		decorateBootstrapModule: true,
 		optimize: false
 	});
 	t.deepEqual(oResult.name, "Component-preload.js");
@@ -856,20 +853,19 @@ sap.ui.predefine("jquery.sap.global", [],function(){console.log("Put me on a map
 	t.deepEqual(indexMap.sections[0].map, expectedSourceMap, "Section contains correct map");
 });
 
-test.skip("integration: createBundle using predefine calls with source maps and a single, multi-line source", async (t) => {
+test("integration: createBundle using predefine calls with source maps and a single, multi-line source", async (t) => {
 	const pool = new ResourcePool();
-	pool.addResource({
-		name: "jquery.sap.global-dbg.js",
-		buffer: async () => `/* Some comment */
-sap.
-ui.
-define(
-[
-], function (){
-	console.log("Put me on a map!");
-	return {};
-});`
-	});
+
+	// jquery.sap.global-dbg.js:
+	// /* Some comment */
+	// sap.
+	// ui.
+	// define(
+	// [
+	// ], function (){
+	// 	console.log("Put me on a map!");
+	// 	return {};
+	// });
 
 	const originalSourceMap = {
 		"version": 3,
@@ -956,27 +952,26 @@ sap.ui.predefine("jquery.sap.global", [],function(){console.log("Put me on a map
 	t.deepEqual(indexMap.sections[0].map, expectedSourceMap, "Section contains correct map");
 });
 
-test.skip("integration: createBundle using predefine calls with source maps and a single source", async (t) => {
+test("integration: createBundle using predefine calls with source maps and a single source with non-executable code in 1st line", async (t) => {
 	const pool = new ResourcePool();
-	pool.addResource({
-		name: "jquery.sap.global-dbg.js",
-		buffer: async () => `/*!
- * OpenUI5
- * (c) Copyright 2009-2021 SAP SE or an SAP affiliate company.
- * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
- */
-/*global XMLHttpRequest, localStorage, alert, document */
-/**
- * @namespace jQuery
- * @public
- */
-sap.ui.define([
-	// new sap/base/* modules
-	"sap/base/util/now", "sap/base/util/Version", "sap/base/assert", "sap/base/Log"
-], function(now, Version, assert, Log) {
-	return now;
-});`
-	});
+
+	// jquery.sap.global-dbg.js:
+	// /*!
+	//  * OpenUI5
+	//  * (c) Copyright 2009-2021 SAP SE or an SAP affiliate company.
+	//  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+	//  */
+	// /*global XMLHttpRequest, localStorage, alert, document */
+	// /**
+	//  * @namespace jQuery
+	//  * @public
+	//  */
+	// sap.ui.define([
+	// 	// new sap/base/* modules
+	// 	"sap/base/util/now", "sap/base/util/Version", "sap/base/assert", "sap/base/Log"
+	// ], function(now, Version, assert, Log) {
+	// 	return now;
+	// });
 
 	const originalSourceMap = {
 		"version": 3,
@@ -1071,33 +1066,32 @@ sap.ui.predefine("jquery.sap.global", ["sap/base/util/now","sap/base/util/Versio
 			"assert",
 			"Log"
 		],
-		"mappings": ";;;;;AAYAA,IAAIC,GAAGC,+BAAO,CAEb,oBAAqB,wBAAyB,kBAAmB,gBAC/D,SAASC,EAAKC,EAASC,EAAQC,GACjC,OAAOH",
+		"mappings": "AAAA;;;;;AAYAA,IAAIC,GAAGC,+BAAO,CAEb,oBAAqB,wBAAyB,kBAAmB,gBAC/D,SAASC,EAAKC,EAASC,EAAQC,GACjC,OAAOH",
 		"sourceRoot": ""
 	};
 	t.deepEqual(indexMap.sections[0].map, expectedSourceMap, "Section contains correct map");
 });
 
-test.skip("integration: createBundle using predefine calls with source maps and a multiple source", async (t) => {
+test("integration: createBundle using predefine calls with source maps and multiple sources", async (t) => {
 	const pool = new ResourcePool();
-	pool.addResource({
-		name: "jquery.sap.global-dbg.js",
-		buffer: async () => `/*!
- * OpenUI5
- * (c) Copyright 2009-2021 SAP SE or an SAP affiliate company.
- * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
- */
-/*global XMLHttpRequest, localStorage, alert, document */
-/**
- * @namespace jQuery
- * @public
- */
-sap.ui.define([
-	// new sap/base/* modules
-	"sap/base/util/now", "sap/base/util/Version", "sap/base/assert", "sap/base/Log"
-], function(now, Version, assert, Log) {
-	return now;
-});`
-	});
+
+	// jquery.sap.global-dbg.js:
+	// /*!
+	//  * OpenUI5
+	//  * (c) Copyright 2009-2021 SAP SE or an SAP affiliate company.
+	//  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+	//  */
+	// /*global XMLHttpRequest, localStorage, alert, document */
+	// /**
+	//  * @namespace jQuery
+	//  * @public
+	//  */
+	// sap.ui.define([
+	// 	// new sap/base/* modules
+	// 	"sap/base/util/now", "sap/base/util/Version", "sap/base/assert", "sap/base/Log"
+	// ], function(now, Version, assert, Log) {
+	// 	return now;
+	// });
 
 	const originalGlobalSourceMap = {
 		"version": 3,
@@ -1133,58 +1127,56 @@ sap.ui.define(["sap/base/util/now","sap/base/util/Version","sap/base/assert","sa
 //# sourceMappingURL=jquery.sap.global.js.map`
 	});
 
-	pool.addResource({
-		name: "jquery.sap.dom-dbg.js",
-		buffer: async () => `/*!
- * OpenUI5
- * (c) Copyright 2009-2021 SAP SE or an SAP affiliate company.
- * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
- */
-// Provides functionality related to DOM analysis and manipulation which is not provided by jQuery itself.
-sap.ui.define([
-	'jquery.sap.global', 'sap/ui/dom/containsOrEquals',
-	'sap/ui/core/syncStyleClass', 'sap/ui/dom/getOwnerWindow', 'sap/ui/dom/getScrollbarSize',
-	'sap/ui/dom/denormalizeScrollLeftRTL', 'sap/ui/dom/denormalizeScrollBeginRTL',
-	'sap/ui/dom/units/Rem', 'sap/ui/dom/jquery/Aria',
-	'sap/ui/dom/jquery/Selection', 'sap/ui/dom/jquery/zIndex', 'sap/ui/dom/jquery/parentByAttribute',
-	'sap/ui/dom/jquery/cursorPos', 'sap/ui/dom/jquery/selectText', 'sap/ui/dom/jquery/getSelectedText',
-	'sap/ui/dom/jquery/rect', 'sap/ui/dom/jquery/rectContains', 'sap/ui/dom/jquery/Focusable',
-	'sap/ui/dom/jquery/hasTabIndex', 'sap/ui/dom/jquery/scrollLeftRTL', 'sap/ui/dom/jquery/scrollRightRTL', 'sap/ui/dom/jquery/Selectors'
-], function(jQuery, domContainsOrEquals, fnSyncStyleClass, domGetOwnerWindow,
-	domGetScrollbarSize, domDenormalizeScrollLeftRTL, domDenormalizeScrollBeginRTL, domUnitsRem
-	/*
-	jqueryAria,
-	jquerySelection,
-	jqueryzIndex,
-	jqueryParentByAttribute,
-	jqueryCursorPos,
-	jquerySelectText,
-	jqueryGetSelectedText,
-	jqueryRect,
-	jqueryRectContains,
-	jqueryFocusable,
-	jqueryHasTabIndex,
-	jqueryScrollLeftRTL,
-	jqueryScrollRightRTL,
-	jquerySelectors*/
-) {
-	"use strict";
-	/**
-	 * Shortcut for document.getElementById().
-	 *
-	 * @param {string} sId The id of the DOM element to return
-	 * @param {Window} [oWindow=window] The window (optional)
-	 * @return {Element} The DOMNode identified by the given sId
-	 * @public
-	 * @since 0.9.0
-	 * @deprecated since 1.58 use <code>document.getElementById</code> instead
-	 */
-	jQuery.sap.domById = function domById(sId, oWindow) {
-		return sId ? (oWindow || window).document.getElementById(sId) : null;
-	};
-	return jQuery;
-});`
-	});
+	// jquery.sap.dom-dbg.js:
+	// /*!
+	//  * OpenUI5
+	//  * (c) Copyright 2009-2021 SAP SE or an SAP affiliate company.
+	//  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+	//  */
+	// // Provides functionality related to DOM analysis and manipulation which is not provided by jQuery itself.
+	// sap.ui.define([
+	// 	'jquery.sap.global', 'sap/ui/dom/containsOrEquals',
+	// 	'sap/ui/core/syncStyleClass', 'sap/ui/dom/getOwnerWindow', 'sap/ui/dom/getScrollbarSize',
+	// 	'sap/ui/dom/denormalizeScrollLeftRTL', 'sap/ui/dom/denormalizeScrollBeginRTL',
+	// 	'sap/ui/dom/units/Rem', 'sap/ui/dom/jquery/Aria',
+	// 	'sap/ui/dom/jquery/Selection', 'sap/ui/dom/jquery/zIndex', 'sap/ui/dom/jquery/parentByAttribute',
+	// 	'sap/ui/dom/jquery/cursorPos', 'sap/ui/dom/jquery/selectText', 'sap/ui/dom/jquery/getSelectedText',
+	// 	'sap/ui/dom/jquery/rect', 'sap/ui/dom/jquery/rectContains', 'sap/ui/dom/jquery/Focusable',
+	// 	'sap/ui/dom/jquery/hasTabIndex', 'sap/ui/dom/jquery/scrollLeftRTL', 'sap/ui/dom/jquery/scrollRightRTL', 'sap/ui/dom/jquery/Selectors'
+	// ], function(jQuery, domContainsOrEquals, fnSyncStyleClass, domGetOwnerWindow,
+	// 	domGetScrollbarSize, domDenormalizeScrollLeftRTL, domDenormalizeScrollBeginRTL, domUnitsRem
+	// 	/*
+	// 	jqueryAria,
+	// 	jquerySelection,
+	// 	jqueryzIndex,
+	// 	jqueryParentByAttribute,
+	// 	jqueryCursorPos,
+	// 	jquerySelectText,
+	// 	jqueryGetSelectedText,
+	// 	jqueryRect,
+	// 	jqueryRectContains,
+	// 	jqueryFocusable,
+	// 	jqueryHasTabIndex,
+	// 	jqueryScrollLeftRTL,
+	// 	jqueryScrollRightRTL,
+	// 	jquerySelectors*/
+	// ) {
+	// 	"use strict";
+	// 	/**
+	// 	 * Shortcut for document.getElementById().
+	// 	 *
+	// 	 * @param {string} sId The id of the DOM element to return
+	// 	 * @param {Window} [oWindow=window] The window (optional)
+	// 	 * @return {Element} The DOMNode identified by the given sId
+	// 	 * @public
+	// 	 * @since 0.9.0
+	// 	 * @deprecated since 1.58 use <code>document.getElementById</code> instead
+	// 	 */
+	// 	jQuery.sap.domById = function domById(sId, oWindow) {
+	// 		return sId ? (oWindow || window).document.getElementById(sId) : null;
+	// 	};
+	// 	return jQuery;
+	// });
 
 	const originalDomSourceMap = {
 		"version": 3,
@@ -1307,7 +1299,7 @@ sap.ui.predefine("jquery.sap.global", ["sap/base/util/now","sap/base/util/Versio
 			"document",
 			"getElementById"
 		],
-		"mappings": ";;;;;AAOAA,IAAIC,GAAGC,4BAAO,CACb,oBAAqB,8BACrB,6BAA8B,4BAA6B,8BAC3D,sCAAuC,uCACvC,uBAAwB,yBACxB,8BAA+B,2BAA4B,sCAC3D,8BAA+B,+BAAgC,oCAC/D,yBAA0B,iCAAkC,8BAC5D,gCAAiC,kCAAmC,mCAAoC,+BACtG,SAASC,OAAQC,EAAqBC,EAAkBC,EAC1DC,EAAqBC,EAA6BC,EAA8BC,GAiBhF,aAYAP,OAAOH,IAAIW,QAAU,SAASA,EAAQC,EAAKC,GAC1C,OAAOD,GAAOC,GAAWC,QAAQC,SAASC,eAAeJ,GAAO,MAGjE,OAAOT",
+		"mappings": "AAAA;;;;;AAOAA,IAAIC,GAAGC,4BAAO,CACb,oBAAqB,8BACrB,6BAA8B,4BAA6B,8BAC3D,sCAAuC,uCACvC,uBAAwB,yBACxB,8BAA+B,2BAA4B,sCAC3D,8BAA+B,+BAAgC,oCAC/D,yBAA0B,iCAAkC,8BAC5D,gCAAiC,kCAAmC,mCAAoC,+BACtG,SAASC,OAAQC,EAAqBC,EAAkBC,EAC1DC,EAAqBC,EAA6BC,EAA8BC,GAiBhF,aAYAP,OAAOH,IAAIW,QAAU,SAASA,EAAQC,EAAKC,GAC1C,OAAOD,GAAOC,GAAWC,QAAQC,SAASC,eAAeJ,GAAO,MAGjE,OAAOT",
 		"sourceRoot": ""
 	};
 	t.deepEqual(indexMap.sections[0].map, expectedSourceMap1, "Section one contains correct map");
@@ -1332,33 +1324,32 @@ sap.ui.predefine("jquery.sap.global", ["sap/base/util/now","sap/base/util/Versio
 			"assert",
 			"Log"
 		],
-		"mappings": ";;;;;AAYAA,IAAIC,GAAGC,+BAAO,CAEb,oBAAqB,wBAAyB,kBAAmB,gBAC/D,SAASC,EAAKC,EAASC,EAAQC,GACjC,OAAOH",
+		"mappings": "AAAA;;;;;AAYAA,IAAIC,GAAGC,+BAAO,CAEb,oBAAqB,wBAAyB,kBAAmB,gBAC/D,SAASC,EAAKC,EAASC,EAAQC,GACjC,OAAOH",
 		"sourceRoot": ""
 	};
 	t.deepEqual(indexMap.sections[1].map, expectedSourceMap2, "Section two contains correct map");
 });
 
-test.skip("integration: createBundle using predefine calls with inline source maps and a single source", async (t) => {
+test("integration: createBundle using predefine calls with inline source maps and a single source", async (t) => {
 	const pool = new ResourcePool();
-	pool.addResource({
-		name: "jquery.sap.global-dbg.js",
-		buffer: async () => `/*!
- * OpenUI5
- * (c) Copyright 2009-2021 SAP SE or an SAP affiliate company.
- * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
- */
-/*global XMLHttpRequest, localStorage, alert, document */
-/**
- * @namespace jQuery
- * @public
- */
-sap.ui.define([
-	// new sap/base/* modules
-	"sap/base/util/now", "sap/base/util/Version", "sap/base/assert", "sap/base/Log"
-], function(now, Version, assert, Log) {
-	return now;
-});`
-	});
+
+	// jquery.sap.global-dbg.js:
+	// /*!
+	//  * OpenUI5
+	//  * (c) Copyright 2009-2021 SAP SE or an SAP affiliate company.
+	//  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+	//  */
+	// /*global XMLHttpRequest, localStorage, alert, document */
+	// /**
+	//  * @namespace jQuery
+	//  * @public
+	//  */
+	// sap.ui.define([
+	// 	// new sap/base/* modules
+	// 	"sap/base/util/now", "sap/base/util/Version", "sap/base/assert", "sap/base/Log"
+	// ], function(now, Version, assert, Log) {
+	// 	return now;
+	// });
 
 	// Source map should be identical to "single source" test above
 	pool.addResource({
@@ -1431,7 +1422,7 @@ sap.ui.predefine("jquery.sap.global", ["sap/base/util/now","sap/base/util/Versio
 			"assert",
 			"Log"
 		],
-		"mappings": ";;;;;AAYAA,IAAIC,GAAGC,+BAAO,CAEb,oBAAqB,wBAAyB,kBAAmB,gBAC/D,SAASC,EAAKC,EAASC,EAAQC,GACjC,OAAOH",
+		"mappings": "AAAA;;;;;AAYAA,IAAIC,GAAGC,+BAAO,CAEb,oBAAqB,wBAAyB,kBAAmB,gBAC/D,SAASC,EAAKC,EAASC,EAAQC,GACjC,OAAOH",
 		"sourceRoot": ""
 	};
 	t.deepEqual(indexMap.sections[0].map, expectedSourceMap, "Section contains correct map");
