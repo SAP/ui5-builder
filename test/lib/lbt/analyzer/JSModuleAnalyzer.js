@@ -684,3 +684,60 @@ jQuery.sap.registerPreloadedModules({
 	t.deepEqual(info.subModules, ["foo/bar.js"],
 		"submodule from jQuery.sap.registerPreloadedModules");
 });
+
+test("Module that contains jQuery.sap.declare should not be derived as subModule", (t) => {
+	const content = `
+sap.ui.define([], function() {
+	jQuery.sap.declare("foo.bar");
+});
+`;
+	const info = analyzeString(content, "modules/module-with-jquery-sap-declare.js");
+	t.is(info.name, "modules/module-with-jquery-sap-declare.js", "TBD");
+	t.deepEqual(info.dependencies, ["jquery.sap.global.js"], "TBD");
+	t.is(info.rawModule, false, "TBD");
+	// t.is(info.format, "ui5-define", "TBD");
+	t.is(info.requiresTopLevelScope, false, "TBD");
+	t.deepEqual(info.subModules, [],
+		"no subModules should be detected");
+});
+
+test("Bundle that contains jQuery.sap.declare (sap.ui.predefine) should not be derived as module name", (t) => {
+	const content = `//@ui5-bundle test1/library-preload.js
+sap.ui.predefine("test1/module1", [], function() {
+	jQuery.sap.declare("foo.bar");
+});
+`;
+	const info = analyzeString(content, "modules/bundle-with-jquery-sap-declare.js");
+	t.is(info.name, "test1/library-preload.js",
+		"TBD");
+	t.is(info.rawModule, false, "TBD");
+	// t.is(info.format, "ui5-declare", "TBD");
+	t.is(info.requiresTopLevelScope, false, "TBD");
+	t.deepEqual(info.subModules, ["test1/module1.js"],
+		"subModule via sap.ui.predefine should be detected");
+	t.deepEqual(info.dependencies, ["ui5loader-autoconfig.js"],
+		"TBD");
+});
+
+test("Bundle that contains jQuery.sap.declare (sap.ui.require.preload) should not be derived as module name", (t) => {
+	const content = `//@ui5-bundle test1/library-preload.js
+sap.ui.require.preload({
+	"test1/module1.js": function() {
+		sap.ui.define([], function() {
+			jQuery.sap.declare("foo.bar");
+		});
+	}
+});
+
+`;
+	const info = analyzeString(content, "modules/bundle-with-jquery-sap-declare.js");
+	t.is(info.name, "test1/library-preload.js",
+		"TBD");
+	t.is(info.rawModule, false, "TBD");
+	// t.is(info.format, "ui5-declare", "TBD");
+	t.is(info.requiresTopLevelScope, false, "TBD");
+	t.deepEqual(info.subModules, ["test1/module1.js"],
+		"subModule via sap.ui.predefine should be detected");
+	t.deepEqual(info.dependencies, ["ui5loader-autoconfig.js"],
+		"TBD");
+});
