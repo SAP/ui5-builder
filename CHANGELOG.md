@@ -2,10 +2,16 @@
 All notable changes to this project will be documented in this file.  
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-A list of unreleased changes can be found [here](https://github.com/SAP/ui5-builder/compare/v2.11.3...HEAD).
+A list of unreleased changes can be found [here](https://github.com/SAP/ui5-builder/compare/v2.11.4...HEAD).
+
+<a name="v2.11.4"></a>
+## [v2.11.4] - 2022-02-21
+### Bug Fixes
+- **generateFlexChangesBundle:** Fix minUI5Version check for UI5 v1.100.0+ ([#706](https://github.com/SAP/ui5-builder/issues/706)) [`fb1217a`](https://github.com/SAP/ui5-builder/commit/fb1217ac536c20da81526f82f2ecb03686815942)
+
 
 <a name="v2.11.3"></a>
-## [v2.11.3] - 2021-12-12
+## [v2.11.3] - 2021-12-14
 ### Bug Fixes
 - Enable buildThemes for libraries without .library [`7b941a7`](https://github.com/SAP/ui5-builder/commit/7b941a797210463a9fa8ca50753662c5db373aa6)
 
@@ -639,6 +645,7 @@ to load the custom bundle file instead.
 - Add ability to configure component preloads and custom bundles [`2241e5f`](https://github.com/SAP/ui5-builder/commit/2241e5ff98fd95f1f80cc74959655ae7a9c660e7)
 
 
+[v2.11.4]: https://github.com/SAP/ui5-builder/compare/v2.11.3...v2.11.4
 [v2.11.3]: https://github.com/SAP/ui5-builder/compare/v2.11.2...v2.11.3
 [v2.11.2]: https://github.com/SAP/ui5-builder/compare/v2.11.1...v2.11.2
 [v2.11.1]: https://github.com/SAP/ui5-builder/compare/v2.11.0...v2.11.1
