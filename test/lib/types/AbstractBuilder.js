@@ -303,6 +303,56 @@ test.serial("Instantiation with custom task defined three times", (t) => {
 		"Order of tasks is correct");
 });
 
+test.serial("Instantiation with custom task defined three times: Custom tasks get called correctly", async (t) => {
+	const customTaskStub = sinon.stub().returns(Promise.resolve());
+	sinon.stub(taskRepository, "getTask").returns({
+		task: customTaskStub,
+		specVersion: "2.0"
+	});
+
+	const project = clone(applicationBTree);
+	project.builder = {
+		customTasks: [{
+			name: "myTask",
+			beforeTask: "myStandardTask",
+			configuration: "foo"
+		}, {
+			name: "myTask",
+			afterTask: "replaceVersion",
+			configuration: "bar"
+		}, {
+			name: "myTask",
+			beforeTask: "myStandardTask",
+			configuration: "baz"
+		}]
+	};
+
+	const resourceCollections = {
+		workspace: "myWorkspace",
+		dependencies: "myDependencies"
+	};
+	const getInterfaceStub = sinon.stub().returns(undefined);
+	const taskUtil = {
+		getInterface: getInterfaceStub
+	};
+	const customBuilder = new CustomBuilder({project, resourceCollections, taskUtil});
+	await customBuilder.build(["myTask"]);
+
+	t.is(getInterfaceStub.callCount, 3, "taskUtil.getInterface got called three times");
+	t.is(customTaskStub.callCount, 3, "Custom task got called three times");
+	["foo", "baz", "bar"].forEach((configuration, index) => {
+		t.deepEqual(customTaskStub.getCall(index).args[0], {
+			options: {
+				projectName: "application.b",
+				projectNamespace: "application/b",
+				configuration
+			},
+			workspace: "myWorkspace",
+			dependencies: "myDependencies"
+		}, `Custom task invocation ${index} got called with expected options`);
+	});
+});
+
 test.serial("Instantiation with custom task: Custom task called correctly", (t) => {
 	const customTaskStub = sinon.stub();
 	sinon.stub(taskRepository, "getTask").returns({
@@ -482,4 +532,22 @@ test("addTask: Add task already added to execution order", (t) => {
 	});
 	t.deepEqual(error.message, "Builder: Failed to add task myTask for project application.b. " +
 		"It has already been scheduled for execution.", "Correct exception thrown");
+});
+
+test("enhancePatternWithExcludes", (t) => {
+	const project = clone(applicationBTree);
+	const customBuilder = new CustomBuilder({project});
+
+	const patterns = ["/default/pattern"];
+	const excludes = ["a", "!b", "c", "!d"];
+
+	customBuilder.enhancePatternWithExcludes(patterns, excludes, "/prefix/");
+
+	t.deepEqual(patterns, [
+		"/default/pattern",
+		"!/prefix/a",
+		"/prefix/b",
+		"!/prefix/c",
+		"/prefix/d"
+	]);
 });

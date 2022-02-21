@@ -106,6 +106,10 @@ test.serial("integration: Analysis of an xml view with core:require from databin
 		], "Dependencies should come from the XML template");
 	t.true(moduleInfo.isImplicitDependency("sap/ui/core/mvc/XMLView.js"),
 		"Implicit dependency should be added since an XMLView is analyzed");
+	t.true(
+		!moduleInfo.isConditionalDependency("sap/m/Button.js") &&
+		!moduleInfo.isImplicitDependency("sap/m/Button.js"),
+		"A control outside of template:if should become a strict dependency");
 
 	t.is(errorLogStub.callCount, 1, "should be called 1 time");
 	t.deepEqual(errorLogStub.getCall(0).args, [
@@ -156,6 +160,8 @@ test.serial("integration: Analysis of an xml view with core:require from databin
 		], "Dependencies should come from the XML template");
 	t.true(moduleInfo.isImplicitDependency("sap/ui/core/mvc/XMLView.js"),
 		"Implicit dependency should be added since an XMLView is analyzed");
+	t.true(moduleInfo.isConditionalDependency("sap/m/Button.js"),
+		"A control within template:if or template:repeat should become a conditional dependency");
 
 	t.is(verboseLogStub.callCount, 1, "should be called 1 time");
 	t.deepEqual(verboseLogStub.getCall(0).args, [
@@ -202,6 +208,8 @@ test.serial("integration: Analysis of an xml view with core:require from express
 		], "Dependencies should come from the XML template");
 	t.true(moduleInfo.isImplicitDependency("sap/ui/core/mvc/XMLView.js"),
 		"Implicit dependency should be added since an XMLView is analyzed");
+	t.true(moduleInfo.isConditionalDependency("sap/m/Button.js"),
+		"A control within template:if should become a conditional dependency");
 
 	t.is(verboseLogStub.callCount, 1, "should be called 1 time");
 	t.deepEqual(verboseLogStub.getCall(0).args, [
@@ -362,8 +370,11 @@ test("_analyze: parseString error", async (t) => {
 	const analyzer = new XMLTemplateAnalyzer();
 	sinon.stub(analyzer._parser, "parseString").callsArgWith(1, new Error("my-error"), "result");
 
-	const error = await t.throwsAsync(analyzer._analyze());
-	t.deepEqual(error.message, "my-error");
+	const moduleInfo = {
+		name: "my.fragment.xml"
+	};
+	const error = await t.throwsAsync(analyzer._analyze(null, moduleInfo));
+	t.deepEqual(error.message, "Error while parsing XML document my.fragment.xml: my-error");
 	t.false(analyzer.busy, "busy state is restored");
 });
 
@@ -383,7 +394,7 @@ test("_analyze: call twice to simulate busy", async (t) => {
 	const error = t.throws(()=> {
 		analyzer._analyze(null, moduleInfo, true);
 	});
-	t.deepEqual(error.message, "analyzer is busy");
+	t.deepEqual(error.message, "XMLTemplateAnalyzer is unexpectedly busy");
 
 	await resultPromise;
 	t.false(analyzer.busy, "busy state is reset after promise resolves");

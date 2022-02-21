@@ -3,6 +3,7 @@ const fs = require("graceful-fs");
 const path = require("path");
 const sinon = require("sinon");
 const mock = require("mock-require");
+const logger = require("@ui5/logger");
 
 test.afterEach.always((t) => {
 	sinon.restore();
@@ -22,6 +23,31 @@ const libraryETree = {
 	type: "library",
 	metadata: {
 		name: "library.e",
+		copyright: "UI development toolkit for HTML5 (OpenUI5)\n * (c) Copyright 2009-xxx SAP SE or an SAP affiliate " +
+			"company.\n * Licensed under the Apache License, Version 2.0 - see LICENSE.txt."
+	},
+	resources: {
+		configuration: {
+			paths: {
+				src: "src",
+				test: "test"
+			}
+		}
+	}
+};
+
+const legacyThemeLibPath = path.join(__dirname, "..", "..", "..", "fixtures", "theme.library.e");
+const legacyThemeLibTree = {
+	id: "@openui5/themelib_sap_bluecrystal",
+	version: "1.0.0",
+	path: legacyThemeLibPath,
+	dependencies: [],
+	_level: 0,
+	_isRoot: true,
+	specVersion: "2.0",
+	type: "library",
+	metadata: {
+		name: "themelib_sap_bluecrystal",
 		copyright: "UI development toolkit for HTML5 (OpenUI5)\n * (c) Copyright 2009-xxx SAP SE or an SAP affiliate " +
 			"company.\n * Licensed under the Apache License, Version 2.0 - see LICENSE.txt."
 	},
@@ -164,6 +190,69 @@ test("validate: test invalid encoding", async (t) => {
 	const error = await t.throwsAsync(libraryFormatter.validate(myProject));
 	t.is(error.message, `Invalid properties file encoding specified for project library.e.id. Encoding provided: ` +
 		`test. Must be either "ISO-8859-1" or "UTF-8".`, "Missing source directory caused error");
+});
+
+test("format and validate non-ASCII project correctly", async (t) => {
+	const libraryØPath = path.join(__dirname, "..", "..", "..", "fixtures", "library.ø");
+	const myProject = {
+		id: "library.ø.id",
+		version: "1.0.0",
+		path: libraryØPath,
+		dependencies: [],
+		_level: 0,
+		_isRoot: true,
+		specVersion: "2.0",
+		type: "library",
+		metadata: {
+			name: "library.ø",
+			namespace: "library/ø",
+			copyright: "Some fancy copyright"
+		},
+		resources: {
+			configuration: {
+				paths: {
+					src: "máin/ßrc",
+					test: "máin/吉"
+				}
+			},
+			pathMappings: {
+				"/resources/": "máin/ßrc",
+				"/test-resources/": "máin/吉"
+			}
+		}
+	};
+	myProject.metadata.copyright = undefined;
+	const libraryFormatter = new LibraryFormatter({project: myProject});
+
+	await libraryFormatter.format();
+	t.deepEqual(myProject, {
+		id: "library.ø.id",
+		version: "1.0.0",
+		path: libraryØPath,
+		dependencies: [],
+		_level: 0,
+		_isRoot: true,
+		specVersion: "2.0",
+		type: "library",
+		metadata: {
+			name: "library.ø",
+			namespace: "library/ø",
+			copyright: "Some fancy copyright"
+		},
+		resources: {
+			configuration: {
+				paths: {
+					src: "máin/ßrc",
+					test: "máin/吉"
+				},
+				propertiesFileSourceEncoding: "UTF-8"
+			},
+			pathMappings: {
+				"/resources/": "máin/ßrc",
+				"/test-resources/": "máin/吉"
+			}
+		}
+	}, "Project got formatted correctly");
 });
 
 test("format: copyright already configured", async (t) => {
@@ -332,6 +421,15 @@ test.serial("format: namespace resolution fails", async (t) => {
 	mock.stop("@ui5/logger");
 });
 
+test("format: legacy OpenUI5 theme library", async (t) => {
+	const myProject = clone(legacyThemeLibTree);
+	const libraryFormatter = new LibraryFormatter({project: myProject});
+	sinon.stub(libraryFormatter, "validate").resolves();
+
+	await t.notThrowsAsync(libraryFormatter.format(), "Does not throw for missing .library");
+	t.deepEqual(myProject.metadata.copyright, legacyThemeLibTree.metadata.copyright, "Copyright was not altered");
+});
+
 test("format: configuration test path", async (t) => {
 	const myProject = clone(libraryETree);
 	const libraryFormatter = new LibraryFormatter({project: myProject});
@@ -340,6 +438,244 @@ test("format: configuration test path", async (t) => {
 	await libraryFormatter.format();
 
 	t.falsy(myProject.resources.pathMappings["/test-resources/"], "test-resources pathMapping is not set");
+});
+
+test.serial("format: Preload exclude fallback for framework libraries (@openui5)", async (t) => {
+	const log = {
+		verbose: sinon.stub()
+	};
+	sinon.stub(logger, "getLogger").withArgs("types:library:LibraryFormatter").returns(log);
+
+	const LibraryFormatter = mock.reRequire("../../../../lib/types/library/LibraryFormatter");
+
+	const project = {
+		id: "@openui5/foo",
+		metadata: {
+			name: "test"
+		},
+		resources: {
+			configuration: {
+				paths: {
+					src: "src",
+					test: "test"
+				}
+			}
+		}
+	};
+
+	const libraryFormatter = new LibraryFormatter({project});
+
+	sinon.stub(libraryFormatter, "validate").resolves();
+	sinon.stub(libraryFormatter, "getNamespace").resolves("namespace");
+	sinon.stub(libraryFormatter, "getCopyright").resolves("copyright");
+	sinon.stub(libraryFormatter, "getPreloadExcludesFromDotLibrary").resolves(["test/exclude/**"]);
+
+	await libraryFormatter.format();
+
+	t.deepEqual(project.builder.libraryPreload.excludes, ["test/exclude/**"],
+		"getPreloadExcludesFromDotLibrary should return array with excludes");
+
+	t.is(libraryFormatter.getPreloadExcludesFromDotLibrary.callCount, 1,
+		"getPreloadExcludesFromDotLibrary should be called once");
+
+	t.is(log.verbose.callCount, 2, "log.verbose should be called twice");
+	t.deepEqual(log.verbose.getCall(0).args, [
+		"Formatting library project %s...", "test"
+	]);
+	t.deepEqual(log.verbose.getCall(1).args, [
+		"No preload excludes defined in project configuration of framework library test. " +
+		"Falling back to .library..."
+	]);
+});
+
+test.serial("format: Preload exclude fallback for framework libraries (@sapui5)", async (t) => {
+	const log = {
+		verbose: sinon.stub()
+	};
+	sinon.stub(logger, "getLogger").withArgs("types:library:LibraryFormatter").returns(log);
+
+	const LibraryFormatter = mock.reRequire("../../../../lib/types/library/LibraryFormatter");
+
+	const project = {
+		id: "@sapui5/foo",
+		metadata: {
+			name: "test"
+		},
+		resources: {
+			configuration: {
+				paths: {
+					src: "src",
+					test: "test"
+				}
+			}
+		}
+	};
+
+	const libraryFormatter = new LibraryFormatter({project});
+
+	sinon.stub(libraryFormatter, "validate").resolves();
+	sinon.stub(libraryFormatter, "getNamespace").resolves("namespace");
+	sinon.stub(libraryFormatter, "getCopyright").resolves("copyright");
+	sinon.stub(libraryFormatter, "getPreloadExcludesFromDotLibrary").resolves(["test/exclude/**"]);
+
+	await libraryFormatter.format();
+
+	t.deepEqual(project.builder.libraryPreload.excludes, ["test/exclude/**"],
+		"getPreloadExcludesFromDotLibrary should return array with excludes");
+
+	t.is(libraryFormatter.getPreloadExcludesFromDotLibrary.callCount, 1,
+		"getPreloadExcludesFromDotLibrary should be called once");
+
+	t.is(log.verbose.callCount, 2, "log.verbose should be called twice");
+	t.deepEqual(log.verbose.getCall(0).args, [
+		"Formatting library project %s...", "test"
+	]);
+	t.deepEqual(log.verbose.getCall(1).args, [
+		"No preload excludes defined in project configuration of framework library test. " +
+		"Falling back to .library..."
+	]);
+});
+
+test.serial("format: No preload exclude fallback for non-framework libraries", async (t) => {
+	const log = {
+		verbose: sinon.stub()
+	};
+	sinon.stub(logger, "getLogger").withArgs("types:library:LibraryFormatter").returns(log);
+
+	const LibraryFormatter = mock.reRequire("../../../../lib/types/library/LibraryFormatter");
+
+	const project = {
+		id: "@foo/bar",
+		metadata: {
+			name: "test"
+		},
+		resources: {
+			configuration: {
+				paths: {
+					src: "src",
+					test: "test"
+				}
+			}
+		}
+	};
+
+	const libraryFormatter = new LibraryFormatter({project});
+
+	sinon.stub(libraryFormatter, "validate").resolves();
+	sinon.stub(libraryFormatter, "getNamespace").resolves("namespace");
+	sinon.stub(libraryFormatter, "getCopyright").resolves("copyright");
+	sinon.stub(libraryFormatter, "getPreloadExcludesFromDotLibrary").resolves(null);
+
+	await libraryFormatter.format();
+
+	t.is(project.builder, undefined);
+
+	t.is(libraryFormatter.getPreloadExcludesFromDotLibrary.callCount, 0,
+		"getPreloadExcludesFromDotLibrary should not be called");
+
+	t.is(log.verbose.callCount, 1, "log.verbose should be called once");
+	t.deepEqual(log.verbose.getCall(0).args, [
+		"Formatting library project %s...", "test"
+	]);
+});
+
+test.serial("format: No preload exclude fallback when excludes defined in configuration", async (t) => {
+	const log = {
+		verbose: sinon.stub()
+	};
+	sinon.stub(logger, "getLogger").withArgs("types:library:LibraryFormatter").returns(log);
+
+	const LibraryFormatter = mock.reRequire("../../../../lib/types/library/LibraryFormatter");
+
+	const project = {
+		id: "@sapui5/foo",
+		metadata: {
+			name: "test"
+		},
+		resources: {
+			configuration: {
+				paths: {
+					src: "src",
+					test: "test"
+				}
+			}
+		},
+		builder: {
+			libraryPreload: {
+				excludes: ["test/exclude/**"]
+			}
+		}
+	};
+
+	const libraryFormatter = new LibraryFormatter({project});
+
+	sinon.stub(libraryFormatter, "validate").resolves();
+	sinon.stub(libraryFormatter, "getNamespace").resolves("namespace");
+	sinon.stub(libraryFormatter, "getCopyright").resolves("copyright");
+	sinon.stub(libraryFormatter, "getPreloadExcludesFromDotLibrary").resolves(null);
+
+	await libraryFormatter.format();
+
+	t.deepEqual(project.builder.libraryPreload.excludes, ["test/exclude/**"],
+		"Defined excludes should remain untouched");
+
+	t.is(libraryFormatter.getPreloadExcludesFromDotLibrary.callCount, 0,
+		"getPreloadExcludesFromDotLibrary should not be called");
+
+	t.is(log.verbose.callCount, 2, "log.verbose should be called once");
+	t.deepEqual(log.verbose.getCall(0).args, [
+		"Formatting library project %s...", "test"
+	]);
+	t.deepEqual(log.verbose.getCall(1).args, [
+		"Using preload excludes for framework library test from project configuration"
+	]);
+});
+
+test.serial("format: Preload exclude fallback returns null", async (t) => {
+	const log = {
+		verbose: sinon.stub()
+	};
+	sinon.stub(logger, "getLogger").withArgs("types:library:LibraryFormatter").returns(log);
+
+	const LibraryFormatter = mock.reRequire("../../../../lib/types/library/LibraryFormatter");
+
+	const project = {
+		id: "@sapui5/foo",
+		metadata: {
+			name: "test"
+		},
+		resources: {
+			configuration: {
+				paths: {
+					src: "src",
+					test: "test"
+				}
+			}
+		}
+	};
+
+	const libraryFormatter = new LibraryFormatter({project});
+
+	sinon.stub(libraryFormatter, "validate").resolves();
+	sinon.stub(libraryFormatter, "getNamespace").resolves("namespace");
+	sinon.stub(libraryFormatter, "getCopyright").resolves("copyright");
+	sinon.stub(libraryFormatter, "getPreloadExcludesFromDotLibrary").resolves(null);
+
+	await libraryFormatter.format();
+
+	t.is(project.builder, undefined);
+
+	t.is(libraryFormatter.getPreloadExcludesFromDotLibrary.callCount, 1,
+		"getPreloadExcludesFromDotLibrary should be called once");
+
+	t.is(log.verbose.callCount, 2, "log.verbose should be called twice");
+	t.deepEqual(log.verbose.getCall(0).args, [
+		"Formatting library project %s...", "test"
+	]);
+	t.deepEqual(log.verbose.getCall(1).args, [
+		"No preload excludes defined in project configuration of framework library test. " +
+		"Falling back to .library..."
+	]);
 });
 
 test("getDotLibrary: reads correctly", async (t) => {
@@ -351,7 +687,7 @@ test("getDotLibrary: reads correctly", async (t) => {
 	const libraryFormatter = new LibraryFormatter({project: myProject});
 
 	const {content, fsPath} = await libraryFormatter.getDotLibrary();
-	t.deepEqual(content.library.name, "library.e", ".library content has been read");
+	t.deepEqual(content.library.name._, "library.e", ".library content has been read");
 	const expectedPath = path.join(myProject.path,
 		myProject.resources.configuration.paths.src, "library", "e", ".library");
 	t.deepEqual(fsPath, expectedPath, ".library fsPath is correct");
@@ -413,13 +749,13 @@ test.serial("getDotLibrary: result is cached", async (t) => {
 	const libraryFormatter = new LibraryFormatter({project: myProject});
 
 	const {content, fsPath} = await libraryFormatter.getDotLibrary();
-	t.deepEqual(content.library.name, "library.e", ".library content has been read");
+	t.deepEqual(content.library.name._, "library.e", ".library content has been read");
 	const expectedPath = path.join(myProject.path,
 		myProject.resources.configuration.paths.src, "library", "e", ".library");
 	t.deepEqual(fsPath, expectedPath, ".library fsPath is correct");
 
 	const {content: contentSecondCall, fsPath: fsPathSecondCall} = await libraryFormatter.getDotLibrary();
-	t.deepEqual(contentSecondCall.library.name, "library.e", ".library content has been read," +
+	t.deepEqual(contentSecondCall.library.name._, "library.e", ".library content has been read, " +
 		"but should be cached now.");
 	const expectedPathSecondCall = path.join(myProject.path,
 		myProject.resources.configuration.paths.src, "library", "e", ".library");
@@ -543,7 +879,7 @@ test("getCopyright: takes copyright from stubbed .library", async (t) => {
 	const libraryFormatter = new LibraryFormatter({project: myProject});
 	sinon.stub(libraryFormatter, "getDotLibrary").resolves({
 		content: {
-			library: {copyright: "pony"}
+			library: {copyright: {_: "pony"}}
 		},
 		fsPath: "/some/path"
 	});
@@ -614,7 +950,7 @@ test("getNamespace: from manifest.json with .library on same level but different
 	});
 	sinon.stub(libraryFormatter, "getDotLibrary").resolves({
 		content: {
-			library: {name: "dot-pony"}
+			library: {name: {_: "dot-pony"}}
 		},
 		fsPath: dotLibraryFsPath
 	});
@@ -702,7 +1038,7 @@ test("getNamespace: from .library", async (t) => {
 	sinon.stub(libraryFormatter, "getManifest").rejects("No manifest aint' here");
 	sinon.stub(libraryFormatter, "getDotLibrary").resolves({
 		content: {
-			library: {name: "dot-pony"}
+			library: {name: {_: "dot-pony"}}
 		},
 		fsPath: path.normalize("/some/path/dot-pony/.library") // normalize for windows
 	});
@@ -725,7 +1061,7 @@ test("getNamespace: from .library with ignored manifest.json on lower level", as
 	});
 	sinon.stub(libraryFormatter, "getDotLibrary").resolves({
 		content: {
-			library: {name: "dot-pony"}
+			library: {name: {_: "dot-pony"}}
 		},
 		fsPath: path.normalize("/some/path/dot-pony/.library") // normalize for windows
 	});
@@ -751,7 +1087,7 @@ test("getNamespace: manifest.json on higher level than .library", async (t) => {
 	});
 	sinon.stub(libraryFormatter, "getDotLibrary").resolves({
 		content: {
-			library: {name: "dot-pony"}
+			library: {name: {_: "dot-pony"}}
 		},
 		fsPath: dotLibraryFsPath
 	});
@@ -776,7 +1112,7 @@ test("getNamespace: from .library with maven placeholder", async (t) => {
 	sinon.stub(libraryFormatter, "getManifest").rejects("No manifest aint' here");
 	sinon.stub(libraryFormatter, "getDotLibrary").resolves({
 		content: {
-			library: {name: "${mvn-pony}"}
+			library: {name: {_: "${mvn-pony}"}}
 		},
 		fsPath: path.normalize("/some/path/mvn-unicorn/.library") // normalize for windows
 	});
@@ -799,7 +1135,7 @@ test("getNamespace: from .library with not matching file path", async (t) => {
 	sinon.stub(libraryFormatter, "getManifest").rejects("No manifest aint' here");
 	sinon.stub(libraryFormatter, "getDotLibrary").resolves({
 		content: {
-			library: {name: "mvn-pony"}
+			library: {name: {_: "mvn-pony"}}
 		},
 		fsPath: path.normalize("/some/path/different/namespace/.library") // normalize for windows
 	});
@@ -1118,7 +1454,159 @@ test("getNamespaceFromFsPath: fsPath is not based on base path", async (t) => {
 
 	const fsPath = "/some/different/path";
 	const err = t.throws(() => libraryFormatter.getNamespaceFromFsPath(fsPath));
-	t.deepEqual(err.message, `Given file system path /some/different/path is not based on source base ` +
-		`path /some/path.`,
+	t.deepEqual(err.message, `Given file system path /some/different/path/ is not based on source base ` +
+		`path /some/path/.`,
 	"Threw with correct error message");
+});
+
+test("getNamespaceFromFsPath: fsPath w/ regex metacharacters", async (t) => {
+	const myProject = clone(libraryETree);
+	myProject.resources.pathMappings = {
+		"/resources/": myProject.resources.configuration.paths.src
+	};
+
+	const libraryFormatter = new LibraryFormatter({project: myProject});
+	sinon.stub(libraryFormatter, "getSourceBasePath").returns("/some/(path");
+
+	const fsPath = "/some/(path/my/namespace";
+	const res = libraryFormatter.getNamespaceFromFsPath(fsPath);
+	t.deepEqual(res, "my/namespace", "Returned correct namespace");
+});
+
+test.serial("getPreloadExcludesFromDotLibrary: No excludes", async (t) => {
+	const log = {
+		verbose: sinon.stub()
+	};
+	sinon.stub(logger, "getLogger").withArgs("types:library:LibraryFormatter").returns(log);
+
+	const LibraryFormatter = mock.reRequire("../../../../lib/types/library/LibraryFormatter");
+
+	const project = {
+		metadata: {
+			name: "test"
+		}
+	};
+
+	const libraryFormatter = new LibraryFormatter({project});
+
+	sinon.stub(libraryFormatter, "getDotLibrary").resolves({
+		content: {library: {}},
+		fsPath: "/path/to/.library"
+	});
+
+	const excludes = await libraryFormatter.getPreloadExcludesFromDotLibrary();
+
+	t.is(excludes, null, "getPreloadExcludesFromDotLibrary should return 'null' when there are no excludes");
+
+	t.is(log.verbose.callCount, 1, "log.verbose should be called once");
+	t.deepEqual(log.verbose.getCall(0).args, [
+		"No preload excludes found in .library of project test at /path/to/.library"
+	]);
+});
+
+test.serial("getPreloadExcludesFromDotLibrary: One exclude", async (t) => {
+	const log = {
+		verbose: sinon.stub()
+	};
+	sinon.stub(logger, "getLogger").withArgs("types:library:LibraryFormatter").returns(log);
+
+	const LibraryFormatter = mock.reRequire("../../../../lib/types/library/LibraryFormatter");
+
+	const project = {
+		metadata: {
+			name: "test"
+		}
+	};
+
+	const libraryFormatter = new LibraryFormatter({project});
+
+	sinon.stub(libraryFormatter, "getDotLibrary").resolves({
+		content: {
+			library: {
+				appData: {
+					packaging: {
+						"all-in-one": {
+							exclude: {
+								$: {
+									name: "test/exclude/**"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		fsPath: "/path/to/.library"
+	});
+
+	const excludes = await libraryFormatter.getPreloadExcludesFromDotLibrary();
+
+	t.deepEqual(excludes, ["test/exclude/**"],
+		"getPreloadExcludesFromDotLibrary should return array with excludes");
+
+	t.is(log.verbose.callCount, 1, "log.verbose should be called once");
+	t.deepEqual(log.verbose.getCall(0).args, [
+		"Found 1 preload excludes in .library file of project test at /path/to/.library"
+	]);
+});
+
+test.serial("getPreloadExcludesFromDotLibrary: Multiple excludes", async (t) => {
+	const log = {
+		verbose: sinon.stub()
+	};
+	sinon.stub(logger, "getLogger").withArgs("types:library:LibraryFormatter").returns(log);
+
+	const LibraryFormatter = mock.reRequire("../../../../lib/types/library/LibraryFormatter");
+
+	const project = {
+		metadata: {
+			name: "test"
+		}
+	};
+
+	const libraryFormatter = new LibraryFormatter({project});
+
+	sinon.stub(libraryFormatter, "getDotLibrary").resolves({
+		content: {
+			library: {
+				appData: {
+					packaging: {
+						"all-in-one": {
+							exclude: [
+								{
+									$: {
+										name: "test/exclude1/**"
+									}
+								},
+								{
+									$: {
+										name: "test/exclude2/**"
+									}
+								},
+								{
+									$: {
+										name: "test/exclude3/**"
+									}
+								}
+							]
+						}
+					}
+				}
+			}
+		},
+		fsPath: "/path/to/.library"
+	});
+
+	const excludes = await libraryFormatter.getPreloadExcludesFromDotLibrary();
+
+	t.deepEqual(excludes, [
+		"test/exclude1/**",
+		"test/exclude2/**",
+		"test/exclude3/**"
+	], "getPreloadExcludesFromDotLibrary should return array with excludes");
+
+	t.is(log.verbose.callCount, 1, "log.verbose should be called once");
+	t.deepEqual(log.verbose.getCall(0).args, [
+		"Found 3 preload excludes in .library file of project test at /path/to/.library"
+	]);
 });

@@ -17,13 +17,19 @@ const applicationGPath = path.join(__dirname, "..", "..", "fixtures", "applicati
 const applicationHPath = path.join(__dirname, "..", "..", "fixtures", "application.h");
 const applicationIPath = path.join(__dirname, "..", "..", "fixtures", "application.i");
 const applicationJPath = path.join(__dirname, "..", "..", "fixtures", "application.j");
+const applicationKPath = path.join(__dirname, "..", "..", "fixtures", "application.k");
+const applicationLPath = path.join(__dirname, "..", "..", "fixtures", "application.l");
+const applicationØPath = path.join(__dirname, "..", "..", "fixtures", "application.ø");
 const collectionPath = path.join(__dirname, "..", "..", "fixtures", "collection");
 const libraryDPath = path.join(__dirname, "..", "..", "fixtures", "library.d");
 const libraryEPath = path.join(__dirname, "..", "..", "fixtures", "library.e");
 const libraryHPath = path.join(__dirname, "..", "..", "fixtures", "library.h");
 const libraryIPath = path.join(__dirname, "..", "..", "fixtures", "library.i");
 const libraryJPath = path.join(__dirname, "..", "..", "fixtures", "library.j");
+const libraryLPath = path.join(__dirname, "..", "..", "fixtures", "library.l");
+const libraryØPath = path.join(__dirname, "..", "..", "fixtures", "library.ø");
 const libraryCore = path.join(__dirname, "..", "..", "fixtures", "sap.ui.core-evo");
+const libraryCoreBuildtime = path.join(__dirname, "..", "..", "fixtures", "sap.ui.core-buildtime");
 const themeJPath = path.join(__dirname, "..", "..", "fixtures", "theme.j");
 
 const recursive = require("recursive-readdir");
@@ -42,8 +48,12 @@ const findFiles = (folder) => {
 	});
 };
 
+function clone(obj) {
+	return JSON.parse(JSON.stringify(obj));
+}
+
 function cloneProjectTree(tree) {
-	const clone = JSON.parse(JSON.stringify(tree));
+	tree = clone(tree);
 
 	function increaseDepth(node) {
 		node._level++;
@@ -52,8 +62,8 @@ function cloneProjectTree(tree) {
 		}
 	}
 
-	increaseDepth(clone);
-	return clone;
+	increaseDepth(tree);
+	return tree;
 }
 
 async function checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath) {
@@ -151,6 +161,7 @@ test.serial("Build", async (t) => {
 	t.deepEqual(appBuildParams.tasks, [
 		"replaceCopyright",
 		"replaceVersion",
+		"replaceBuildtime",
 		"createDebugFiles",
 		"escapeNonAsciiCharacters",
 		"uglify",
@@ -166,10 +177,10 @@ test.serial("Build", async (t) => {
 	t.true(appBuildParams.taskUtil instanceof DummyTaskUtil, "Correct taskUtil instance provided to type");
 
 	t.is(getResourceTagCollectionStub.callCount, 1, "getResourceTagCollection called once");
-	t.is(getTagStub.callCount, 2, "getTag called once");
+	t.is(getTagStub.callCount, 3, "getTag called three times");
 	t.deepEqual(getTagStub.getCall(0).args[1], "👻", "First getTag call with expected tag name");
 	t.deepEqual(getTagStub.getCall(1).args[1], "👻", "Second getTag call with expected tag name");
-	t.is(isRootProjectStub.callCount, 2, "isRootProject called once");
+	t.is(isRootProjectStub.callCount, 3, "isRootProject called three times");
 	t.is(executeCleanupTasksStub.callCount, 1, "Cleanup called once");
 });
 
@@ -417,7 +428,6 @@ test.serial("Build application.g with excludes", (t) => {
 	return builder.build({
 		tree: applicationGTreeWithExcludes,
 		destPath,
-		includeTasks: ["createDebugFiles"],
 		excludedTasks: ["*"]
 	}).then(() => {
 		return findFiles(expectedPath);
@@ -525,6 +535,108 @@ test.serial("Build application.j with resources.json and version info", (t) => {
 		tree: applicationJTree,
 		destPath,
 		excludedTasks: ["createDebugFiles", "generateStandaloneAppBundle"]
+	}).then(() => {
+		return findFiles(expectedPath);
+	}).then((expectedFiles) => {
+		// Check for all directories and files
+		assert.directoryDeepEqual(destPath, expectedPath);
+		// Check for all file contents
+		return checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath);
+	}).then(() => {
+		t.pass();
+	});
+});
+
+test.serial("Build application.k (componentPreload excludes)", (t) => {
+	const destPath = "./test/tmp/build/application.k/dest";
+	const expectedPath = path.join("test", "expected", "build", "application.k", "dest");
+
+	return builder.build({
+		tree: applicationKTree,
+		destPath,
+		includedTasks: ["generateComponentPreload"],
+		excludedTasks: ["*"]
+	}).then(() => {
+		return findFiles(expectedPath);
+	}).then((expectedFiles) => {
+		// Check for all directories and files
+		assert.directoryDeepEqual(destPath, expectedPath);
+		// Check for all file contents
+		return checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath);
+	}).then(() => {
+		t.pass();
+	});
+});
+
+test.serial("Build application.k (package sub-components / componentPreload excludes)", (t) => {
+	const destPath = "./test/tmp/build/application.k/dest-package-subcomponents";
+	const expectedPath = path.join("test", "expected", "build", "application.k", "dest-package-subcomponents");
+
+	return builder.build({
+		tree: applicationKPackageSubcomponentsTree,
+		destPath,
+		includedTasks: ["generateComponentPreload"],
+		excludedTasks: ["*"]
+	}).then(() => {
+		return findFiles(expectedPath);
+	}).then((expectedFiles) => {
+		// Check for all directories and files
+		assert.directoryDeepEqual(destPath, expectedPath);
+		// Check for all file contents
+		return checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath);
+	}).then(() => {
+		t.pass();
+	});
+});
+
+test.serial("Build application.l: minification excludes, w/ namespace", (t) => {
+	const destPath = "./test/tmp/build/application.l/dest";
+	const expectedPath = path.join("test", "expected", "build", "application.l", "dest");
+
+	return builder.build({
+		tree: applicationLTree,
+		destPath,
+		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo"]
+	}).then(() => {
+		return findFiles(expectedPath);
+	}).then((expectedFiles) => {
+		// Check for all directories and files
+		assert.directoryDeepEqual(destPath, expectedPath);
+		// Check for all file contents
+		return checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath);
+	}).then(() => {
+		t.pass();
+	});
+});
+
+test.serial("Build application.l: minification excludes, w/o namespace", (t) => {
+	const destPath = "./test/tmp/build/application.l/dest";
+	const expectedPath = path.join("test", "expected", "build", "application.l", "dest");
+
+	return builder.build({
+		tree: applicationLTreeNoNamespace,
+		destPath,
+		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo"]
+	}).then(() => {
+		return findFiles(expectedPath);
+	}).then((expectedFiles) => {
+		// Check for all directories and files
+		assert.directoryDeepEqual(destPath, expectedPath);
+		// Check for all file contents
+		return checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath);
+	}).then(() => {
+		t.pass();
+	});
+});
+
+test.serial("Build application.ø", (t) => {
+	const destPath = "./test/tmp/build/application.ø/dest";
+	const expectedPath = path.join("test", "expected", "build", "application.ø", "dest");
+
+	return builder.build({
+		tree: applicationØTree,
+		destPath,
+		excludedTasks: ["generateVersionInfo"]
 	}).then(() => {
 		return findFiles(expectedPath);
 	}).then((expectedFiles) => {
@@ -667,6 +779,26 @@ test.serial("Build library.j with JSDoc build only", (t) => {
 	});
 });
 
+test.serial("Build library.l", (t) => {
+	const destPath = path.join("test", "tmp", "build", "library.l", "dest");
+	const expectedPath = path.join("test", "expected", "build", "library.l", "dest");
+
+	return builder.build({
+		tree: libraryLTree,
+		destPath,
+		excludedTasks: ["generateLibraryManifest", "generateLibraryPreload"]
+	}).then(() => {
+		return findFiles(expectedPath);
+	}).then((expectedFiles) => {
+		// Check for all directories and files
+		assert.directoryDeepEqual(destPath, expectedPath);
+		// Check for all file contents
+		return checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath);
+	}).then(() => {
+		t.pass();
+	});
+});
+
 test.serial("Build theme.j even without an library", (t) => {
 	const destPath = "./test/tmp/build/theme.j/dest";
 	const expectedPath = "./test/expected/build/theme.j/dest";
@@ -700,6 +832,56 @@ test.serial("Build theme.j even without an library with resources.json", (t) => 
 		// Check for all directories and files
 		assert.directoryDeepEqual(destPath, expectedPath);
 
+		return checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath);
+	}).then(() => {
+		t.pass();
+	});
+});
+
+test.serial("Build library.ø", (t) => {
+	const destPath = "./test/tmp/build/library.ø/dest";
+	const expectedPath = path.join("test", "expected", "build", "library.ø", "dest");
+
+	return builder.build({
+		tree: libraryØTree,
+		destPath
+	}).then(() => {
+		return findFiles(expectedPath);
+	}).then((expectedFiles) => {
+		// Check for all directories and files
+		assert.directoryDeepEqual(destPath, expectedPath);
+
+		// Check for all file contents
+		return checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath);
+	}).then(() => {
+		t.pass();
+	});
+});
+
+test.serial("Build library.coreBuildtime: replaceBuildtime", (t) => {
+	const destPath = path.join("test", "tmp", "build", "library.coreBuildtime", "dest");
+	const expectedPath = path.join("test", "expected", "build", "sap.ui.core-buildtime", "dest");
+
+	const dateStubs = [
+		sinon.stub(Date.prototype, "getFullYear").returns(2022),
+		sinon.stub(Date.prototype, "getMonth").returns(5),
+		sinon.stub(Date.prototype, "getDate").returns(20),
+		sinon.stub(Date.prototype, "getHours").returns(16),
+		sinon.stub(Date.prototype, "getMinutes").returns(30),
+	];
+
+	return builder.build({
+		tree: libraryCoreBuildtimeTree,
+		destPath,
+		excludedTasks: ["generateLibraryManifest", "generateLibraryPreload"]
+	}).then(() => {
+		dateStubs.forEach((stub) => stub.restore());
+		return findFiles(expectedPath);
+	}).then((expectedFiles) => {
+		// Check for all directories and files
+		assert.directoryDeepEqual(destPath, expectedPath);
+
+		// Check for all file contents
 		return checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath);
 	}).then(() => {
 		t.pass();
@@ -1172,6 +1354,148 @@ const applicationJTree = {
 	}
 };
 
+const applicationKTree = {
+	"id": "application.k",
+	"version": "1.0.0",
+	"path": applicationKPath,
+	"_level": 0,
+	"_isRoot": true,
+	"specVersion": "0.1",
+	"type": "application",
+	"metadata": {
+		"name": "application.k",
+		"namespace": "application/k",
+		"copyright": "Some fancy copyright"
+	},
+	"dependencies": [],
+	"resources": {
+		"configuration": {
+			"paths": {
+				"webapp": "webapp"
+			},
+			"propertiesFileSourceEncoding": "ISO-8859-1"
+		},
+		"pathMappings": {
+			"/": "webapp"
+		}
+	},
+	"builder": {
+		"componentPreload": {
+			"namespaces": [
+				"application/k",
+				"application/k/subcomponentA",
+				"application/k/subcomponentB"
+			],
+			"excludes": [
+				"application/k/**/thirdparty/",
+				"!application/k/subcomponentB/thirdparty/"
+			]
+		}
+	}
+};
+
+const applicationKPackageSubcomponentsTree = clone(applicationKTree);
+applicationKPackageSubcomponentsTree.builder = {
+	"componentPreload": {
+		"excludes": [
+			"application/k/**/thirdparty/",
+			"!application/k/subcomponentB/thirdparty/"
+		]
+	}
+};
+
+const applicationLTree = {
+	"id": "application.l",
+	"version": "1.0.0",
+	"path": applicationLPath,
+	"dependencies": [],
+	"_level": 0,
+	"_isRoot": true,
+	"specVersion": "2.6",
+	"type": "application",
+	"metadata": {
+		"name": "application.l",
+		"namespace": "application/l"
+	},
+	"resources": {
+		"configuration": {
+			"paths": {
+				"webapp": "webapp"
+			},
+			"propertiesFileSourceEncoding": "ISO-8859-1"
+		},
+		"pathMappings": {
+			"/": "webapp"
+		}
+	},
+	"builder": {
+		"minification": {
+			"excludes": [
+				"application/l/**/thirdparty/**",
+				"!application/l/subdir/thirdparty/File1.js"
+			]
+		}
+	}
+};
+
+const applicationLTreeNoNamespace = clone(applicationLTree);
+applicationLTreeNoNamespace.metadata = {"name": "application.l"};
+applicationLTreeNoNamespace.builder.minification.excludes = [
+	"**/thirdparty/**",
+	"!subdir/thirdparty/File1.js"
+];
+
+const applicationØTree = {
+	"id": "application.ø",
+	"version": "1.0.0",
+	"path": applicationØPath,
+	"dependencies": [
+		{
+			"id": "sap.ui.core-evo",
+			"version": "1.0.0",
+			"path": libraryCore,
+			"dependencies": [],
+			"_level": 1,
+			"specVersion": "0.1",
+			"type": "library",
+			"metadata": {
+				"name": "sap.ui.core",
+				"namespace": "sap/ui/core",
+				"copyright": "Some fancy copyright"
+			},
+			"resources": {
+				"configuration": {
+					"paths": {
+						"src": "main/src"
+					}
+				},
+				"pathMappings": {
+					"/resources/": "main/src"
+				}
+			}
+		}
+	],
+	"_level": 0,
+	"_isRoot": true,
+	"specVersion": "2.0",
+	"type": "application",
+	"metadata": {
+		"name": "application.ø",
+		"namespace": "application/ø"
+	},
+	"resources": {
+		"configuration": {
+			"paths": {
+				webapp: "wêbäpp"
+			},
+			"propertiesFileSourceEncoding": "UTF-8",
+		},
+		"pathMappings": {
+			"/": "wêbäpp"
+		}
+	}
+};
+
 const libraryETree = {
 	"id": "library.e",
 	"version": "1.0.0",
@@ -1394,6 +1718,122 @@ const libraryJTree = {
 			"paths": {
 				"src": "main/src"
 			}
+		},
+		"pathMappings": {
+			"/resources/": "main/src"
+		}
+	}
+};
+
+const libraryLTree = {
+	"id": "library.l",
+	"version": "1.0.0",
+	"path": libraryLPath,
+	"dependencies": [],
+	"_level": 0,
+	"_isRoot": true,
+	"specVersion": "2.6",
+	"type": "library",
+	"metadata": {
+		"name": "library.l",
+		"namespace": "library/l",
+		"copyright": "Some fancy copyright"
+	},
+	"resources": {
+		"configuration": {
+			"paths": {
+				"src": "main/src"
+			},
+			"propertiesFileSourceEncoding": "ISO-8859-1"
+		},
+		"pathMappings": {
+			"/resources/": "main/src"
+		}
+	},
+	"builder": {
+		"minification": {
+			"excludes": [
+				"**/thirdparty/**",
+				"!**/subdir/thirdparty/File1.js"
+			]
+		}
+	}
+};
+
+const libraryØTree = {
+	"id": "library.ø",
+	"version": "1.0.0",
+	"path": libraryØPath,
+	"dependencies": [
+		{
+			"id": "sap.ui.core-evo",
+			"version": "1.0.0",
+			"path": libraryCore,
+			"dependencies": [],
+			"_level": 1,
+			"specVersion": "0.1",
+			"type": "library",
+			"metadata": {
+				"name": "sap.ui.core",
+				"namespace": "sap/ui/core",
+				"copyright": "Some fancy copyright"
+			},
+			"resources": {
+				"configuration": {
+					"paths": {
+						"src": "main/src"
+					}
+				},
+				"pathMappings": {
+					"/resources/": "main/src"
+				}
+			}
+		}
+	],
+	"_level": 0,
+	"_isRoot": true,
+	"specVersion": "2.0",
+	"type": "library",
+	"metadata": {
+		"name": "library.ø",
+		"namespace": "library/ø",
+		"copyright": "Some fancy copyright"
+	},
+	"resources": {
+		"configuration": {
+			"paths": {
+				"src": "máin/ßrc",
+				"test": "máin/吉"
+			},
+			"propertiesFileSourceEncoding": "UTF-8"
+		},
+		"pathMappings": {
+			"/resources/": "máin/ßrc",
+			"/test-resources/": "máin/吉"
+		}
+	}
+};
+
+const libraryCoreBuildtimeTree = {
+	"id": "library.coreBuildtime",
+	"version": "1.0.0",
+	"path": libraryCoreBuildtime,
+	"dependencies": [],
+	"_level": 0,
+	"_isRoot": true,
+	"specVersion": "0.1",
+	"type": "library",
+	"metadata": {
+		"name": "library.coreBuildtime",
+		"namespace": "library/coreBuildtime",
+		"copyright": "Some fancy copyright"
+	},
+	"resources": {
+		"configuration": {
+			"paths": {
+				"src": "main/src"
+			},
+			"propertiesFileSourceEncoding": "ISO-8859-1"
 		},
 		"pathMappings": {
 			"/resources/": "main/src"

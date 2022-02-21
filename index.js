@@ -46,6 +46,14 @@ module.exports = {
 		 */
 		debugFileCreator: "./lib/processors/debugFileCreator",
 		/**
+		 * @type {import('./lib/processors/libraryLessGenerator')}
+		 */
+		libraryLessGenerator: "./lib/processors/libraryLessGenerator",
+		/**
+		 * @type {import('./lib/processors/manifestCreator')}
+		 */
+		manifestCreator: "./lib/processors/manifestCreator",
+		/**
 		 * @type {import('./lib/processors/resourceCopier')}
 		 */
 		resourceCopier: "./lib/processors/resourceCopier",
@@ -97,6 +105,10 @@ module.exports = {
 		 */
 		generateStandaloneAppBundle: "./lib/tasks/bundlers/generateStandaloneAppBundle",
 		/**
+		 * @type {import('./lib/tasks/generateThemeDesignerResources')}
+		 */
+		generateThemeDesignerResources: "./lib/tasks/generateThemeDesignerResources",
+		/**
 		 * @type {import('./lib/tasks/bundlers/generateBundle')}
 		 */
 		generateBundle: "./lib/tasks/bundlers/generateBundle",
@@ -140,6 +152,10 @@ module.exports = {
 		 * @type {import('./lib/tasks/replaceVersion')}
 		 */
 		replaceVersion: "./lib/tasks/replaceVersion",
+		/**
+		 * @type {import('./lib/tasks/replaceBuildtime')}
+		 */
+		replaceBuildtime: "./lib/tasks/replaceBuildtime",
 		/**
 		 * @type {import('./lib/tasks/transformBootstrapHtml')}
 		 */

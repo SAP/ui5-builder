@@ -2,7 +2,173 @@
 All notable changes to this project will be documented in this file.  
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-A list of unreleased changes can be found [here](https://github.com/SAP/ui5-builder/compare/v2.4.5...HEAD).
+A list of unreleased changes can be found [here](https://github.com/SAP/ui5-builder/compare/v2.11.3...HEAD).
+
+<a name="v2.11.3"></a>
+## [v2.11.3] - 2021-12-12
+### Bug Fixes
+- Enable buildThemes for libraries without .library [`7b941a7`](https://github.com/SAP/ui5-builder/commit/7b941a797210463a9fa8ca50753662c5db373aa6)
+
+
+<a name="v2.11.2"></a>
+## [v2.11.2] - 2021-11-17
+### Bug Fixes
+- **Builder:** Emit warning on bundleInfo name without extension [`ed0da12`](https://github.com/SAP/ui5-builder/commit/ed0da123ac084d126a28f0f34d9740c310d91902)
+- **manifestCreator:** Trim whitespace/new-lines for sap.app/title [`019cfd7`](https://github.com/SAP/ui5-builder/commit/019cfd7031a2bd63ce93801ad027413151a3b060)
+
+
+<a name="v2.11.1"></a>
+## [v2.11.1] - 2021-10-19
+### Bug Fixes
+- Minification excludes for application projects [`7f6fd68`](https://github.com/SAP/ui5-builder/commit/7f6fd68e1aed9131896723f1231816287eaf2fce)
+
+
+<a name="v2.11.0"></a>
+## [v2.11.0] - 2021-10-19
+### Bug Fixes
+- **manifestCreator:** supportedThemes should only list relevant themes [`01f3859`](https://github.com/SAP/ui5-builder/commit/01f3859070b6955b9824b0949e633c6d40244633)
+
+### Features
+- Support build minification excludes ([#653](https://github.com/SAP/ui5-builder/issues/653)) [`0aa2301`](https://github.com/SAP/ui5-builder/commit/0aa2301df4c5d40c531da52e2d6314955b95b396)
+
+
+<a name="v2.10.0"></a>
+## [v2.10.0] - 2021-10-05
+### Features
+- Introduce build task replaceBuildtime [`2ad0960`](https://github.com/SAP/ui5-builder/commit/2ad09603deee3bc26eae36aa36a7a4ac10f83cb0)
+
+
+<a name="v2.9.5"></a>
+## [v2.9.5] - 2021-08-25
+### Bug Fixes
+- **AbstractBuilder:** Multiple custom task executions did not run ([#636](https://github.com/SAP/ui5-builder/issues/636)) [`c05587a`](https://github.com/SAP/ui5-builder/commit/c05587a3cab93c8852832098318235dbfbcce49f)
+- **Builder:** Handle files without extension ([#637](https://github.com/SAP/ui5-builder/issues/637)) [`07aaa24`](https://github.com/SAP/ui5-builder/commit/07aaa247ae8c07f8c7bb13a93439ef2c1270cb6c)
+
+
+<a name="v2.9.4"></a>
+## [v2.9.4] - 2021-07-23
+### Bug Fixes
+- **XMLTemplateAnalyzer:** Include document name for XML parsing errors [`3c88ca4`](https://github.com/SAP/ui5-builder/commit/3c88ca47aae85892360e4e4cf4b50860a0f430e3)
+
+
+<a name="v2.9.3"></a>
+## [v2.9.3] - 2021-07-01
+### Bug Fixes
+- **LibraryFormatter:** Fix handling of paths containing special characters [`2093562`](https://github.com/SAP/ui5-builder/commit/2093562adec588a9c1f50125e0b739836e6c76c8)
+
+
+<a name="v2.9.2"></a>
+## [v2.9.2] - 2021-06-17
+### Bug Fixes
+- Switch from esprima to espree ([#615](https://github.com/SAP/ui5-builder/issues/615)) [`c3d50e3`](https://github.com/SAP/ui5-builder/commit/c3d50e36aacf374f7616278aa590a6423c3294fe)
+- **lbt/resources/ResourceCollector:** Ensure proper matching of indicator files ([#614](https://github.com/SAP/ui5-builder/issues/614)) [`2d3a1d8`](https://github.com/SAP/ui5-builder/commit/2d3a1d86f06f0eb223b7ae9843d6479ebb1e14e4)
+
+
+<a name="v2.9.1"></a>
+## [v2.9.1] - 2021-06-08
+### Bug Fixes
+- **JSDoc:** Use namespace to derive uilib name for jsdoc generator [`2077130`](https://github.com/SAP/ui5-builder/commit/2077130d52305e4f46c3230c94001812beb2eb36)
+- **JSDoc:** add project name to JSDoc configuration and api.json ([#609](https://github.com/SAP/ui5-builder/issues/609)) [`419ce38`](https://github.com/SAP/ui5-builder/commit/419ce3836bce117fb3d5fc05af11caef5c8a432a)
+- **lib/processors/debugFileCreator:** Add -dbg suffix only to files ([#611](https://github.com/SAP/ui5-builder/issues/611)) [`9da2f7b`](https://github.com/SAP/ui5-builder/commit/9da2f7b7b53b41adbce772e9823cee24b50a9aa9)
+
+### Dependency Updates
+- Bump cheerio from 0.22.0 to 1.0.0-rc.9 [`8bdb146`](https://github.com/SAP/ui5-builder/commit/8bdb1462e721127eaf860665a1361b6877e873a1)
+
+
+<a name="v2.9.0"></a>
+## [v2.9.0] - 2021-06-01
+### Features
+- Support writing 'bundles' config as part of a bundle ([#396](https://github.com/SAP/ui5-builder/issues/396)) [`b5f372a`](https://github.com/SAP/ui5-builder/commit/b5f372a6ab9c31f3acef41a59e6cecd6681be2dd)
+
+
+<a name="v2.8.4"></a>
+## [v2.8.4] - 2021-05-17
+### Bug Fixes
+- **XMLTemplateAnalyzer:** Properly detect conditional dependencies [`0f56490`](https://github.com/SAP/ui5-builder/commit/0f56490cedcdebc363cc7f1d99f03cfde907804f)
+- **lbt/bundle/Builder:** Preserve comments in bundles [`8dfa919`](https://github.com/SAP/ui5-builder/commit/8dfa9191d36cb60ce44b64536b6f6b2b766b87c2)
+
+
+<a name="v2.8.3"></a>
+## [v2.8.3] - 2021-04-19
+### Bug Fixes
+- Emit warning when including/excluding unknown tasks [`854f456`](https://github.com/SAP/ui5-builder/commit/854f456e06e163e8423702e4fe893905e240adfa)
+
+
+<a name="v2.8.2"></a>
+## [v2.8.2] - 2021-03-11
+### Bug Fixes
+- **LibraryFormatter:** Do not throw for missing .library in legacy OpenUI5 theme libraries [`f7e22ba`](https://github.com/SAP/ui5-builder/commit/f7e22ba866bf6a61b0d2932ef18aad53127641fd)
+
+### Dependency Updates
+- Bump less-openui5 from 0.10.0 to 0.11.0 ([#594](https://github.com/SAP/ui5-builder/issues/594)) [`f3d174b`](https://github.com/SAP/ui5-builder/commit/f3d174be1fc2ab66a62632439592b2899680c093)
+
+
+<a name="v2.8.1"></a>
+## [v2.8.1] - 2021-03-04
+### Bug Fixes
+- **generateResourcesJson:** Include dependencies of XML resources [`0fc364d`](https://github.com/SAP/ui5-builder/commit/0fc364ded64eb5bae4085397dc1831e04b19edf4)
+- **manifestCreator:** 'embeds' should list all components ([#575](https://github.com/SAP/ui5-builder/issues/575)) [`11f823a`](https://github.com/SAP/ui5-builder/commit/11f823a77e72cfa4c096e7e8f4277a6a6b9400b8)
+- **moduleBundler:** Apply defaultFileTypes ([#580](https://github.com/SAP/ui5-builder/issues/580)) [`42f6474`](https://github.com/SAP/ui5-builder/commit/42f64744a299e8548f6dbdb7bcbb8b3cef72f1f4)
+- **resourceListCreator:** Include dependencies of subModules ([#588](https://github.com/SAP/ui5-builder/issues/588)) [`fe61d6e`](https://github.com/SAP/ui5-builder/commit/fe61d6eba6671ca31f7c49a7d1281adb6d5f2114)
+- **versionInfoGenerator:** fix hasOwnPreload flag ([#591](https://github.com/SAP/ui5-builder/issues/591)) [`73a0f8b`](https://github.com/SAP/ui5-builder/commit/73a0f8baa0248aef3ac6c2b114082aa120ef6e22)
+
+
+<a name="v2.8.0"></a>
+## [v2.8.0] - 2021-02-09
+### Features
+- Add Library/Component preload exclude configuration ([#573](https://github.com/SAP/ui5-builder/issues/573)) [`f1644a4`](https://github.com/SAP/ui5-builder/commit/f1644a4d75c4b3ffb5c092f3a24c74b9123afedc)
+
+
+<a name="v2.7.2"></a>
+## [v2.7.2] - 2021-01-29
+### Dependency Updates
+- Bump less-openui5 from 0.9.0 to 0.10.0 [`4674fef`](https://github.com/SAP/ui5-builder/commit/4674fef348cf0f5b1ac76fff931335244d64e66f)
+
+
+<a name="v2.7.1"></a>
+## [v2.7.1] - 2021-01-28
+### Bug Fixes
+- **JSDoc:** adapt sdkTransformer to change in transformApiJson.js ([#574](https://github.com/SAP/ui5-builder/issues/574)) [`655f731`](https://github.com/SAP/ui5-builder/commit/655f731191f1210d9f72bee9f60fcebdc863bc36)
+- **versionInfoGenerator:** manifest without embeds [#486](https://github.com/SAP/ui5-builder/issues/486) ([#576](https://github.com/SAP/ui5-builder/issues/576)) [`4d86226`](https://github.com/SAP/ui5-builder/commit/4d86226abf6ce549f3cf719068270014ddeefb5a)
+
+
+<a name="v2.7.0"></a>
+## [v2.7.0] - 2021-01-26
+### Features
+- Versioninfo enrich with manifest infos ([#554](https://github.com/SAP/ui5-builder/issues/554)) [`7603ece`](https://github.com/SAP/ui5-builder/commit/7603ece36a74592c7756f6147eed91d08a5788a6)
+- Align JSDoc template & plugin with OpenUI5 1.87.0 ([#572](https://github.com/SAP/ui5-builder/issues/572)) [`0cb02ac`](https://github.com/SAP/ui5-builder/commit/0cb02acee2b070889146ef9f725cc139691f0ab2)
+
+
+<a name="v2.6.1"></a>
+## [v2.6.1] - 2021-01-21
+### Bug Fixes
+- **Theme Build:** Only process themes within library namespace ([#570](https://github.com/SAP/ui5-builder/issues/570)) [`8cecc01`](https://github.com/SAP/ui5-builder/commit/8cecc01ccbd1a84e2ede91e618f31dcf6c00b3fd)
+- **processors/libraryLessGenerator:** Don't throw in case of import errors [`0e25b59`](https://github.com/SAP/ui5-builder/commit/0e25b59fe8e7e37f4f6b5c947a76b4da6f79469f)
+
+
+<a name="v2.6.0"></a>
+## [v2.6.0] - 2021-01-14
+### Features
+- Add 'generateThemeDesignerResources' task [`03241c0`](https://github.com/SAP/ui5-builder/commit/03241c0e2599cb0928cbbf34ddc678634b2d5a93)
+- Add 'libraryLessGenerator' processor ([#560](https://github.com/SAP/ui5-builder/issues/560)) [`a7e1e5c`](https://github.com/SAP/ui5-builder/commit/a7e1e5c0c4b63d9bab3f6645deff8e0f4187d305)
+- **manifestBundler:** Add support for sap.app/i18n/enhanceWith ([#564](https://github.com/SAP/ui5-builder/issues/564)) [`1b7a277`](https://github.com/SAP/ui5-builder/commit/1b7a277aeeba9a43b647a46ae4487878ca2d6219)
+- **manifestCreator:** enrich manifest with supportedLocales in i18n (for libraries) ([#547](https://github.com/SAP/ui5-builder/issues/547)) [`8102034`](https://github.com/SAP/ui5-builder/commit/810203477647c52948eb357ce9679373d32dd9b1)
+
+
+<a name="v2.5.1"></a>
+## [v2.5.1] - 2020-12-18
+### Bug Fixes
+- **Windows:** Correctly handle project paths containing non-ASCII characters [`b229bf3`](https://github.com/SAP/ui5-builder/commit/b229bf315097591d2e870b74fb2b92b26b178877)
+
+
+<a name="v2.5.0"></a>
+## [v2.5.0] - 2020-12-15
+### Bug Fixes
+- **manifestCreator:** Add component path to error logs [`049b9ee`](https://github.com/SAP/ui5-builder/commit/049b9ee22f8bf6c1bb41f9ba32be65a8fce38f23)
+
+### Features
+- **ApplicationFormatter:** Implement manifest.appdescr_variant fallback ([#545](https://github.com/SAP/ui5-builder/issues/545)) [`6d44481`](https://github.com/SAP/ui5-builder/commit/6d44481ad3668758d4c008d28b11cb47ca6bbee1)
+
 
 <a name="v2.4.5"></a>
 ## [v2.4.5] - 2020-11-30
@@ -473,6 +639,29 @@ to load the custom bundle file instead.
 - Add ability to configure component preloads and custom bundles [`2241e5f`](https://github.com/SAP/ui5-builder/commit/2241e5ff98fd95f1f80cc74959655ae7a9c660e7)
 
 
+[v2.11.3]: https://github.com/SAP/ui5-builder/compare/v2.11.2...v2.11.3
+[v2.11.2]: https://github.com/SAP/ui5-builder/compare/v2.11.1...v2.11.2
+[v2.11.1]: https://github.com/SAP/ui5-builder/compare/v2.11.0...v2.11.1
+[v2.11.0]: https://github.com/SAP/ui5-builder/compare/v2.10.0...v2.11.0
+[v2.10.0]: https://github.com/SAP/ui5-builder/compare/v2.9.5...v2.10.0
+[v2.9.5]: https://github.com/SAP/ui5-builder/compare/v2.9.4...v2.9.5
+[v2.9.4]: https://github.com/SAP/ui5-builder/compare/v2.9.3...v2.9.4
+[v2.9.3]: https://github.com/SAP/ui5-builder/compare/v2.9.2...v2.9.3
+[v2.9.2]: https://github.com/SAP/ui5-builder/compare/v2.9.1...v2.9.2
+[v2.9.1]: https://github.com/SAP/ui5-builder/compare/v2.9.0...v2.9.1
+[v2.9.0]: https://github.com/SAP/ui5-builder/compare/v2.8.4...v2.9.0
+[v2.8.4]: https://github.com/SAP/ui5-builder/compare/v2.8.3...v2.8.4
+[v2.8.3]: https://github.com/SAP/ui5-builder/compare/v2.8.2...v2.8.3
+[v2.8.2]: https://github.com/SAP/ui5-builder/compare/v2.8.1...v2.8.2
+[v2.8.1]: https://github.com/SAP/ui5-builder/compare/v2.8.0...v2.8.1
+[v2.8.0]: https://github.com/SAP/ui5-builder/compare/v2.7.2...v2.8.0
+[v2.7.2]: https://github.com/SAP/ui5-builder/compare/v2.7.1...v2.7.2
+[v2.7.1]: https://github.com/SAP/ui5-builder/compare/v2.7.0...v2.7.1
+[v2.7.0]: https://github.com/SAP/ui5-builder/compare/v2.6.1...v2.7.0
+[v2.6.1]: https://github.com/SAP/ui5-builder/compare/v2.6.0...v2.6.1
+[v2.6.0]: https://github.com/SAP/ui5-builder/compare/v2.5.1...v2.6.0
+[v2.5.1]: https://github.com/SAP/ui5-builder/compare/v2.5.0...v2.5.1
+[v2.5.0]: https://github.com/SAP/ui5-builder/compare/v2.4.5...v2.5.0
 [v2.4.5]: https://github.com/SAP/ui5-builder/compare/v2.4.4...v2.4.5
 [v2.4.4]: https://github.com/SAP/ui5-builder/compare/v2.4.3...v2.4.4
 [v2.4.3]: https://github.com/SAP/ui5-builder/compare/v2.4.2...v2.4.3
