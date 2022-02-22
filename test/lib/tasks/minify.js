@@ -70,11 +70,13 @@ test();`;
 	}
 	t.deepEqual(await resSourceMap.getString(), expectedSourceMap, "Correct source map content");
 
-	t.is(taskUtil.setTag.callCount, 3, "taskUtil.setTag was called 3 times");
+	t.is(taskUtil.setTag.callCount, 4, "taskUtil.setTag was called 4 times");
 	t.deepEqual(taskUtil.setTag.getCall(0).args, [res, "1️⃣"], "First taskUtil.setTag call with expected arguments");
 	t.deepEqual(taskUtil.setTag.getCall(1).args, [resDbg, "2️⃣"],
 		"Second taskUtil.setTag call with expected arguments");
-	t.deepEqual(taskUtil.setTag.getCall(2).args, [resSourceMap, "3️⃣"],
+	t.deepEqual(taskUtil.setTag.getCall(2).args, [resSourceMap, "1️⃣"],
 		"Third taskUtil.setTag call with expected arguments");
+	t.deepEqual(taskUtil.setTag.getCall(3).args, [resSourceMap, "3️⃣"],
+		"Fourth taskUtil.setTag call with expected arguments");
 });
 
