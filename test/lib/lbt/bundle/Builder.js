@@ -56,6 +56,7 @@ test("integration: createBundle with exposedGlobals", async (t) => {
 	const pool = new ResourcePool();
 	pool.addResource({
 		name: "a.js",
+		getPath: () => "a.js",
 		string: function() {
 			return this.buffer();
 		},
@@ -63,6 +64,7 @@ test("integration: createBundle with exposedGlobals", async (t) => {
 	});
 	pool.addResource({
 		name: "ui5loader.js",
+		getPath: () => "ui5loader.js",
 		string: function() {
 			return this.buffer();
 		},
@@ -70,6 +72,7 @@ test("integration: createBundle with exposedGlobals", async (t) => {
 	});
 	pool.addResource({
 		name: "a.library",
+		getPath: () => "a.library",
 		string: function() {
 			return this.buffer();
 		},
@@ -126,6 +129,7 @@ test("integration: createBundle EVOBundleFormat (ui5loader.js)", async (t) => {
 	const pool = new ResourcePool();
 	pool.addResource({
 		name: "ui5loader.js",
+		getPath: () => "ui5loader.js",
 		string: function() {
 			return this.buffer();
 		},
@@ -133,6 +137,7 @@ test("integration: createBundle EVOBundleFormat (ui5loader.js)", async (t) => {
 	});
 	pool.addResource({
 		name: "jquery.sap.global-dbg.js",
+		getPath: () => "jquery.sap.global-dbg.js",
 		string: function() {
 			return this.buffer();
 		},
@@ -140,6 +145,7 @@ test("integration: createBundle EVOBundleFormat (ui5loader.js)", async (t) => {
 	});
 	pool.addResource({
 		name: "myModule.js",
+		getPath: () => "myModule.js",
 		string: function() {
 			return this.buffer();
 		},
@@ -194,6 +200,7 @@ test("integration: createBundle EVOBundleFormat, using predefine calls", async (
 	const pool = new ResourcePool();
 	pool.addResource({
 		name: "ui5loader.js",
+		getPath: () => "ui5loader.js",
 		string: function() {
 			return this.buffer();
 		},
@@ -201,6 +208,7 @@ test("integration: createBundle EVOBundleFormat, using predefine calls", async (
 	});
 	pool.addResource({ // the pool must contain this to activate optimization markers
 		name: "jquery.sap.global-dbg.js",
+		getPath: () => "jquery.sap.global-dbg.js",
 		string: function() {
 			return this.buffer();
 		},
@@ -208,6 +216,7 @@ test("integration: createBundle EVOBundleFormat, using predefine calls", async (
 	});
 	pool.addResource({
 		name: "jquery.sap.global.js",
+		getPath: () => "jquery.sap.global.js",
 		string: function() {
 			return this.buffer();
 		},
@@ -215,6 +224,7 @@ test("integration: createBundle EVOBundleFormat, using predefine calls", async (
 	});
 	pool.addResource({
 		name: "jquery.sap.pony1.js",
+		getPath: () => "jquery.sap.pony1.js",
 		string: function() {
 			return this.buffer();
 		},
@@ -222,6 +232,7 @@ test("integration: createBundle EVOBundleFormat, using predefine calls", async (
 	});
 	pool.addResource({
 		name: "jquery.sap.pony2.js",
+		getPath: () => "jquery.sap.pony2.js",
 		string: function() {
 			return this.buffer();
 		},
@@ -232,6 +243,7 @@ test("integration: createBundle EVOBundleFormat, using predefine calls", async (
 	});
 	pool.addResource({
 		name: "myRawModule.js",
+		getPath: () => "myRawModule.js",
 		string: function() {
 			return this.buffer();
 		},
@@ -239,6 +251,7 @@ test("integration: createBundle EVOBundleFormat, using predefine calls", async (
 	});
 	pool.addResource({
 		name: "myModuleUsingGlobalScope.js",
+		getPath: () => "myModuleUsingGlobalScope.js",
 		string: function() {
 			return this.buffer();
 		},
@@ -313,6 +326,7 @@ test("integration: createBundle EVOBundleFormat, using predefine calls, no optim
 	const pool = new ResourcePool();
 	pool.addResource({
 		name: "ui5loader.js",
+		getPath: () => "ui5loader.js",
 		string: function() {
 			return this.buffer();
 		},
@@ -320,6 +334,7 @@ test("integration: createBundle EVOBundleFormat, using predefine calls, no optim
 	});
 	pool.addResource({ // the pool must contain this to activate optimization markers
 		name: "jquery.sap.global-dbg.js",
+		getPath: () => "jquery.sap.global-dbg.js",
 		string: function() {
 			return this.buffer();
 		},
@@ -327,6 +342,7 @@ test("integration: createBundle EVOBundleFormat, using predefine calls, no optim
 	});
 	pool.addResource({
 		name: "jquery.sap.global.js",
+		getPath: () => "jquery.sap.global.js",
 		string: function() {
 			return this.buffer();
 		},
@@ -334,6 +350,7 @@ test("integration: createBundle EVOBundleFormat, using predefine calls, no optim
 	});
 	pool.addResource({
 		name: "jquery.sap.pony1.js",
+		getPath: () => "jquery.sap.pony1.js",
 		string: function() {
 			return this.buffer();
 		},
@@ -341,6 +358,7 @@ test("integration: createBundle EVOBundleFormat, using predefine calls, no optim
 	});
 	pool.addResource({
 		name: "jquery.sap.pony2.js",
+		getPath: () => "jquery.sap.pony2.js",
 		string: function() {
 			return this.buffer();
 		},
@@ -351,6 +369,7 @@ test("integration: createBundle EVOBundleFormat, using predefine calls, no optim
 	});
 	pool.addResource({
 		name: "myRawModule.js",
+		getPath: () => "myRawModule.js",
 		string: function() {
 			return this.buffer();
 		},
@@ -358,6 +377,7 @@ test("integration: createBundle EVOBundleFormat, using predefine calls, no optim
 	});
 	pool.addResource({
 		name: "myModuleUsingGlobalScope.js",
+		getPath: () => "myModuleUsingGlobalScope.js",
 		string: function() {
 			return this.buffer();
 		},
@@ -432,6 +452,7 @@ test("integration: createBundle (bootstrap bundle)", async (t) => {
 	const pool = new ResourcePool();
 	pool.addResource({
 		name: "ui5loader.js",
+		getPath: () => "ui5loader.js",
 		string: function() {
 			return this.buffer();
 		},
@@ -439,6 +460,7 @@ test("integration: createBundle (bootstrap bundle)", async (t) => {
 	});
 	pool.addResource({
 		name: "sap/ui/core/Core.js",
+		getPath: () => "sap/ui/core/Core.js",
 		string: function() {
 			return this.buffer();
 		},
@@ -501,6 +523,7 @@ test("integration: createBundle UI5BundleFormat (non ui5loader.js)", async (t) =
 	const pool = new ResourcePool();
 	pool.addResource({
 		name: "sap-ui-core.js",
+		getPath: () => "sap-ui-core.js",
 		string: function() {
 			return this.buffer();
 		},
@@ -508,6 +531,7 @@ test("integration: createBundle UI5BundleFormat (non ui5loader.js)", async (t) =
 	});
 	pool.addResource({
 		name: "jquery.sap.global-dbg.js",
+		getPath: () => "jquery.sap.global-dbg.js",
 		string: function() {
 			return this.buffer();
 		},
@@ -515,6 +539,7 @@ test("integration: createBundle UI5BundleFormat (non ui5loader.js)", async (t) =
 	});
 	pool.addResource({
 		name: "myModule.js",
+		getPath: () => "myModule.js",
 		string: function() {
 			return this.buffer();
 		},
@@ -571,6 +596,7 @@ test("integration: createBundle (bootstrap bundle, UI5BundleFormat)", async (t) 
 	const pool = new ResourcePool();
 	pool.addResource({
 		name: "jquery.sap.global.js",
+		getPath: () => "jquery.sap.global.js",
 		string: function() {
 			return this.buffer();
 		},
@@ -578,6 +604,7 @@ test("integration: createBundle (bootstrap bundle, UI5BundleFormat)", async (t) 
 	});
 	pool.addResource({
 		name: "myRawModule.js",
+		getPath: () => "myRawModule.js",
 		string: function() {
 			return this.buffer();
 		},
@@ -585,6 +612,7 @@ test("integration: createBundle (bootstrap bundle, UI5BundleFormat)", async (t) 
 	});
 	pool.addResource({
 		name: "sap/ui/core/Core.js",
+		getPath: () => "sap/ui/core/Core.js",
 		string: function() {
 			return this.buffer();
 		},
@@ -661,6 +689,7 @@ test("integration: createBundle with bundleInfo", async (t) => {
 	const pool = new ResourcePool();
 	pool.addResource({
 		name: "a.js",
+		getPath: () => "a.js",
 		string: function() {
 			return this.buffer();
 		},
@@ -668,6 +697,7 @@ test("integration: createBundle with bundleInfo", async (t) => {
 	});
 	pool.addResource({
 		name: "b.js",
+		getPath: () => "b.js",
 		string: function() {
 			return this.buffer();
 		},
@@ -675,6 +705,7 @@ test("integration: createBundle with bundleInfo", async (t) => {
 	});
 	pool.addResource({
 		name: "c.js",
+		getPath: () => "c.js",
 		string: function() {
 			return this.buffer();
 		},
@@ -682,6 +713,7 @@ test("integration: createBundle with bundleInfo", async (t) => {
 	});
 	pool.addResource({
 		name: "ui5loader.js",
+		getPath: () => "ui5loader.js",
 		string: function() {
 			return this.buffer();
 		},
@@ -689,6 +721,7 @@ test("integration: createBundle with bundleInfo", async (t) => {
 	});
 	pool.addResource({
 		name: "a.library",
+		getPath: () => "a.library",
 		string: function() {
 			return this.buffer();
 		},
@@ -789,10 +822,12 @@ test("integration: createBundle using predefine calls with source maps and a sin
 	};
 	pool.addResource({
 		name: "jquery.sap.global.js.map",
+		getPath: () => "jquery.sap.global.js.map",
 		buffer: async () => JSON.stringify(originalSourceMap)
 	});
 	pool.addResource({
 		name: "jquery.sap.global.js",
+		getPath: () => "jquery.sap.global.js",
 		buffer: async () => `sap.ui.define([],function(){console.log("Put me on a map!");return{}});
 //# sourceMappingURL=jquery.sap.global.js.map`
 	});
@@ -886,10 +921,14 @@ test("integration: createBundle using predefine calls with source maps and a sin
 	};
 	pool.addResource({
 		name: "jquery.sap.global.js.map",
+		getPath: () => "jquery.sap.global.js.map",
+		getPath: () => "jquery.sap.global.js.map",
 		buffer: async () => JSON.stringify(originalSourceMap)
 	});
 	pool.addResource({
 		name: "jquery.sap.global.js",
+		getPath: () => "jquery.sap.global.js",
+		getPath: () => "jquery.sap.global.js",
 		buffer: async () => `sap.ui.define([],function(){console.log("Put me on a map!");return{}});
 //# sourceMappingURL=jquery.sap.global.js.map`
 	});
@@ -994,10 +1033,14 @@ test("integration: createBundle using predefine calls with source maps and a sin
 	};
 	pool.addResource({
 		name: "jquery.sap.global.js.map",
+		getPath: () => "jquery.sap.global.js.map",
+		getPath: () => "jquery.sap.global.js.map",
 		buffer: async () => JSON.stringify(originalSourceMap)
 	});
 	pool.addResource({
 		name: "jquery.sap.global.js",
+		getPath: () => "jquery.sap.global.js",
+		getPath: () => "jquery.sap.global.js",
 		buffer: async () => `/*!
  * OpenUI5
  * (c) Copyright 2009-2021 SAP SE or an SAP affiliate company.
@@ -1114,10 +1157,12 @@ test("integration: createBundle using predefine calls with source maps and multi
 	};
 	pool.addResource({
 		name: "jquery.sap.global.js.map",
+		getPath: () => "jquery.sap.global.js.map",
 		buffer: async () => JSON.stringify(originalGlobalSourceMap)
 	});
 	pool.addResource({
 		name: "jquery.sap.global.js",
+		getPath: () => "jquery.sap.global.js",
 		buffer: async () => `/*!
  * OpenUI5
  * (c) Copyright 2009-2021 SAP SE or an SAP affiliate company.
@@ -1209,10 +1254,12 @@ sap.ui.define(["sap/base/util/now","sap/base/util/Version","sap/base/assert","sa
 	};
 	pool.addResource({
 		name: "jquery.sap.dom.js.map",
+		getPath: () => "jquery.sap.dom.js.map",
 		buffer: async () => JSON.stringify(originalDomSourceMap)
 	});
 	pool.addResource({
 		name: "jquery.sap.dom.js",
+		getPath: () => "jquery.sap.dom.js",
 		buffer: async () => `/*!
  * OpenUI5
  * (c) Copyright 2009-2021 SAP SE or an SAP affiliate company.
@@ -1372,10 +1419,12 @@ test("integration: createBundle using predefine calls with source maps and multi
 	};
 	pool.addResource({
 		name: "jquery.sap.global.js.map",
+		getPath: () => "jquery.sap.global.js.map",
 		buffer: async () => JSON.stringify(originalGlobalSourceMap)
 	});
 	pool.addResource({
 		name: "jquery.sap.global.js",
+		getPath: () => "jquery.sap.global.js",
 		buffer: async () => `/*!
  * OpenUI5
  * (c) Copyright 2009-2021 SAP SE or an SAP affiliate company.
@@ -1385,9 +1434,10 @@ sap.ui.define(["sap/base/util/now","sap/base/util/Version","sap/base/assert","sa
 //# sourceMappingURL=jquery.sap.global.js.map`
 	});
 
-
+	// No source map for "jquery.sap.xom.js" => Transitive source map will be created
 	pool.addResource({
 		name: "jquery.sap.xom.js",
+		getPath: () => "jquery.sap.xom.js",
 		buffer: async () => `/*!
  * OpenUI5
  * (c) Copyright 2009-2021 SAP SE or an SAP affiliate company.
@@ -1456,41 +1506,6 @@ sap.ui.predefine("jquery.sap.xom", function() {
 		"version": 3,
 		"sources":
 		[
-			"jquery.sap.dom-dbg.js"
-		],
-		"names":
-		[
-			"sap",
-			"ui",
-			"define",
-			"jQuery",
-			"domContainsOrEquals",
-			"fnSyncStyleClass",
-			"domGetOwnerWindow",
-			"domGetScrollbarSize",
-			"domDenormalizeScrollLeftRTL",
-			"domDenormalizeScrollBeginRTL",
-			"domUnitsRem",
-			"domById",
-			"sId",
-			"oWindow",
-			"window",
-			"document",
-			"getElementById"
-		],
-		"mappings": "AAAA;;;;;AAOAA,IAAIC,GAAGC,4BAAO,CACb,oBAAqB,8BACrB,6BAA8B,4BAA6B,8BAC3D,sCAAuC,uCACvC,uBAAwB,yBACxB,8BAA+B,2BAA4B,sCAC3D,8BAA+B,+BAAgC,oCAC/D,yBAA0B,iCAAkC,8BAC5D,gCAAiC,kCAAmC,mCAAoC,+BACtG,SAASC,OAAQC,EAAqBC,EAAkBC,EAC1DC,EAAqBC,EAA6BC,EAA8BC,GAiBhF,aAYAP,OAAOH,IAAIW,QAAU,SAASA,EAAQC,EAAKC,GAC1C,OAAOD,GAAOC,GAAWC,QAAQC,SAASC,eAAeJ,GAAO,MAGjE,OAAOT",
-		"sourceRoot": ""
-	};
-	t.deepEqual(indexMap.sections[0].map, expectedSourceMap1, "Section one contains correct map");
-	t.deepEqual(indexMap.sections[1].offset, {
-		line: 7,
-		column: 0
-	}, "Section two has correct offset");
-
-	const expectedSourceMap2 = {
-		"version": 3,
-		"sources":
-		[
 			"jquery.sap.global-dbg.js"
 		],
 		"names":
@@ -1504,6 +1519,21 @@ sap.ui.predefine("jquery.sap.xom", function() {
 			"Log"
 		],
 		"mappings": "AAAA;;;;;AAYAA,IAAIC,GAAGC,+BAAO,CAEb,oBAAqB,wBAAyB,kBAAmB,gBAC/D,SAASC,EAAKC,EAASC,EAAQC,GACjC,OAAOH",
+		"sourceRoot": ""
+	};
+	t.deepEqual(indexMap.sections[0].map, expectedSourceMap1, "Section one contains correct map");
+	t.deepEqual(indexMap.sections[1].offset, {
+		line: 7,
+		column: 0
+	}, "Section two has correct offset");
+
+	const expectedSourceMap2 = { // Transitive source map
+		"version": 3,
+		"sources":
+		[
+			"jquery.sap.xom.js"
+		],
+		"mappings": "AAAA;AACA;AACA;AACA;AACA;AACA;AACA;AACA;AACA",
 		"sourceRoot": ""
 	};
 	t.deepEqual(indexMap.sections[1].map, expectedSourceMap2, "Section two contains correct map");
@@ -1533,6 +1563,7 @@ test("integration: createBundle using predefine calls with inline source maps an
 	// Source map should be identical to "single source" test above
 	pool.addResource({
 		name: "jquery.sap.global.js",
+		getPath: () => "jquery.sap.global.js",
 		buffer: async () => `/*!
  * OpenUI5
  * (c) Copyright 2009-2021 SAP SE or an SAP affiliate company.
@@ -1610,14 +1641,14 @@ sap.ui.predefine("jquery.sap.global", ["sap/base/util/now","sap/base/util/Versio
 test("rewriteDefine (without moduleSourceMap)", async (t) => {
 	const {rewriteDefine} = Builder.__localFunctions__;
 
-	const {content, sourceMap} = await rewriteDefine({
+	const {moduleContent, moduleSourceMap} = await rewriteDefine({
 		moduleName: "my/test/module.js",
 		moduleContent: "sap.ui.define([],(()=>1));",
-		moduleSourceMap: false
+		moduleSourceMap: undefined
 	});
 
-	t.is(content, `sap.ui.predefine("my/test/module", [],(()=>1));`);
-	t.is(sourceMap, null);
+	t.is(moduleContent, `sap.ui.predefine("my/test/module", [],(()=>1));`);
+	t.is(moduleSourceMap, undefined);
 });
 
 test("rewriteDefine (with moduleSourceMap)", async (t) => {
@@ -1647,7 +1678,7 @@ test("rewriteDefine (with moduleSourceMap)", async (t) => {
 		]
 	];
 
-	const {content, sourceMap} = await rewriteDefine({
+	const {moduleContent, moduleSourceMap} = await rewriteDefine({
 		moduleName: "my/test/module.js",
 		moduleContent: "sap.ui.define([],(()=>1));",
 		moduleSourceMap: {
@@ -1665,9 +1696,9 @@ test("rewriteDefine (with moduleSourceMap)", async (t) => {
 	expectedMappings[0][4][0] += expectedColumnDiff;
 	expectedMappings[0][5][0] += expectedColumnDiff;
 
-	t.is(content, `sap.ui.predefine("my/test/module", [],(()=>1));`);
-	t.deepEqual(decodeMappings(sourceMap.mappings), expectedMappings);
-	t.deepEqual(sourceMap, {
+	t.is(moduleContent, `sap.ui.predefine("my/test/module", [],(()=>1));`);
+	t.deepEqual(decodeMappings(moduleSourceMap.mappings), expectedMappings);
+	t.deepEqual(moduleSourceMap, {
 		"version": 3,
 		"sources": ["my/test/module-dbg.js"],
 		"names": ["sap", "ui", "define"],
@@ -1675,7 +1706,7 @@ test("rewriteDefine (with moduleSourceMap)", async (t) => {
 	});
 });
 
-test.only("rewriteDefine (with empty moduleSourceMap)", async (t) => {
+test("rewriteDefine (with empty moduleSourceMap)", async (t) => {
 	const {rewriteDefine} = Builder.__localFunctions__;
 	const {encode: encodeMappings, decode: decodeMappings} = require("sourcemap-codec");
 
@@ -1687,7 +1718,7 @@ test.only("rewriteDefine (with empty moduleSourceMap)", async (t) => {
 		]
 	];
 
-	const {content, sourceMap} = await rewriteDefine({
+	const {moduleContent, moduleSourceMap} = await rewriteDefine({
 		moduleName: "my/test/module.js",
 		moduleContent: `sap
 .ui.define([], () => {
@@ -1702,14 +1733,162 @@ test.only("rewriteDefine (with empty moduleSourceMap)", async (t) => {
 
 	const expectedMappings = JSON.parse(JSON.stringify(inputMappings));
 
-	t.is(content, `sap
+	t.is(moduleContent, `sap
 .ui.predefine("my/test/module", [], () => {
 	return 1;
 });`);
-	t.deepEqual(decodeMappings(sourceMap.mappings), expectedMappings);
-	t.deepEqual(sourceMap, {
+	t.deepEqual(decodeMappings(moduleSourceMap.mappings), expectedMappings);
+	t.deepEqual(moduleSourceMap, {
 		"version": 3,
 		"sources": ["my/test/module.js"],
 		"mappings": encodeMappings(expectedMappings)
+	});
+});
+
+test("getSourceMapForModule: Source map resource named after module resource (no sourceMappingURL)", async (t) => {
+	const originalSourceMap = {
+		"version": 3,
+		"sources":
+		[
+			"module-dbg.js"
+		],
+		"names":
+		[
+		],
+		"mappings": "XXXX",
+		"file": "module.js"
+	};
+	const pool = new ResourcePool();
+	pool.addResource({
+		name: "my/test/module.js.map",
+		getPath: () => "module.js.map",
+		string: function() {
+			return this.buffer();
+		},
+		buffer: async () => JSON.stringify(originalSourceMap)
+	});
+
+	const builder = new Builder(pool);
+	const {moduleContent, moduleSourceMap} = await builder.getSourceMapForModule({
+		moduleName: "my/test/module",
+		resourcePath: "/resources/my/test/module.js",
+		moduleContent: `// Some content
+`
+	});
+
+	t.is(moduleContent, "// Some content\n", "Source map URL has been removed from module content");
+	t.deepEqual(moduleSourceMap, originalSourceMap, "Correct source map retrieved via relative URL");
+});
+
+test("getSourceMapForModule: Relative URL", async (t) => {
+	const originalSourceMap = {
+		"version": 3,
+		"sources":
+		[
+			"module-dbg.js"
+		],
+		"names":
+		[
+		],
+		"mappings": "XXXX",
+		"file": "module.js"
+	};
+	const pool = new ResourcePool();
+	pool.addResource({
+		name: "my/test/module.js.map",
+		getPath: () => "module.js.map",
+		string: function() {
+			return this.buffer();
+		},
+		buffer: async () => JSON.stringify(originalSourceMap)
+	});
+
+	const builder = new Builder(pool);
+	const {moduleContent, moduleSourceMap} = await builder.getSourceMapForModule({
+		moduleName: "my/test/module",
+		resourcePath: "/resources/my/test/module.js",
+		moduleContent: `// Some content
+//# sourceMappingURL=module.js.map`
+	});
+
+	t.is(moduleContent, "// Some content\n", "Source map URL has been removed from module content");
+	t.deepEqual(moduleSourceMap, originalSourceMap, "Correct source map retrieved via relative URL");
+});
+
+test("getSourceMapForModule: Full URL (not supported)", async (t) => {
+	const pool = new ResourcePool();
+	const builder = new Builder(pool);
+	const {moduleContent, moduleSourceMap} = await builder.getSourceMapForModule({
+		moduleName: "my/test/module",
+		resourcePath: "/resources/my/test/module.js",
+		moduleContent: `// Some content
+//# sourceMappingURL=https://ui5.sap.com/resources/my/test/module.js.map`
+	});
+
+	t.is(moduleContent, "// Some content\n", "Source map URL has been removed from module content");
+	t.deepEqual(moduleSourceMap, {
+		mappings: "AAAA;AACA",
+		sources: [
+			"module.js",
+		],
+		version: 3,
+	}, "Expected transitive source map has been generated");
+});
+
+test("getSourceMapForModule: Absolute URL (not supported)", async (t) => {
+	const pool = new ResourcePool();
+	const builder = new Builder(pool);
+	const {moduleContent, moduleSourceMap} = await builder.getSourceMapForModule({
+		moduleName: "my/test/module",
+		resourcePath: "/resources/my/test/module.js",
+		moduleContent: `// Some content
+//# sourceMappingURL=/resources/my/test/module.js.map`
+	});
+
+	t.is(moduleContent, "// Some content\n", "Source map URL has been removed from module content");
+	t.deepEqual(moduleSourceMap, {
+		mappings: "AAAA;AACA",
+		sources: [
+			"module.js",
+		],
+		version: 3,
+	}, "Expected transitive source map has been generated");
+});
+
+test("createTransientSourceMap: includeContent=false", async (t) => {
+	const {createTransientSourceMap} = Builder.__localFunctions__;
+
+	const res = createTransientSourceMap({
+		moduleName: "my/test/module.js",
+		moduleContent: `Some content
+With
+Multiple
+Lines`,
+		includeContent: false
+	});
+	t.deepEqual(res, {
+		"version": 3,
+		"sources": ["my/test/module.js"],
+		"mappings": "AAAA;AACA;AACA;AACA"
+	});
+});
+
+test("createTransientSourceMap: includeContent=true", async (t) => {
+	const {createTransientSourceMap} = Builder.__localFunctions__;
+
+	const moduleContent = `Some content
+With
+Multiple
+Lines`;
+	const res = createTransientSourceMap({
+		moduleName: "my/test/module.js",
+		moduleContent,
+		includeContent: true
+	});
+	t.deepEqual(res, {
+		version: 3,
+		sources: ["my/test/module.js"],
+		mappings: "AAAA;AACA;AACA;AACA",
+		sourcesContent: [moduleContent]
 	});
 });
