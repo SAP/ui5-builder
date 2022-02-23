@@ -1855,6 +1855,27 @@ ${SOURCE_MAPPING_URL}=module.js.map`
 	t.deepEqual(moduleSourceMap, originalSourceMap, "Correct source map retrieved via relative URL");
 });
 
+test("getSourceMapForModule: Relative URL to resource that cannot be found", async (t) => {
+	const pool = new ResourcePool();
+
+	const builder = new Builder(pool);
+	const {moduleContent, moduleSourceMap} = await builder.getSourceMapForModule({
+		moduleName: "my/test/module",
+		resourcePath: "/resources/my/test/module.js",
+		moduleContent: `// Some content
+${SOURCE_MAPPING_URL}=module.js.map`
+	});
+
+	t.is(moduleContent, "// Some content\n", "Source map URL has been removed from module content");
+	t.deepEqual(moduleSourceMap, {
+		mappings: "AAAA;AACA",
+		sources: [
+			"module.js",
+		],
+		version: 3,
+	}, "Expected transitive source map has been generated");
+});
+
 test("getSourceMapForModule: Full URL (not supported)", async (t) => {
 	const pool = new ResourcePool();
 	const builder = new Builder(pool);
@@ -1922,6 +1943,26 @@ ${SOURCE_MAPPING_URL}=data:application/json;charset=utf-8;base64,${encodedSource
 	t.deepEqual(moduleSourceMap, originalSourceMap, "Encoded source map has been parsed correctly");
 });
 
+test("getSourceMapForModule: Data URI with incorrect encoding", async (t) => {
+	const pool = new ResourcePool();
+	const builder = new Builder(pool);
+	const {moduleContent, moduleSourceMap} = await builder.getSourceMapForModule({
+		moduleName: "my/test/module",
+		resourcePath: "/resources/my/test/module.js",
+		moduleContent: `// Some content
+${SOURCE_MAPPING_URL}=data:application/pony;charset=utf-8;base64,AAAA`
+	});
+
+	t.is(moduleContent, "// Some content\n", "Source map URL has been removed from module content");
+	t.deepEqual(moduleSourceMap, {
+		mappings: "AAAA;AACA",
+		sources: [
+			"module.js",
+		],
+		version: 3,
+	}, "Expected transitive source map has been generated");
+});
+
 test("createTransientSourceMap: includeContent=false", async (t) => {
 	const {createTransientSourceMap} = Builder.__localFunctions__;
 
@@ -1937,7 +1978,7 @@ Lines`,
 		"version": 3,
 		"sources": ["my/test/module.js"],
 		"mappings": "AAAA;AACA;AACA;AACA"
-	});
+	}, "Expected source map has been created");
 });
 
 test("createTransientSourceMap: includeContent=true", async (t) => {
@@ -1957,5 +1998,5 @@ Lines`;
 		sources: ["my/test/module.js"],
 		mappings: "AAAA;AACA;AACA;AACA",
 		sourcesContent: [moduleContent]
-	});
+	}, "Expected source map has been created");
 });
