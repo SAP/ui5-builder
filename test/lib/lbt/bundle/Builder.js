@@ -922,12 +922,10 @@ test("integration: createBundle using predefine calls with source maps and a sin
 	pool.addResource({
 		name: "jquery.sap.global.js.map",
 		getPath: () => "jquery.sap.global.js.map",
-		getPath: () => "jquery.sap.global.js.map",
 		buffer: async () => JSON.stringify(originalSourceMap)
 	});
 	pool.addResource({
 		name: "jquery.sap.global.js",
-		getPath: () => "jquery.sap.global.js",
 		getPath: () => "jquery.sap.global.js",
 		buffer: async () => `sap.ui.define([],function(){console.log("Put me on a map!");return{}});
 //# sourceMappingURL=jquery.sap.global.js.map`
@@ -1034,12 +1032,10 @@ test("integration: createBundle using predefine calls with source maps and a sin
 	pool.addResource({
 		name: "jquery.sap.global.js.map",
 		getPath: () => "jquery.sap.global.js.map",
-		getPath: () => "jquery.sap.global.js.map",
 		buffer: async () => JSON.stringify(originalSourceMap)
 	});
 	pool.addResource({
 		name: "jquery.sap.global.js",
-		getPath: () => "jquery.sap.global.js",
 		getPath: () => "jquery.sap.global.js",
 		buffer: async () => `/*!
  * OpenUI5
