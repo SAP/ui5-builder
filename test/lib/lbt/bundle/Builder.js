@@ -6,6 +6,11 @@ const mock = require("mock-require");
 const Builder = require("../../../../lib/lbt/bundle/Builder");
 const ResourcePool = require("../../../../lib/lbt/resources/ResourcePool");
 
+// Node.js itself tries to parse sourceMappingURLs in all JavaScript files. This is unwanted and might even lead to
+// obscure errors when dynamically generating Data-URI soruceMappingURL values.
+// Therefore use this constant to never write the actual string.
+const SOURCE_MAPPING_URL = "//" + "# sourceMappingURL";
+
 test.afterEach.always((t) => {
 	mock.stopAll();
 	sinon.restore();
@@ -39,7 +44,6 @@ test.serial("writePreloadModule: with invalid json content", async (t) => {
 		}
 	};
 	const result = await builder.writePreloadModule("invalid.json", undefined, invalidJsonResource);
-
 
 	t.is(verboseLogStub.callCount, 2, "called 2 times");
 	t.is(verboseLogStub.firstCall.args[0], "Failed to parse JSON file %s. Ignoring error, skipping compression.",
@@ -113,7 +117,7 @@ this.One=One;
 }
 },"preload-section");
 sap.ui.requireSync("ui5loader");
-//# sourceMappingURL=library-preload.js.map
+${SOURCE_MAPPING_URL}=library-preload.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "EVOBundleFormat " +
 		"should contain:" +
@@ -183,7 +187,7 @@ sap.ui.define([], function(){return {};});
 //@ui5-bundle-raw-include myModule.js
 (function(){window.mine = {};}());
 sap.ui.requireSync("ui5loader");
-//# sourceMappingURL=Component-preload.js.map
+${SOURCE_MAPPING_URL}=Component-preload.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "EVOBundleFormat should start with optimization and " +
 		"should contain:" +
@@ -303,7 +307,7 @@ sap.ui.require.preload({
 //@ui5-bundle-raw-include myRawModule.js
 (function(){window.mine = {};}());
 sap.ui.requireSync("ui5loader");
-//# sourceMappingURL=Component-preload.js.map
+${SOURCE_MAPPING_URL}=Component-preload.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "EVOBundleFormat should start with optimization and " +
 		"should contain:" +
@@ -429,7 +433,7 @@ sap.ui.require.preload({
 //@ui5-bundle-raw-include myRawModule.js
 (function(){window.mine = {};}());
 sap.ui.requireSync("ui5loader");
-//# sourceMappingURL=Component-preload.js.map
+${SOURCE_MAPPING_URL}=Component-preload.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "EVOBundleFormat should start with optimization and " +
 		"should contain:" +
@@ -506,7 +510,7 @@ sap.ui.getCore().boot && sap.ui.getCore().boot();
 } catch(oError) {
 if (oError.name != "Restart") { throw oError; }
 }
-//# sourceMappingURL=bootstrap.js.map
+${SOURCE_MAPPING_URL}=bootstrap.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "EVOBundleFormat should start with optimization and " +
 		"should contain:" +
@@ -579,7 +583,7 @@ sap.ui.define([], function(){/* comment */ return {};});
 //@ui5-bundle-raw-include myModule.js
 (function(){window.mine = {};}());
 sap.ui.requireSync("sap-ui-core");
-//# sourceMappingURL=Component-preload.js.map
+${SOURCE_MAPPING_URL}=Component-preload.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "Ui5BundleFormat should start with registerPreloadedModules " +
 		"and should contain:" +
@@ -662,7 +666,7 @@ sap.ui.getCore().boot && sap.ui.getCore().boot();
 } catch(oError) {
 if (oError.name != "Restart") { throw oError; }
 }
-//# sourceMappingURL=bootstrap.js.map
+${SOURCE_MAPPING_URL}=bootstrap.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "EVOBundleFormat should start with optimization and " +
 		"should contain:" +
@@ -774,7 +778,7 @@ sap.ui.loader.config({bundlesUI5:{
 "my-custom-bundle":['b.js'],
 "my-other-custom-bundle.js":['c.js']
 }});
-//# sourceMappingURL=library-preload.js.map
+${SOURCE_MAPPING_URL}=library-preload.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "EVOBundleFormat " +
 		"should contain:" +
@@ -829,7 +833,7 @@ test("integration: createBundle using predefine calls with source maps and a sin
 		name: "jquery.sap.global.js",
 		getPath: () => "jquery.sap.global.js",
 		buffer: async () => `sap.ui.define([],function(){console.log("Put me on a map!");return{}});
-//# sourceMappingURL=jquery.sap.global.js.map`
+${SOURCE_MAPPING_URL}=jquery.sap.global.js.map`
 	});
 
 	const bundleDefinition = {
@@ -852,7 +856,7 @@ test("integration: createBundle using predefine calls with source maps and a sin
 	t.deepEqual(oResult.name, "Component-preload.js");
 	const expectedContent = `//@ui5-bundle Component-preload.js
 sap.ui.predefine("jquery.sap.global", [],function(){console.log("Put me on a map!");return{}});
-//# sourceMappingURL=Component-preload.js.map
+${SOURCE_MAPPING_URL}=Component-preload.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "Correct bundle content");
 	t.deepEqual(oResult.bundleInfo.name, "Component-preload.js", "bundle info name is correct");
@@ -928,7 +932,7 @@ test("integration: createBundle using predefine calls with source maps and a sin
 		name: "jquery.sap.global.js",
 		getPath: () => "jquery.sap.global.js",
 		buffer: async () => `sap.ui.define([],function(){console.log("Put me on a map!");return{}});
-//# sourceMappingURL=jquery.sap.global.js.map`
+${SOURCE_MAPPING_URL}=jquery.sap.global.js.map`
 	});
 
 	const bundleDefinition = {
@@ -953,7 +957,7 @@ test("integration: createBundle using predefine calls with source maps and a sin
 	t.deepEqual(oResult.name, "Component-preload.js");
 	const expectedContent = `//@ui5-bundle Component-preload.js
 sap.ui.predefine("jquery.sap.global", [],function(){console.log("Put me on a map!");return{}});
-//# sourceMappingURL=Component-preload.js.map
+${SOURCE_MAPPING_URL}=Component-preload.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "Correct bundle content");
 	t.deepEqual(oResult.bundleInfo.name, "Component-preload.js", "bundle info name is correct");
@@ -1043,7 +1047,7 @@ test("integration: createBundle using predefine calls with source maps and a sin
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 sap.ui.define(["sap/base/util/now","sap/base/util/Version","sap/base/assert","sap/base/Log"],function(s,a,e,i){return s});
-//# sourceMappingURL=jquery.sap.global.js.map`
+${SOURCE_MAPPING_URL}=jquery.sap.global.js.map`
 	});
 
 	const bundleDefinition = {
@@ -1073,7 +1077,7 @@ sap.ui.define(["sap/base/util/now","sap/base/util/Version","sap/base/assert","sa
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 sap.ui.predefine("jquery.sap.global", ["sap/base/util/now","sap/base/util/Version","sap/base/assert","sap/base/Log"],function(s,a,e,i){return s});
-//# sourceMappingURL=Component-preload.js.map
+${SOURCE_MAPPING_URL}=Component-preload.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "Correct bundle content");
 	t.deepEqual(oResult.bundleInfo.name, "Component-preload.js", "bundle info name is correct");
@@ -1165,7 +1169,7 @@ test("integration: createBundle using predefine calls with source maps and multi
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 sap.ui.define(["sap/base/util/now","sap/base/util/Version","sap/base/assert","sap/base/Log"],function(s,a,e,i){return s});
-//# sourceMappingURL=jquery.sap.global.js.map`
+${SOURCE_MAPPING_URL}=jquery.sap.global.js.map`
 	});
 
 	// jquery.sap.dom-dbg.js:
@@ -1262,7 +1266,7 @@ sap.ui.define(["sap/base/util/now","sap/base/util/Version","sap/base/assert","sa
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 sap.ui.define(["jquery.sap.global","sap/ui/dom/containsOrEquals","sap/ui/core/syncStyleClass","sap/ui/dom/getOwnerWindow","sap/ui/dom/getScrollbarSize","sap/ui/dom/denormalizeScrollLeftRTL","sap/ui/dom/denormalizeScrollBeginRTL","sap/ui/dom/units/Rem","sap/ui/dom/jquery/Aria","sap/ui/dom/jquery/Selection","sap/ui/dom/jquery/zIndex","sap/ui/dom/jquery/parentByAttribute","sap/ui/dom/jquery/cursorPos","sap/ui/dom/jquery/selectText","sap/ui/dom/jquery/getSelectedText","sap/ui/dom/jquery/rect","sap/ui/dom/jquery/rectContains","sap/ui/dom/jquery/Focusable","sap/ui/dom/jquery/hasTabIndex","sap/ui/dom/jquery/scrollLeftRTL","sap/ui/dom/jquery/scrollRightRTL","sap/ui/dom/jquery/Selectors"],function(jQuery,e,u,o,s,i,r,a){"use strict";jQuery.sap.domById=function e(u,o){return u?(o||window).document.getElementById(u):null};return jQuery});
-//# sourceMappingURL=jquery.sap.dom.js.map`
+${SOURCE_MAPPING_URL}=jquery.sap.dom.js.map`
 	});
 
 	const bundleDefinition = {
@@ -1299,7 +1303,7 @@ sap.ui.predefine("jquery.sap.dom", ["jquery.sap.global","sap/ui/dom/containsOrEq
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 sap.ui.predefine("jquery.sap.global", ["sap/base/util/now","sap/base/util/Version","sap/base/assert","sap/base/Log"],function(s,a,e,i){return s});
-//# sourceMappingURL=Component-preload.js.map
+${SOURCE_MAPPING_URL}=Component-preload.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "Correct bundle content");
 	t.deepEqual(oResult.bundleInfo.name, "Component-preload.js", "bundle info name is correct");
@@ -1427,7 +1431,7 @@ test("integration: createBundle using predefine calls with source maps and multi
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 sap.ui.define(["sap/base/util/now","sap/base/util/Version","sap/base/assert","sap/base/Log"],function(s,a,e,i){return s});
-//# sourceMappingURL=jquery.sap.global.js.map`
+${SOURCE_MAPPING_URL}=jquery.sap.global.js.map`
 	});
 
 	// No source map for "jquery.sap.xom.js" => Transitive source map will be created
@@ -1481,7 +1485,7 @@ sap.ui.predefine("jquery.sap.global", ["sap/base/util/now","sap/base/util/Versio
 sap.ui.predefine("jquery.sap.xom", function() {
 	console.log("Test");
 });
-//# sourceMappingURL=Component-preload.js.map
+${SOURCE_MAPPING_URL}=Component-preload.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "Correct bundle content");
 	t.deepEqual(oResult.bundleInfo.name, "Component-preload.js", "bundle info name is correct");
@@ -1566,7 +1570,7 @@ test("integration: createBundle using predefine calls with inline source maps an
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 sap.ui.define(["sap/base/util/now","sap/base/util/Version","sap/base/assert","sap/base/Log"],function(s,a,e,i){return s});
-//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImpxdWVyeS5zYXAuZ2xvYmFsLWRiZy5qcyJdLCJuYW1lcyI6WyJzYXAiLCJ1aSIsImRlZmluZSIsIm5vdyIsIlZlcnNpb24iLCJhc3NlcnQiLCJMb2ciXSwibWFwcGluZ3MiOiI7Ozs7O0FBWUFBLElBQUlDLEdBQUdDLE9BQU8sQ0FFYixvQkFBcUIsd0JBQXlCLGtCQUFtQixnQkFDL0QsU0FBU0MsRUFBS0MsRUFBU0MsRUFBUUMsR0FDakMsT0FBT0giLCJmaWxlIjoianF1ZXJ5LnNhcC5nbG9iYWwuanMifQ==`
+${SOURCE_MAPPING_URL}=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImpxdWVyeS5zYXAuZ2xvYmFsLWRiZy5qcyJdLCJuYW1lcyI6WyJzYXAiLCJ1aSIsImRlZmluZSIsIm5vdyIsIlZlcnNpb24iLCJhc3NlcnQiLCJMb2ciXSwibWFwcGluZ3MiOiI7Ozs7O0FBWUFBLElBQUlDLEdBQUdDLE9BQU8sQ0FFYixvQkFBcUIsd0JBQXlCLGtCQUFtQixnQkFDL0QsU0FBU0MsRUFBS0MsRUFBU0MsRUFBUUMsR0FDakMsT0FBT0giLCJmaWxlIjoianF1ZXJ5LnNhcC5nbG9iYWwuanMifQ==`
 	});
 
 	const bundleDefinition = {
@@ -1596,7 +1600,7 @@ sap.ui.define(["sap/base/util/now","sap/base/util/Version","sap/base/assert","sa
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 sap.ui.predefine("jquery.sap.global", ["sap/base/util/now","sap/base/util/Version","sap/base/assert","sap/base/Log"],function(s,a,e,i){return s});
-//# sourceMappingURL=Component-preload.js.map
+${SOURCE_MAPPING_URL}=Component-preload.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "Correct bundle content");
 	t.deepEqual(oResult.bundleInfo.name, "Component-preload.js", "bundle info name is correct");
@@ -1844,7 +1848,7 @@ test("getSourceMapForModule: Relative URL", async (t) => {
 		moduleName: "my/test/module",
 		resourcePath: "/resources/my/test/module.js",
 		moduleContent: `// Some content
-//# sourceMappingURL=module.js.map`
+${SOURCE_MAPPING_URL}=module.js.map`
 	});
 
 	t.is(moduleContent, "// Some content\n", "Source map URL has been removed from module content");
@@ -1858,7 +1862,7 @@ test("getSourceMapForModule: Full URL (not supported)", async (t) => {
 		moduleName: "my/test/module",
 		resourcePath: "/resources/my/test/module.js",
 		moduleContent: `// Some content
-//# sourceMappingURL=https://ui5.sap.com/resources/my/test/module.js.map`
+${SOURCE_MAPPING_URL}=https://ui5.sap.com/resources/my/test/module.js.map`
 	});
 
 	t.is(moduleContent, "// Some content\n", "Source map URL has been removed from module content");
@@ -1878,7 +1882,7 @@ test("getSourceMapForModule: Absolute URL (not supported)", async (t) => {
 		moduleName: "my/test/module",
 		resourcePath: "/resources/my/test/module.js",
 		moduleContent: `// Some content
-//# sourceMappingURL=/resources/my/test/module.js.map`
+${SOURCE_MAPPING_URL}=/resources/my/test/module.js.map`
 	});
 
 	t.is(moduleContent, "// Some content\n", "Source map URL has been removed from module content");
@@ -1911,7 +1915,7 @@ test("getSourceMapForModule: Data URI", async (t) => {
 		moduleName: "my/test/module",
 		resourcePath: "/resources/my/test/module.js",
 		moduleContent: `// Some content
-//# sourceMappingURL=data:application/json;charset=utf-8;base64,${encodedSourceMap}`
+${SOURCE_MAPPING_URL}=data:application/json;charset=utf-8;base64,${encodedSourceMap}`
 	});
 
 	t.is(moduleContent, "// Some content\n", "Source map URL has been removed from module content");
