@@ -140,7 +140,7 @@ test();`;
 	}
 	t.deepEqual(await resSourceMap.getString(), expectedSourceMap, "Correct source map content");
 
-	t.is(taskUtil.setTag.callCount, 3, "taskUtil.setTag was called 4 times");
+	t.is(taskUtil.setTag.callCount, 3, "taskUtil.setTag was called 3 times");
 	t.deepEqual(taskUtil.setTag.getCall(0).args, [res, "1️⃣"], "First taskUtil.setTag call with expected arguments");
 	t.deepEqual(taskUtil.setTag.getCall(1).args, [resDbg, "2️⃣"],
 		"Second taskUtil.setTag call with expected arguments");
