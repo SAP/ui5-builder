@@ -35,7 +35,7 @@
 		{
 			"name": "components/Component.js",
 			"module": "library/h/components/Component.js",
-			"size": 153,
+			"size": 115,
 			"required": [
 				"sap/ui/core/UIComponent.js"
 			]
@@ -50,7 +50,7 @@
 		{
 			"name": "components/TodoComponent.js",
 			"module": "library/h/components/TodoComponent.js",
-			"size": 96,
+			"size": 54,
 			"format": "raw"
 		},
 		{
@@ -82,7 +82,7 @@
 		{
 			"name": "components/subcomponent1/Component.js",
 			"module": "library/h/components/subcomponent1/Component.js",
-			"size": 153,
+			"size": 115,
 			"required": [
 				"sap/ui/core/UIComponent.js"
 			]
@@ -116,7 +116,7 @@
 		{
 			"name": "components/subcomponent2/Component.js",
 			"module": "library/h/components/subcomponent2/Component.js",
-			"size": 153,
+			"size": 115,
 			"required": [
 				"sap/ui/core/UIComponent.js"
 			]
@@ -150,7 +150,7 @@
 		{
 			"name": "components/subcomponent3/Component.js",
 			"module": "library/h/components/subcomponent3/Component.js",
-			"size": 153,
+			"size": 115,
 			"required": [
 				"sap/ui/core/UIComponent.js"
 			]
@@ -207,7 +207,7 @@
 		{
 			"name": "designtime/library.designtime.js",
 			"module": "library/h/designtime/library.designtime.js",
-			"size": 133,
+			"size": 86,
 			"requiresTopLevelScope": true,
 			"exposedGlobalNames": [
 				"myexport"
@@ -225,7 +225,7 @@
 		{
 			"name": "file.js",
 			"module": "library/h/file.js",
-			"size": 87,
+			"size": 54,
 			"format": "raw"
 		},
 		{
@@ -252,7 +252,7 @@
 		{
 			"name": "library.js",
 			"module": "library/h/library.js",
-			"size": 93,
+			"size": 57,
 			"format": "raw"
 		},
 		{
@@ -270,12 +270,12 @@
 		{
 			"name": "not.js",
 			"module": "library/h/not.js",
-			"size": 95,
+			"size": 63,
 			"format": "raw"
 		},
 		{
 			"name": "resources.json",
-			"size": 6451
+			"size": 6449
 		},
 		{
 			"name": "some-dbg.js",
@@ -291,7 +291,7 @@
 		{
 			"name": "some.js",
 			"module": "library/h/some.js",
-			"size": 132,
+			"size": 99,
 			"format": "raw",
 			"merged": true,
 			"included": [

@@ -30,7 +30,7 @@
 		{
 			"name": "Component.js",
 			"module": "library/h/components/subcomponent3/Component.js",
-			"size": 153,
+			"size": 115,
 			"required": [
 				"sap/ui/core/UIComponent.js"
 			]

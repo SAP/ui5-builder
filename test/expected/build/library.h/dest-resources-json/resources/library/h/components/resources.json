@@ -31,7 +31,7 @@
 		{
 			"name": "Component.js",
 			"module": "library/h/components/Component.js",
-			"size": 153,
+			"size": 115,
 			"required": [
 				"sap/ui/core/UIComponent.js"
 			]
@@ -46,7 +46,7 @@
 		{
 			"name": "TodoComponent.js",
 			"module": "library/h/components/TodoComponent.js",
-			"size": 96,
+			"size": 54,
 			"format": "raw"
 		},
 		{
@@ -82,7 +82,7 @@
 		{
 			"name": "subcomponent1/Component.js",
 			"module": "library/h/components/subcomponent1/Component.js",
-			"size": 153,
+			"size": 115,
 			"required": [
 				"sap/ui/core/UIComponent.js"
 			]
@@ -116,7 +116,7 @@
 		{
 			"name": "subcomponent2/Component.js",
 			"module": "library/h/components/subcomponent2/Component.js",
-			"size": 153,
+			"size": 115,
 			"required": [
 				"sap/ui/core/UIComponent.js"
 			]
@@ -150,7 +150,7 @@
 		{
 			"name": "subcomponent3/Component.js",
 			"module": "library/h/components/subcomponent3/Component.js",
-			"size": 153,
+			"size": 115,
 			"required": [
 				"sap/ui/core/UIComponent.js"
 			]
