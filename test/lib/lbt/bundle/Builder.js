@@ -675,7 +675,7 @@ if (oError.name != "Restart") { throw oError; }
 		"bundle info subModules are correct");
 });
 
-test("integration: createBundle with bundleInfo", async (t) => {
+test.serial("integration: createBundle with bundleInfo", async (t) => {
 	const logger = require("@ui5/logger");
 	const verboseLogStub = sinon.stub();
 	const warnLogStub = sinon.stub();
@@ -1757,7 +1757,7 @@ test("getSourceMapForModule: Source map resource named after module resource (no
 	const pool = new ResourcePool();
 	pool.addResource({
 		name: "my/test/module.js.map",
-		getPath: () => "module.js.map",
+		getPath: () => "my/test/module.js.map",
 		string: function() {
 			return this.buffer();
 		},
@@ -1774,6 +1774,46 @@ test("getSourceMapForModule: Source map resource named after module resource (no
 
 	t.is(moduleContent, "// Some content\n", "Source map URL has been removed from module content");
 	t.deepEqual(moduleSourceMap, originalSourceMap, "Correct source map retrieved via relative URL");
+});
+test("getSourceMapForModule: No source map available for debug variant", async (t) => {
+	const originalSourceMap = {
+		"version": 3,
+		"sources":
+		[
+			"module-dbg.js"
+		],
+		"names":
+		[
+		],
+		"mappings": "XXXX",
+		"file": "module.js"
+	};
+	const pool = new ResourcePool();
+	pool.addResource({
+		name: "my/test/module.js.map",
+		getPath: () => "my/test/module.js.map",
+		string: function() {
+			return this.buffer();
+		},
+		buffer: async () => JSON.stringify(originalSourceMap)
+	});
+
+	const builder = new Builder(pool);
+	const {moduleContent, moduleSourceMap} = await builder.getSourceMapForModule({
+		moduleName: "my/test/module",
+		resourcePath: "/resources/my/test/module-dbg.js",
+		moduleContent: `// Some content
+`
+	});
+
+	t.is(moduleContent, "// Some content\n", "Source map URL has been removed from module content");
+	t.deepEqual(moduleSourceMap, {
+		mappings: "AAAA;AACA",
+		sources: [
+			"module-dbg.js",
+		],
+		version: 3,
+	}, "Expected transitive source map has been generated");
 });
 
 test("getSourceMapForModule: Relative URL", async (t) => {
@@ -1792,7 +1832,7 @@ test("getSourceMapForModule: Relative URL", async (t) => {
 	const pool = new ResourcePool();
 	pool.addResource({
 		name: "my/test/module.js.map",
-		getPath: () => "module.js.map",
+		getPath: () => "my/test/module.js.map",
 		string: function() {
 			return this.buffer();
 		},
@@ -1849,6 +1889,33 @@ test("getSourceMapForModule: Absolute URL (not supported)", async (t) => {
 		],
 		version: 3,
 	}, "Expected transitive source map has been generated");
+});
+
+test("getSourceMapForModule: Data URI", async (t) => {
+	const pool = new ResourcePool();
+	const builder = new Builder(pool);
+	const originalSourceMap = {
+		"version": 3,
+		"sources":
+		[
+			"module-dbg.js"
+		],
+		"names":
+		[
+		],
+		"mappings": "XXXX",
+		"file": "module.js"
+	};
+	const encodedSourceMap = Buffer.from(JSON.stringify(originalSourceMap)).toString("base64");
+	const {moduleContent, moduleSourceMap} = await builder.getSourceMapForModule({
+		moduleName: "my/test/module",
+		resourcePath: "/resources/my/test/module.js",
+		moduleContent: `// Some content
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,${encodedSourceMap}`
+	});
+
+	t.is(moduleContent, "// Some content\n", "Source map URL has been removed from module content");
+	t.deepEqual(moduleSourceMap, originalSourceMap, "Encoded source map has been parsed correctly");
 });
 
 test("createTransientSourceMap: includeContent=false", async (t) => {
