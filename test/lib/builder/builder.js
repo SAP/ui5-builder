@@ -868,6 +868,7 @@ test.serial("Build library.coreBuildtime: replaceBuildtime", (t) => {
 		sinon.stub(Date.prototype, "getUTCDate").returns(20),
 		sinon.stub(Date.prototype, "getUTCHours").returns(14),
 		sinon.stub(Date.prototype, "getUTCMinutes").returns(30),
+		sinon.stub(Date.prototype, "getUTCSeconds").returns(29)
 	];
 
 	return builder.build({
