@@ -111,9 +111,13 @@ test.serial("Build", async (t) => {
 		getTag: getTagStub
 	});
 	const isRootProjectStub = sinon.stub().returns(true);
+	const getOptionsStub = sinon.stub().returns({friend: "Pony"});
+	const getOptionStub = sinon.stub().returns("Pony");
 	const dummyProjectContext = {
 		getResourceTagCollection: getResourceTagCollectionStub,
 		isRootProject: isRootProjectStub,
+		getOptions: getOptionsStub,
+		getOption: getOptionStub,
 		STANDARD_TAGS: {
 			OmitFromBuildResult: "👻"
 		}
@@ -887,6 +891,22 @@ test.serial("Build library.coreBuildtime: replaceBuildtime", (t) => {
 		t.pass();
 	});
 });
+
+// test.serial("Build library with theme configured for CSS variables", (t) => {
+// 	return builder.build({
+// 		cssVariables: true
+// 	}).then(() => {
+// 		assert.ok(false);
+// 	});
+// });
+
+// test.serial("Build theme-library with CSS variables", (t) => {
+// 	return builder.build({
+// 		cssVariables: true
+// 	}).then(() => {
+// 		assert.ok(false);
+// 	});
+// });
 
 test.serial("Cleanup", async (t) => {
 	const BuildContext = require("../../../lib/builder/BuildContext");
