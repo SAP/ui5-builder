@@ -31,6 +31,7 @@ const libraryØPath = path.join(__dirname, "..", "..", "fixtures", "library.ø")
 const libraryCore = path.join(__dirname, "..", "..", "fixtures", "sap.ui.core-evo");
 const libraryCoreBuildtime = path.join(__dirname, "..", "..", "fixtures", "sap.ui.core-buildtime");
 const themeJPath = path.join(__dirname, "..", "..", "fixtures", "theme.j");
+const themeLibraryEPath = path.join(__dirname, "..", "..", "fixtures", "theme.library.e");
 
 const recursive = require("recursive-readdir");
 
@@ -911,14 +912,24 @@ test.serial("Build library with theme configured for CSS variables", (t) => {
 	});
 });
 
-// test.serial("Build theme-library with CSS variables", (t) => {
-// With theme.library.e	
-// return builder.build({
-// 		cssVariables: true
-// 	}).then(() => {
-// 		assert.ok(false);
-// 	});
-// });
+test.serial("Build theme-library with CSS variables", (t) => {
+	const destPath = "./test/tmp/build/theme.library.e/dest-css-variables";
+	const expectedPath = "./test/expected/build/theme.library.e/dest-css-variables";
+	return builder.build({
+		tree: themeLibraryETree,
+		cssVariables: true,
+		destPath
+	}).then(() => {
+		return findFiles(expectedPath);
+	}).then((expectedFiles) => {
+		// Check for all directories and files
+		assert.directoryDeepEqual(destPath, expectedPath);
+
+		return checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath);
+	}).then(() => {
+		t.pass();
+	});
+});
 
 test.serial("Cleanup", async (t) => {
 	const BuildContext = require("../../../lib/builder/BuildContext");
@@ -1897,6 +1908,30 @@ const themeJTree = {
 		},
 		"pathMappings": {
 			"/resources/": "main/src"
+		}
+	}
+};
+
+const themeLibraryETree = {
+	"id": "theme.library.e.id",
+	"version": "1.0.0",
+	"path": themeLibraryEPath,
+	"dependencies": [],
+	"_level": 0,
+	"_isRoot": true,
+	"specVersion": "1.1",
+	"type": "theme-library",
+	"metadata": {
+		"name": "theme.library.e",
+		"namespace": "theme/library/e",
+		"copyright": "Some fancy copyright"
+	},
+	"resources": {
+		"configuration": {
+			"paths": {
+				"src": "src",
+				"test": "test"
+			}
 		}
 	}
 };
