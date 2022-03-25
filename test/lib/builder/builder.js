@@ -892,16 +892,28 @@ test.serial("Build library.coreBuildtime: replaceBuildtime", (t) => {
 	});
 });
 
-// test.serial("Build library with theme configured for CSS variables", (t) => {
-// 	return builder.build({
-// 		cssVariables: true
-// 	}).then(() => {
-// 		assert.ok(false);
-// 	});
-// });
+test.serial("Build library with theme configured for CSS variables", (t) => {
+	const destPath = "./test/tmp/build/theme.j/dest-css-variables";
+	const expectedPath = "./test/expected/build/theme.j/dest-css-variables";
+	return builder.build({
+		tree: themeJTree,
+		cssVariables: true,
+		destPath
+	}).then(() => {
+		return findFiles(expectedPath);
+	}).then((expectedFiles) => {
+		// Check for all directories and files
+		assert.directoryDeepEqual(destPath, expectedPath);
+
+		return checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath);
+	}).then(() => {
+		t.pass();
+	});
+});
 
 // test.serial("Build theme-library with CSS variables", (t) => {
-// 	return builder.build({
+// With theme.library.e	
+// return builder.build({
 // 		cssVariables: true
 // 	}).then(() => {
 // 		assert.ok(false);
