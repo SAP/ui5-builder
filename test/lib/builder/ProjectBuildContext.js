@@ -41,26 +41,6 @@ test("isRootProject: false", (t) => {
 	t.false(projectBuildContext.isRootProject(), "Correctly identified non-root project");
 });
 
-test("getBuildOptions", (t) => {
-	const options = {
-		a: true,
-		b: "Pony",
-		c: 235,
-		d: {
-			d1: "Bee"
-		}
-	};
-	const projectBuildContext = new ProjectBuildContext({
-		buildContext: {
-			getOptions: () => options
-		},
-		project: "my project",
-		resources: "resources"
-	});
-
-	t.deepEqual(projectBuildContext.getOptions(), options, "Returned value is correct");
-});
-
 test("getBuildOption", (t) => {
 	const projectBuildContext = new ProjectBuildContext({
 		buildContext: {

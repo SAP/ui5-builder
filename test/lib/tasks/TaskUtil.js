@@ -108,24 +108,6 @@ test("getBuildOption", (t) => {
 	t.is(res, "Pony", "Correct result");
 });
 
-test("getBuildOptions", (t) => {
-	const expectedResult = {
-		friend: "Pony"
-	};
-	const getOptionsStub = sinon.stub().returns(expectedResult);
-	const taskUtil = new TaskUtil({
-		projectBuildContext: {
-			STANDARD_TAGS: ["some tag"],
-			getOptions: getOptionsStub
-		}
-	});
-
-	const res = taskUtil.getBuildOptions();
-
-	t.is(getOptionsStub.callCount, 1, "ProjectBuildContext#getBuildOptions got called once");
-	t.deepEqual(res, expectedResult, "Correct result");
-});
-
 test("registerCleanupTask", async (t) => {
 	const registerCleanupTaskStub = sinon.stub();
 	const taskUtil = new TaskUtil({

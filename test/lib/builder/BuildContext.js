@@ -44,23 +44,6 @@ test("getBuildOption", (t) => {
 	t.deepEqual(buildContext.getOption("d"), {d1: "Bee"}, "Returned 'object' value is correct");
 });
 
-test("getBuildOptions", (t) => {
-	const options = {
-		a: true,
-		b: "Pony",
-		c: 235,
-		d: {
-			d1: "Bee"
-		}
-	};
-	const buildContext = new BuildContext({
-		rootProject: "root_project",
-		options: options
-	});
-
-	t.deepEqual(buildContext.getOptions(), options, "Returned value is correct");
-});
-
 test.serial("createProjectContext", (t) => {
 	class DummyProjectContext {
 		constructor({buildContext, project, resources}) {

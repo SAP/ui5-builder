@@ -112,12 +112,10 @@ test.serial("Build", async (t) => {
 		getTag: getTagStub
 	});
 	const isRootProjectStub = sinon.stub().returns(true);
-	const getOptionsStub = sinon.stub().returns({friend: "Pony"});
 	const getOptionStub = sinon.stub().returns("Pony");
 	const dummyProjectContext = {
 		getResourceTagCollection: getResourceTagCollectionStub,
 		isRootProject: isRootProjectStub,
-		getOptions: getOptionsStub,
 		getOption: getOptionStub,
 		STANDARD_TAGS: {
 			OmitFromBuildResult: "👻"
