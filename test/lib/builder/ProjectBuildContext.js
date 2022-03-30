@@ -59,8 +59,10 @@ test("isRootProject: false", (t) => {
 test("getBuildOption", (t) => {
 	const projectBuildContext = new ProjectBuildContext({
 		buildContext: {
-			getOption: () => "Pony"
+			getOption: () => "Pony",
+			getResourceTagCollection: () => t.context.resourceTagCollection
 		},
+		globalTags: {MyTag: "me:MyTag"},
 		project: "my project",
 		resources: "resources"
 	});
