@@ -2001,6 +2001,10 @@ const themeLibraryETree = {
 				"src": "src",
 				"test": "test"
 			}
+		},
+		"pathMappings": {
+			"/resources/": "src",
+			"/test-resources/": "test"
 		}
 	}
 };
