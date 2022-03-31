@@ -45,9 +45,6 @@ test("tasks", async (t) => {
 			isRootProject: () => {
 				return true;
 			},
-			getBuildOptions: () => {
-				return {};
-			},
 			getBuildOption: (key) => {
 				return key;
 			}
