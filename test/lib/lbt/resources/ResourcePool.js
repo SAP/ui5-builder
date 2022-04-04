@@ -113,7 +113,7 @@ test("getModuleInfo", async (t) => {
 	t.deepEqual(jsResource.subModules, [], "does not contain submodules");
 });
 
-test("getModuleInfo: determineDependencyInfo for raw js resources", async (t) => {
+test.serial("getModuleInfo: determineDependencyInfo for raw js resources", async (t) => {
 	const resourcePool = new ResourcePool();
 	const code = `function One() {return 1;}`;
 	const inputJsResource = {name: "a.js", buffer: async () => code};
@@ -135,6 +135,30 @@ test("getModuleInfo: determineDependencyInfo for raw js resources", async (t) =>
 
 	const jsResource = await resourcePool.getModuleInfo("a.js");
 	t.false(jsResource.requiresTopLevelScope);
+
+	stubGetDependencyInfos.restore();
+});
+
+test.serial("getModuleInfo: determineDependencyInfo for dbg variants", async (t) => {
+	const resourcePool = new ResourcePool();
+	const code = `sap.ui.define(function(){});`;
+	const inputJsResource = {name: "a-dbg.js", buffer: async () => code};
+	resourcePool.addResource(inputJsResource);
+
+	const infoA = new ModuleInfo("a.js");
+
+	const stubGetDependencyInfos = sinon.stub(LibraryFileAnalyzer, "getDependencyInfos").returns({
+		"a.js": infoA
+	});
+
+	const library = {
+		name: "a.library",
+		buffer: async () => ""
+	};
+	await resourcePool.addResource(library);
+
+	const jsResource = await resourcePool.getModuleInfo("a-dbg.js");
+	t.true(jsResource.rawModule);
 
 	stubGetDependencyInfos.restore();
 });
