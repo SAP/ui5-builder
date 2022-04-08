@@ -409,6 +409,81 @@ test.serial("generateThemeDesignerResources: Theme-Library", async (t) => {
 		"workspace.write should be called with libraryLessResource");
 });
 
+test.serial("generateThemeDesignerResources: Theme-Library with CSS Variables", async (t) => {
+	const {generateThemeDesignerResources, libraryLessGeneratorStub, fsInterfaceStub, ResourceStub} = t.context;
+
+	const librarySourceLessResource = {
+		getPath: sinon.stub().returns("/resources/sap/ui/demo/lib/themes/my_theme/library.source.less")
+	};
+
+	const workspace = {
+		byGlob: sinon.stub().callsFake(async (globPattern) => {
+			if (globPattern === "/resources/**/themes/*/library.source.less") {
+				return [librarySourceLessResource];
+			} else {
+				return [];
+			}
+		}),
+		write: sinon.stub()
+	};
+	const dependencies = {};
+
+	const libraryLessResource = {};
+
+	libraryLessGeneratorStub.resolves([libraryLessResource]);
+
+	await generateThemeDesignerResources({
+		workspace,
+		dependencies,
+		options: {
+			projectName: "sap.ui.demo.lib",
+			version: "1.2.3"
+		}
+	});
+
+	t.is(t.context.ReaderCollectionPrioritizedStub.callCount, 1, "ReaderCollectionPrioritized should be created once");
+	t.deepEqual(t.context.ReaderCollectionPrioritizedStub.getCall(0).args, [{
+		name: `generateThemeDesignerResources - prioritize workspace over dependencies: sap.ui.demo.lib`,
+		readers: [workspace, dependencies]
+	}]);
+	const combo = t.context.ReaderCollectionPrioritizedStub.getCall(0).returnValue;
+
+	t.is(fsInterfaceStub.callCount, 1, "fsInterface should be created once");
+	t.deepEqual(fsInterfaceStub.getCall(0).args, [combo], "fsInterface should be created for 'combo'");
+	const fs = fsInterfaceStub.getCall(0).returnValue;
+
+	t.is(libraryLessGeneratorStub.callCount, 1);
+
+	t.deepEqual(libraryLessGeneratorStub.getCall(0).args[0], {
+		resources: [librarySourceLessResource],
+		fs,
+	}, "libraryLessGenerator processor should be called with expected arguments");
+
+	t.is(ResourceStub.callCount, 1);
+	t.true(ResourceStub.alwaysCalledWithNew());
+
+	t.deepEqual(ResourceStub.getCall(0).args, [{
+		path: "/resources/sap/ui/demo/lib/themes/my_theme/.theming",
+		string: JSON.stringify({
+			sEntity: "Theme",
+			sId: "my_theme",
+			sVendor: "SAP",
+			oExtends: "base"
+		}, null, 2)
+	}]);
+	const myThemeDotTheming = ResourceStub.getCall(0).returnValue;
+
+	t.is(workspace.write.callCount, 2);
+	t.is(workspace.write.getCall(0).args.length, 1,
+		"workspace.write for myThemeDotTheming should be called with 1 argument");
+	t.is(workspace.write.getCall(0).args[0], myThemeDotTheming,
+		"workspace.write should be called with myThemeDotTheming");
+	t.is(workspace.write.getCall(1).args.length, 1,
+		"workspace.write for libraryLessResource should be called with 1 argument");
+	t.is(workspace.write.getCall(1).args[0], libraryLessResource,
+		"workspace.write should be called with libraryLessResource");
+});
+
 test.serial("generateThemeDesignerResources: .theming file missing in sap.ui.core library source`", async (t) => {
 	const {generateThemeDesignerResources, libraryLessGeneratorStub, ResourceStub} = t.context;
 
