@@ -971,6 +971,26 @@ test.serial("Build theme-library with CSS variables", (t) => {
 	});
 });
 
+test.serial("Build theme-library with CSS variables and Theme Designer Resources", (t) => {
+	const destPath = "./test/tmp/build/theme.library.e/dest-css-variables-theme-designer-resources";
+	const expectedPath = "./test/expected/build/theme.library.e/dest-css-variables-theme-designer-resources";
+	return builder.build({
+		tree: themeLibraryETree,
+		cssVariables: true,
+		destPath,
+		includedTasks: ["generateThemeDesignerResources"]
+	}).then(() => {
+		return findFiles(expectedPath);
+	}).then((expectedFiles) => {
+		// Check for all directories and files
+		assert.directoryDeepEqual(destPath, expectedPath);
+
+		return checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath);
+	}).then(() => {
+		t.pass();
+	});
+});
+
 test.serial("Cleanup", async (t) => {
 	const BuildContext = require("../../../lib/builder/BuildContext");
 	const createProjectContextStub = sinon.spy(BuildContext.prototype, "createProjectContext");
