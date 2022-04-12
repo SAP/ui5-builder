@@ -434,8 +434,8 @@ test.serial("generateThemeDesignerResources: Theme-Library with CSS Variables", 
 				return [];
 			}
 		}),
-		byPath: sinon.stub().callsFake(async (globPattern) => {
-			if (globPattern === "/resources/sap/ui/demo/lib/themes/my_theme/css_variables.source.less") {
+		byPath: sinon.stub().callsFake(async (virPath) => {
+			if (virPath === "/resources/sap/ui/demo/lib/themes/my_theme/css_variables.source.less") {
 				return cssVariablesSourceResource;
 			} else {
 				return [];
@@ -509,8 +509,8 @@ test.serial("generateThemeDesignerResources: Theme-Library with CSS Variables wi
 				return [];
 			}
 		}),
-		byPath: sinon.stub().callsFake(async (globPattern) => {
-			if (globPattern === "/resources/sap/ui/demo/lib/themes/my_theme/css_variables.source.less") {
+		byPath: sinon.stub().callsFake(async (virPath) => {
+			if (virPath === "/resources/sap/ui/demo/lib/themes/my_theme/css_variables.source.less") {
 				return cssVariablesSourceResource;
 			} else {
 				return [];
@@ -567,20 +567,36 @@ My Content from Namespace
 });
 
 test.serial("generateThemeDesignerResources: Theme-Library with CSS Variables with base theme", async (t) => {
-	// TODO: continue test
-	const {generateThemeDesignerResources, libraryLessGeneratorStub, ResourceStub} = t.context;
+	const {
+		generateThemeDesignerResources,
+		libraryLessGeneratorStub,
+		ResourceStub,
+		ReaderCollectionPrioritizedStub
+	} = t.context;
 
 	const librarySourceLessResource = {
 		getPath: sinon.stub().returns("/resources/sap/ui/demo/lib/themes/my_theme/library.source.less")
 	};
 
 	const cssVariablesSourceResource = {
-		getString: sinon.stub().returns("My Content"),
+		getString: sinon.stub().returns("My Content with Base Theme"),
 	};
 
 	const cssVariableSourceLessResource = {
 		getPath: sinon.stub().returns("/resources/sap/ui/demo/lib/themes/my_theme/css_variables.source.less")
 	};
+
+	const baseLessResource = {};
+
+	ReaderCollectionPrioritizedStub.returns({
+		byPath: sinon.stub().callsFake(async (virPath) => {
+			if (virPath === "/resources/sap/ui/core/themes/my_theme/base.less") {
+				return baseLessResource;
+			} else {
+				return null;
+			}
+		})
+	});
 
 	const workspace = {
 		byGlob: sinon.stub().callsFake(async (globPattern) => {
@@ -592,8 +608,8 @@ test.serial("generateThemeDesignerResources: Theme-Library with CSS Variables wi
 				return [];
 			}
 		}),
-		byPath: sinon.stub().callsFake(async (globPattern) => {
-			if (globPattern === "/resources/sap/ui/demo/lib/themes/my_theme/css_variables.source.less") {
+		byPath: sinon.stub().callsFake(async (virPath) => {
+			if (virPath === "/resources/sap/ui/demo/lib/themes/my_theme/css_variables.source.less") {
 				return cssVariablesSourceResource;
 			} else {
 				return [];
@@ -627,10 +643,84 @@ test.serial("generateThemeDesignerResources: Theme-Library with CSS Variables wi
 @import "../base/css_variables.less";
 
 /* START "css_variables.source.less" */
-My Content
+My Content with Base Theme
 /* END "css_variables.source.less" */
 
+@import "../../../../../../../Base/baseLib/my_theme/base.less";
 @import "../../../../../../sap/ui/core/themes/my_theme/global.less";
+`
+	}]);
+	const cssVariableResource = ResourceStub.getCall(1).returnValue;
+
+	t.is(workspace.write.callCount, 3);
+	t.is(workspace.write.getCall(2).args.length, 1,
+		"workspace.write for cssVariableResource should be called with 1 argument");
+	t.is(workspace.write.getCall(2).args[0], cssVariableResource,
+		"workspace.write should be called with cssVariableResource");
+});
+
+test.serial("generateThemeDesignerResources: Base Theme-Library with CSS Variables", async (t) => {
+	const {
+		generateThemeDesignerResources,
+		libraryLessGeneratorStub,
+		ResourceStub
+	} = t.context;
+
+	const librarySourceLessResource = {
+		getPath: sinon.stub().returns("/resources/sap/ui/demo/lib/themes/base/library.source.less")
+	};
+
+	const cssVariablesSourceResource = {
+		getString: sinon.stub().returns("My Base Theme Content"),
+	};
+
+	const cssVariableSourceLessResource = {
+		getPath: sinon.stub().returns("/resources/sap/ui/demo/lib/themes/base/css_variables.source.less")
+	};
+
+	const workspace = {
+		byGlob: sinon.stub().callsFake(async (globPattern) => {
+			if (globPattern === "/resources/**/themes/*/library.source.less") {
+				return [librarySourceLessResource];
+			} else if (globPattern === "/resources/**/themes/*/css_variables.source.less") {
+				return [cssVariableSourceLessResource];
+			} else {
+				return [];
+			}
+		}),
+		byPath: sinon.stub().callsFake(async (virPath) => {
+			if (virPath === "/resources/sap/ui/demo/lib/themes/my_theme/css_variables.source.less") {
+				return cssVariablesSourceResource;
+			} else {
+				return [];
+			}
+		}),
+		write: sinon.stub()
+	};
+	const dependencies = {};
+
+	const libraryLessResource = {};
+
+	libraryLessGeneratorStub.resolves([libraryLessResource]);
+
+	await generateThemeDesignerResources({
+		workspace,
+		dependencies,
+		options: {
+			projectName: "sap.ui.demo.lib",
+			version: "1.2.3"
+		}
+	});
+
+	t.is(ResourceStub.callCount, 2);
+	t.true(ResourceStub.alwaysCalledWithNew());
+
+	t.deepEqual(ResourceStub.getCall(1).args, [{
+		path: "/resources/sap/ui/demo/lib/themes/base/css_variables.less",
+		string:
+`/* NOTE: This file was generated as an optimized version of "css_variables.source.less" for the Theme Designer. */
+
+@import "../../../../../../sap/ui/core/themes/base/global.less";
 `
 	}]);
 	const cssVariableResource = ResourceStub.getCall(1).returnValue;
