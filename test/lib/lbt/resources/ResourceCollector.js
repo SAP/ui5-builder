@@ -369,3 +369,50 @@ define('b', ['a'], (a) => a + 'b');
 	t.deepEqual(myRawModuleBundleDbg.required,
 		new Set(["mylib/externalDependency.js"]));
 });
+
+test.serial.only("integration: Analyze debug bundle", async (t) => {
+	const resources = [
+		new Resource({
+			path: "/resources/mylib/myBundle.js",
+			string: `sap.ui.define('a', () => 'a');sap.ui.define('b', ['a'], (a) => a + 'b');`
+		}),
+		new Resource({
+			path: "/resources/mylib/myBundle-dbg.js",
+			string: `sap.ui.define('a', () => 'a');`
+		}),
+	];
+
+	const pool = new LocatorResourcePool();
+	await pool.prepare( resources );
+
+	const collector = new ResourceCollector(pool);
+	await Promise.all(resources.map((resource) => collector.visitResource(resource)));
+
+	await collector.determineResourceDetails({
+		debugResources: ["**/*-dbg.js"]
+	});
+
+	collector.groupResourcesByComponents();
+
+	const resourceInfoList = collector.components.get("mylib/");
+
+	const myRawModuleBundle = resourceInfoList.resourcesByName.get("myBundle.js");
+	t.is(myRawModuleBundle.name, "myBundle.js");
+	t.is(myRawModuleBundle.module, "mylib/myBundle.js");
+	t.is(myRawModuleBundle.format, "raw");
+	t.is(myRawModuleBundle.requiresTopLevelScope, false);
+	t.deepEqual(myRawModuleBundle.included,
+		new Set(["a.js", "b.js"]));
+	t.deepEqual(myRawModuleBundle.required,
+		new Set(["mylib/externalDependency.js"]));
+
+	const myRawModuleBundleDbg = resourceInfoList.resourcesByName.get("myBundle-dbg.js");
+	t.is(myRawModuleBundleDbg.name, "myBundle-dbg.js");
+	t.is(myRawModuleBundleDbg.module, "mylib/myBundle.js");
+	t.is(myRawModuleBundleDbg.format, "raw");
+	t.is(myRawModuleBundleDbg.requiresTopLevelScope, false);
+	t.deepEqual(myRawModuleBundleDbg.included,
+		new Set(["a.js", "b.js"]));
+	t.deepEqual(myRawModuleBundleDbg.required,
+		new Set(["mylib/externalDependency.js"]));
+});
