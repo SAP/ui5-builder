@@ -370,15 +370,32 @@ define('b', ['a'], (a) => a + 'b');
 		new Set(["mylib/externalDependency.js"]));
 });
 
-test.serial.only("integration: Analyze debug bundle", async (t) => {
+test.serial("integration: Analyze debug bundle", async (t) => {
 	const resources = [
 		new Resource({
 			path: "/resources/mylib/myBundle.js",
-			string: `sap.ui.define('a', () => 'a');sap.ui.define('b', ['a'], (a) => a + 'b');`
+			string: `sap.ui.predefine('a', () => 'a');sap.ui.predefine('b', ['a'], (a) => a + 'b');`
 		}),
 		new Resource({
 			path: "/resources/mylib/myBundle-dbg.js",
-			string: `sap.ui.define('a', () => 'a');`
+			string: `sap.ui.predefine('a', () => 'a');`
+		}),
+		new Resource({
+			path: "/resources/mylib/.library",
+			string: `
+			<?xml version="1.0" encoding="UTF-8" ?>
+			<library xmlns="http://www.sap.com/sap.ui.library.xsd">
+				<name>mylib</name>
+				<vendor>Me</vendor>
+				<copyright>mylib</copyright>
+				<version>1.0.0</version>
+				<documentation>mylib</documentation>
+				<dependencies>
+					<dependency>
+						<libraryName>sap.ui.core</libraryName>
+					</dependency>
+				</dependencies>
+			</library>`
 		}),
 	];
 
@@ -399,20 +416,20 @@ test.serial.only("integration: Analyze debug bundle", async (t) => {
 	const myRawModuleBundle = resourceInfoList.resourcesByName.get("myBundle.js");
 	t.is(myRawModuleBundle.name, "myBundle.js");
 	t.is(myRawModuleBundle.module, "mylib/myBundle.js");
-	t.is(myRawModuleBundle.format, "raw");
+	t.is(myRawModuleBundle.format, null);
 	t.is(myRawModuleBundle.requiresTopLevelScope, false);
 	t.deepEqual(myRawModuleBundle.included,
 		new Set(["a.js", "b.js"]));
 	t.deepEqual(myRawModuleBundle.required,
-		new Set(["mylib/externalDependency.js"]));
+		new Set([]));
 
 	const myRawModuleBundleDbg = resourceInfoList.resourcesByName.get("myBundle-dbg.js");
 	t.is(myRawModuleBundleDbg.name, "myBundle-dbg.js");
 	t.is(myRawModuleBundleDbg.module, "mylib/myBundle.js");
-	t.is(myRawModuleBundleDbg.format, "raw");
+	t.is(myRawModuleBundleDbg.format, null);
 	t.is(myRawModuleBundleDbg.requiresTopLevelScope, false);
 	t.deepEqual(myRawModuleBundleDbg.included,
-		new Set(["a.js", "b.js"]));
+		new Set(["a.js"]));
 	t.deepEqual(myRawModuleBundleDbg.required,
-		new Set(["mylib/externalDependency.js"]));
+		new Set());
 });
