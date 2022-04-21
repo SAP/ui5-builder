@@ -685,7 +685,7 @@ jQuery.sap.registerPreloadedModules({
 		"submodule from jQuery.sap.registerPreloadedModules");
 });
 
-test("Module that contains jQuery.sap.declare should not be derived as subModule", (t) => {
+test("Module that contains jQuery.sap.declare should be derived as subModule", (t) => {
 	const content = `
 sap.ui.define([], function() {
 	jQuery.sap.declare("foo.bar");
@@ -695,10 +695,10 @@ sap.ui.define([], function() {
 	t.is(info.name, "modules/module-with-jquery-sap-declare.js", "TBD");
 	t.deepEqual(info.dependencies, ["jquery.sap.global.js"], "TBD");
 	t.is(info.rawModule, false, "TBD");
-	// t.is(info.format, "ui5-define", "TBD");
+	t.is(info.format, "ui5-declare", "TBD"); // Shouldn't this be ui5-define?
 	t.is(info.requiresTopLevelScope, false, "TBD");
-	t.deepEqual(info.subModules, [],
-		"no subModules should be detected");
+	t.deepEqual(info.subModules, ["foo/bar.js"],
+		"jQuery.sap.declare subModule should be detected");
 });
 
 test("Bundle that contains jQuery.sap.declare (sap.ui.predefine) should not be derived as module name", (t) => {
@@ -711,11 +711,11 @@ sap.ui.predefine("test1/module1", [], function() {
 	t.is(info.name, "test1/library-preload.js",
 		"TBD");
 	t.is(info.rawModule, false, "TBD");
-	// t.is(info.format, "ui5-declare", "TBD");
+	t.is(info.format, "ui5-declare", "TBD"); // Shouldn't this be ui5-define?
 	t.is(info.requiresTopLevelScope, false, "TBD");
-	t.deepEqual(info.subModules, ["test1/module1.js"],
+	t.deepEqual(info.subModules, ["test1/module1.js"], // Shouldn't foo/bar.js be listed here?
 		"subModule via sap.ui.predefine should be detected");
-	t.deepEqual(info.dependencies, ["ui5loader-autoconfig.js"],
+	t.deepEqual(info.dependencies, ["jquery.sap.global.js"],
 		"TBD");
 });
 
@@ -734,9 +734,9 @@ sap.ui.require.preload({
 	t.is(info.name, "test1/library-preload.js",
 		"TBD");
 	t.is(info.rawModule, false, "TBD");
-	// t.is(info.format, "ui5-declare", "TBD");
+	t.is(info.format, "ui5-define", "TBD");
 	t.is(info.requiresTopLevelScope, false, "TBD");
-	t.deepEqual(info.subModules, ["test1/module1.js"],
+	t.deepEqual(info.subModules, ["test1/module1.js"], // Shouldn't foo/bar.js be listed here?
 		"subModule via sap.ui.predefine should be detected");
 	t.deepEqual(info.dependencies, ["ui5loader-autoconfig.js"],
 		"TBD");
