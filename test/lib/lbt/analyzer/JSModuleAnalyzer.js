@@ -694,7 +694,7 @@ sap.ui.define([], function() {
 	const info = analyzeString(content, "modules/module-with-jquery-sap-declare.js");
 	t.is(info.name, "modules/module-with-jquery-sap-declare.js");
 	t.is(info.rawModule, false);
-	t.is(info.format, "ui5-declare", "Format should be declare once a jQuery.sap.declare statement is found");
+	t.is(info.format, "ui5-declare"); // FIXME: Format should actually be ui5-define
 	t.is(info.requiresTopLevelScope, false);
 	t.deepEqual(info.subModules, ["foo/bar.js"],
 		"jQuery.sap.declare subModule should be detected");
@@ -710,7 +710,7 @@ sap.ui.predefine("test1/module1", [], function() {
 	const info = analyzeString(content, "modules/bundle-with-jquery-sap-declare.js");
 	t.is(info.name, "test1/library-preload.js", "Module name should be taken from @ui5-bundle comment");
 	t.is(info.rawModule, false);
-	t.is(info.format, "ui5-declare", "Format should be declare once a jQuery.sap.declare statement is found");
+	t.is(info.format, "ui5-declare"); // FIXME: Format should actually be ui5-define
 	t.is(info.requiresTopLevelScope, false);
 	// Note: foo/bar.js is not listed as the predefine body is not analyzed
 	t.deepEqual(info.subModules, ["test1/module1.js"],
