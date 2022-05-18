@@ -127,6 +127,7 @@
 		"yazl": "^2.5.1"
 	},
 	"devDependencies": {
+		"@ui5/project": "^3.0.0-alpha.2",
 		"ava": "^3.15.0",
 		"chai": "^4.3.4",
 		"chai-fs": "^2.0.0",

@@ -10,8 +10,9 @@ const sinon = require("sinon");
 const mock = require("mock-require");
 const resourceFactory = require("@ui5/fs").resourceFactory;
 
-const ui5Builder = require("../../../");
-const builder = ui5Builder.builder;
+const generateProjectGraph = require("@ui5/project").generateProjectGraph.usingNodePackageDependencies;
+const builder = require("@ui5/project").builder;
+
 const applicationAPath = path.join(__dirname, "..", "..", "fixtures", "application.a");
 const applicationGPath = path.join(__dirname, "..", "..", "fixtures", "application.g");
 const applicationHPath = path.join(__dirname, "..", "..", "fixtures", "application.h");
@@ -65,6 +66,16 @@ function cloneProjectTree(tree) {
 
 	increaseDepth(tree);
 	return tree;
+}
+
+function directoryDeepEqual(t, destPath, expectedPath) {
+	try {
+		assert.directoryDeepEqual(destPath, expectedPath);
+	} catch (err) {
+		if (err instanceof chai.AssertionError) {
+			t.deepEqual(err.actual, err.expected, err.message);
+		}
+	}
 }
 
 async function checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath) {
@@ -186,58 +197,50 @@ test.serial("Build", async (t) => {
 	t.is(executeCleanupTasksStub.callCount, 1, "Cleanup called once");
 });
 
-test.serial("Build application.a", (t) => {
+test.serial.only("Build application.a", async (t) => {
 	const destPath = "./test/tmp/build/application.a/dest";
 	const expectedPath = path.join("test", "expected", "build", "application.a", "dest");
 
-	return builder.build({
-		tree: applicationATree,
+	const graph = await generateProjectGraph({
+		cwd: applicationAPath
+	});
+	await builder({
+		graph,
 		destPath,
 		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo"]
-	}).then(() => {
-		return findFiles(expectedPath);
-	}).then((expectedFiles) => {
-		// Check for all directories and files
-		assert.directoryDeepEqual(destPath, expectedPath);
-		// Check for all file contents
-		return checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath);
-	}).then(() => {
-		t.pass();
 	});
+
+	const expectedFiles = await findFiles(expectedPath);
+	// Check for all directories and files
+	directoryDeepEqual(t, destPath, expectedPath);
+	// Check for all file contents
+	await checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath);
+	t.pass();
 });
 
-test.serial("Build application.a with error", async (t) => {
-	const destPath = "./test/tmp/build/application.a/dest";
-
-	const error = await t.throwsAsync(builder.build({
-		tree: applicationATreeBadType,
-		destPath
-	}));
-	t.deepEqual(error.message, `Unknown type 'non existent'`);
-});
-
-test.serial("Build application.a with dependencies", (t) => {
+test.serial.only("Build application.a with dependencies", async (t) => {
 	const destPath = "./test/tmp/build/application.a/dest-deps";
 	const expectedPath = path.join("test", "expected", "build", "application.a", "dest-deps");
 
-	return builder.build({
-		tree: applicationATree,
+	const graph = await generateProjectGraph({
+		cwd: applicationAPath
+	});
+	await builder({
+		graph,
 		destPath,
 		excludedTasks: [
 			"generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo",
 			"generateLibraryPreload", "escapeNonAsciiCharacters", "generateLibraryManifest"
 		],
-		buildDependencies: true
-	}).then(() => {
-		return findFiles(expectedPath);
-	}).then((expectedFiles) => {
-		// Check for all directories and files
-		assert.directoryDeepEqual(destPath, expectedPath);
-		// Check for all file contents
-		return checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath);
-	}).then(() => {
-		t.pass();
+		includedDependencies: ["*"]
 	});
+
+	const expectedFiles = await findFiles(expectedPath);
+	// Check for all directories and files
+	directoryDeepEqual(t, destPath, expectedPath);
+	// Check for all file contents
+	await checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath);
+	t.pass();
 });
 
 test.serial("Build application.a with dependencies include", (t) => {
@@ -1076,8 +1079,7 @@ const libraryDTree = {
 			"version": "1.0.0",
 			"path": libraryCore,
 			"dependencies": [],
-			"_level": 1,
-			"specVersion": "0.1",
+			"specVersion": "2.6",
 			"type": "library",
 			"metadata": {
 				"name": "sap.ui.core",
@@ -1096,9 +1098,7 @@ const libraryDTree = {
 			}
 		}
 	],
-	"_level": 0,
-	"_isRoot": true,
-	"specVersion": "0.1",
+	"specVersion": "2.6",
 	"type": "library",
 	"metadata": {
 		"name": "library.d",
@@ -1131,24 +1131,20 @@ const applicationATree = {
 			"version": "1.0.0",
 			"path": path.join(collectionPath, "library.a"),
 			"dependencies": [],
-			"_level": 1,
-			"specVersion": "0.1",
-			"type": "library",
-			"metadata": {
-				"name": "library.a",
-				"namespace": "library/a",
-				"copyright": "${copyright}"
-			},
-			"resources": {
-				"configuration": {
-					"paths": {
-						"src": "src",
-						"test": "test"
-					}
+			"configuration": {
+				"specVersion": "2.6",
+				"type": "library",
+				"metadata": {
+					"name": "library.a",
+					"copyright": "${copyright}"
 				},
-				"pathMappings": {
-					"/resources/": "src",
-					"/test-resources/": "test"
+				"resources": {
+					"configuration": {
+						"paths": {
+							"src": "src",
+							"test": "test"
+						}
+					}
 				}
 			}
 		},
@@ -1157,24 +1153,20 @@ const applicationATree = {
 			"version": "1.0.0",
 			"path": path.join(collectionPath, "library.b"),
 			"dependencies": [],
-			"_level": 1,
-			"specVersion": "0.1",
-			"type": "library",
-			"metadata": {
-				"name": "library.b",
-				"namespace": "library/b",
-				"copyright": "${copyright}"
-			},
-			"resources": {
-				"configuration": {
-					"paths": {
-						"src": "src",
-						"test": "test"
-					}
+			"configuration": {
+				"specVersion": "2.6",
+				"type": "library",
+				"metadata": {
+					"name": "library.b",
+					"copyright": "${copyright}"
 				},
-				"pathMappings": {
-					"/resources/": "src",
-					"/test-resources/": "test"
+				"resources": {
+					"configuration": {
+						"paths": {
+							"src": "src",
+							"test": "test"
+						}
+					}
 				}
 			}
 		},
@@ -1183,45 +1175,37 @@ const applicationATree = {
 			"version": "1.0.0",
 			"path": path.join(collectionPath, "library.c"),
 			"dependencies": [],
-			"_level": 1,
-			"specVersion": "0.1",
-			"type": "library",
-			"metadata": {
-				"name": "library.c",
-				"namespace": "library/c",
-				"copyright": "${copyright}"
-			},
-			"resources": {
-				"configuration": {
-					"paths": {
-						"src": "src",
-						"test": "test"
-					}
+			"configuration": {
+				"specVersion": "2.6",
+				"type": "library",
+				"metadata": {
+					"name": "library.c",
+					"copyright": "${copyright}"
 				},
-				"pathMappings": {
-					"/resources/": "src",
-					"/test-resources/": "test"
+				"resources": {
+					"configuration": {
+						"paths": {
+							"src": "src",
+							"test": "test"
+						}
+					}
 				}
 			}
 		}
 	],
-	"_level": 0,
-	"_isRoot": true,
-	"specVersion": "0.1",
-	"type": "application",
-	"metadata": {
-		"name": "application.a",
-		"namespace": "application/a"
-	},
-	"resources": {
-		"configuration": {
-			"paths": {
-				"webapp": "webapp"
-			},
-			"propertiesFileSourceEncoding": "ISO-8859-1"
+	"configuration": {
+		"specVersion": "2.6",
+		"type": "application",
+		"metadata": {
+			"name": "application.a"
 		},
-		"pathMappings": {
-			"/": "webapp"
+		"resources": {
+			"configuration": {
+				"paths": {
+					"webapp": "webapp"
+				},
+				"propertiesFileSourceEncoding": "ISO-8859-1"
+			}
 		}
 	}
 };
@@ -1230,9 +1214,7 @@ const applicationATreeBadType = {
 	"id": "application.a",
 	"version": "1.0.0",
 	"path": applicationAPath,
-	"_level": 0,
-	"_isRoot": true,
-	"specVersion": "0.1",
+	"specVersion": "2.6",
 	"type": "non existent",
 	"metadata": {
 		"name": "application.a"
@@ -1254,9 +1236,7 @@ const applicationGTree = {
 	"id": "application.g",
 	"version": "1.0.0",
 	"path": applicationGPath,
-	"_level": 0,
-	"_isRoot": true,
-	"specVersion": "0.1",
+	"specVersion": "2.6",
 	"type": "application",
 	"metadata": {
 		"name": "application.g",
@@ -1290,9 +1270,7 @@ const applicationGTreeWithExcludes = {
 	"id": "application.g",
 	"version": "1.0.0",
 	"path": applicationGPath,
-	"_level": 0,
-	"_isRoot": true,
-	"specVersion": "0.1",
+	"specVersion": "2.6",
 	"type": "application",
 	"metadata": {
 		"name": "application.g",
@@ -1327,9 +1305,7 @@ const applicationGTreeComponentPreloadPaths = {
 	"id": "application.g",
 	"version": "1.0.0",
 	"path": applicationGPath,
-	"_level": 0,
-	"_isRoot": true,
-	"specVersion": "0.1",
+	"specVersion": "2.6",
 	"type": "application",
 	"metadata": {
 		"name": "application.g",
@@ -1361,9 +1337,7 @@ const applicationHTree = {
 	"id": "application.h",
 	"version": "1.0.0",
 	"path": applicationHPath,
-	"_level": 0,
-	"_isRoot": true,
-	"specVersion": "0.1",
+	"specVersion": "2.6",
 	"type": "application",
 	"metadata": {
 		"name": "application.h",
@@ -1423,9 +1397,7 @@ const applicationITree = {
 	"id": "application.i",
 	"version": "1.0.0",
 	"path": applicationIPath,
-	"_level": 0,
-	"_isRoot": true,
-	"specVersion": "0.1",
+	"specVersion": "2.6",
 	"type": "application",
 	"metadata": {
 		"name": "application.i",
@@ -1452,9 +1424,7 @@ const applicationJTree = {
 	"id": "application.j",
 	"version": "1.0.0",
 	"path": applicationJPath,
-	"_level": 0,
-	"_isRoot": true,
-	"specVersion": "0.1",
+	"specVersion": "2.6",
 	"type": "application",
 	"metadata": {
 		"name": "application.j",
@@ -1481,9 +1451,7 @@ const applicationKTree = {
 	"id": "application.k",
 	"version": "1.0.0",
 	"path": applicationKPath,
-	"_level": 0,
-	"_isRoot": true,
-	"specVersion": "0.1",
+	"specVersion": "2.6",
 	"type": "application",
 	"metadata": {
 		"name": "application.k",
@@ -1532,8 +1500,6 @@ const applicationLTree = {
 	"version": "1.0.0",
 	"path": applicationLPath,
 	"dependencies": [],
-	"_level": 0,
-	"_isRoot": true,
 	"specVersion": "2.6",
 	"type": "application",
 	"metadata": {
@@ -1578,8 +1544,7 @@ const applicationØTree = {
 			"version": "1.0.0",
 			"path": libraryCore,
 			"dependencies": [],
-			"_level": 1,
-			"specVersion": "0.1",
+			"specVersion": "2.6",
 			"type": "library",
 			"metadata": {
 				"name": "sap.ui.core",
@@ -1598,8 +1563,6 @@ const applicationØTree = {
 			}
 		}
 	],
-	"_level": 0,
-	"_isRoot": true,
 	"specVersion": "2.0",
 	"type": "application",
 	"metadata": {
@@ -1629,8 +1592,7 @@ const libraryETree = {
 			"version": "1.0.0",
 			"path": libraryCore,
 			"dependencies": [],
-			"_level": 1,
-			"specVersion": "0.1",
+			"specVersion": "2.6",
 			"type": "library",
 			"metadata": {
 				"name": "sap.ui.core",
@@ -1649,9 +1611,7 @@ const libraryETree = {
 			}
 		}
 	],
-	"_level": 0,
-	"_isRoot": true,
-	"specVersion": "0.1",
+	"specVersion": "2.6",
 	"type": "library",
 	"metadata": {
 		"name": "library.e",
@@ -1684,8 +1644,7 @@ const libraryHTree = {
 			"version": "1.0.0",
 			"path": libraryCore,
 			"dependencies": [],
-			"_level": 1,
-			"specVersion": "0.1",
+			"specVersion": "2.6",
 			"type": "library",
 			"metadata": {
 				"name": "sap.ui.core",
@@ -1704,9 +1663,7 @@ const libraryHTree = {
 			}
 		}
 	],
-	"_level": 0,
-	"_isRoot": true,
-	"specVersion": "0.1",
+	"specVersion": "2.6",
 	"type": "library",
 	"metadata": {
 		"name": "library.h",
@@ -1807,8 +1764,7 @@ const libraryITree = {
 			"version": "1.0.0",
 			"path": libraryCore,
 			"dependencies": [],
-			"_level": 1,
-			"specVersion": "0.1",
+			"specVersion": "2.6",
 			"type": "library",
 			"metadata": {
 				"name": "sap.ui.core",
@@ -1828,9 +1784,7 @@ const libraryITree = {
 		},
 		cloneProjectTree(libraryDTree)
 	],
-	"_level": 0,
-	"_isRoot": true,
-	"specVersion": "0.1",
+	"specVersion": "2.6",
 	"type": "library",
 	"metadata": {
 		"name": "library.i",
@@ -1856,9 +1810,7 @@ const libraryJTree = {
 	"version": "1.0.0",
 	"path": libraryJPath,
 	"dependencies": [],
-	"_level": 0,
-	"_isRoot": true,
-	"specVersion": "0.1",
+	"specVersion": "2.6",
 	"type": "library",
 	"metadata": {
 		"name": "library.j",
@@ -1882,8 +1834,6 @@ const libraryLTree = {
 	"version": "1.0.0",
 	"path": libraryLPath,
 	"dependencies": [],
-	"_level": 0,
-	"_isRoot": true,
 	"specVersion": "2.6",
 	"type": "library",
 	"metadata": {
@@ -1922,8 +1872,7 @@ const libraryØTree = {
 			"version": "1.0.0",
 			"path": libraryCore,
 			"dependencies": [],
-			"_level": 1,
-			"specVersion": "0.1",
+			"specVersion": "2.6",
 			"type": "library",
 			"metadata": {
 				"name": "sap.ui.core",
@@ -1942,8 +1891,6 @@ const libraryØTree = {
 			}
 		}
 	],
-	"_level": 0,
-	"_isRoot": true,
 	"specVersion": "2.0",
 	"type": "library",
 	"metadata": {
@@ -1971,9 +1918,7 @@ const libraryCoreBuildtimeTree = {
 	"version": "1.0.0",
 	"path": libraryCoreBuildtime,
 	"dependencies": [],
-	"_level": 0,
-	"_isRoot": true,
-	"specVersion": "0.1",
+	"specVersion": "2.6",
 	"type": "library",
 	"metadata": {
 		"name": "library.coreBuildtime",
@@ -1998,9 +1943,7 @@ const themeJTree = {
 	"version": "1.0.0",
 	"path": themeJPath,
 	"dependencies": [],
-	"_level": 0,
-	"_isRoot": true,
-	"specVersion": "0.1",
+	"specVersion": "2.6",
 	"type": "library",
 	"metadata": {
 		"name": "theme.j",
@@ -2026,8 +1969,6 @@ const themeLibraryETree = {
 	"version": "1.0.0",
 	"path": themeLibraryEPath,
 	"dependencies": [],
-	"_level": 0,
-	"_isRoot": true,
 	"specVersion": "1.1",
 	"type": "theme-library",
 	"metadata": {
