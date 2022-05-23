@@ -3,7 +3,7 @@
 
 	<name>library.a</name>
 	<vendor>SAP SE</vendor>
-	<copyright>Some fancy copyright</copyright>
+	<copyright>Some fancy copyright ${currentYear}</copyright>
 	<version>1.0.0</version>
 
 	<documentation>Library A</documentation>
