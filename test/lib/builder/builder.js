@@ -68,12 +68,23 @@ function cloneProjectTree(tree) {
 	return tree;
 }
 
+function arrayToMap(array) {
+	const map = {};
+	array.forEach((v) => {
+		if (map[v]) {
+			throw new Error(`Unable to convert array to map because of duplicate entry '${v}'`);
+		}
+		map[v] = true;
+	});
+	return map;
+}
+
 function directoryDeepEqual(t, destPath, expectedPath) {
 	try {
 		assert.directoryDeepEqual(destPath, expectedPath);
 	} catch (err) {
 		if (err instanceof chai.AssertionError) {
-			t.deepEqual(err.actual.sort(), err.expected.sort(), err.message);
+			t.deepEqual(arrayToMap(err.actual), arrayToMap(err.expected), err.message);
 		}
 	}
 }
@@ -244,8 +255,7 @@ test.serial("Build application.a with dependencies", async (t) => {
 	t.pass();
 });
 
-// TODO: FIX
-test.serial.skip("Build application.a with dependencies exclude", async (t) => {
+test.serial("Build application.a with dependencies exclude", async (t) => {
 	const destPath = "./test/tmp/build/application.a/dest-deps-excl";
 	const expectedPath = path.join("test", "expected", "build", "application.a", "dest-deps-excl");
 
@@ -271,7 +281,7 @@ test.serial.skip("Build application.a with dependencies exclude", async (t) => {
 	t.pass();
 });
 
-// TODO: FIX
+// TODO: FIX. resources/sap-ui-custom.js is not written to dist because it's not part of the application namespace
 test.serial.skip("Build application.a self-contained", async (t) => {
 	const destPath = "./test/tmp/build/application.a/dest-self";
 	const expectedPath = path.join("test", "expected", "build", "application.a", "dest-self");
@@ -294,7 +304,7 @@ test.serial.skip("Build application.a self-contained", async (t) => {
 	t.pass();
 });
 
-// TODO: FIX
+// TODO: FIX. resources/sap-ui-custom.js is not written to dist because it's not part of the application namespace
 test.serial.skip("Build application.a with dependencies self-contained", async (t) => {
 	const destPath = "./test/tmp/build/application.a/dest-depself";
 	const expectedPath = path.join("test", "expected", "build", "application.a", "dest-depself");
@@ -395,7 +405,7 @@ test.serial("Build application.g with component preload paths", async (t) => {
 });
 
 // TODO: FIX. builder.resources.excludes don't seem to work
-test.serial.skip("Build application.g with excludes", async (t) => {
+test.serial("Build application.g with excludes", async (t) => {
 	const destPath = "./test/tmp/build/application.g/excludes";
 	const expectedPath = path.join("test", "expected", "build", "application.g", "excludes");
 
@@ -460,8 +470,7 @@ test.serial("Build application.h (no minify)", async (t) => {
 	t.pass();
 });
 
-// TODO: FIX. OmitFromBuildResult for *.change files doesn't seem to work. Files are still written to dist folder
-test.serial.skip("Build application.i", async (t) => {
+test.serial("Build application.i", async (t) => {
 	const destPath = "./test/tmp/build/application.i/dest";
 	const expectedPath = path.join("test", "expected", "build", "application.i", "dest");
 
@@ -482,8 +491,7 @@ test.serial.skip("Build application.i", async (t) => {
 	t.pass();
 });
 
-// TODO: FIX. OmitFromBuildResult for *.change files doesn't seem to work. Files are still written to dist folder
-test.serial.skip("Build application.j", async (t) => {
+test.serial("Build application.j", async (t) => {
 	const destPath = "./test/tmp/build/application.j/dest";
 	const expectedPath = path.join("test", "expected", "build", "application.j", "dest");
 
@@ -504,7 +512,7 @@ test.serial.skip("Build application.j", async (t) => {
 	t.pass();
 });
 
-// TODO: FIX. OmitFromBuildResult for *.change files doesn't seem to work. Files are still written to dist folder
+// TODO: FIX. resources/sap-ui-version.json is not written to dist because it's not part of the application namespace
 test.serial.skip("Build application.j with resources.json and version info", async (t) => {
 	const destPath = "./test/tmp/build/application.j/dest-resources-json";
 	const expectedPath = path.join("test", "expected", "build", "application.j", "dest-resources-json");
@@ -549,7 +557,7 @@ test.serial.skip("Build application.j with resources.json and version info", asy
 });
 
 // TODO: Check why Component-preload.js content differs
-test.serial.skip("Build application.k (componentPreload excludes)", async (t) => {
+test.serial("Build application.k (componentPreload excludes)", async (t) => {
 	const destPath = "./test/tmp/build/application.k/dest";
 	const expectedPath = path.join("test", "expected", "build", "application.k", "dest");
 
@@ -572,7 +580,7 @@ test.serial.skip("Build application.k (componentPreload excludes)", async (t) =>
 });
 
 // TODO: Check why Component-preload.js content differs
-test.serial.skip("Build application.k (package sub-components / componentPreload excludes)", async (t) => {
+test.serial("Build application.k (package sub-components / componentPreload excludes)", async (t) => {
 	const destPath = "./test/tmp/build/application.k/dest-package-subcomponents";
 	const expectedPath = path.join("test", "expected", "build", "application.k", "dest-package-subcomponents");
 
@@ -678,8 +686,7 @@ test.serial("Build library.e with copyright from metadata configuration of tree"
 	t.pass();
 });
 
-// TODO: FIX. test-resources are missing in destPath
-test.serial.skip("Build library.h with custom bundles and component-preloads", async (t) => {
+test.serial("Build library.h with custom bundles and component-preloads", async (t) => {
 	const destPath = path.join("test", "tmp", "build", "library.h", "dest");
 	const expectedPath = path.join("test", "expected", "build", "library.h", "dest");
 
@@ -700,8 +707,7 @@ test.serial.skip("Build library.h with custom bundles and component-preloads", a
 	t.pass();
 });
 
-// TODO: FIX. test-resources are missing in destPath
-test.serial.skip("Build library.h with custom bundles and component-preloads (no minify)", async (t) => {
+test.serial("Build library.h with custom bundles and component-preloads (no minify)", async (t) => {
 	const destPath = path.join("test", "tmp", "build", "library.h", "no-minify");
 	const expectedPath = path.join("test", "expected", "build", "library.h", "no-minify");
 
@@ -722,8 +728,7 @@ test.serial.skip("Build library.h with custom bundles and component-preloads (no
 	t.pass();
 });
 
-// TODO: FIX. test-resources are missing in destPath
-test.serial.skip("Build library.h with custom bundles and component-preloads with resources.json", async (t) => {
+test.serial("Build library.h with custom bundles and component-preloads with resources.json", async (t) => {
 	const destPath = path.join("test", "tmp", "build", "library.h", "dest-resources-json");
 	const expectedPath = path.join("test", "expected", "build", "library.h", "dest-resources-json");
 
@@ -852,8 +857,7 @@ test.serial("Build theme.j even without an library with resources.json", async (
 	t.pass();
 });
 
-// TODO: FIX. test-resources are missing in destPath
-test.serial.skip("Build library.ø", async (t) => {
+test.serial("Build library.ø", async (t) => {
 	const destPath = "./test/tmp/build/library.ø/dest";
 	const expectedPath = path.join("test", "expected", "build", "library.ø", "dest");
 
@@ -873,8 +877,7 @@ test.serial.skip("Build library.ø", async (t) => {
 	t.pass();
 });
 
-// TODO: FIX. sap-ui-core(-dbg).js files are missing in destPath
-test.serial.skip("Build library.coreBuildtime: replaceBuildtime", async (t) => {
+test.serial("Build library.coreBuildtime (legacy-library): replaceBuildtime", async (t) => {
 	const destPath = path.join("test", "tmp", "build", "sap.ui.core-buildtime", "dest");
 	const expectedPath = path.join("test", "expected", "build", "sap.ui.core-buildtime", "dest");
 
@@ -1793,43 +1796,38 @@ const libraryØTree = {
 			"version": "1.0.0",
 			"path": libraryCore,
 			"dependencies": [],
-			"specVersion": "2.6",
-			"type": "library",
-			"metadata": {
-				"name": "sap.ui.core",
-				"namespace": "sap/ui/core",
-				"copyright": "Some fancy copyright"
-			},
-			"resources": {
-				"configuration": {
-					"paths": {
-						"src": "main/src"
-					}
+			"configuration": {
+				"specVersion": "2.6",
+				"type": "library",
+				"metadata": {
+					"name": "sap.ui.core",
+					"copyright": "Some fancy copyright"
 				},
-				"pathMappings": {
-					"/resources/": "main/src"
+				"resources": {
+					"configuration": {
+						"paths": {
+							"src": "main/src"
+						}
+					}
 				}
 			}
 		}
 	],
-	"specVersion": "2.0",
-	"type": "library",
-	"metadata": {
-		"name": "library.ø",
-		"namespace": "library/ø",
-		"copyright": "Some fancy copyright"
-	},
-	"resources": {
-		"configuration": {
-			"paths": {
-				"src": "máin/ßrc",
-				"test": "máin/吉"
-			},
-			"propertiesFileSourceEncoding": "UTF-8"
+	"configuration": {
+		"specVersion": "2.0",
+		"type": "library",
+		"metadata": {
+			"name": "library.ø",
+			"copyright": "Some fancy copyright"
 		},
-		"pathMappings": {
-			"/resources/": "máin/ßrc",
-			"/test-resources/": "máin/吉"
+		"resources": {
+			"configuration": {
+				"paths": {
+					"src": "máin/ßrc",
+					"test": "máin/吉"
+				},
+				"propertiesFileSourceEncoding": "UTF-8"
+			}
 		}
 	}
 };
@@ -1841,7 +1839,7 @@ const libraryCoreBuildtimeTree = {
 	"dependencies": [],
 	"configuration": {
 		"specVersion": "2.6",
-		"type": "library",
+		"type": "legacy-library",
 		"metadata": {
 			"name": "library.coreBuildtime",
 			"copyright": "Some fancy copyright"
