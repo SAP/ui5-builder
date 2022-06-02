@@ -281,8 +281,7 @@ test.serial("Build application.a with dependencies exclude", async (t) => {
 	t.pass();
 });
 
-// TODO: FIX. resources/sap-ui-custom.js is not written to dist because it's not part of the application namespace
-test.serial.skip("Build application.a self-contained", async (t) => {
+test.serial("Build application.a self-contained", async (t) => {
 	const destPath = "./test/tmp/build/application.a/dest-self";
 	const expectedPath = path.join("test", "expected", "build", "application.a", "dest-self");
 
@@ -304,8 +303,7 @@ test.serial.skip("Build application.a self-contained", async (t) => {
 	t.pass();
 });
 
-// TODO: FIX. resources/sap-ui-custom.js is not written to dist because it's not part of the application namespace
-test.serial.skip("Build application.a with dependencies self-contained", async (t) => {
+test.serial("Build application.a with dependencies self-contained", async (t) => {
 	const destPath = "./test/tmp/build/application.a/dest-depself";
 	const expectedPath = path.join("test", "expected", "build", "application.a", "dest-depself");
 
@@ -512,8 +510,7 @@ test.serial("Build application.j", async (t) => {
 	t.pass();
 });
 
-// TODO: FIX. resources/sap-ui-version.json is not written to dist because it's not part of the application namespace
-test.serial.skip("Build application.j with resources.json and version info", async (t) => {
+test.serial("Build application.j with resources.json and version info", async (t) => {
 	const destPath = "./test/tmp/build/application.j/dest-resources-json";
 	const expectedPath = path.join("test", "expected", "build", "application.j", "dest-resources-json");
 
@@ -545,7 +542,7 @@ test.serial.skip("Build application.j with resources.json and version info", asy
 	await builder({
 		graph,
 		destPath,
-		includedTasks: ["generateResourcesJson"]
+		includedTasks: ["generateResourcesJson", "generateVersionInfo"]
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
