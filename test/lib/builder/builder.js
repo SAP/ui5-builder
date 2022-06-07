@@ -402,8 +402,7 @@ test.serial("Build application.g with component preload paths", async (t) => {
 	t.pass();
 });
 
-// TODO: FIX. builder.resources.excludes don't seem to work
-test.serial.skip("Build application.g with excludes", async (t) => {
+test.serial("Build application.g with excludes", async (t) => {
 	const destPath = "./test/tmp/build/application.g/excludes";
 	const expectedPath = path.join("test", "expected", "build", "application.g", "excludes");
 
