@@ -871,7 +871,7 @@ test.serial("Build library.ø", async (t) => {
 	t.pass();
 });
 
-test.serial("Build library.coreBuildtime (legacy-library): replaceBuildtime", async (t) => {
+test.serial("Build library.coreBuildtime: replaceBuildtime", async (t) => {
 	const destPath = path.join("test", "tmp", "build", "sap.ui.core-buildtime", "dest");
 	const expectedPath = path.join("test", "expected", "build", "sap.ui.core-buildtime", "dest");
 
@@ -1833,7 +1833,7 @@ const libraryCoreBuildtimeTree = {
 	"dependencies": [],
 	"configuration": {
 		"specVersion": "2.6",
-		"type": "legacy-library",
+		"type": "library",
 		"metadata": {
 			"name": "library.coreBuildtime",
 			"copyright": "Some fancy copyright"

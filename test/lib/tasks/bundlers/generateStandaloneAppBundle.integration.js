@@ -31,8 +31,7 @@ const findFiles = (folder) => {
 	});
 };
 
-// TODO: FIX. resources/sap-ui-custom.js is not written to dist because it's not part of the application namespace
-test.skip("integration: build application.b standalone", async (t) => {
+test("integration: build application.b standalone", async (t) => {
 	// beforeEach mocks do not apply to this test as all modules have already been required via ui5Builder require above
 	const destPath = "./test/tmp/build/application.b/standalone";
 	const expectedPath = "./test/expected/build/application.b/standalone";
