@@ -98,11 +98,13 @@ test.beforeEach((t) => {
 	t.context.errorLogStub = sinon.stub();
 	t.context.warnLogStub = sinon.stub();
 	t.context.infoLogStub = sinon.stub();
+	t.context.sillyLogStub = sinon.stub();
 	sinon.stub(logger, "getLogger").returns({
 		verbose: t.context.verboseLogStub,
 		error: t.context.errorLogStub,
 		warn: t.context.warnLogStub,
 		info: t.context.infoLogStub,
+		silly: t.context.sillyLogStub,
 		isLevelEnabled: () => true
 	});
 	mock.reRequire("../../../lib/processors/versionInfoGenerator");
@@ -149,8 +151,8 @@ test.serial("integration: Library without i18n bundle file", async (t) => {
 		"version": "1.33.7",
 	}, oOptions);
 
-	t.is(t.context.verboseLogStub.callCount, 7);
-	t.is(t.context.verboseLogStub.getCall(3).args[0],
+	t.is(t.context.verboseLogStub.callCount, 4);
+	t.is(t.context.verboseLogStub.getCall(1).args[0],
 		"Cannot add meta information for library 'test.lib3'. The manifest.json file cannot be found");
 });
 
