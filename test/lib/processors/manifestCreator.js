@@ -186,7 +186,6 @@ test.serial("default manifest creation (multi-line documentation)", async (t) =>
 	t.is(errorLogStub.callCount, 0);
 });
 
-
 test.serial("default manifest creation i18n empty string", async (t) => {
 	const {manifestCreator, errorLogStub, getProjectVersion} = t.context;
 	const prefix = "/resources/sap/ui/mine/";
@@ -331,7 +330,7 @@ test.serial("default manifest creation with sourceTemplate and thirdparty", asyn
 	t.is(errorLogStub.callCount, 0);
 });
 
-test.serial("default manifest creation no dependency version", async (t) => {
+test.serial("default manifest creation no project versions", async (t) => {
 	const {manifestCreator, errorLogStub, getProjectVersion} = t.context;
 	const prefix = "/resources/sap/ui/mine/";
 	const libraryResource = {
@@ -358,13 +357,13 @@ test.serial("default manifest creation no dependency version", async (t) => {
 		}
 	};
 
-	const error = await t.throwsAsync(manifestCreator({
-		libraryResource,
-		resources: [],
-		getProjectVersion
-	}));
-	t.deepEqual(error.message,
-		"Couldn't find version for library 'my.lib', project dependency missing?", "error message correct");
+	const expectedManifestContentObjectModified = expectedManifestContentObject();
+	expectedManifestContentObjectModified["sap.app"]["i18n"] = undefined;
+	expectedManifestContentObjectModified["sap.app"]["applicationVersion"] = {};
+	expectedManifestContentObjectModified["sap.ui5"]["dependencies"]["libs"]["my.lib"] = {};
+	const expectedManifestContent = JSON.stringify(expectedManifestContentObjectModified, null, 2);
+	const result = await manifestCreator({libraryResource, resources: [], getProjectVersion, options: {}});
+	t.is(await result.getString(), expectedManifestContent, "Correct result returned");
 	t.is(errorLogStub.callCount, 0);
 });
 
