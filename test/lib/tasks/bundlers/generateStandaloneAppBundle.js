@@ -206,7 +206,6 @@ test.serial.only("execute module bundler with taskUtil", async (t) => {
 			namespace: "some/project/namespace"
 		}
 	};
-	debugger;
 	await generateStandaloneAppBundle(params);
 
 	t.is(t.context.moduleBundlerStub.callCount, 2);
