@@ -20,6 +20,12 @@ test("Named Define", (t) => {
 	t.is(call.name, "HardcodedName");
 });
 
+test("Named Define (template literal)", (t) => {
+	const ast = parse("sap.ui.define(`HardcodedName`, [], function() {});");
+	const call = new SapUiDefineCall(ast, "FileSystemName");
+	t.is(call.name, "HardcodedName");
+});
+
 test("Unnamed Define", (t) => {
 	const ast = parse("sap.ui.define([], function() {});");
 	const call = new SapUiDefineCall(ast, "FileSystemName");
@@ -70,6 +76,20 @@ test("Find Import Name (no dependencies)", (t) => {
 	const ast = parse("sap.ui.define(function() {});");
 	const call = new SapUiDefineCall(ast, "FileSystemName");
 	t.is(call.findImportName("wanted.js"), null);
+});
+
+test("Find Import Name (template literal)", (t) => {
+	const ast = parse("sap.ui.define([`wanted`], function(johndoe) {});");
+	const call = new SapUiDefineCall(ast, "FileSystemName");
+	t.is(call.findImportName("wanted.js"), "johndoe");
+});
+
+test("Find Import Name (destructuring)", (t) => {
+	const ast = parse("sap.ui.define(['invalid', 'wanted', 'invalid1'], function({inv}, johndoe, [inv1]) {});");
+	const call = new SapUiDefineCall(ast, "FileSystemName");
+	t.is(call.findImportName("invalid.js"), null);
+	t.is(call.findImportName("wanted.js"), "johndoe");
+	t.is(call.findImportName("invalid1.js"), null);
 });
 
 test("Export as Global: omitted", (t) => {

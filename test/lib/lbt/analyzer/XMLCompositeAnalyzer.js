@@ -20,7 +20,86 @@ test("integration: XMLComposite code", async (t) => {
 	const moduleInfo = new ModuleInfo();
 	await analyzer.analyze(ast, name, moduleInfo);
 	t.deepEqual(moduleInfo.dependencies, ["composites/ButtonList.control.xml"],
-		"Dependency should be created from component name");
+		"Dependency should be created from composite name");
+});
+
+test("integration: XMLComposite code without VariableDeclaration", async (t) => {
+	const code = `sap.ui.define([
+		'jquery.sap.global', 'sap/ui/core/XMLComposite'],
+		function(jQuery, XMLComposite) {
+		"use strict";
+		return XMLComposite.extend("composites.ButtonList", {});
+	});`;
+
+	const ast = parseJS(code);
+
+	const analyzer = new XMLCompositeAnalyzer();
+	const name = "composites.ButtonList";
+	const moduleInfo = new ModuleInfo();
+	await analyzer.analyze(ast, name, moduleInfo);
+	t.deepEqual(moduleInfo.dependencies, ["composites/ButtonList.control.xml"],
+		"Dependency should be created from composite name");
+});
+
+test("integration: XMLComposite code with arrow function", async (t) => {
+	const code = `sap.ui.define([
+		'jquery.sap.global', 'sap/ui/core/XMLComposite'],
+		(jQuery, XMLComposite) => {
+		return XMLComposite.extend("composites.ButtonList", {});
+	});`;
+
+	const ast = parseJS(code);
+
+	const analyzer = new XMLCompositeAnalyzer();
+	const name = "composites.ButtonList";
+	const moduleInfo = new ModuleInfo();
+	await analyzer.analyze(ast, name, moduleInfo);
+	t.deepEqual(moduleInfo.dependencies, ["composites/ButtonList.control.xml"],
+		"Dependency should be created from composite name");
+});
+
+test("integration: XMLComposite code with arrow function with implicit return", async (t) => {
+	const code = `sap.ui.define([
+		'jquery.sap.global', 'sap/ui/core/XMLComposite'],
+		(jQuery, XMLComposite) => XMLComposite.extend("composites.ButtonList", {}));`;
+
+	const ast = parseJS(code);
+
+	const analyzer = new XMLCompositeAnalyzer();
+	const name = "composites.ButtonList";
+	const moduleInfo = new ModuleInfo();
+	await analyzer.analyze(ast, name, moduleInfo);
+	t.deepEqual(moduleInfo.dependencies, ["composites/ButtonList.control.xml"],
+		"Dependency should be created from composite name");
+});
+
+test("integration: XMLComposite code with SpreadElement", async (t) => {
+	const code = `sap.ui.define([
+		'jquery.sap.global', 'sap/ui/core/XMLComposite'],
+		(jQuery, XMLComposite) => {
+		const myXMLComposite = {
+			fragment: "composites.custom.ButtonList"
+		};
+		return XMLComposite.extend("composites.ButtonList", {
+			...myXMLComposite
+		});
+	});`;
+
+
+	const ast = parseJS(code);
+
+	const analyzer = new XMLCompositeAnalyzer();
+	const name = "composites.ButtonList";
+	const moduleInfo = new ModuleInfo();
+	await analyzer.analyze(ast, name, moduleInfo);
+
+	t.deepEqual(moduleInfo.dependencies, ["composites/ButtonList.control.xml"],
+		"Dependency should be created from composite name because overriden by the 'fragment' property " +
+		" is not possible to lacking SpreadElement support");
+
+	// TODO: Support SpreadElement
+	// t.deepEqual(moduleInfo.dependencies, ["composites/custom/ButtonList.control.xml"],
+	// 	"Dependency should be created from composite name");
 });
 
 test("analyze: not an XMLComposite module", async (t) => {
@@ -120,8 +199,28 @@ test("_checkForXMLCClassDefinition: string argument and object expression", (t) 
 		"addDependency should be called with the dependency name");
 });
 
+test("_checkForXMLCClassDefinition: string argument (template literal)", (t) => {
+	const code = `XMLComposite.extend(\`composites.ButtonList\`, {})`;
+	const ast = parseJS(code);
+	const analyzer = new XMLCompositeAnalyzer();
+	const fragmentName = analyzer._checkForXMLCClassDefinition("XMLComposite", ast.body[0].expression);
+	t.is(fragmentName, "composites.ButtonList");
+});
+
 test("_analyzeXMLCClassDefinition: name retrieval", (t) => {
 	const code = `test({fragment: "cat"})`;
+
+	const ast = parseJS(code);
+
+	const analyzer = new XMLCompositeAnalyzer();
+	const result = analyzer._analyzeXMLCClassDefinition(ast.body[0].expression.arguments[0]);
+
+	t.is(result, "cat",
+		"addDependency should be called with the dependency name");
+});
+
+test("_analyzeXMLCClassDefinition: name retrieval (template literal)", (t) => {
+	const code = `test({fragment: \`cat\`})`;
 
 	const ast = parseJS(code);
 
