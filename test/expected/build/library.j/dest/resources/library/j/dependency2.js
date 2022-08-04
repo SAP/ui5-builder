@@ -1,3 +1,6 @@
+/*!
+ * ${copyright}
+ */
 sap.ui.define([], function () {
 	sap.ui.getCore().initLibrary({
 		name: "testlib",
