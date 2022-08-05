@@ -8,12 +8,11 @@ sap.ui.define([
 	"./dependency-es6-1",
 	"./dependency-es6-2",
 	"./dependency-es6-3"
-], function (Control, coreLib, library, es6_1, , es6_2, , es6_3) {
-	"use strict";
+], (Control, { MyValidEnum }, library, es6_1, , es6_2, , es6_3) => {
 
-	const { AnotherValidEnum: Zzz } = library;
 	const { AnotherValidEnum } = library;
 	const { Buzz } = AnotherValidEnum;
+	const { AnotherValidEnum: Zzz } = library;
 	const { TitleLevel } = sap.ui.core;
 
 	/**
@@ -35,34 +34,40 @@ sap.ui.define([
 			metadata: {
 				properties: {
 					/**
+					 * validPropertyDefaultValueEnumSimpleDestructuring
+					 */
+					validPropertyDefaultValueEnumSimpleDestructuring: {
+						type: "testlib.AnotherValidEnum",
+						group: "Misc",
+						defaultValue: AnotherValidEnum.Buzz,
+					},
+
+					/**
+					 * validPropertyDefaultValueEnumChainedDestructuring
+					 */
+					validPropertyDefaultValueEnumChainedDestructuring: {
+						type: "testlib.AnotherValidEnum",
+						group: "Misc",
+						defaultValue: Buzz,
+					},
+
+					/**
+					 * validPropertyDefaultValueEnumDestructuringWithRename
+					 */
+					validPropertyDefaultValueEnumDestructuringWithRename: {
+						type: "testlib.AnotherValidEnum",
+						group: "Misc",
+						defaultValue: Zzz.Fizz,
+					},
+
+					/**
 					 * validPropertyDefaultValueEnumViaDestructuringInArrowFn
 					 */
-					validPropertyDefaultValueEnumViaDestructuringInArrowFn:
-						{
-							type: "testlib.MyValidEnum",
-							group: "Misc",
-							defaultValue: coreLib.MyValidEnum.Foo,
-						},
-
-					/**
-					 * validPropertyDefaultValueEnumViaDestructuringWithRename
-					 */
-					validPropertyDefaultValueEnumViaDestructuringWithRename:
-						{
-							type: "testlib.AnotherValidEnum",
-							group: "Misc",
-							defaultValue: Zzz.Fizz,
-						},
-
-					/**
-					 * validPropertyDefaultValueEnumViaHierarchicalDestructuring
-					 */
-					validPropertyDefaultValueEnumViaHierarchicalDestructuring:
-						{
-							type: "testlib.AnotherValidEnum",
-							group: "Misc",
-							defaultValue: Buzz,
-						},
+					validPropertyDefaultValueEnumViaDestructuringInArrowFn: {
+						type: "testlib.MyValidEnum",
+						group: "Misc",
+						defaultValue: MyValidEnum.Foo,
+					},
 
 					/**
 					 * validPropertyDefaultValueEnumViaDestructuringGlobal
