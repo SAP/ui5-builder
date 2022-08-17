@@ -13,7 +13,7 @@ sap.ui.define([
 	const { AnotherValidEnum } = library;
 	const { Buzz } = AnotherValidEnum;
 	const { AnotherValidEnum: Zzz } = library;
-	const { TitleLevel } = sap.ui.core;
+	const { H1 } = sap.ui.core.TitleLevel;
 
 	/**
 	 * @class
@@ -73,9 +73,9 @@ sap.ui.define([
 					 * validPropertyDefaultValueEnumViaDestructuringGlobal
 					 */
 					validPropertyDefaultValueEnumViaDestructuringGlobal: {
-						type: "sap.ui.core",
+						type: "sap.ui.core.TitleLevel",
 						group: "Misc",
-						defaultValue: TitleLevel,
+						defaultValue: H1,
 					},
 				},
 			},
