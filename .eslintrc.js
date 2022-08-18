@@ -3,9 +3,10 @@ module.exports = {
 		"node": true,
 		"es2021": true
 	},
-	"extends": ["eslint:recommended", "google"],
+	"extends": ["eslint:recommended", "plugin:ava/recommended", "google"],
 	"plugins": [
-		"jsdoc"
+		"jsdoc",
+		"ava"
 	],
 	"rules": {
 		"indent": [
