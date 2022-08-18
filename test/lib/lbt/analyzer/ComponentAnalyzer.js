@@ -300,11 +300,9 @@ test("rootView with object", async (t) => {
 	};
 
 	const subject = new ComponentAnalyzer(mockPool);
-	return await subject.analyze({name: path.join("test", "Component.js")}, mockInfo).then( () => {
-		t.deepEqual(mockInfo.deps, [
-			"test/view/App.view.js",
-		], "dependencies should be correct");
-	});
+
+	await subject.analyze({name: path.join("test", "Component.js")}, mockInfo);
+	t.deepEqual(mockInfo.deps, ["test/view/App.view.js"], "dependencies should be correct");
 });
 
 test("rootView with string", async (t) => {
@@ -324,11 +322,8 @@ test("rootView with string", async (t) => {
 	};
 
 	const subject = new ComponentAnalyzer(mockPool);
-	return await subject.analyze({name: path.join("test", "Component.js")}, mockInfo).then( () => {
-		t.deepEqual(mockInfo.deps, [
-			"test/view/App.view.xml",
-		], "dependencies should be correct");
-	});
+	await subject.analyze({name: path.join("test", "Component.js")}, mockInfo);
+	t.deepEqual(mockInfo.deps, ["test/view/App.view.xml"], "dependencies should be correct");
 });
 
 

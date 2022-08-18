@@ -54,27 +54,27 @@ test("integration: simple", async (t) => {
 			inputPattern: "/resources/super/duper/looper/themes/**/library.source.less"
 		}
 	});
-	return await Promise.all([
+
+	const [cssResource, cssRtlResource, parametersResource] = await Promise.all([
 		writer.byPath(cssPath),
 		writer.byPath(cssRtlPath),
 		writer.byPath(parametersPath)
-	]).then(([cssResource, cssRtlResource, parametersResource]) => {
-		t.truthy(cssResource, "CSS resource has been created");
-		t.truthy(cssRtlResource, "CSS right-to-left resource has been created");
-		t.truthy(parametersResource, "Parameters JSON resource has been created");
+	]);
 
-		return Promise.all([
-			cssResource.getBuffer(),
-			cssRtlResource.getBuffer(),
-			parametersResource.getBuffer()
-		]);
-	}).then(([cssBuffer, cssRtlBuffer, parametersBuffer]) => {
-		t.deepEqual(cssBuffer.toString(), cssExpected, "Correct CSS content");
-		t.deepEqual(cssRtlBuffer.toString(), cssRtlExpected, "Correct CSS right-to-left content");
-		t.deepEqual(parametersBuffer.toString(), parametersExpected, "Correct parameters JSON content");
-	});
+	t.truthy(cssResource, "CSS resource has been created");
+	t.truthy(cssRtlResource, "CSS right-to-left resource has been created");
+	t.truthy(parametersResource, "Parameters JSON resource has been created");
+
+	const [cssBuffer, cssRtlBuffer, parametersBuffer] = await Promise.all([
+		cssResource.getBuffer(),
+		cssRtlResource.getBuffer(),
+		parametersResource.getBuffer()
+	]);
+
+	t.deepEqual(cssBuffer.toString(), cssExpected, "Correct CSS content");
+	t.deepEqual(cssRtlBuffer.toString(), cssRtlExpected, "Correct CSS right-to-left content");
+	t.deepEqual(parametersBuffer.toString(), parametersExpected, "Correct parameters JSON content");
 });
-
 test("integration: imports", async (t) => {
 	const reader = resourceFactory.createAdapter({
 		virBasePath: "/"
@@ -136,23 +136,23 @@ test("integration: imports", async (t) => {
 		}
 	});
 
-	return await Promise.all([
+	const [cssResource, cssRtlResource, parametersResource] = await Promise.all([
 		writer.byPath(cssPath),
 		writer.byPath(cssRtlPath),
 		writer.byPath(parametersPath)
-	]).then(([cssResource, cssRtlResource, parametersResource]) => {
-		t.truthy(cssResource, "CSS resource has been created");
-		t.truthy(cssRtlResource, "CSS right-to-left resource has been created");
-		t.truthy(parametersResource, "Parameters JSON resource has been created");
+	]);
 
-		return Promise.all([
-			cssResource.getBuffer(),
-			cssRtlResource.getBuffer(),
-			parametersResource.getBuffer()
-		]);
-	}).then(([cssBuffer, cssRtlBuffer, parametersBuffer]) => {
-		t.deepEqual(cssBuffer.toString(), cssExpected, "Correct CSS content");
-		t.deepEqual(cssRtlBuffer.toString(), cssRtlExpected, "Correct CSS right-to-left content");
-		t.deepEqual(parametersBuffer.toString(), parametersExpected, "Correct parameters JSON content");
-	});
+	t.truthy(cssResource, "CSS resource has been created");
+	t.truthy(cssRtlResource, "CSS right-to-left resource has been created");
+	t.truthy(parametersResource, "Parameters JSON resource has been created");
+
+	const [cssBuffer, cssRtlBuffer, parametersBuffer] = await Promise.all([
+		cssResource.getBuffer(),
+		cssRtlResource.getBuffer(),
+		parametersResource.getBuffer()
+	]);
+
+	t.deepEqual(cssBuffer.toString(), cssExpected, "Correct CSS content");
+	t.deepEqual(cssRtlBuffer.toString(), cssRtlExpected, "Correct CSS right-to-left content");
+	t.deepEqual(parametersBuffer.toString(), parametersExpected, "Correct parameters JSON content");
 });
