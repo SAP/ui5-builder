@@ -496,7 +496,7 @@ test("ES6 Syntax", async (t) => {
 	const expected = [
 		"conditional/module1.js",
 		"conditional/module10.js",
-		// "conditional/module11.js", // TODO: see es6-syntax.js
+		"conditional/module11.js",
 		"conditional/module2.js",
 		"conditional/module3.js",
 		"conditional/module4.js",
@@ -659,6 +659,47 @@ test("ChainExpression", (t) => {
 		"conditional/module5.js",
 		"jquery.sap.global.js",
 		"static/module1.js",
+	];
+	const actual = info.dependencies.sort();
+	t.deepEqual(actual, expected, "module dependencies should match");
+	expected.forEach((dep) => {
+		t.is(info.isConditionalDependency(dep), /^conditional\//.test(dep),
+			`only dependencies to 'conditional/*' modules should be conditional (${dep})`);
+		t.is(info.isImplicitDependency(dep), !/^(?:conditional|static)\//.test(dep),
+			`all dependencies other than 'conditional/*' and 'static/*' should be implicit (${dep})`);
+	});
+	t.false(info.dynamicDependencies,
+		`no use of dynamic dependencies should have been detected`);
+	t.false(info.rawModule,
+		`ui5 module`);
+});
+
+test("LogicalExpression", (t) => {
+	const content = `
+	sap.ui.define(['require', 'static/module1'], (require, module1) => {
+		module1 && sap.ui.require(['conditional/module2']);
+		module1 || sap.ui.requireSync('conditional/module3');
+		module1 ?? jQuery.sap.require('conditional.module4');
+		!module1 && require(['conditional/module5']);
+
+		sap.ui.require(['static/module2']) && module1;
+		sap.ui.requireSync('static/module3') || module1;
+		jQuery.sap.require('static.module4') ?? module1;
+		require(['static/module5']) && module1;
+	});`;
+	const info = analyzeString(content, "modules/LogicalExpression.js");
+
+	const expected = [
+		"conditional/module2.js",
+		"conditional/module3.js",
+		"conditional/module4.js",
+		"conditional/module5.js",
+		"jquery.sap.global.js",
+		"static/module1.js",
+		"static/module2.js",
+		"static/module3.js",
+		"static/module4.js",
+		"static/module5.js",
 	];
 	const actual = info.dependencies.sort();
 	t.deepEqual(actual, expected, "module dependencies should match");

@@ -78,10 +78,7 @@ sap.ui.define([
 
 	};
 
-	// TODO: This is not detected as a conditional dependency -> Currently, these kind of logical operators are not analyzed
-	// m1 ?? sap.ui.require(['conditional/module11']);
-	// m1 && sap.ui.require(['conditional/module11']);
-	// m1 || sap.ui.require(['conditional/module11']);
+	m1 ?? sap.ui.require(['conditional/module11']);
 
 	// ObjectPattern as Id
 	const {module11, module12} = {
