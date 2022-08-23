@@ -41,10 +41,45 @@ test("integration: XMLComposite code without VariableDeclaration", async (t) => 
 		"Dependency should be created from composite name");
 });
 
+test("integration: XMLComposite code without VariableDeclaration (async function)", async (t) => {
+	const code = `sap.ui.define([
+		'jquery.sap.global', 'sap/ui/core/XMLComposite'],
+		async function(jQuery, XMLComposite) {
+		"use strict";
+		return XMLComposite.extend("composites.ButtonList", {});
+	});`;
+
+	const ast = parseJS(code);
+
+	const analyzer = new XMLCompositeAnalyzer();
+	const name = "composites.ButtonList";
+	const moduleInfo = new ModuleInfo();
+	await analyzer.analyze(ast, name, moduleInfo);
+	t.deepEqual(moduleInfo.dependencies, ["composites/ButtonList.control.xml"],
+		"Dependency should be created from composite name");
+});
+
 test("integration: XMLComposite code with arrow function", async (t) => {
 	const code = `sap.ui.define([
 		'jquery.sap.global', 'sap/ui/core/XMLComposite'],
 		(jQuery, XMLComposite) => {
+		return XMLComposite.extend("composites.ButtonList", {});
+	});`;
+
+	const ast = parseJS(code);
+
+	const analyzer = new XMLCompositeAnalyzer();
+	const name = "composites.ButtonList";
+	const moduleInfo = new ModuleInfo();
+	await analyzer.analyze(ast, name, moduleInfo);
+	t.deepEqual(moduleInfo.dependencies, ["composites/ButtonList.control.xml"],
+		"Dependency should be created from composite name");
+});
+
+test("integration: XMLComposite code with async arrow function", async (t) => {
+	const code = `sap.ui.define([
+		'jquery.sap.global', 'sap/ui/core/XMLComposite'],
+		async(jQuery, XMLComposite) => {
 		return XMLComposite.extend("composites.ButtonList", {});
 	});`;
 

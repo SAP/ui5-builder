@@ -245,6 +245,26 @@ test("_analyzeAST: get template name from ast", async (t) => {
 	t.is(templateName, "sap.fe.templates.Page.view.Page");
 });
 
+test("_analyzeAST: get template name from ast (async function)", async (t) => {
+	const code = `sap.ui.define(["a", "sap/fe/core/TemplateAssembler"], async function(a, TemplateAssembler){
+		return TemplateAssembler.getTemplateComponent(getMethods,
+		"sap.fe.templates.Page.Component", {
+			metadata: {
+				properties: {
+					"templateName": {
+						"type": "string",
+						"defaultValue": "sap.fe.templates.Page.view.Page"
+					}
+				},
+				"manifest": "json"
+			}
+		});});`;
+	const ast = parseUtils.parseJS(code);
+	const analyzer = new FioriElementsAnalyzer();
+	const templateName = await analyzer._analyzeAST("sap.fe.templates.Page.Component", ast);
+	t.is(templateName, "sap.fe.templates.Page.view.Page");
+});
+
 test("_analyzeAST: get template name from ast (ArrowFunction)", async (t) => {
 	const code = `sap.ui.define(["a", "sap/fe/core/TemplateAssembler"], (a, TemplateAssembler) => {
 		return TemplateAssembler.getTemplateComponent(getMethods,
@@ -268,6 +288,26 @@ test("_analyzeAST: get template name from ast (ArrowFunction)", async (t) => {
 test("_analyzeAST: get template name from ast (ArrowFunction with implicit return)", async (t) => {
 	const code = `sap.ui.define(["a", "sap/fe/core/TemplateAssembler"],
 	(a, TemplateAssembler) => TemplateAssembler.getTemplateComponent(getMethods,
+		"sap.fe.templates.Page.Component", {
+			metadata: {
+				properties: {
+					"templateName": {
+						"type": "string",
+						"defaultValue": "sap.fe.templates.Page.view.Page"
+					}
+				},
+				"manifest": "json"
+			}
+		}));`;
+	const ast = parseUtils.parseJS(code);
+	const analyzer = new FioriElementsAnalyzer();
+	const templateName = await analyzer._analyzeAST("sap.fe.templates.Page.Component", ast);
+	t.is(templateName, "sap.fe.templates.Page.view.Page");
+});
+
+test("_analyzeAST: get template name from ast (async factory function)", async (t) => {
+	const code = `sap.ui.define(["a", "sap/fe/core/TemplateAssembler"],
+	async (a, TemplateAssembler) => TemplateAssembler.getTemplateComponent(getMethods,
 		"sap.fe.templates.Page.Component", {
 			metadata: {
 				properties: {

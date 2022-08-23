@@ -447,19 +447,51 @@ test("_analyzeAST: get template name from ast (ArrowFunction with implicit retur
 			}
 		}));`;
 	const ast = parseUtils.parseJS(code);
-
 	const analyzer = new SmartTemplateAnalyzer();
+	const templateName = await analyzer._analyzeAST("sap.fe.templates.Page.Component", ast);
+	t.is(templateName, "sap.fe.templates.Page.view.Page");
+});
 
-	const stubAnalyzeTemplateClassDefinition = sinon.stub(analyzer,
-		"_analyzeTemplateClassDefinition").returns("donkey");
+test("_analyzeAST: get template name from ast (async ArrowFunction)", async (t) => {
+	const code = `sap.ui.define(["a", "sap/suite/ui/generic/template/lib/TemplateAssembler"],
+	async (a, TemplateAssembler) => TemplateAssembler.getTemplateComponent(getMethods,
+		"sap.fe.templates.Page.Component", {
+			metadata: {
+				properties: {
+					"templateName": {
+						"type": "string",
+						"defaultValue": "sap.fe.templates.Page.view.Page"
+					}
+				},
+				"manifest": "json"
+			}
+		}));`;
+	const ast = parseUtils.parseJS(code);
+	const analyzer = new SmartTemplateAnalyzer();
+	const templateName = await analyzer._analyzeAST("sap.fe.templates.Page.Component", ast);
+	t.is(templateName, "sap.fe.templates.Page.view.Page");
+});
 
-	const result = await analyzer._analyzeAST("pony", ast);
-
-
-	t.true(stubAnalyzeTemplateClassDefinition.calledOnce, "_analyzeTemplateClassDefinition was called once");
-
-	stubAnalyzeTemplateClassDefinition.restore();
-	t.is(result, "donkey");
+test("_analyzeAST: get template name from ast (async function)", async (t) => {
+	const code = `sap.ui.define(["a", "sap/suite/ui/generic/template/lib/TemplateAssembler"],
+	async function (a, TemplateAssembler) {
+		return TemplateAssembler.getTemplateComponent(getMethods,
+			"sap.fe.templates.Page.Component", {
+				metadata: {
+					properties: {
+						"templateName": {
+							"type": "string",
+							"defaultValue": "sap.fe.templates.Page.view.Page"
+						}
+					},
+					"manifest": "json"
+				}
+			}
+	);});`;
+	const ast = parseUtils.parseJS(code);
+	const analyzer = new SmartTemplateAnalyzer();
+	const templateName = await analyzer._analyzeAST("sap.fe.templates.Page.Component", ast);
+	t.is(templateName, "sap.fe.templates.Page.view.Page");
 });
 
 test("_analyzeAST: get template name from ast (with SpreadElement)", async (t) => {

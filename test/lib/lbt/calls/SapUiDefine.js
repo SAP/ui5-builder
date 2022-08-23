@@ -92,6 +92,13 @@ test("Find Import Name (destructuring)", (t) => {
 	t.is(call.findImportName("invalid1.js"), null);
 });
 
+test("Find Import Name (async function)", (t) => {
+	const ast = parse("sap.ui.define(['wanted'], async function(johndoe) {});");
+	const call = new SapUiDefineCall(ast, "FileSystemName");
+	t.is(call.findImportName("wanted.js"), "johndoe");
+});
+
+
 test("Export as Global: omitted", (t) => {
 	const ast = parse("sap.ui.define(['wanted'], function(johndoe) {});");
 	const call = new SapUiDefineCall(ast, "FileSystemName");
