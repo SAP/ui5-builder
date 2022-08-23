@@ -11,9 +11,9 @@ sap.ui.define(["/.a"], (a) =>
 		metadata: {
 			properties: {
 				MyProp: {
-					type: "Boolean",
+					type: "boolean",
 					group: "Misc",
-					defaultValue: true,
+					defaultValue: false,
 				},
 			},
 		},
