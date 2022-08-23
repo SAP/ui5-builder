@@ -874,7 +874,7 @@ test.serial("Build library.i with manifest info taken from .library and library.
 	t.pass();
 });
 
-test.serial("Build library.j with JSDoc build only", async (t) => {
+test.serial.only("Build library.j with JSDoc build only", async (t) => {
 	const destPath = path.join("test", "tmp", "build", "library.j", "dest");
 	const expectedPath = path.join("test", "expected", "build", "library.j", "dest");
 
