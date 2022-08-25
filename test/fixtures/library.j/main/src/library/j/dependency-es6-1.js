@@ -9,9 +9,24 @@
  * - ClassDeclaration
  */
 (sap?.ui).define([`Bar`], (Bar) => {
-	return class Foo extends Bar {
+	/**
+	 * @class
+	 * My super documentation of this class
+	 *
+	 * @extends library.j.Bar
+	 *
+	 * @author SAP SE
+	 * @version ${version}
+	 *
+	 * @public
+	 * @alias library.j.Foo
+	 * @ui5-metamodel text
+	 */
+	class Foo extends Bar {
 		make() {
 			sap.ui.require("conditional/module1");
 		}
-	};
+	}
+
+	return Foo;
 });
