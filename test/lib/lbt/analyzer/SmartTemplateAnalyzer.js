@@ -1,9 +1,28 @@
 const test = require("ava");
 const SmartTemplateAnalyzer = require("../../../../lib/lbt/analyzer/SmartTemplateAnalyzer");
 const ModuleInfo = require("../../../../lib/lbt/resources/ModuleInfo");
-const sinon = require("sinon");
 const parseUtils = require("../../../../lib/lbt/utils/parseUtils");
+const sinonGlobal = require("sinon");
+const logger = require("@ui5/logger");
+const loggerInstance = logger.getLogger();
+const mock = require("mock-require");
 
+test.before((t) => {
+	const sinon = t.context.sinon = sinonGlobal.createSandbox();
+	t.context.warningLogSpy = sinon.spy(loggerInstance, "warn");
+	sinon.stub(logger, "getLogger").returns(loggerInstance);
+	t.context.SmartTemplateAnalyzerWithStubbedLogger =
+		mock.reRequire("../../../../lib/lbt/analyzer/SmartTemplateAnalyzer");
+});
+
+test.after((t) => {
+	mock.stopAll();
+	t.context.sinon.restore();
+});
+
+test.beforeEach((t) => {
+	t.context.warningLogSpy.resetHistory();
+});
 
 test("analyze: with Component.js", async (t) => {
 	const emptyPool = {};
@@ -28,7 +47,7 @@ test("analyze: without manifest", async (t) => {
 	const moduleInfo = {};
 
 	const analyzer = new SmartTemplateAnalyzer(mockPool);
-	const stubAnalyzeManifest = sinon.stub(analyzer, "_analyzeManifest").resolves();
+	const stubAnalyzeManifest = t.context.sinon.stub(analyzer, "_analyzeManifest").resolves();
 
 	const name = "MyComponent.js";
 	const result = await analyzer.analyze({name}, moduleInfo);
@@ -52,7 +71,7 @@ test("_analyzeManifest: with manifest with recursive pages (as array)", async (t
 	const moduleInfo = {
 		addDependency: function() {}
 	};
-	const stubAddDependency = sinon.spy(moduleInfo, "addDependency");
+	const stubAddDependency = t.context.sinon.spy(moduleInfo, "addDependency");
 
 	const manifest = {
 		"sap.ui.generic.app": {
@@ -76,7 +95,7 @@ test("_analyzeManifest: with manifest with recursive pages (as array)", async (t
 	};
 
 	const analyzer = new SmartTemplateAnalyzer();
-	const stubAnalyzeTemplateComponent = sinon.stub(analyzer, "_analyzeTemplateComponent").resolves();
+	const stubAnalyzeTemplateComponent = t.context.sinon.stub(analyzer, "_analyzeTemplateComponent").resolves();
 
 	await analyzer._analyzeManifest(manifest, moduleInfo);
 
@@ -120,7 +139,7 @@ test("_analyzeManifest: with manifest with recursive pages (as object)", async (
 	const moduleInfo = {
 		addDependency: function() {}
 	};
-	const stubAddDependency = sinon.spy(moduleInfo, "addDependency");
+	const stubAddDependency = t.context.sinon.spy(moduleInfo, "addDependency");
 
 	const manifest = {
 		"sap.ui.generic.app": {
@@ -148,7 +167,7 @@ test("_analyzeManifest: with manifest with recursive pages (as object)", async (
 	};
 
 	const analyzer = new SmartTemplateAnalyzer();
-	const stubAnalyzeTemplateComponent = sinon.stub(analyzer, "_analyzeTemplateComponent").resolves();
+	const stubAnalyzeTemplateComponent = t.context.sinon.stub(analyzer, "_analyzeTemplateComponent").resolves();
 
 	await analyzer._analyzeManifest(manifest, moduleInfo);
 
@@ -194,7 +213,7 @@ test.serial("_analyzeTemplateComponent: Manifest with TemplateAssembler code", a
 	const moduleInfo = {
 		addDependency: function() {}
 	};
-	const stubAddDependency = sinon.spy(moduleInfo, "addDependency");
+	const stubAddDependency = t.context.sinon.spy(moduleInfo, "addDependency");
 
 	const mockPool = {
 		async findResource() {
@@ -209,8 +228,8 @@ test.serial("_analyzeTemplateComponent: Manifest with TemplateAssembler code", a
 
 	const analyzer = new SmartTemplateAnalyzer(mockPool);
 
-	const stubAnalyzeAST = sinon.stub(analyzer, "_analyzeAST").returns("mytpl");
-	const stubParse = sinon.stub(parseUtils, "parseJS").returns("");
+	const stubAnalyzeAST = t.context.sinon.stub(analyzer, "_analyzeAST").returns("mytpl");
+	const stubParse = t.context.sinon.stub(parseUtils, "parseJS").returns("");
 
 	await analyzer._analyzeTemplateComponent("pony",
 		{}, moduleInfo);
@@ -231,7 +250,7 @@ test.serial("_analyzeTemplateComponent: no default template name", async (t) => 
 	const moduleInfo = {
 		addDependency: function() {}
 	};
-	const stubAddDependency = sinon.spy(moduleInfo, "addDependency");
+	const stubAddDependency = t.context.sinon.spy(moduleInfo, "addDependency");
 
 	const mockPool = {
 		async findResource() {
@@ -246,8 +265,8 @@ test.serial("_analyzeTemplateComponent: no default template name", async (t) => 
 
 	const analyzer = new SmartTemplateAnalyzer(mockPool);
 
-	const stubAnalyzeAST = sinon.stub(analyzer, "_analyzeAST").returns("");
-	const stubParse = sinon.stub(parseUtils, "parseJS").returns("");
+	const stubAnalyzeAST = t.context.sinon.stub(analyzer, "_analyzeAST").returns("");
+	const stubParse = t.context.sinon.stub(parseUtils, "parseJS").returns("");
 
 	await analyzer._analyzeTemplateComponent("pony",
 		{}, moduleInfo);
@@ -263,7 +282,7 @@ test.serial("_analyzeTemplateComponent: with template name from pageConfig", asy
 	const moduleInfo = {
 		addDependency: function() {}
 	};
-	const stubAddDependency = sinon.spy(moduleInfo, "addDependency");
+	const stubAddDependency = t.context.sinon.spy(moduleInfo, "addDependency");
 
 	const mockPool = {
 		async findResource() {
@@ -278,8 +297,8 @@ test.serial("_analyzeTemplateComponent: with template name from pageConfig", asy
 
 	const analyzer = new SmartTemplateAnalyzer(mockPool);
 
-	const stubAnalyzeAST = sinon.stub(analyzer, "_analyzeAST").returns("");
-	const stubParse = sinon.stub(parseUtils, "parseJS").returns("");
+	const stubAnalyzeAST = t.context.sinon.stub(analyzer, "_analyzeAST").returns("");
+	const stubParse = t.context.sinon.stub(parseUtils, "parseJS").returns("");
 
 	await analyzer._analyzeTemplateComponent("pony", {
 		component: {
@@ -302,7 +321,7 @@ test.serial("_analyzeTemplateComponent: dependency not found", async (t) => {
 	const moduleInfo = {
 		addDependency: function() {}
 	};
-	const stubAddDependency = sinon.spy(moduleInfo, "addDependency");
+	const stubAddDependency = t.context.sinon.spy(moduleInfo, "addDependency");
 
 	const mockPool = {
 		async findResource() {
@@ -315,8 +334,8 @@ test.serial("_analyzeTemplateComponent: dependency not found", async (t) => {
 
 	const analyzer = new SmartTemplateAnalyzer(mockPool);
 
-	const stubAnalyzeAST = sinon.stub(analyzer, "_analyzeAST").returns("");
-	const stubParse = sinon.stub(parseUtils, "parseJS").returns("");
+	const stubAnalyzeAST = t.context.sinon.stub(analyzer, "_analyzeAST").returns("");
+	const stubParse = t.context.sinon.stub(parseUtils, "parseJS").returns("");
 
 	const error = await t.throwsAsync(analyzer._analyzeTemplateComponent("pony", {
 		component: {
@@ -339,7 +358,7 @@ test.serial("_analyzeTemplateComponent: dependency not found is ignored", async 
 	const moduleInfo = {
 		addDependency: function() {}
 	};
-	const stubAddDependency = sinon.spy(moduleInfo, "addDependency");
+	const stubAddDependency = t.context.sinon.spy(moduleInfo, "addDependency");
 
 	const mockPool = {
 		async findResource() {
@@ -352,8 +371,8 @@ test.serial("_analyzeTemplateComponent: dependency not found is ignored", async 
 
 	const analyzer = new SmartTemplateAnalyzer(mockPool);
 
-	const stubAnalyzeAST = sinon.stub(analyzer, "_analyzeAST").returns("");
-	const stubParse = sinon.stub(parseUtils, "parseJS").returns("");
+	const stubAnalyzeAST = t.context.sinon.stub(analyzer, "_analyzeAST").returns("");
+	const stubParse = t.context.sinon.stub(parseUtils, "parseJS").returns("");
 
 	await analyzer._analyzeTemplateComponent("pony", {
 		component: {
@@ -370,7 +389,7 @@ test.serial("_analyzeTemplateComponent: dependency not found is ignored", async 
 	stubParse.restore();
 });
 
-test("_analyzeAST: get template name from ast", async (t) => {
+test("_analyzeAST: get template name from ast", (t) => {
 	const code = `sap.ui.define(["a", "sap/suite/ui/generic/template/lib/TemplateAssembler"],
 	function(a, TemplateAssembler){
 		return TemplateAssembler.getTemplateComponent(getMethods,
@@ -389,10 +408,10 @@ test("_analyzeAST: get template name from ast", async (t) => {
 
 	const analyzer = new SmartTemplateAnalyzer();
 
-	const stubAnalyzeTemplateClassDefinition = sinon.stub(analyzer,
+	const stubAnalyzeTemplateClassDefinition = t.context.sinon.stub(analyzer,
 		"_analyzeTemplateClassDefinition").returns("donkey");
 
-	const result = await analyzer._analyzeAST("pony", ast);
+	const result = analyzer._analyzeAST("pony", ast);
 
 
 	t.true(stubAnalyzeTemplateClassDefinition.calledOnce, "_analyzeTemplateClassDefinition was called once");
@@ -401,7 +420,7 @@ test("_analyzeAST: get template name from ast", async (t) => {
 	t.is(result, "donkey");
 });
 
-test("_analyzeAST: get template name from ast (ArrowFunction)", async (t) => {
+test("_analyzeAST: get template name from ast (ArrowFunction)", (t) => {
 	const code = `sap.ui.define(["a", "sap/suite/ui/generic/template/lib/TemplateAssembler"],
 	(a, TemplateAssembler) => {
 		return TemplateAssembler.getTemplateComponent(getMethods,
@@ -420,10 +439,10 @@ test("_analyzeAST: get template name from ast (ArrowFunction)", async (t) => {
 
 	const analyzer = new SmartTemplateAnalyzer();
 
-	const stubAnalyzeTemplateClassDefinition = sinon.stub(analyzer,
+	const stubAnalyzeTemplateClassDefinition = t.context.sinon.stub(analyzer,
 		"_analyzeTemplateClassDefinition").returns("donkey");
 
-	const result = await analyzer._analyzeAST("pony", ast);
+	const result = analyzer._analyzeAST("pony", ast);
 
 
 	t.true(stubAnalyzeTemplateClassDefinition.calledOnce, "_analyzeTemplateClassDefinition was called once");
@@ -432,7 +451,7 @@ test("_analyzeAST: get template name from ast (ArrowFunction)", async (t) => {
 	t.is(result, "donkey");
 });
 
-test("_analyzeAST: get template name from ast (ArrowFunction with implicit return)", async (t) => {
+test("_analyzeAST: get template name from ast (ArrowFunction with implicit return)", (t) => {
 	const code = `sap.ui.define(["a", "sap/suite/ui/generic/template/lib/TemplateAssembler"],
 	(a, TemplateAssembler) => TemplateAssembler.getTemplateComponent(getMethods,
 		"sap.fe.templates.Page.Component", {
@@ -448,31 +467,11 @@ test("_analyzeAST: get template name from ast (ArrowFunction with implicit retur
 		}));`;
 	const ast = parseUtils.parseJS(code);
 	const analyzer = new SmartTemplateAnalyzer();
-	const templateName = await analyzer._analyzeAST("sap.fe.templates.Page.Component", ast);
+	const templateName = analyzer._analyzeAST("sap.fe.templates.Page.Component", ast);
 	t.is(templateName, "sap.fe.templates.Page.view.Page");
 });
 
-test("_analyzeAST: get template name from ast (async ArrowFunction)", async (t) => {
-	const code = `sap.ui.define(["a", "sap/suite/ui/generic/template/lib/TemplateAssembler"],
-	async (a, TemplateAssembler) => TemplateAssembler.getTemplateComponent(getMethods,
-		"sap.fe.templates.Page.Component", {
-			metadata: {
-				properties: {
-					"templateName": {
-						"type": "string",
-						"defaultValue": "sap.fe.templates.Page.view.Page"
-					}
-				},
-				"manifest": "json"
-			}
-		}));`;
-	const ast = parseUtils.parseJS(code);
-	const analyzer = new SmartTemplateAnalyzer();
-	const templateName = await analyzer._analyzeAST("sap.fe.templates.Page.Component", ast);
-	t.is(templateName, "sap.fe.templates.Page.view.Page");
-});
-
-test("_analyzeAST: get template name from ast (async function)", async (t) => {
+test.serial("_analyzeAST: get template name from ast (async factory function)", (t) => {
 	const code = `sap.ui.define(["a", "sap/suite/ui/generic/template/lib/TemplateAssembler"],
 	async function (a, TemplateAssembler) {
 		return TemplateAssembler.getTemplateComponent(getMethods,
@@ -488,13 +487,62 @@ test("_analyzeAST: get template name from ast (async function)", async (t) => {
 				}
 			}
 	);});`;
+	const {SmartTemplateAnalyzerWithStubbedLogger, warningLogSpy} = t.context;
 	const ast = parseUtils.parseJS(code);
-	const analyzer = new SmartTemplateAnalyzer();
-	const templateName = await analyzer._analyzeAST("sap.fe.templates.Page.Component", ast);
+	const analyzer = new SmartTemplateAnalyzerWithStubbedLogger();
+	const templateName = analyzer._analyzeAST("sap.fe.templates.Page.Component", ast);
 	t.is(templateName, "sap.fe.templates.Page.view.Page");
+	t.is(warningLogSpy.callCount, 1, "Warning log is called once");
 });
 
-test("_analyzeAST: get template name from ast (with SpreadElement)", async (t) => {
+test.serial("_analyzeAST: get template name from ast (async arrow factory function)", (t) => {
+	const code = `sap.ui.define(["a", "sap/suite/ui/generic/template/lib/TemplateAssembler"],
+	async (a, TemplateAssembler) => {
+		return TemplateAssembler.getTemplateComponent(getMethods,
+			"sap.fe.templates.Page.Component", {
+				metadata: {
+					properties: {
+						"templateName": {
+							"type": "string",
+							"defaultValue": "sap.fe.templates.Page.view.Page"
+						}
+					},
+					"manifest": "json"
+				}
+			}
+	);});`;
+	const {SmartTemplateAnalyzerWithStubbedLogger, warningLogSpy} = t.context;
+	const ast = parseUtils.parseJS(code);
+	const analyzer = new SmartTemplateAnalyzerWithStubbedLogger();
+	const templateName = analyzer._analyzeAST("sap.fe.templates.Page.Component", ast);
+	t.is(templateName, "sap.fe.templates.Page.view.Page");
+	t.is(warningLogSpy.callCount, 1, "Warning log is called once");
+});
+
+test.serial("_analyzeAST: get template name from ast (async arrow factory function implicit return)", (t) => {
+	const code = `sap.ui.define(["a", "sap/suite/ui/generic/template/lib/TemplateAssembler"],
+	async (a, TemplateAssembler) => TemplateAssembler.getTemplateComponent(getMethods,
+			"sap.fe.templates.Page.Component", {
+				metadata: {
+					properties: {
+						"templateName": {
+							"type": "string",
+							"defaultValue": "sap.fe.templates.Page.view.Page"
+						}
+					},
+					"manifest": "json"
+				}
+			}
+	));`;
+	const {SmartTemplateAnalyzerWithStubbedLogger, warningLogSpy} = t.context;
+	const ast = parseUtils.parseJS(code);
+	const analyzer = new SmartTemplateAnalyzerWithStubbedLogger();
+	const templateName = analyzer._analyzeAST("sap.fe.templates.Page.Component", ast);
+	t.is(templateName, "sap.fe.templates.Page.view.Page");
+	t.is(warningLogSpy.callCount, 1, "Warning log is called once");
+});
+
+test("_analyzeAST: get template name from ast (with SpreadElement)", (t) => {
 	const code = `sap.ui.define(["a", "sap/suite/ui/generic/template/lib/TemplateAssembler"],
 	(a, TemplateAssembler) => {
 		const myTemplate = {
@@ -514,7 +562,7 @@ test("_analyzeAST: get template name from ast (with SpreadElement)", async (t) =
 		});});`;
 	const ast = parseUtils.parseJS(code);
 	const analyzer = new SmartTemplateAnalyzer();
-	const templateName = await analyzer._analyzeAST("sap.fe.templates.Page.Component", ast);
+	const templateName = analyzer._analyzeAST("sap.fe.templates.Page.Component", ast);
 
 	t.is(templateName, "", "The TemplateName is correctly empty");
 	// TODO: Support SpreadElement
@@ -522,7 +570,7 @@ test("_analyzeAST: get template name from ast (with SpreadElement)", async (t) =
 });
 
 
-test("_analyzeAST: no template name from ast", async (t) => {
+test("_analyzeAST: no template name from ast", (t) => {
 	const code = `sap.ui.define(["a", "sap/suite/ui/generic/template/lib/TemplateAssembler"],
 	function(a, TemplateAssembler){
 		return TemplateAssembler.getTemplateComponent(getMethods,
@@ -541,10 +589,10 @@ test("_analyzeAST: no template name from ast", async (t) => {
 
 	const analyzer = new SmartTemplateAnalyzer();
 
-	const stubAnalyzeTemplateClassDefinition = sinon.stub(analyzer,
+	const stubAnalyzeTemplateClassDefinition = t.context.sinon.stub(analyzer,
 		"_analyzeTemplateClassDefinition").returns(false);
 
-	const result = await analyzer._analyzeAST("pony", ast);
+	const result = analyzer._analyzeAST("pony", ast);
 
 
 	t.true(stubAnalyzeTemplateClassDefinition.calledOnce, "_analyzeTemplateClassDefinition was called once");
@@ -553,7 +601,7 @@ test("_analyzeAST: no template name from ast", async (t) => {
 	t.is(result, "");
 });
 
-test("_analyzeAST: get template name (template literal)", async (t) => {
+test("_analyzeAST: get template name (template literal)", (t) => {
 	const code = `sap.ui.define(["a", "sap/suite/ui/generic/template/lib/TemplateAssembler"],
 	(a, TemplateAssembler) => TemplateAssembler.getTemplateComponent(getMethods,
 		"sap.fe.templates.Page.Component", {
@@ -569,7 +617,7 @@ test("_analyzeAST: get template name (template literal)", async (t) => {
 		}));`;
 	const ast = parseUtils.parseJS(code);
 	const analyzer = new SmartTemplateAnalyzer();
-	const templateName = await analyzer._analyzeAST("sap.fe.templates.Page.Component", ast);
+	const templateName = analyzer._analyzeAST("sap.fe.templates.Page.Component", ast);
 	t.is(templateName, "sap.fe.templates.Page.view.Page", "The TemplateName is correct");
 });
 
