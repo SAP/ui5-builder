@@ -420,6 +420,67 @@ test("_analyzeAST: get template name from ast", (t) => {
 	t.is(result, "donkey");
 });
 
+test("_analyzeAST: get template name from ast (AMD define)", (t) => {
+	const code = `define(["a", "sap/suite/ui/generic/template/lib/TemplateAssembler"], function(a, TemplateAssembler) {
+		return TemplateAssembler.getTemplateComponent(getMethods,
+		"sap.fe.templates.Page.Component", {
+			metadata: {
+				properties: {
+					"templateName": {
+						"type": "string",
+						"defaultValue": "sap.fe.templates.Page.view.Page"
+					}
+				},
+				"manifest": "json"
+			}
+		});});`;
+	const ast = parseUtils.parseJS(code);
+	const analyzer = new SmartTemplateAnalyzer();
+	const templateName = analyzer._analyzeAST("sap.fe.templates.Page.Component", ast);
+	t.is(templateName, "sap.fe.templates.Page.view.Page");
+});
+
+test("_analyzeAST: unable to get template name from ast (no TemplateAssembler import)", (t) => {
+	const code = `define(["a"], function(a, TemplateAssembler) { // import missing
+		return TemplateAssembler.getTemplateComponent(getMethods,
+		"sap.fe.templates.Page.Component", {
+			metadata: {
+				properties: {
+					"templateName": {
+						"type": "string",
+						"defaultValue": "sap.fe.templates.Page.view.Page"
+					}
+				},
+				"manifest": "json"
+			}
+		});});`;
+	const ast = parseUtils.parseJS(code);
+	const analyzer = new SmartTemplateAnalyzer();
+	const templateName = analyzer._analyzeAST("sap.fe.templates.Page.Component", ast);
+	t.is(templateName, "");
+});
+
+test("_analyzeAST: unable to get template name from ast (no module definition)", (t) => {
+	const code = `myDefine(["a", "sap/suite/ui/generic/template/lib/TemplateAssembler"],
+	function(a, TemplateAssembler) { // unsupported module definition
+		return TemplateAssembler.getTemplateComponent(getMethods,
+		"sap.fe.templates.Page.Component", {
+			metadata: {
+				properties: {
+					"templateName": {
+						"type": "string",
+						"defaultValue": "sap.fe.templates.Page.view.Page"
+					}
+				},
+				"manifest": "json"
+			}
+		});});`;
+	const ast = parseUtils.parseJS(code);
+	const analyzer = new SmartTemplateAnalyzer();
+	const templateName = analyzer._analyzeAST("sap.fe.templates.Page.Component", ast);
+	t.is(templateName, "");
+});
+
 test("_analyzeAST: get template name from ast (ArrowFunction)", (t) => {
 	const code = `sap.ui.define(["a", "sap/suite/ui/generic/template/lib/TemplateAssembler"],
 	(a, TemplateAssembler) => {
@@ -493,6 +554,41 @@ test.serial("_analyzeAST: get template name from ast (async factory function)", 
 	const templateName = analyzer._analyzeAST("sap.fe.templates.Page.Component", ast);
 	t.is(templateName, "sap.fe.templates.Page.view.Page");
 	t.is(warningLogSpy.callCount, 1, "Warning log is called once");
+});
+
+test("_analyzeAST: unable to get template name from ast (ArrowFunction with implicit return #1)", (t) => {
+	const code = `sap.ui.define(["a", "sap/suite/ui/generic/template/lib/TemplateAssembler"],
+	(a, TemplateAssembler) => TemplateAssembler.getTemplateComponent(getMethods,
+		"sap.fe.templates.Page.Component", {
+			metadata: {
+				// No templateName provided
+				"manifest": "json"
+			}
+		}));`;
+	const ast = parseUtils.parseJS(code);
+	const analyzer = new SmartTemplateAnalyzer();
+	const templateName = analyzer._analyzeAST("sap.fe.templates.Page.Component", ast);
+	t.is(templateName, "");
+});
+
+test("_analyzeAST: unable to get template name from ast (ArrowFunction with implicit return #2)", (t) => {
+	const code = `sap.ui.define(["a", "sap/suite/ui/generic/template/lib/TemplateAssembler"],
+	(a, TemplateAssembler) => TemplateAssembler.extend(getMethods, // wrong call. should be 'getTemplateComponent'
+		"sap.fe.templates.Page.Component", {
+			metadata: {
+				properties: {
+					"templateName": {
+						"type": "string",
+						"defaultValue": "sap.fe.templates.Page.view.Page"
+					}
+				},
+				"manifest": "json"
+			}
+		}));`;
+	const ast = parseUtils.parseJS(code);
+	const analyzer = new SmartTemplateAnalyzer();
+	const templateName = analyzer._analyzeAST("sap.fe.templates.Page.Component", ast);
+	t.is(templateName, "");
 });
 
 test.serial("_analyzeAST: get template name from ast (async arrow factory function)", (t) => {
