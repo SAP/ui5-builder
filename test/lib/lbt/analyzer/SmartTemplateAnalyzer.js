@@ -11,7 +11,7 @@ test.beforeEach((t) => {
 	t.context.sinon = sinonGlobal.createSandbox();
 });
 
-test.afterEach((t) => {
+test.afterEach.always((t) => {
 	t.context.sinon.restore();
 	mock.stopAll();
 });
@@ -555,6 +555,9 @@ test.serial("_analyzeAST: get template name from ast (async factory function)", 
 	const templateName = analyzer._analyzeAST("sap.fe.templates.Page.Component", ast);
 	t.is(templateName, "sap.fe.templates.Page.view.Page");
 	t.is(warningLogSpy.callCount, 1, "Warning log is called once");
+	t.is(warningLogSpy.getCall(0).firstArg,
+		"Using 'sap.ui.define' with an asynchronous function callback is currently not supported by the UI5 runtime. " +
+		"Module: 'sap.fe.templates.Page.Component'.");
 });
 
 test("_analyzeAST: unable to get template name from ast (ArrowFunction with implicit return #1)", (t) => {
@@ -615,6 +618,9 @@ test.serial("_analyzeAST: get template name from ast (async arrow factory functi
 	const templateName = analyzer._analyzeAST("sap.fe.templates.Page.Component", ast);
 	t.is(templateName, "sap.fe.templates.Page.view.Page");
 	t.is(warningLogSpy.callCount, 1, "Warning log is called once");
+	t.is(warningLogSpy.getCall(0).firstArg,
+		"Using 'sap.ui.define' with an asynchronous function callback is currently not supported by the UI5 runtime. " +
+		"Module: 'sap.fe.templates.Page.Component'.");
 });
 
 test.serial("_analyzeAST: get template name from ast (async arrow factory function implicit return)", (t) => {
@@ -639,6 +645,9 @@ test.serial("_analyzeAST: get template name from ast (async arrow factory functi
 	const templateName = analyzer._analyzeAST("sap.fe.templates.Page.Component", ast);
 	t.is(templateName, "sap.fe.templates.Page.view.Page");
 	t.is(warningLogSpy.callCount, 1, "Warning log is called once");
+	t.is(warningLogSpy.getCall(0).firstArg,
+		"Using 'sap.ui.define' with an asynchronous function callback is currently not supported by the UI5 runtime. " +
+		"Module: 'sap.fe.templates.Page.Component'.");
 });
 
 test("_analyzeAST: get template name from ast (with SpreadElement)", (t) => {

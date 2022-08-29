@@ -11,17 +11,21 @@ function parse(code) {
 	return ast.body[0].expression;
 }
 
-function setupSapUiDefineCallWithStubbedLogger(t) {
-	const sinon = t.context.sinon = sinonGlobal.createSandbox();
-	t.context.warningLogSpy = sinon.spy(loggerInstance, "warn");
+function setupSapUiDefineCallWithStubbedLogger({context}) {
+	const {sinon} = context;
+	context.warningLogSpy = sinon.spy(loggerInstance, "warn");
 	sinon.stub(logger, "getLogger").returns(loggerInstance);
-	t.context.SapUiDefineCallWithStubbedLogger = mock.reRequire("../../../../lib/lbt/calls/SapUiDefine");
+	context.SapUiDefineCallWithStubbedLogger = mock.reRequire("../../../../lib/lbt/calls/SapUiDefine");
 }
 
-function cleanUpSapUiDefineCallWithStubbedLogger(t) {
+test.beforeEach((t) => {
+	t.context.sinon = sinonGlobal.createSandbox();
+});
+
+test.afterEach.always((t) => {
 	t.context.sinon.restore();
 	mock.stopAll();
-}
+});
 
 test("Empty Define", (t) => {
 	const ast = parse("sap.ui.define();");
@@ -114,7 +118,6 @@ test.serial("Find Import Name (async function)", (t) => {
 	const call = new SapUiDefineCallWithStubbedLogger(ast, "FileSystemName");
 	t.is(call.findImportName("wanted.js"), "johndoe");
 	t.is(warningLogSpy.callCount, 0, "Warning log is not called");
-	cleanUpSapUiDefineCallWithStubbedLogger(t);
 });
 
 test.serial("Find Import Name (async arrow function)", (t) => {
@@ -124,7 +127,6 @@ test.serial("Find Import Name (async arrow function)", (t) => {
 	const call = new SapUiDefineCallWithStubbedLogger(ast, "FileSystemName");
 	t.is(call.findImportName("wanted.js"), "johndoe");
 	t.is(warningLogSpy.callCount, 0, "Warning log is not called");
-	cleanUpSapUiDefineCallWithStubbedLogger(t);
 });
 
 test.serial("Find Import Name (async arrow function with implicit return)", (t) => {
@@ -134,7 +136,6 @@ test.serial("Find Import Name (async arrow function with implicit return)", (t) 
 	const call = new SapUiDefineCallWithStubbedLogger(ast, "FileSystemName");
 	t.is(call.findImportName("wanted.js"), "johndoe");
 	t.is(warningLogSpy.callCount, 0, "Warning log is not called");
-	cleanUpSapUiDefineCallWithStubbedLogger(t);
 });
 
 test("Export as Global: omitted", (t) => {

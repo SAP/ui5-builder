@@ -10,7 +10,7 @@ test.beforeEach((t) => {
 	t.context.sinon = sinonGlobal.createSandbox();
 });
 
-test.afterEach((t) => {
+test.afterEach.always((t) => {
 	t.context.sinon.restore();
 	mock.stopAll();
 });
@@ -383,6 +383,9 @@ test.serial("_analyzeAST: get template name from ast (async function)", (t) => {
 	const templateName = analyzer._analyzeAST("sap.fe.templates.Page.Component", ast);
 	t.is(templateName, "sap.fe.templates.Page.view.Page");
 	t.is(warningLogSpy.callCount, 1, "Warning log is called once");
+	t.is(warningLogSpy.getCall(0).firstArg,
+		"Using 'sap.ui.define' with an asynchronous function callback is currently not supported by the UI5 runtime. " +
+		"Module: 'sap.fe.templates.Page.Component'.");
 });
 
 test.serial("_analyzeAST: get template name from ast (async ArrowFunction)", (t) => {
@@ -406,6 +409,9 @@ test.serial("_analyzeAST: get template name from ast (async ArrowFunction)", (t)
 	const templateName = analyzer._analyzeAST("sap.fe.templates.Page.Component", ast);
 	t.is(templateName, "sap.fe.templates.Page.view.Page");
 	t.is(warningLogSpy.callCount, 1, "Warning log is called once");
+	t.is(warningLogSpy.getCall(0).firstArg,
+		"Using 'sap.ui.define' with an asynchronous function callback is currently not supported by the UI5 runtime. " +
+		"Module: 'sap.fe.templates.Page.Component'.");
 });
 
 test.serial("_analyzeAST: get template name from ast (async ArrowFunction with implicit return)", (t) => {
@@ -429,6 +435,9 @@ test.serial("_analyzeAST: get template name from ast (async ArrowFunction with i
 	const templateName = analyzer._analyzeAST("sap.fe.templates.Page.Component", ast);
 	t.is(templateName, "sap.fe.templates.Page.view.Page");
 	t.is(warningLogSpy.callCount, 1, "Warning log is called once");
+	t.is(warningLogSpy.getCall(0).firstArg,
+		"Using 'sap.ui.define' with an asynchronous function callback is currently not supported by the UI5 runtime. " +
+		"Module: 'sap.fe.templates.Page.Component'.");
 });
 
 test("_analyzeAST: get template name from ast (ArrowFunction)", (t) => {

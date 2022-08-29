@@ -11,7 +11,7 @@ test.beforeEach((t) => {
 	t.context.sinon = sinonGlobal.createSandbox();
 });
 
-test.afterEach((t) => {
+test.afterEach.always((t) => {
 	t.context.sinon.restore();
 	mock.stopAll();
 });
@@ -110,6 +110,9 @@ test.serial("integration: XMLComposite code (async factory function)", (t) => {
 	t.deepEqual(moduleInfo.dependencies, ["composites/ButtonList.control.xml"],
 		"Dependency should be created from composite name");
 	t.is(warningLogSpy.callCount, 1, "Warning log is called once");
+	t.is(warningLogSpy.getCall(0).firstArg,
+		"Using 'sap.ui.define' with an asynchronous function callback is currently not supported by the UI5 runtime. " +
+		"Module: 'composites.ButtonList'.");
 });
 
 test.serial("integration: XMLComposite code (async arrow factory function)", (t) => {
@@ -128,6 +131,9 @@ test.serial("integration: XMLComposite code (async arrow factory function)", (t)
 	t.deepEqual(moduleInfo.dependencies, ["composites/ButtonList.control.xml"],
 		"Dependency should be created from composite name");
 	t.is(warningLogSpy.callCount, 1, "Warning log is called once");
+	t.is(warningLogSpy.getCall(0).firstArg,
+		"Using 'sap.ui.define' with an asynchronous function callback is currently not supported by the UI5 runtime. " +
+		"Module: 'composites.ButtonList'.");
 });
 
 test.serial("integration: XMLComposite code (async arrow factory function with implicit return)", (t) => {
@@ -144,6 +150,9 @@ test.serial("integration: XMLComposite code (async arrow factory function with i
 	t.deepEqual(moduleInfo.dependencies, ["composites/ButtonList.control.xml"],
 		"Dependency should be created from composite name");
 	t.is(warningLogSpy.callCount, 1, "Warning log is called once");
+	t.is(warningLogSpy.getCall(0).firstArg,
+		"Using 'sap.ui.define' with an asynchronous function callback is currently not supported by the UI5 runtime. " +
+		"Module: 'composites.ButtonList'.");
 });
 
 test("integration: XMLComposite code with SpreadElement", (t) => {
