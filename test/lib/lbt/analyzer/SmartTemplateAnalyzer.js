@@ -7,22 +7,22 @@ const logger = require("@ui5/logger");
 const loggerInstance = logger.getLogger();
 const mock = require("mock-require");
 
-test.before((t) => {
-	const sinon = t.context.sinon = sinonGlobal.createSandbox();
-	t.context.warningLogSpy = sinon.spy(loggerInstance, "warn");
-	sinon.stub(logger, "getLogger").returns(loggerInstance);
-	t.context.SmartTemplateAnalyzerWithStubbedLogger =
-		mock.reRequire("../../../../lib/lbt/analyzer/SmartTemplateAnalyzer");
-});
-
-test.after((t) => {
-	mock.stopAll();
-	t.context.sinon.restore();
-});
-
 test.beforeEach((t) => {
-	t.context.warningLogSpy.resetHistory();
+	t.context.sinon = sinonGlobal.createSandbox();
 });
+
+test.afterEach((t) => {
+	t.context.sinon.restore();
+	mock.stopAll();
+});
+
+function setupSmartTemplateAnalyzerWithStubbedLogger({context}) {
+	const {sinon} = context;
+	context.warningLogSpy = sinon.spy(loggerInstance, "warn");
+	sinon.stub(logger, "getLogger").returns(loggerInstance);
+	context.SmartTemplateAnalyzerWithStubbedLogger =
+		mock.reRequire("../../../../lib/lbt/analyzer/SmartTemplateAnalyzer");
+}
 
 test("analyze: with Component.js", async (t) => {
 	const emptyPool = {};
@@ -548,6 +548,7 @@ test.serial("_analyzeAST: get template name from ast (async factory function)", 
 				}
 			}
 	);});`;
+	setupSmartTemplateAnalyzerWithStubbedLogger(t);
 	const {SmartTemplateAnalyzerWithStubbedLogger, warningLogSpy} = t.context;
 	const ast = parseUtils.parseJS(code);
 	const analyzer = new SmartTemplateAnalyzerWithStubbedLogger();
@@ -607,6 +608,7 @@ test.serial("_analyzeAST: get template name from ast (async arrow factory functi
 				}
 			}
 	);});`;
+	setupSmartTemplateAnalyzerWithStubbedLogger(t);
 	const {SmartTemplateAnalyzerWithStubbedLogger, warningLogSpy} = t.context;
 	const ast = parseUtils.parseJS(code);
 	const analyzer = new SmartTemplateAnalyzerWithStubbedLogger();
@@ -630,6 +632,7 @@ test.serial("_analyzeAST: get template name from ast (async arrow factory functi
 				}
 			}
 	));`;
+	setupSmartTemplateAnalyzerWithStubbedLogger(t);
 	const {SmartTemplateAnalyzerWithStubbedLogger, warningLogSpy} = t.context;
 	const ast = parseUtils.parseJS(code);
 	const analyzer = new SmartTemplateAnalyzerWithStubbedLogger();

@@ -6,22 +6,22 @@ const logger = require("@ui5/logger");
 const loggerInstance = logger.getLogger();
 const mock = require("mock-require");
 
-test.before((t) => {
-	const sinon = t.context.sinon = sinonGlobal.createSandbox();
-	t.context.warningLogSpy = sinon.spy(loggerInstance, "warn");
-	sinon.stub(logger, "getLogger").returns(loggerInstance);
-	t.context.FioriElementsAnalyzerWithStubbedLogger =
-		mock.reRequire("../../../../lib/lbt/analyzer/FioriElementsAnalyzer");
-});
-
-test.after((t) => {
-	mock.stopAll();
-	t.context.sinon.restore();
-});
-
 test.beforeEach((t) => {
-	t.context.warningLogSpy.resetHistory();
+	t.context.sinon = sinonGlobal.createSandbox();
 });
+
+test.afterEach((t) => {
+	t.context.sinon.restore();
+	mock.stopAll();
+});
+
+function setupFioriElementsAnalyzerWithStubbedLogger({context}) {
+	const {sinon} = context;
+	context.warningLogSpy = sinon.spy(loggerInstance, "warn");
+	sinon.stub(logger, "getLogger").returns(loggerInstance);
+	context.FioriElementsAnalyzerWithStubbedLogger =
+		mock.reRequire("../../../../lib/lbt/analyzer/FioriElementsAnalyzer");
+}
 
 test("analyze: with Component.js", async (t) => {
 	const emptyPool = {};
@@ -376,6 +376,7 @@ test.serial("_analyzeAST: get template name from ast (async function)", (t) => {
 				"manifest": "json"
 			}
 		});});`;
+	setupFioriElementsAnalyzerWithStubbedLogger(t);
 	const {FioriElementsAnalyzerWithStubbedLogger, warningLogSpy} = t.context;
 	const ast = parseUtils.parseJS(code);
 	const analyzer = new FioriElementsAnalyzerWithStubbedLogger();
@@ -398,6 +399,7 @@ test.serial("_analyzeAST: get template name from ast (async ArrowFunction)", (t)
 				"manifest": "json"
 			}
 		});});`;
+	setupFioriElementsAnalyzerWithStubbedLogger(t);
 	const {FioriElementsAnalyzerWithStubbedLogger, warningLogSpy} = t.context;
 	const ast = parseUtils.parseJS(code);
 	const analyzer = new FioriElementsAnalyzerWithStubbedLogger();
@@ -420,6 +422,7 @@ test.serial("_analyzeAST: get template name from ast (async ArrowFunction with i
 				"manifest": "json"
 			}
 		}));`;
+	setupFioriElementsAnalyzerWithStubbedLogger(t);
 	const {FioriElementsAnalyzerWithStubbedLogger, warningLogSpy} = t.context;
 	const ast = parseUtils.parseJS(code);
 	const analyzer = new FioriElementsAnalyzerWithStubbedLogger();

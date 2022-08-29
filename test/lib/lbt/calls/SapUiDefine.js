@@ -11,21 +11,17 @@ function parse(code) {
 	return ast.body[0].expression;
 }
 
-test.before((t) => {
+function setupSapUiDefineCallWithStubbedLogger(t) {
 	const sinon = t.context.sinon = sinonGlobal.createSandbox();
 	t.context.warningLogSpy = sinon.spy(loggerInstance, "warn");
 	sinon.stub(logger, "getLogger").returns(loggerInstance);
 	t.context.SapUiDefineCallWithStubbedLogger = mock.reRequire("../../../../lib/lbt/calls/SapUiDefine");
-});
+}
 
-test.after((t) => {
-	mock.stopAll();
+function cleanUpSapUiDefineCallWithStubbedLogger(t) {
 	t.context.sinon.restore();
-});
-
-test.beforeEach((t) => {
-	t.context.warningLogSpy.resetHistory();
-});
+	mock.stopAll();
+}
 
 test("Empty Define", (t) => {
 	const ast = parse("sap.ui.define();");
@@ -112,27 +108,33 @@ test("Find Import Name (destructuring)", (t) => {
 });
 
 test.serial("Find Import Name (async function)", (t) => {
+	setupSapUiDefineCallWithStubbedLogger(t);
 	const {SapUiDefineCallWithStubbedLogger, warningLogSpy} = t.context;
 	const ast = parse("sap.ui.define(['wanted'], async function(johndoe) {});");
 	const call = new SapUiDefineCallWithStubbedLogger(ast, "FileSystemName");
 	t.is(call.findImportName("wanted.js"), "johndoe");
 	t.is(warningLogSpy.callCount, 0, "Warning log is not called");
+	cleanUpSapUiDefineCallWithStubbedLogger(t);
 });
 
 test.serial("Find Import Name (async arrow function)", (t) => {
+	setupSapUiDefineCallWithStubbedLogger(t);
 	const {SapUiDefineCallWithStubbedLogger, warningLogSpy} = t.context;
 	const ast = parse("sap.ui.define(['wanted'], async (johndoe) => {return johndoe});");
 	const call = new SapUiDefineCallWithStubbedLogger(ast, "FileSystemName");
 	t.is(call.findImportName("wanted.js"), "johndoe");
 	t.is(warningLogSpy.callCount, 0, "Warning log is not called");
+	cleanUpSapUiDefineCallWithStubbedLogger(t);
 });
 
 test.serial("Find Import Name (async arrow function with implicit return)", (t) => {
+	setupSapUiDefineCallWithStubbedLogger(t);
 	const {SapUiDefineCallWithStubbedLogger, warningLogSpy} = t.context;
 	const ast = parse("sap.ui.define(['wanted'], async (johndoe) => johndoe);");
 	const call = new SapUiDefineCallWithStubbedLogger(ast, "FileSystemName");
 	t.is(call.findImportName("wanted.js"), "johndoe");
 	t.is(warningLogSpy.callCount, 0, "Warning log is not called");
+	cleanUpSapUiDefineCallWithStubbedLogger(t);
 });
 
 test("Export as Global: omitted", (t) => {

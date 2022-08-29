@@ -7,22 +7,22 @@ const logger = require("@ui5/logger");
 const loggerInstance = logger.getLogger();
 const mock = require("mock-require");
 
-test.before((t) => {
-	const sinon = t.context.sinon = sinonGlobal.createSandbox();
-	t.context.warningLogSpy = sinon.spy(loggerInstance, "warn");
-	sinon.stub(logger, "getLogger").returns(loggerInstance);
-	t.context.XMLCompositeAnalyzerWithStubbedLogger =
-		mock.reRequire("../../../../lib/lbt/analyzer/XMLCompositeAnalyzer");
-});
-
-test.after((t) => {
-	mock.stopAll();
-	t.context.sinon.restore();
-});
-
 test.beforeEach((t) => {
-	t.context.warningLogSpy.resetHistory();
+	t.context.sinon = sinonGlobal.createSandbox();
 });
+
+test.afterEach((t) => {
+	t.context.sinon.restore();
+	mock.stopAll();
+});
+
+function setupXMLCompositeAnalyzerWithStubbedLogger({context}) {
+	const {sinon} = context;
+	context.warningLogSpy = sinon.spy(loggerInstance, "warn");
+	sinon.stub(logger, "getLogger").returns(loggerInstance);
+	context.XMLCompositeAnalyzerWithStubbedLogger =
+		mock.reRequire("../../../../lib/lbt/analyzer/XMLCompositeAnalyzer");
+}
 
 test("integration: XMLComposite code with VariableDeclaration", (t) => {
 	const code = `sap.ui.define([
@@ -100,8 +100,9 @@ test.serial("integration: XMLComposite code (async factory function)", (t) => {
 		"use strict";
 		return XMLComposite.extend("composites.ButtonList", {});
 	});`;
-	const ast = parseJS(code);
+	setupXMLCompositeAnalyzerWithStubbedLogger(t);
 	const {XMLCompositeAnalyzerWithStubbedLogger, warningLogSpy} = t.context;
+	const ast = parseJS(code);
 	const analyzer = new XMLCompositeAnalyzerWithStubbedLogger();
 	const name = "composites.ButtonList";
 	const moduleInfo = new ModuleInfo();
@@ -117,6 +118,7 @@ test.serial("integration: XMLComposite code (async arrow factory function)", (t)
 		async (jQuery, XMLComposite) => {
 		return XMLComposite.extend("composites.ButtonList", {});
 	});`;
+	setupXMLCompositeAnalyzerWithStubbedLogger(t);
 	const {XMLCompositeAnalyzerWithStubbedLogger, warningLogSpy} = t.context;
 	const ast = parseJS(code);
 	const analyzer = new XMLCompositeAnalyzerWithStubbedLogger();
@@ -132,6 +134,7 @@ test.serial("integration: XMLComposite code (async arrow factory function with i
 	const code = `sap.ui.define([
 		'jquery.sap.global', 'sap/ui/core/XMLComposite'],
 		async (jQuery, XMLComposite) => XMLComposite.extend("composites.ButtonList", {}));`;
+	setupXMLCompositeAnalyzerWithStubbedLogger(t);
 	const {XMLCompositeAnalyzerWithStubbedLogger, warningLogSpy} = t.context;
 	const ast = parseJS(code);
 	const analyzer = new XMLCompositeAnalyzerWithStubbedLogger();
