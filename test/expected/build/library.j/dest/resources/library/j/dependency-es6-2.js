@@ -7,7 +7,8 @@
  * - ArrowFunctionExpression
  */
 window.someRandomModule ||
-	sap.ui.define(["./a"], (a) =>
+	sap.ui.define(
+		["./a"],
 		/**
 		 * Constructor for a new library.j.aaa.
 		 *
@@ -26,19 +27,20 @@ window.someRandomModule ||
 		 * @alias library.j.aaa
 		 * @ui5-metamodel This control will also be described in the UI5 (legacy) design time meta model.
 		 */
-		a.extend(`library.j.aaa`, {
-			metadata: {
-				properties: {
-					/**
-					 * MyProp property
-					 * @since 1.46
-					 */
-					MyProp: {
-						type: "boolean",
-						group: `Misc`,
-						defaultValue: false,
+		(a) =>
+			a.extend(`library.j.aaa`, {
+				metadata: {
+					properties: {
+						/**
+						 * MyProp property
+						 * @since 1.46
+						 */
+						MyProp: {
+							type: "boolean",
+							group: `Misc`,
+							defaultValue: false,
+						},
 					},
 				},
-			},
-		})
+			})
 	);
