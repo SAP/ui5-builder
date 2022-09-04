@@ -20,7 +20,6 @@
 	 *
 	 * @public
 	 * @alias library.j.Foo
-	 * @ui5-metamodel text
 	 */
 	class Foo extends Bar {
 		make() {
