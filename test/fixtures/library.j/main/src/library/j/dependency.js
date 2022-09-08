@@ -30,5 +30,24 @@ sap.ui.define([], function () {
 		Bar: "Bar",
 	};
 
+	/**
+	 * ThisIsEnumToo
+	 *
+	 * @enum {string}
+	 * @public
+	 */
+	testlib.ThisIsEnumToo = {
+		/**
+		 * Foo
+		 * @public
+		 */
+		Value1: "Value1",
+		/**
+		 * Bar
+		 * @public
+		 */
+		Value2: "Value2",
+	};
+
 	return testlib;
 });

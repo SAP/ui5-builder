@@ -2,7 +2,7 @@
  * ${copyright}
  */
 sap.ui.define([
-	"sap/ui/core/Control", 
+	"sap/ui/core/Control",
 	"./dependency",
 	"./dependency2",
 	"./dependency-es6-1",
@@ -14,6 +14,7 @@ sap.ui.define([
 	const { Buzz } = AnotherValidEnum;
 	const { AnotherValidEnum: Zzz } = library;
 	const { H1 } = sap.ui.core.TitleLevel;
+	const { Value2: RenamedValue2 } = RenamedEnum;
 
 	/**
 	 * @class
@@ -58,6 +59,24 @@ sap.ui.define([
 						type: "testlib.AnotherValidEnum",
 						group: "Misc",
 						defaultValue: Zzz.Fizz,
+					},
+
+					/**
+					 * validPropertyDefaultValueEnumDestructuringWithRenameInArguments
+					 */
+					validPropertyDefaultValueEnumDestructuringWithRenameInArguments: {
+						type: "testlib.ThisIsEnumToo",
+						group: "Misc",
+						defaultValue: RenamedEnum.Value1,
+					},
+
+					/**
+					 * validPropertyDefaultValueEnumDestructuringWithRenameInArgumentsAndLocalVar
+					 */
+					validPropertyDefaultValueEnumDestructuringWithRenameInArgumentsAndLocalVar: {
+						type: "testlib.ThisIsEnumToo",
+						group: "Misc",
+						defaultValue: RenamedValue2,
 					},
 
 					/**
