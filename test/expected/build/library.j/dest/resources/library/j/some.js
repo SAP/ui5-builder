@@ -8,7 +8,7 @@ sap.ui.define([
 	"./dependency-es6-1",
 	"./dependency-es6-2",
 	"./dependency-es6-3"
-], (Control, { MyValidEnum, ThisIsEnumToo: RenamedEnum }, library, es6_1, , es6_2, , es6_3) => {
+], (Control, { MyValidEnum, ThisIsEnumToo: RenamedEnum }, library, es6_1, es6_2, es6_3) => {
 
 	const { AnotherValidEnum } = library;
 	const { Buzz } = AnotherValidEnum;
