@@ -1,7 +1,7 @@
 sap.ui.define([
 	'static/module1'
 ], () => {
-	// spread expression
-	const dynamicModules = ["not-detected/module1"]; // TODO: should this be supported?
+	// spread expression, currently not detected as dependency
+	const dynamicModules = ["not-detected/module1"];
 	sap.ui.require(["static/module1", ...dynamicModules]);
 });
