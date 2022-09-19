@@ -101,7 +101,7 @@ test.serial("integration: XMLComposite code (async factory function)", (t) => {
 		return XMLComposite.extend("composites.ButtonList", {});
 	});`;
 	setupXMLCompositeAnalyzerWithStubbedLogger(t);
-	const {XMLCompositeAnalyzerWithStubbedLogger, warningLogSpy} = t.context;
+	const {XMLCompositeAnalyzerWithStubbedLogger} = t.context;
 	const ast = parseJS(code);
 	const analyzer = new XMLCompositeAnalyzerWithStubbedLogger();
 	const name = "composites.ButtonList";
@@ -109,10 +109,6 @@ test.serial("integration: XMLComposite code (async factory function)", (t) => {
 	analyzer.analyze(ast, name, moduleInfo);
 	t.deepEqual(moduleInfo.dependencies, ["composites/ButtonList.control.xml"],
 		"Dependency should be created from composite name");
-	t.is(warningLogSpy.callCount, 1, "Warning log is called once");
-	t.is(warningLogSpy.getCall(0).firstArg,
-		"Using 'sap.ui.define' with an asynchronous function callback is currently not supported by the UI5 runtime. " +
-		"Module: 'composites.ButtonList'.");
 });
 
 test.serial("integration: XMLComposite code (async arrow factory function)", (t) => {
@@ -122,7 +118,7 @@ test.serial("integration: XMLComposite code (async arrow factory function)", (t)
 		return XMLComposite.extend("composites.ButtonList", {});
 	});`;
 	setupXMLCompositeAnalyzerWithStubbedLogger(t);
-	const {XMLCompositeAnalyzerWithStubbedLogger, warningLogSpy} = t.context;
+	const {XMLCompositeAnalyzerWithStubbedLogger} = t.context;
 	const ast = parseJS(code);
 	const analyzer = new XMLCompositeAnalyzerWithStubbedLogger();
 	const name = "composites.ButtonList";
@@ -130,10 +126,6 @@ test.serial("integration: XMLComposite code (async arrow factory function)", (t)
 	analyzer.analyze(ast, name, moduleInfo);
 	t.deepEqual(moduleInfo.dependencies, ["composites/ButtonList.control.xml"],
 		"Dependency should be created from composite name");
-	t.is(warningLogSpy.callCount, 1, "Warning log is called once");
-	t.is(warningLogSpy.getCall(0).firstArg,
-		"Using 'sap.ui.define' with an asynchronous function callback is currently not supported by the UI5 runtime. " +
-		"Module: 'composites.ButtonList'.");
 });
 
 test.serial("integration: XMLComposite code (async arrow factory function with implicit return)", (t) => {
@@ -141,7 +133,7 @@ test.serial("integration: XMLComposite code (async arrow factory function with i
 		'jquery.sap.global', 'sap/ui/core/XMLComposite'],
 		async (jQuery, XMLComposite) => XMLComposite.extend("composites.ButtonList", {}));`;
 	setupXMLCompositeAnalyzerWithStubbedLogger(t);
-	const {XMLCompositeAnalyzerWithStubbedLogger, warningLogSpy} = t.context;
+	const {XMLCompositeAnalyzerWithStubbedLogger} = t.context;
 	const ast = parseJS(code);
 	const analyzer = new XMLCompositeAnalyzerWithStubbedLogger();
 	const name = "composites.ButtonList";
@@ -149,10 +141,6 @@ test.serial("integration: XMLComposite code (async arrow factory function with i
 	analyzer.analyze(ast, name, moduleInfo);
 	t.deepEqual(moduleInfo.dependencies, ["composites/ButtonList.control.xml"],
 		"Dependency should be created from composite name");
-	t.is(warningLogSpy.callCount, 1, "Warning log is called once");
-	t.is(warningLogSpy.getCall(0).firstArg,
-		"Using 'sap.ui.define' with an asynchronous function callback is currently not supported by the UI5 runtime. " +
-		"Module: 'composites.ButtonList'.");
 });
 
 test("integration: XMLComposite code with SpreadElement", (t) => {
@@ -176,12 +164,8 @@ test("integration: XMLComposite code with SpreadElement", (t) => {
 	analyzer.analyze(ast, name, moduleInfo);
 
 	t.deepEqual(moduleInfo.dependencies, ["composites/ButtonList.control.xml"],
-		"Dependency should be created from composite name because overriden by the 'fragment' property " +
+		"Dependency should be created from composite name because overridden by the 'fragment' property " +
 		" is not possible to lacking SpreadElement support");
-
-	// TODO: Support SpreadElement
-	// t.deepEqual(moduleInfo.dependencies, ["composites/custom/ButtonList.control.xml"],
-	// 	"Dependency should be created from composite name");
 });
 
 test("analyze: not an XMLComposite module", (t) => {

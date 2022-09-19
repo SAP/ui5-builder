@@ -377,15 +377,11 @@ test.serial("_analyzeAST: get template name from ast (async function)", (t) => {
 			}
 		});});`;
 	setupFioriElementsAnalyzerWithStubbedLogger(t);
-	const {FioriElementsAnalyzerWithStubbedLogger, warningLogSpy} = t.context;
+	const {FioriElementsAnalyzerWithStubbedLogger} = t.context;
 	const ast = parseUtils.parseJS(code);
 	const analyzer = new FioriElementsAnalyzerWithStubbedLogger();
 	const templateName = analyzer._analyzeAST("sap.fe.templates.Page.Component", ast);
 	t.is(templateName, "sap.fe.templates.Page.view.Page");
-	t.is(warningLogSpy.callCount, 1, "Warning log is called once");
-	t.is(warningLogSpy.getCall(0).firstArg,
-		"Using 'sap.ui.define' with an asynchronous function callback is currently not supported by the UI5 runtime. " +
-		"Module: 'sap.fe.templates.Page.Component'.");
 });
 
 test.serial("_analyzeAST: get template name from ast (async ArrowFunction)", (t) => {
@@ -403,15 +399,11 @@ test.serial("_analyzeAST: get template name from ast (async ArrowFunction)", (t)
 			}
 		});});`;
 	setupFioriElementsAnalyzerWithStubbedLogger(t);
-	const {FioriElementsAnalyzerWithStubbedLogger, warningLogSpy} = t.context;
+	const {FioriElementsAnalyzerWithStubbedLogger} = t.context;
 	const ast = parseUtils.parseJS(code);
 	const analyzer = new FioriElementsAnalyzerWithStubbedLogger();
 	const templateName = analyzer._analyzeAST("sap.fe.templates.Page.Component", ast);
 	t.is(templateName, "sap.fe.templates.Page.view.Page");
-	t.is(warningLogSpy.callCount, 1, "Warning log is called once");
-	t.is(warningLogSpy.getCall(0).firstArg,
-		"Using 'sap.ui.define' with an asynchronous function callback is currently not supported by the UI5 runtime. " +
-		"Module: 'sap.fe.templates.Page.Component'.");
 });
 
 test.serial("_analyzeAST: get template name from ast (async ArrowFunction with implicit return)", (t) => {
@@ -429,15 +421,11 @@ test.serial("_analyzeAST: get template name from ast (async ArrowFunction with i
 			}
 		}));`;
 	setupFioriElementsAnalyzerWithStubbedLogger(t);
-	const {FioriElementsAnalyzerWithStubbedLogger, warningLogSpy} = t.context;
+	const {FioriElementsAnalyzerWithStubbedLogger} = t.context;
 	const ast = parseUtils.parseJS(code);
 	const analyzer = new FioriElementsAnalyzerWithStubbedLogger();
 	const templateName = analyzer._analyzeAST("sap.fe.templates.Page.Component", ast);
 	t.is(templateName, "sap.fe.templates.Page.view.Page");
-	t.is(warningLogSpy.callCount, 1, "Warning log is called once");
-	t.is(warningLogSpy.getCall(0).firstArg,
-		"Using 'sap.ui.define' with an asynchronous function callback is currently not supported by the UI5 runtime. " +
-		"Module: 'sap.fe.templates.Page.Component'.");
 });
 
 test("_analyzeAST: get template name from ast (ArrowFunction)", (t) => {
@@ -501,9 +489,7 @@ test("_analyzeAST: get template name from ast (with SpreadElement)", (t) => {
 	const analyzer = new FioriElementsAnalyzer();
 	const templateName = analyzer._analyzeAST("sap.fe.templates.Page.Component", ast);
 
-	t.is(templateName, "", "The TemplateName is correctly empty");
-	// TODO: Support SpreadElement
-	// t.is(templateName, "sap.fe.templates.Page.view.Page", "The TemplateName is correctly determined");
+	t.is(templateName, "", "The TemplateName is correctly empty as SpreadElements are not supported");
 });
 
 test("_analyzeAST: no template name from ast", (t) => {
