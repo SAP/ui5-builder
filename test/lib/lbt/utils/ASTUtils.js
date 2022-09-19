@@ -175,6 +175,14 @@ test("getPropertyKey", (t) => {
 	// quoted key with dash
 	const dashedProperties = parseJS("var myVar = {'my-var': 47}").body[0].declarations[0].init.properties;
 	t.is(ASTUtils.getPropertyKey(dashedProperties[0]), "my-var", "sole property key is 'my-var'");
+
+	// SpreadElement (not supported)
+	const spreadElement = parseJS("var myVar = { ...foo }").body[0].declarations[0].init.properties;
+	t.is(ASTUtils.getPropertyKey(spreadElement[0]), undefined);
+
+	// Computed property key (not supported)
+	const computedKey = parseJS(`var myVar = { ["foo" + "bar"]: 42 }`).body[0].declarations[0].init.properties;
+	t.is(ASTUtils.getPropertyKey(computedKey[0]), undefined);
 });
 
 test("findOwnProperty", (t) => {
