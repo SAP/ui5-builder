@@ -16,7 +16,8 @@
 		"development",
 		"tool"
 	],
-	"main": "index.js",
+	"type": "module",
+	"exports": "./index.js",
 	"engines": {
 		"node": ">= 16.13.2",
 		"npm": ">= 8"

@@ -4,8 +4,7 @@
 
 sap.ui.define([],
 	function() {
-	"use strict";
-
+	
 	/**
 	 * @alias library.l
 	 * @namespace
