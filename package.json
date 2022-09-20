@@ -56,6 +56,10 @@
 		"files": [
 			"test/lib/**/*.js"
 		],
+		"nodeArguments": [
+			"--loader=esmock",
+			"--no-warnings"
+		],
 		"ignoredByWatcher": [
 			"test/tmp/**"
 		]
