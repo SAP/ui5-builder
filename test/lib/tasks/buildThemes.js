@@ -3,18 +3,21 @@ import sinon from "sinon";
 import esmock from "esmock";
 import buildThemes from "../../../lib/tasks/buildThemes.js";
 
-test.before(() => {
+test.before(async () => {
 	// Enable verbose logging to also cover verbose logging code
-	require("@ui5/logger").setLevel("verbose");
+	const { default: logger } = await import("@ui5/logger");
+	logger.setLevel("verbose");
 });
 
-test.beforeEach((t) => {
+test.beforeEach(async (t) => {
+	const ui5Fs = await import("@ui5/fs");
+	const { fsInterface, ReaderCollectionPrioritized } = ui5Fs;
 	// Stubbing processors/themeBuilder
 	t.context.themeBuilderStub = sinon.stub();
-	t.context.fsInterfaceStub = sinon.stub(require("@ui5/fs"), "fsInterface");
+	t.context.fsInterfaceStub = sinon.stub(fsInterface);
 	t.context.fsInterfaceStub.returns({});
 
-	t.context.ReaderCollectionPrioritizedStub = sinon.stub(require("@ui5/fs"), "ReaderCollectionPrioritized");
+	t.context.ReaderCollectionPrioritizedStub = sinon.stub(ReaderCollectionPrioritized);
 	t.context.comboByGlob = sinon.stub();
 	t.context.ReaderCollectionPrioritizedStub.returns({byGlob: t.context.comboByGlob});
 
@@ -25,12 +28,12 @@ test.beforeEach((t) => {
 	esmock("../../../lib/processors/themeBuilder", t.context.themeBuilderStub);
 
 	// Re-require tested module
-	buildThemes = esmock.reRequire("../../../lib/tasks/buildThemes");
+	// buildThemes = esmock.reRequire("../../../lib/tasks/buildThemes");
 });
 
 test.afterEach.always((t) => {
 	sinon.restore();
-	esmock.stopAll();
+	// esmock.stopAll();
 });
 
 test.serial("buildThemes", async (t) => {
