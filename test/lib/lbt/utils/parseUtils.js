@@ -1,5 +1,5 @@
-const test = require("ava");
-const {parseJS, Syntax} = require("../../../../lib/lbt/utils/parseUtils");
+import test from "ava";
+import { parseJS, Syntax } from "../../../../lib/lbt/utils/parseUtils.js";
 
 test("invalid options", (t) => {
 	t.throws(function() {

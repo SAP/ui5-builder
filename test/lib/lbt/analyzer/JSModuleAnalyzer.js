@@ -2,12 +2,13 @@
 /* Test modifier `cb` was deprecated with ava version
 3 and removed with ava version 4. Therefore, tests using `cb` has to be rewritten, when upgrade to ava version 4 */
 
-const test = require("ava");
-const fs = require("fs");
-const path = require("path");
-const {parseJS} = require("../../../../lib/lbt/utils/parseUtils");
-const ModuleInfo = require("../../../../lib/lbt/resources/ModuleInfo");
-const JSModuleAnalyzer = require("../../../../lib/lbt/analyzer/JSModuleAnalyzer");
+import test from "ava";
+
+import fs from "node:fs";
+import path from "node:path";
+import { parseJS } from "../../../../lib/lbt/utils/parseUtils.js";
+import ModuleInfo from "../../../../lib/lbt/resources/ModuleInfo.js";
+import JSModuleAnalyzer from "../../../../lib/lbt/analyzer/JSModuleAnalyzer.js";
 
 const EXPECTED_MODULE_NAME = "sap/ui/testmodule.js";
 

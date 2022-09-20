@@ -1,6 +1,5 @@
-const test = require("ava");
-
-const taskRepository = require("../../../lib/tasks/taskRepository");
+import test from "ava";
+import taskRepository from "../../../lib/tasks/taskRepository.js";
 
 test("Task retrieval", (t) => {
 	const escapeNonAsciiCharacters = require("../../../lib/tasks/escapeNonAsciiCharacters");

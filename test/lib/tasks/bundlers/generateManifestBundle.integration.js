@@ -1,14 +1,12 @@
-const test = require("ava");
-const path = require("path");
-
-const chai = require("chai");
+import test from "ava";
+import path from "node:path";
+import chai from "chai";
 chai.use(require("chai-fs"));
 const assert = chai.assert;
-const extractZip = require("extract-zip");
-const recursive = require("recursive-readdir");
-
-const {generateProjectGraph} = require("@ui5/project");
-const taskRepository = require("../../../../lib/tasks/taskRepository");
+import extractZip from "extract-zip";
+import recursive from "recursive-readdir";
+import { generateProjectGraph } from "@ui5/project";
+import taskRepository from "../../../../lib/tasks/taskRepository.js";
 
 const applicationBPath = path.join(__dirname, "..", "..", "..", "fixtures", "application.b");
 const libraryCore = path.join(__dirname, "..", "..", "..", "fixtures", "sap.ui.core-evo");

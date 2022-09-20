@@ -1,16 +1,15 @@
-const test = require("ava");
-const path = require("path");
-const chai = require("chai");
+import test from "ava";
+import path from "node:path";
+import chai from "chai";
 chai.use(require("chai-fs"));
-const fs = require("graceful-fs");
-const {promisify} = require("util");
+import fs from "graceful-fs";
+import { promisify } from "node:util";
 const readFile = promisify(fs.readFile);
 const assert = chai.assert;
-const sinon = require("sinon");
-const mock = require("mock-require");
-
-const {generateProjectGraph} = require("@ui5/project");
-const taskRepository = require("../../../lib/tasks/taskRepository");
+import sinon from "sinon";
+import esmock from "esmock";
+import { generateProjectGraph } from "@ui5/project";
+import taskRepository from "../../../lib/tasks/taskRepository.js";
 
 const applicationAPath = path.join(__dirname, "..", "..", "fixtures", "application.a");
 const applicationGPath = path.join(__dirname, "..", "..", "fixtures", "application.g");
@@ -33,7 +32,7 @@ const libraryCoreBuildtime = path.join(__dirname, "..", "..", "fixtures", "sap.u
 const themeJPath = path.join(__dirname, "..", "..", "fixtures", "theme.j");
 const themeLibraryEPath = path.join(__dirname, "..", "..", "fixtures", "theme.library.e");
 
-const recursive = require("recursive-readdir");
+import recursive from "recursive-readdir";
 
 const newLineRegexp = /\r?\n|\r/g;
 
@@ -119,7 +118,7 @@ async function checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, 
 
 test.afterEach.always((t) => {
 	sinon.restore();
-	mock.stopAll();
+	esmock.stopAll();
 });
 
 test.serial("Build application.a", async (t) => {

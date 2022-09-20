@@ -1,10 +1,9 @@
-const test = require("ava");
-const ModuleInfo = require("../../../../lib/lbt/resources/ModuleInfo");
-const ResourcePool = require("../../../../lib/lbt/resources/ResourcePool");
-const ResourceFilterList = require("../../../../lib/lbt/resources/ResourceFilterList");
-
-const LibraryFileAnalyzer = require("../../../../lib/lbt/resources/LibraryFileAnalyzer");
-const sinon = require("sinon");
+import test from "ava";
+import ModuleInfo from "../../../../lib/lbt/resources/ModuleInfo.js";
+import ResourcePool from "../../../../lib/lbt/resources/ResourcePool.js";
+import ResourceFilterList from "../../../../lib/lbt/resources/ResourceFilterList.js";
+import LibraryFileAnalyzer from "../../../../lib/lbt/resources/LibraryFileAnalyzer.js";
+import sinon from "sinon";
 
 test("findResources: based on pattern", async (t) => {
 	const resourcePool = new ResourcePool();

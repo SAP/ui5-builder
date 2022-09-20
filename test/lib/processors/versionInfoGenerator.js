@@ -1,10 +1,8 @@
-const test = require("ava");
-const sinon = require("sinon");
-
-const mock = require("mock-require");
-const logger = require("@ui5/logger");
-
-let versionInfoGenerator = require("../../../lib/processors/versionInfoGenerator");
+import test from "ava";
+import sinon from "sinon";
+import esmock from "esmock";
+import logger from "@ui5/logger";
+import versionInfoGenerator from "../../../lib/processors/versionInfoGenerator.js";
 
 
 test.beforeEach((t) => {
@@ -19,11 +17,11 @@ test.beforeEach((t) => {
 		silly: t.context.sillyLogStub,
 		isLevelEnabled: () => true
 	});
-	versionInfoGenerator = mock.reRequire("../../../lib/processors/versionInfoGenerator");
+	versionInfoGenerator = esmock.reRequire("../../../lib/processors/versionInfoGenerator");
 });
 
 test.afterEach.always((t) => {
-	mock.stopAll();
+	esmock.stopAll();
 	sinon.restore();
 });
 

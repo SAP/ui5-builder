@@ -1,7 +1,6 @@
-const test = require("ava");
-
-const minifier = require("../../../lib/processors/minifier");
-const ui5Fs = require("@ui5/fs");
+import test from "ava";
+import minifier from "../../../lib/processors/minifier.js";
+import ui5Fs from "@ui5/fs";
 const resourceFactory = ui5Fs.resourceFactory;
 
 // Node.js itself tries to parse sourceMappingURLs in all JavaScript files. This is unwanted and might even lead to

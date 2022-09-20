@@ -1,6 +1,6 @@
-const test = require("ava");
-const sinon = require("sinon");
-const mock = require("mock-require");
+import test from "ava";
+import sinon from "sinon";
+import esmock from "esmock";
 
 test.beforeEach((t) => {
 	t.context.log = {
@@ -14,10 +14,10 @@ test.beforeEach((t) => {
 		prepare: sinon.stub().resolves()
 	};
 	t.context.LocatorResourcePool = sinon.stub().returns(t.context.pool);
-	mock("../../../../lib/lbt/resources/LocatorResourcePool", t.context.LocatorResourcePool);
+	esmock("../../../../lib/lbt/resources/LocatorResourcePool", t.context.LocatorResourcePool);
 
 	t.context.Resource = sinon.stub();
-	mock("@ui5/fs", {
+	esmock("@ui5/fs", {
 		Resource: t.context.Resource
 	});
 
@@ -25,15 +25,15 @@ test.beforeEach((t) => {
 		createBundle: sinon.stub().resolves([])
 	};
 	t.context.BundleBuilder = sinon.stub().returns(t.context.builder);
-	mock("../../../../lib/lbt/bundle/Builder", t.context.BundleBuilder);
+	esmock("../../../../lib/lbt/bundle/Builder", t.context.BundleBuilder);
 
-	const processor = mock.reRequire("../../../../lib/processors/bundlers/moduleBundler");
+	const processor = esmock.reRequire("../../../../lib/processors/bundlers/moduleBundler");
 	t.context.processor = processor;
 });
 
 test.afterEach.always(() => {
 	sinon.restore();
-	mock.stopAll();
+	esmock.stopAll();
 });
 
 test.serial("Builder returns single bundle", async (t) => {

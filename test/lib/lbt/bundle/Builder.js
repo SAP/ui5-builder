@@ -1,10 +1,10 @@
 /* eslint-disable max-len */
-const test = require("ava");
-const sinon = require("sinon");
-const mock = require("mock-require");
+import test from "ava";
 
-const Builder = require("../../../../lib/lbt/bundle/Builder");
-const ResourcePool = require("../../../../lib/lbt/resources/ResourcePool");
+import sinon from "sinon";
+import esmock from "esmock";
+import Builder from "../../../../lib/lbt/bundle/Builder.js";
+import ResourcePool from "../../../../lib/lbt/resources/ResourcePool.js";
 
 // Node.js itself tries to parse sourceMappingURLs in all JavaScript files. This is unwanted and might even lead to
 // obscure errors when dynamically generating Data-URI soruceMappingURL values.
@@ -12,7 +12,7 @@ const ResourcePool = require("../../../../lib/lbt/resources/ResourcePool");
 const SOURCE_MAPPING_URL = "//" + "# sourceMappingURL";
 
 test.afterEach.always((t) => {
-	mock.stopAll();
+	esmock.stopAll();
 	sinon.restore();
 });
 
@@ -24,7 +24,7 @@ test.serial("writePreloadModule: with invalid json content", async (t) => {
 		verbose: verboseLogStub
 	};
 	sinon.stub(logger, "getLogger").returns(myLoggerInstance);
-	const BuilderWithStub = mock.reRequire("../../../../lib/lbt/bundle/Builder");
+	const BuilderWithStub = esmock.reRequire("../../../../lib/lbt/bundle/Builder");
 	const invalidJsonContent = `{
 	"a": 47,
 	"b": {{include: asd}}
@@ -686,7 +686,7 @@ test.serial("integration: createBundle with bundleInfo", async (t) => {
 		warn: warnLogStub
 	};
 	sinon.stub(logger, "getLogger").returns(myLoggerInstance);
-	const BuilderWithStub = mock.reRequire("../../../../lib/lbt/bundle/Builder");
+	const BuilderWithStub = esmock.reRequire("../../../../lib/lbt/bundle/Builder");
 
 	const pool = new ResourcePool();
 	pool.addResource({

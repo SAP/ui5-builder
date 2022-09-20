@@ -1,10 +1,10 @@
-const test = require("ava");
+import test from "ava";
 
-const resourceFactory = require("@ui5/fs").resourceFactory;
-const fsInterface = require("@ui5/fs").fsInterface;
+import { resourceFactory } from "@ui5/fs";
+import { fsInterface } from "@ui5/fs";
 
-const themeBuilderProcessor = require("../../../lib/processors/themeBuilder");
-const ThemeBuilder = require("../../../lib/processors/themeBuilder").ThemeBuilder;
+import themeBuilderProcessor from "../../../lib/processors/themeBuilder.js";
+import { ThemeBuilder } from "../../../lib/processors/themeBuilder.js";
 
 function prepareResources({library} = {}) {
 	const input =

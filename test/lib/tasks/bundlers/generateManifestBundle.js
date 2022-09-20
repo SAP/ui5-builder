@@ -1,10 +1,9 @@
-const test = require("ava");
-const sinon = require("sinon");
-const mock = require("mock-require");
-
-const chai = require("chai");
+import test from "ava";
+import sinon from "sinon";
+import esmock from "esmock";
+import chai from "chai";
 chai.use(require("chai-fs"));
-const generateManifestBundle = require("../../../../lib/tasks/bundlers/generateManifestBundle");
+import generateManifestBundle from "../../../../lib/tasks/bundlers/generateManifestBundle.js";
 
 test.serial("generateManifestBundle", async (t) => {
 	const byGlobStub = sinon.stub().resolves(["some resource", "some other resource"]);
@@ -15,8 +14,8 @@ test.serial("generateManifestBundle", async (t) => {
 	};
 
 	const manifestBundlerStub = sinon.stub().resolves(["some new resource", "some other new resource"]);
-	mock("../../../../lib/processors/bundlers/manifestBundler", manifestBundlerStub);
-	const generateManifestBundle = mock.reRequire("../../../../lib/tasks/bundlers/generateManifestBundle");
+	esmock("../../../../lib/processors/bundlers/manifestBundler", manifestBundlerStub);
+	const generateManifestBundle = esmock.reRequire("../../../../lib/tasks/bundlers/generateManifestBundle");
 
 
 	await generateManifestBundle({
@@ -47,7 +46,7 @@ test.serial("generateManifestBundle", async (t) => {
 	t.is(writeStub.getCall(1).args[0], "some other new resource",
 		"workspace.write got called with the correct arguments");
 
-	mock.stop("../../../../lib/processors/bundlers/manifestBundler");
+	esmock.stop("../../../../lib/processors/bundlers/manifestBundler");
 });
 
 test.serial("generateManifestBundle with no resources", async (t) => {
@@ -57,8 +56,8 @@ test.serial("generateManifestBundle with no resources", async (t) => {
 	};
 
 	const manifestBundlerStub = sinon.stub().resolves([]);
-	mock("../../../../lib/processors/bundlers/manifestBundler", manifestBundlerStub);
-	const generateManifestBundle = mock.reRequire("../../../../lib/tasks/bundlers/generateManifestBundle");
+	esmock("../../../../lib/processors/bundlers/manifestBundler", manifestBundlerStub);
+	const generateManifestBundle = esmock.reRequire("../../../../lib/tasks/bundlers/generateManifestBundle");
 
 
 	await generateManifestBundle({
@@ -74,7 +73,7 @@ test.serial("generateManifestBundle with no resources", async (t) => {
 
 	t.is(manifestBundlerStub.callCount, 0, "manifestBundler not called");
 
-	mock.stop("../../../../lib/processors/bundlers/manifestBundler");
+	esmock.stop("../../../../lib/processors/bundlers/manifestBundler");
 });
 
 test("generateManifestBundle with missing parameters", async (t) => {

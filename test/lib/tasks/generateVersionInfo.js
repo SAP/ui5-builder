@@ -1,12 +1,11 @@
-const test = require("ava");
-
-let generateVersionInfo = require("../../../lib/tasks/generateVersionInfo");
-const path = require("path");
-const ui5Fs = require("@ui5/fs");
+import test from "ava";
+import generateVersionInfo from "../../../lib/tasks/generateVersionInfo.js";
+import path from "node:path";
+import ui5Fs from "@ui5/fs";
 const resourceFactory = ui5Fs.resourceFactory;
-const sinon = require("sinon");
-const mock = require("mock-require");
-const logger = require("@ui5/logger");
+import sinon from "sinon";
+import esmock from "esmock";
+import logger from "@ui5/logger";
 
 const projectCache = {};
 
@@ -14,7 +13,7 @@ const projectCache = {};
  *
  * @param {string[]} names e.g. ["lib", "a"]
  * @param {string} [version="3.0.0-<library name>"] Project version
- * @returns {object} Project mock
+ * @returns {object} Project esmock
  */
 const createProjectMetadata = (names, version) => {
 	const key = names.join(".");
@@ -107,12 +106,12 @@ test.beforeEach((t) => {
 		silly: t.context.sillyLogStub,
 		isLevelEnabled: () => true
 	});
-	mock.reRequire("../../../lib/processors/versionInfoGenerator");
-	generateVersionInfo = mock.reRequire("../../../lib/tasks/generateVersionInfo");
+	esmock.reRequire("../../../lib/processors/versionInfoGenerator");
+	generateVersionInfo = esmock.reRequire("../../../lib/tasks/generateVersionInfo");
 });
 
 test.afterEach.always((t) => {
-	mock.stopAll();
+	esmock.stopAll();
 	sinon.restore();
 });
 

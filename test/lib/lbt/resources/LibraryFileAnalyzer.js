@@ -1,5 +1,5 @@
-const test = require("ava");
-const LibraryFileAnalyzer = require("../../../../lib/lbt/resources/LibraryFileAnalyzer");
+import test from "ava";
+import LibraryFileAnalyzer from "../../../../lib/lbt/resources/LibraryFileAnalyzer.js";
 
 test("extract packaging info from .library file", (t) => {
 	const libraryFile = `\

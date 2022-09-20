@@ -1,7 +1,6 @@
-const test = require("ava");
-
-const generateLibraryManifest = require("../../../lib/tasks/generateLibraryManifest");
-const ui5Fs = require("@ui5/fs");
+import test from "ava";
+import generateLibraryManifest from "../../../lib/tasks/generateLibraryManifest.js";
+import ui5Fs from "@ui5/fs";
 const resourceFactory = ui5Fs.resourceFactory;
 
 function createWorkspace() {

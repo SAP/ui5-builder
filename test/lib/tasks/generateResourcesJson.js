@@ -1,9 +1,7 @@
-const test = require("ava");
-const sinon = require("sinon");
-const mock = require("mock-require");
-
-
-const ui5Fs = require("@ui5/fs");
+import test from "ava";
+import sinon from "sinon";
+import esmock from "esmock";
+import ui5Fs from "@ui5/fs";
 const resourceFactory = ui5Fs.resourceFactory;
 
 function createWorkspace() {
@@ -35,14 +33,14 @@ function createDependencies() {
 test.beforeEach((t) => {
 	t.context.resourceListCreatorStub = sinon.stub();
 	t.context.resourceListCreatorStub.returns(Promise.resolve([]));
-	mock("../../../lib/processors/resourceListCreator", t.context.resourceListCreatorStub);
+	esmock("../../../lib/processors/resourceListCreator", t.context.resourceListCreatorStub);
 
-	t.context.generateResourcesJson = mock.reRequire("../../../lib/tasks/generateResourcesJson");
+	t.context.generateResourcesJson = esmock.reRequire("../../../lib/tasks/generateResourcesJson");
 });
 
 test.afterEach.always((t) => {
 	sinon.restore();
-	mock.stopAll();
+	esmock.stopAll();
 });
 
 test.serial("Missing 'dependencies' parameter", async (t) => {

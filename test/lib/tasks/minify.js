@@ -1,8 +1,7 @@
-const test = require("ava");
-const sinon = require("sinon");
-
-const minify = require("../../../lib/tasks/minify");
-const ui5Fs = require("@ui5/fs");
+import test from "ava";
+import sinon from "sinon";
+import minify from "../../../lib/tasks/minify.js";
+import ui5Fs from "@ui5/fs";
 const resourceFactory = ui5Fs.resourceFactory;
 const DuplexCollection = ui5Fs.DuplexCollection;
 

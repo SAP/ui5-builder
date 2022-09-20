@@ -1,8 +1,8 @@
-const test = require("ava");
-const sinon = require("sinon");
-const mock = require("mock-require");
+import test from "ava";
+import sinon from "sinon";
+import esmock from "esmock";
 
-const resourceFactory = require("@ui5/fs").resourceFactory;
+import { resourceFactory } from "@ui5/fs";
 
 test.beforeEach((t) => {
 	t.context.resourceListCreatorLog = {
@@ -24,12 +24,12 @@ test.beforeEach((t) => {
 	t.context.XMLTemplateAnalyzerAnalyzeViewSpy = sinon.spy(XMLTemplateAnalyzer.prototype, "analyzeView");
 
 	// Re-require tested modules
-	mock.reRequire("../../../lib/lbt/resources/ResourceCollector");
-	t.context.resourceListCreator = mock.reRequire("../../../lib/processors/resourceListCreator");
+	esmock.reRequire("../../../lib/lbt/resources/ResourceCollector");
+	t.context.resourceListCreator = esmock.reRequire("../../../lib/processors/resourceListCreator");
 });
 
 test.afterEach.always((t) => {
-	mock.stopAll();
+	esmock.stopAll();
 	sinon.restore();
 });
 

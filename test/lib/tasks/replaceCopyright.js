@@ -1,7 +1,6 @@
-const test = require("ava");
-
-const replaceCopyright = require("../../../lib/tasks/replaceCopyright");
-const ui5Fs = require("@ui5/fs");
+import test from "ava";
+import replaceCopyright from "../../../lib/tasks/replaceCopyright.js";
+import ui5Fs from "@ui5/fs";
 const resourceFactory = ui5Fs.resourceFactory;
 const DuplexCollection = ui5Fs.DuplexCollection;
 

@@ -1,11 +1,11 @@
-const test = require("ava");
-const SmartTemplateAnalyzer = require("../../../../lib/lbt/analyzer/SmartTemplateAnalyzer");
-const ModuleInfo = require("../../../../lib/lbt/resources/ModuleInfo");
-const parseUtils = require("../../../../lib/lbt/utils/parseUtils");
-const sinonGlobal = require("sinon");
-const logger = require("@ui5/logger");
+import test from "ava";
+import SmartTemplateAnalyzer from "../../../../lib/lbt/analyzer/SmartTemplateAnalyzer.js";
+import ModuleInfo from "../../../../lib/lbt/resources/ModuleInfo.js";
+import parseUtils from "../../../../lib/lbt/utils/parseUtils.js";
+import sinonGlobal from "sinon";
+import logger from "@ui5/logger";
 const loggerInstance = logger.getLogger();
-const mock = require("mock-require");
+import esmock from "esmock";
 
 test.beforeEach((t) => {
 	t.context.sinon = sinonGlobal.createSandbox();
@@ -13,7 +13,7 @@ test.beforeEach((t) => {
 
 test.afterEach.always((t) => {
 	t.context.sinon.restore();
-	mock.stopAll();
+	esmock.stopAll();
 });
 
 function setupSmartTemplateAnalyzerWithStubbedLogger({context}) {
@@ -21,7 +21,7 @@ function setupSmartTemplateAnalyzerWithStubbedLogger({context}) {
 	context.warningLogSpy = sinon.spy(loggerInstance, "warn");
 	sinon.stub(logger, "getLogger").returns(loggerInstance);
 	context.SmartTemplateAnalyzerWithStubbedLogger =
-		mock.reRequire("../../../../lib/lbt/analyzer/SmartTemplateAnalyzer");
+		esmock.reRequire("../../../../lib/lbt/analyzer/SmartTemplateAnalyzer");
 }
 
 test("analyze: with Component.js", async (t) => {

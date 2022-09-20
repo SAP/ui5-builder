@@ -1,12 +1,10 @@
-const test = require("ava");
-const sinon = require("sinon");
-
-const mock = require("mock-require");
-
-const executeJsdocSdkTransformation = require("../../../../lib/tasks/jsdoc/executeJsdocSdkTransformation");
+import test from "ava";
+import sinon from "sinon";
+import esmock from "esmock";
+import executeJsdocSdkTransformation from "../../../../lib/tasks/jsdoc/executeJsdocSdkTransformation.js";
 
 test.afterEach.always((t) => {
-	mock.stopAll();
+	esmock.stopAll();
 	sinon.restore();
 });
 
@@ -14,7 +12,7 @@ test.serial("executeJsdocSdkTransformation", async (t) => {
 	t.plan(13);
 	const sdkTransformerStub = sinon.stub().resolves(["resource A", "resource B"]);
 	const fsInterfaceStub = sinon.stub().returns("custom fs");
-	mock("../../../../lib/processors/jsdoc/sdkTransformer", sdkTransformerStub);
+	esmock("../../../../lib/processors/jsdoc/sdkTransformer", sdkTransformerStub);
 
 	class ReaderCollectionPrioritizedStubClass {
 		constructor(parameters) {
@@ -25,12 +23,12 @@ test.serial("executeJsdocSdkTransformation", async (t) => {
 		}
 	}
 
-	mock("@ui5/fs", {
+	esmock("@ui5/fs", {
 		ReaderCollectionPrioritized: ReaderCollectionPrioritizedStubClass,
 		fsInterface: fsInterfaceStub
 	});
 
-	const executeJsdocSdkTransformation = mock.reRequire("../../../../lib/tasks/jsdoc/executeJsdocSdkTransformation");
+	const executeJsdocSdkTransformation = esmock.reRequire("../../../../lib/tasks/jsdoc/executeJsdocSdkTransformation");
 
 	const writeStub = sinon.stub().resolves();
 	const byGlobWorkspaceStub = sinon.stub()
@@ -105,7 +103,7 @@ test.serial("executeJsdocSdkTransformation with missing project api.json (skips 
 		info: infoLogStub
 	};
 	sinon.stub(logger, "getLogger").returns(myLoggerInstance);
-	const executeJsdocSdkTransformation = mock.reRequire("../../../../lib/tasks/jsdoc/executeJsdocSdkTransformation");
+	const executeJsdocSdkTransformation = esmock.reRequire("../../../../lib/tasks/jsdoc/executeJsdocSdkTransformation");
 
 	const byGlobWorkspaceStub = sinon.stub()
 		.onFirstCall().resolves([])

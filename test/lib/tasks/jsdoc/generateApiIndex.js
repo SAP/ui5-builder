@@ -1,20 +1,18 @@
-const test = require("ava");
-const sinon = require("sinon");
-const ui5Fs = require("@ui5/fs");
-
-const mock = require("mock-require");
-
-const generateApiIndex = require("../../../../lib/tasks/jsdoc/generateApiIndex");
+import test from "ava";
+import sinon from "sinon";
+import ui5Fs from "@ui5/fs";
+import esmock from "esmock";
+import generateApiIndex from "../../../../lib/tasks/jsdoc/generateApiIndex.js";
 
 test.afterEach.always((t) => {
-	mock.stopAll();
+	esmock.stopAll();
 	sinon.restore();
 });
 
 test.serial("generateApiIndex", async (t) => {
 	const apiIndexGeneratorStub = sinon.stub().resolves(["resource A", "resource B"]);
 	const fsInterfaceStub = sinon.stub(ui5Fs, "fsInterface").returns("custom fs");
-	mock("../../../../lib/processors/jsdoc/apiIndexGenerator", apiIndexGeneratorStub);
+	esmock("../../../../lib/processors/jsdoc/apiIndexGenerator", apiIndexGeneratorStub);
 
 	class ReaderCollectionPrioritizedStubClass {
 		constructor(parameters) {
@@ -25,11 +23,11 @@ test.serial("generateApiIndex", async (t) => {
 		}
 	}
 
-	mock("@ui5/fs", {
+	esmock("@ui5/fs", {
 		ReaderCollectionPrioritized: ReaderCollectionPrioritizedStubClass,
 		fsInterface: fsInterfaceStub
 	});
-	const generateApiIndex = mock.reRequire("../../../../lib/tasks/jsdoc/generateApiIndex");
+	const generateApiIndex = esmock.reRequire("../../../../lib/tasks/jsdoc/generateApiIndex");
 
 	const writeStub = sinon.stub().resolves();
 	const workspace = {

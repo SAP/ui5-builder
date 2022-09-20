@@ -1,25 +1,24 @@
-const test = require("ava");
-const sinon = require("sinon");
-const mock = require("mock-require");
-
-let bootstrapHtmlTransformer = require("../../../lib/processors/bootstrapHtmlTransformer");
+import test from "ava";
+import sinon from "sinon";
+import esmock from "esmock";
+import bootstrapHtmlTransformer from "../../../lib/processors/bootstrapHtmlTransformer.js";
 
 test.beforeEach((t) => {
 	// Spying logger of processors/bootstrapHtmlTransformer
 	const log = require("@ui5/logger");
 	const loggerInstance = log.getLogger("builder:processors:bootstrapHtmlTransformer");
-	mock("@ui5/logger", {
+	esmock("@ui5/logger", {
 		getLogger: () => loggerInstance
 	});
-	mock.reRequire("@ui5/logger");
+	esmock.reRequire("@ui5/logger");
 	t.context.logWarnSpy = sinon.spy(loggerInstance, "warn");
 
 	// Re-require tested module
-	bootstrapHtmlTransformer = mock.reRequire("../../../lib/processors/bootstrapHtmlTransformer");
+	bootstrapHtmlTransformer = esmock.reRequire("../../../lib/processors/bootstrapHtmlTransformer");
 });
 
 test.afterEach.always((t) => {
-	mock.stop("@ui5/logger");
+	esmock.stop("@ui5/logger");
 	t.context.logWarnSpy.restore();
 });
 

@@ -1,9 +1,7 @@
-const test = require("ava");
-
-const sinon = require("sinon");
-const mock = require("mock-require");
-
-let buildThemes = require("../../../lib/tasks/buildThemes");
+import test from "ava";
+import sinon from "sinon";
+import esmock from "esmock";
+import buildThemes from "../../../lib/tasks/buildThemes.js";
 
 test.before(() => {
 	// Enable verbose logging to also cover verbose logging code
@@ -20,19 +18,19 @@ test.beforeEach((t) => {
 	t.context.comboByGlob = sinon.stub();
 	t.context.ReaderCollectionPrioritizedStub.returns({byGlob: t.context.comboByGlob});
 
-	mock("@ui5/fs", {
+	esmock("@ui5/fs", {
 		ReaderCollectionPrioritized: t.context.ReaderCollectionPrioritizedStub,
 		fsInterface: t.context.fsInterfaceStub
 	});
-	mock("../../../lib/processors/themeBuilder", t.context.themeBuilderStub);
+	esmock("../../../lib/processors/themeBuilder", t.context.themeBuilderStub);
 
 	// Re-require tested module
-	buildThemes = mock.reRequire("../../../lib/tasks/buildThemes");
+	buildThemes = esmock.reRequire("../../../lib/tasks/buildThemes");
 });
 
 test.afterEach.always((t) => {
 	sinon.restore();
-	mock.stopAll();
+	esmock.stopAll();
 });
 
 test.serial("buildThemes", async (t) => {

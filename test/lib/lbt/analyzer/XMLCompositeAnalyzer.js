@@ -1,11 +1,11 @@
-const test = require("ava");
-const {parseJS} = require("../../../../lib/lbt/utils/parseUtils");
-const XMLCompositeAnalyzer = require("../../../../lib/lbt/analyzer/XMLCompositeAnalyzer");
-const ModuleInfo = require("../../../../lib/lbt/resources/ModuleInfo");
-const sinonGlobal = require("sinon");
-const logger = require("@ui5/logger");
+import test from "ava";
+import { parseJS } from "../../../../lib/lbt/utils/parseUtils.js";
+import XMLCompositeAnalyzer from "../../../../lib/lbt/analyzer/XMLCompositeAnalyzer.js";
+import ModuleInfo from "../../../../lib/lbt/resources/ModuleInfo.js";
+import sinonGlobal from "sinon";
+import logger from "@ui5/logger";
 const loggerInstance = logger.getLogger();
-const mock = require("mock-require");
+import esmock from "esmock";
 
 test.beforeEach((t) => {
 	t.context.sinon = sinonGlobal.createSandbox();
@@ -13,7 +13,7 @@ test.beforeEach((t) => {
 
 test.afterEach.always((t) => {
 	t.context.sinon.restore();
-	mock.stopAll();
+	esmock.stopAll();
 });
 
 function setupXMLCompositeAnalyzerWithStubbedLogger({context}) {
@@ -21,7 +21,7 @@ function setupXMLCompositeAnalyzerWithStubbedLogger({context}) {
 	context.warningLogSpy = sinon.spy(loggerInstance, "warn");
 	sinon.stub(logger, "getLogger").returns(loggerInstance);
 	context.XMLCompositeAnalyzerWithStubbedLogger =
-		mock.reRequire("../../../../lib/lbt/analyzer/XMLCompositeAnalyzer");
+		esmock.reRequire("../../../../lib/lbt/analyzer/XMLCompositeAnalyzer");
 }
 
 test("integration: XMLComposite code with VariableDeclaration", (t) => {

@@ -1,6 +1,6 @@
-const test = require("ava");
-const sinon = require("sinon");
-const mock = require("mock-require");
+import test from "ava";
+import sinon from "sinon";
+import esmock from "esmock";
 
 function createMockResource(content, path) {
 	return {
@@ -14,7 +14,7 @@ function createMockResource(content, path) {
 }
 
 test.afterEach.always((t) => {
-	mock.stopAll();
+	esmock.stopAll();
 	sinon.restore();
 });
 
@@ -65,7 +65,7 @@ sap.ui.define([
 		error: errorLogStub
 	};
 	sinon.stub(logger, "getLogger").returns(myLoggerInstance);
-	const analyzeLibraryJSWithStubbedLogger = mock.reRequire("../../../../lib/lbt/analyzer/analyzeLibraryJS");
+	const analyzeLibraryJSWithStubbedLogger = esmock.reRequire("../../../../lib/lbt/analyzer/analyzeLibraryJS");
 
 	const mockResource = createMockResource(libraryJS, librayJSPath);
 
@@ -108,7 +108,7 @@ sap.ui.define([
 		error: errorLogStub
 	};
 	sinon.stub(logger, "getLogger").returns(myLoggerInstance);
-	const analyzeLibraryJSWithStubbedLogger = mock.reRequire("../../../../lib/lbt/analyzer/analyzeLibraryJS");
+	const analyzeLibraryJSWithStubbedLogger = esmock.reRequire("../../../../lib/lbt/analyzer/analyzeLibraryJS");
 
 	const mockResource = createMockResource(libraryJS, librayJSPath);
 
@@ -142,7 +142,7 @@ sap.ui.define([
 		error: errorLogStub
 	};
 	sinon.stub(logger, "getLogger").returns(myLoggerInstance);
-	const analyzeLibraryJSWithStubbedLogger = mock.reRequire("../../../../lib/lbt/analyzer/analyzeLibraryJS");
+	const analyzeLibraryJSWithStubbedLogger = esmock.reRequire("../../../../lib/lbt/analyzer/analyzeLibraryJS");
 
 	const mockResource = createMockResource(libraryJS, librayJSPath);
 

@@ -1,5 +1,5 @@
-const test = require("ava");
-const ResourceFilterList = require("../../../../lib/lbt/resources/ResourceFilterList");
+import test from "ava";
+import ResourceFilterList from "../../../../lib/lbt/resources/ResourceFilterList.js";
 
 test("single string matcher", (t) => {
 	const filterList = new ResourceFilterList([

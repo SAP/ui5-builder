@@ -1,25 +1,23 @@
-const test = require("ava");
-
-const yazl = require("yazl");
-const sinon = require("sinon");
-const mock = require("mock-require");
-
-let manifestBundler = require("../../../../lib/processors/bundlers/manifestBundler");
+import test from "ava";
+import yazl from "yazl";
+import sinon from "sinon";
+import esmock from "esmock";
+import manifestBundler from "../../../../lib/processors/bundlers/manifestBundler.js";
 
 test.beforeEach((t) => {
 	// Stubbing logger of processors/bundlers/manifestBundler
 	const log = require("@ui5/logger");
 	const loggerInstance = log.getLogger("builder:processors:bundlers:manifestBundler");
-	mock("@ui5/logger", {
+	esmock("@ui5/logger", {
 		getLogger: () => loggerInstance
 	});
-	mock.reRequire("@ui5/logger");
+	esmock.reRequire("@ui5/logger");
 	t.context.logVerboseSpy = sinon.stub(loggerInstance, "verbose");
 	t.context.logWarnSpy = sinon.stub(loggerInstance, "warn");
 	t.context.logErrorSpy = sinon.stub(loggerInstance, "error");
 
 	// Re-require tested module
-	manifestBundler = mock.reRequire("../../../../lib/processors/bundlers/manifestBundler");
+	manifestBundler = esmock.reRequire("../../../../lib/processors/bundlers/manifestBundler");
 
 
 	const zip = new yazl.ZipFile();
@@ -28,7 +26,7 @@ test.beforeEach((t) => {
 });
 
 test.afterEach.always(() => {
-	mock.stopAll();
+	esmock.stopAll();
 	sinon.restore();
 });
 

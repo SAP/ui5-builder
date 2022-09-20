@@ -1,20 +1,19 @@
-const test = require("ava");
-const path = require("path");
-const chai = require("chai");
+import test from "ava";
+import path from "node:path";
+import chai from "chai";
 chai.use(require("chai-fs"));
 const assert = chai.assert;
-const sinon = require("sinon");
-const mock = require("mock-require");
-
-const {generateProjectGraph} = require("@ui5/project");
-const taskRepository = require("../../../../lib/tasks/taskRepository");
+import sinon from "sinon";
+import esmock from "esmock";
+import { generateProjectGraph } from "@ui5/project";
+import taskRepository from "../../../../lib/tasks/taskRepository.js";
 
 test.afterEach.always((t) => {
-	mock.stopAll();
+	esmock.stopAll();
 	sinon.restore();
 });
 
-const recursive = require("recursive-readdir");
+import recursive from "recursive-readdir";
 
 const applicationBPath = path.join(__dirname, "..", "..", "..", "fixtures", "application.b");
 const sapUiCorePath = path.join(__dirname, "..", "..", "..", "fixtures", "sap.ui.core");

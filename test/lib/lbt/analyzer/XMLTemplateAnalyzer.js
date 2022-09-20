@@ -1,12 +1,11 @@
-const test = require("ava");
-const XMLTemplateAnalyzer = require("../../../../lib/lbt/analyzer/XMLTemplateAnalyzer");
-const ModuleInfo = require("../../../../lib/lbt/resources/ModuleInfo");
-const sinon = require("sinon");
-
-const mock = require("mock-require");
+import test from "ava";
+import XMLTemplateAnalyzer from "../../../../lib/lbt/analyzer/XMLTemplateAnalyzer.js";
+import ModuleInfo from "../../../../lib/lbt/resources/ModuleInfo.js";
+import sinon from "sinon";
+import esmock from "esmock";
 
 test.afterEach.always((t) => {
-	mock.stopAll();
+	esmock.stopAll();
 	sinon.restore();
 });
 
@@ -68,7 +67,7 @@ test.serial("integration: Analysis of an xml view with core:require from databin
 		error: errorLogStub
 	};
 	sinon.stub(logger, "getLogger").returns(myLoggerInstance);
-	const XMLTemplateAnalyzerWithStubbedLogger = mock.reRequire("../../../../lib/lbt/analyzer/XMLTemplateAnalyzer");
+	const XMLTemplateAnalyzerWithStubbedLogger = esmock.reRequire("../../../../lib/lbt/analyzer/XMLTemplateAnalyzer");
 
 	const xml = `<mvc:View
 	xmlns="sap.m"
@@ -127,7 +126,7 @@ test.serial("integration: Analysis of an xml view with core:require from databin
 		verbose: verboseLogStub
 	};
 	sinon.stub(logger, "getLogger").returns(myLoggerInstance);
-	const XMLTemplateAnalyzerWithStubbedLogger = mock.reRequire("../../../../lib/lbt/analyzer/XMLTemplateAnalyzer");
+	const XMLTemplateAnalyzerWithStubbedLogger = esmock.reRequire("../../../../lib/lbt/analyzer/XMLTemplateAnalyzer");
 
 	const xml = `<mvc:View
 	xmlns="sap.m"
@@ -179,7 +178,7 @@ test.serial("integration: Analysis of an xml view with core:require from express
 		verbose: verboseLogStub
 	};
 	sinon.stub(logger, "getLogger").returns(myLoggerInstance);
-	const XMLTemplateAnalyzerWithStubbedLogger = mock.reRequire("../../../../lib/lbt/analyzer/XMLTemplateAnalyzer");
+	const XMLTemplateAnalyzerWithStubbedLogger = esmock.reRequire("../../../../lib/lbt/analyzer/XMLTemplateAnalyzer");
 
 	const xml = `<mvc:View
 	xmlns="sap.m"

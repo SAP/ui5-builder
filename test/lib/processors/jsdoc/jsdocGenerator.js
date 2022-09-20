@@ -1,8 +1,8 @@
-const path = require("path");
-const test = require("ava");
-const sinon = require("sinon");
-const mock = require("mock-require");
-const jsdocGenerator = require("../../../../lib/processors/jsdoc/jsdocGenerator");
+import path from "node:path";
+import test from "ava";
+import sinon from "sinon";
+import esmock from "esmock";
+import jsdocGenerator from "../../../../lib/processors/jsdoc/jsdocGenerator.js";
 
 test("generateJsdocConfig", async (t) => {
 	const res = await jsdocGenerator._generateJsdocConfig({
@@ -60,7 +60,7 @@ test("generateJsdocConfig", async (t) => {
 });
 
 test.serial("writeJsdocConfig", async (t) => {
-	mock("graceful-fs", {
+	esmock("graceful-fs", {
 		writeFile: (configPath, configContent, callback) => {
 			t.deepEqual(configPath, path.join("/", "some", "path", "jsdoc-config.json"),
 				"Correct config path supplied");
@@ -68,15 +68,15 @@ test.serial("writeJsdocConfig", async (t) => {
 			callback();
 		}
 	});
-	mock.reRequire("graceful-fs");
+	esmock.reRequire("graceful-fs");
 
 	// Re-require tested module
-	const jsdocGenerator = mock.reRequire("../../../../lib/processors/jsdoc/jsdocGenerator");
+	const jsdocGenerator = esmock.reRequire("../../../../lib/processors/jsdoc/jsdocGenerator");
 	const res = await jsdocGenerator._writeJsdocConfig("/some/path", "some config");
 
 	t.deepEqual(res, path.join("/", "some", "path", "jsdoc-config.json"), "Correct config path returned");
 
-	mock.stop("graceful-fs");
+	esmock.stop("graceful-fs");
 });
 
 test.serial("buildJsdoc", async (t) => {
@@ -87,7 +87,7 @@ test.serial("buildJsdoc", async (t) => {
 			callback(exitCode);
 		}
 	});
-	const jsdocGenerator = mock.reRequire("../../../../lib/processors/jsdoc/jsdocGenerator");
+	const jsdocGenerator = esmock.reRequire("../../../../lib/processors/jsdoc/jsdocGenerator");
 
 	await jsdocGenerator._buildJsdoc({
 		sourcePath: "/some/path",

@@ -1,7 +1,7 @@
-const test = require("ava");
-const sinon = require("sinon");
-const mock = require("mock-require");
-const logger = require("@ui5/logger");
+import test from "ava";
+import sinon from "sinon";
+import esmock from "esmock";
+import logger from "@ui5/logger";
 
 test.beforeEach((t) => {
 	t.context.log = {
@@ -22,14 +22,14 @@ test.beforeEach((t) => {
 	t.context.secondByGlob = t.context.workspace.byGlob.onSecondCall();
 
 	t.context.moduleBundlerStub = sinon.stub().resolves([]);
-	mock("../../../../lib/processors/bundlers/moduleBundler", t.context.moduleBundlerStub);
+	esmock("../../../../lib/processors/bundlers/moduleBundler", t.context.moduleBundlerStub);
 
-	t.context.generateLibraryPreload = mock.reRequire("../../../../lib/tasks/bundlers/generateLibraryPreload");
+	t.context.generateLibraryPreload = esmock.reRequire("../../../../lib/tasks/bundlers/generateLibraryPreload");
 });
 
 test.afterEach.always(() => {
 	sinon.restore();
-	mock.stopAll();
+	esmock.stopAll();
 });
 
 test.serial("generateLibraryPreload", async (t) => {

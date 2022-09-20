@@ -1,6 +1,6 @@
-const test = require("ava");
-const sinon = require("sinon");
-const mock = require("mock-require");
+import test from "ava";
+import sinon from "sinon";
+import esmock from "esmock";
 
 const FILE_HEADER = `/* NOTE: This file was generated as an optimized version of ` +
 	`"library.source.less" for the Theme Designer. */`;
@@ -13,14 +13,14 @@ test.beforeEach((t) => {
 	const logger = require("@ui5/logger");
 	sinon.stub(logger, "getLogger").withArgs("builder:processors:libraryLessGenerator").returns(t.context.log);
 
-	const processor = mock.reRequire("../../../lib/processors/libraryLessGenerator");
+	const processor = esmock.reRequire("../../../lib/processors/libraryLessGenerator");
 	t.context.processor = processor;
 	t.context.LibraryLessGenerator = processor._LibraryLessGenerator;
 });
 
 test.afterEach.always(() => {
 	sinon.restore();
-	mock.stopAll();
+	esmock.stopAll();
 });
 
 test.serial("processor", async (t) => {

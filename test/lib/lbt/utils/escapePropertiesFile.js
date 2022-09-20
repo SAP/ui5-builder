@@ -1,6 +1,6 @@
-const test = require("ava");
-const mock = require("mock-require");
-const sinon = require("sinon");
+import test from "ava";
+import esmock from "esmock";
+import sinon from "sinon";
 
 
 test.beforeEach((t) => {
@@ -8,13 +8,13 @@ test.beforeEach((t) => {
 	t.context.getEncodingFromAliasStub = sinon.stub().returns("node encoding name");
 	t.context.nonAsciiEscaperStub = sinon.stub().resolves();
 	t.context.nonAsciiEscaperStub.getEncodingFromAlias = t.context.getEncodingFromAliasStub;
-	mock("../../../../lib/processors/nonAsciiEscaper", t.context.nonAsciiEscaperStub);
-	t.context.escapePropertiesFile = mock.reRequire("../../../../lib/lbt/utils/escapePropertiesFile");
+	esmock("../../../../lib/processors/nonAsciiEscaper", t.context.nonAsciiEscaperStub);
+	t.context.escapePropertiesFile = esmock.reRequire("../../../../lib/lbt/utils/escapePropertiesFile");
 });
 
 test.afterEach.always((t) => {
 	sinon.restore();
-	mock.stopAll();
+	esmock.stopAll();
 });
 
 test.serial("propertiesFileSourceEncoding UTF-8", async (t) => {

@@ -1,7 +1,7 @@
-const test = require("ava");
-const sinon = require("sinon");
-const mock = require("mock-require");
-const apiIndexGenerator = require("../../../../lib/processors/jsdoc/apiIndexGenerator");
+import test from "ava";
+import sinon from "sinon";
+import esmock from "esmock";
+import apiIndexGenerator from "../../../../lib/processors/jsdoc/apiIndexGenerator.js";
 
 test.afterEach.always((t) => {
 	sinon.restore();
@@ -14,14 +14,14 @@ test.serial("apiIndexGenerator", async (t) => {
 		"/some/path/api-index-experimental.json": "resource content C",
 		"/some/path/api-index-since.json": "resource content D"
 	});
-	mock("../../../../lib/processors/jsdoc/lib/createIndexFiles", createApiIndexStub);
+	esmock("../../../../lib/processors/jsdoc/lib/createIndexFiles", createApiIndexStub);
 	const createResourceStub = sinon.stub(require("@ui5/fs").resourceFactory, "createResource")
 		.onCall(0).returns("result resource A")
 		.onCall(1).returns("result resource B")
 		.onCall(2).returns("result resource C")
 		.onCall(3).returns("result resource D");
 
-	const apiIndexGenerator = mock.reRequire("../../../../lib/processors/jsdoc/apiIndexGenerator");
+	const apiIndexGenerator = esmock.reRequire("../../../../lib/processors/jsdoc/apiIndexGenerator");
 
 	const res = await apiIndexGenerator({
 		versionInfoPath: "/some/path/sap-ui-version.json",
@@ -75,7 +75,7 @@ test.serial("apiIndexGenerator", async (t) => {
 		string: "resource content D"
 	}, "createResource called with correct arguments for resource 4");
 
-	mock.stop("../../../../lib/processors/jsdoc/lib/createIndexFiles");
+	esmock.stop("../../../../lib/processors/jsdoc/lib/createIndexFiles");
 });
 
 test("apiIndexGenerator missing parameters", async (t) => {

@@ -1,10 +1,10 @@
-const test = require("ava");
-const {parseJS, Syntax} = require("../../../../lib/lbt/utils/parseUtils");
-const SapUiDefineCall = require("../../../../lib/lbt/calls/SapUiDefine");
-const logger = require("@ui5/logger");
+import test from "ava";
+import { parseJS, Syntax } from "../../../../lib/lbt/utils/parseUtils.js";
+import SapUiDefineCall from "../../../../lib/lbt/calls/SapUiDefine.js";
+import logger from "@ui5/logger";
 const loggerInstance = logger.getLogger();
-const sinonGlobal = require("sinon");
-const mock = require("mock-require");
+import sinonGlobal from "sinon";
+import esmock from "esmock";
 
 function parse(code) {
 	const ast = parseJS(code);
@@ -15,7 +15,7 @@ function setupSapUiDefineCallWithStubbedLogger({context}) {
 	const {sinon} = context;
 	context.warningLogSpy = sinon.spy(loggerInstance, "warn");
 	sinon.stub(logger, "getLogger").returns(loggerInstance);
-	context.SapUiDefineCallWithStubbedLogger = mock.reRequire("../../../../lib/lbt/calls/SapUiDefine");
+	context.SapUiDefineCallWithStubbedLogger = esmock.reRequire("../../../../lib/lbt/calls/SapUiDefine");
 }
 
 test.beforeEach((t) => {
@@ -24,7 +24,7 @@ test.beforeEach((t) => {
 
 test.afterEach.always((t) => {
 	t.context.sinon.restore();
-	mock.stopAll();
+	esmock.stopAll();
 });
 
 test("Empty Define", (t) => {

@@ -1,7 +1,7 @@
-const test = require("ava");
-const sinon = require("sinon");
-const mock = require("mock-require");
-const ModuleName = require("../../../../lib/lbt/utils/ModuleName");
+import test from "ava";
+import sinon from "sinon";
+import esmock from "esmock";
+import ModuleName from "../../../../lib/lbt/utils/ModuleName.js";
 
 test.beforeEach((t) => {
 	t.context.log = {
@@ -33,19 +33,19 @@ test.beforeEach((t) => {
 
 	t.context.ReaderCollectionPrioritizedStub = sinon.stub();
 	t.context.ReaderCollectionPrioritizedStub.returns(t.context.combo);
-	mock("@ui5/fs", {
+	esmock("@ui5/fs", {
 		ReaderCollectionPrioritized: t.context.ReaderCollectionPrioritizedStub
 	});
 
 	t.context.moduleBundlerStub = sinon.stub().resolves([]);
-	mock("../../../../lib/processors/bundlers/moduleBundler", t.context.moduleBundlerStub);
+	esmock("../../../../lib/processors/bundlers/moduleBundler", t.context.moduleBundlerStub);
 
-	t.context.generateBundle = mock.reRequire("../../../../lib/tasks/bundlers/generateBundle");
+	t.context.generateBundle = esmock.reRequire("../../../../lib/tasks/bundlers/generateBundle");
 });
 
 test.afterEach.always(() => {
 	sinon.restore();
-	mock.stopAll();
+	esmock.stopAll();
 });
 
 test.serial("generateBundle: No taskUtil, no bundleOptions", async (t) => {

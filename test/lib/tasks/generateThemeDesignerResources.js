@@ -1,7 +1,6 @@
-const test = require("ava");
-
-const sinon = require("sinon");
-const mock = require("mock-require");
+import test from "ava";
+import sinon from "sinon";
+import esmock from "esmock";
 
 test.beforeEach((t) => {
 	const ui5Fs = require("@ui5/fs");
@@ -16,7 +15,7 @@ test.beforeEach((t) => {
 
 	t.context.ResourceStub = sinon.stub();
 
-	mock("@ui5/fs", {
+	esmock("@ui5/fs", {
 		ReaderCollectionPrioritized: t.context.ReaderCollectionPrioritizedStub,
 		fsInterface: t.context.fsInterfaceStub,
 		Resource: t.context.ResourceStub
@@ -24,15 +23,15 @@ test.beforeEach((t) => {
 
 	t.context.libraryLessGeneratorStub = sinon.stub();
 
-	mock("../../../lib/processors/libraryLessGenerator", t.context.libraryLessGeneratorStub);
+	esmock("../../../lib/processors/libraryLessGenerator", t.context.libraryLessGeneratorStub);
 
 	// Re-require tested module
-	t.context.generateThemeDesignerResources = mock.reRequire("../../../lib/tasks/generateThemeDesignerResources");
+	t.context.generateThemeDesignerResources = esmock.reRequire("../../../lib/tasks/generateThemeDesignerResources");
 });
 
 test.afterEach.always((t) => {
 	sinon.restore();
-	mock.stopAll();
+	esmock.stopAll();
 });
 
 test.serial("generateThemeDesignerResources: Library", async (t) => {

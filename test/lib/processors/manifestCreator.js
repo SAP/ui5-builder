@@ -1,8 +1,8 @@
-const test = require("ava");
-const sinon = require("sinon");
-const mock = require("mock-require");
-const logger = require("@ui5/logger");
-const {SemVer: Version} = require("semver");
+import test from "ava";
+import sinon from "sinon";
+import esmock from "esmock";
+import logger from "@ui5/logger";
+import { SemVer as Version } from "semver";
 
 const libraryContent = `<?xml version="1.0" encoding="UTF-8" ?>
 <library xmlns="http://www.sap.com/sap.ui.library.xsd" >
@@ -99,11 +99,11 @@ test.beforeEach((t) => {
 		error: t.context.errorLogStub
 	});
 	t.context.getProjectVersion = sinon.stub();
-	t.context.manifestCreator = mock.reRequire("../../../lib/processors/manifestCreator");
+	t.context.manifestCreator = esmock.reRequire("../../../lib/processors/manifestCreator");
 });
 
 test.afterEach.always((t) => {
-	mock.stopAll();
+	esmock.stopAll();
 	sinon.restore();
 });
 

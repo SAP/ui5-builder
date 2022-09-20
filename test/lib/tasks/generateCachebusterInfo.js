@@ -1,16 +1,16 @@
-const test = require("ava");
-const fs = require("fs");
-const path = require("path");
-const chai = require("chai");
+import test from "ava";
+import fs from "node:fs";
+import path from "node:path";
+import chai from "chai";
 chai.use(require("chai-fs"));
 const assert = chai.assert;
 
-const {generateProjectGraph} = require("@ui5/project");
-const taskRepository = require("../../../lib/tasks/taskRepository");
+import { generateProjectGraph } from "@ui5/project";
+import taskRepository from "../../../lib/tasks/taskRepository.js";
 
 const applicationGPath = path.join(__dirname, "..", "..", "fixtures", "application.g");
 
-const recursive = require("recursive-readdir");
+import recursive from "recursive-readdir";
 
 const findFiles = (folder) => {
 	return new Promise((resolve, reject) => {

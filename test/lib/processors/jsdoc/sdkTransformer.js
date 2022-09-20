@@ -1,7 +1,7 @@
-const test = require("ava");
-const sinon = require("sinon");
-const mock = require("mock-require");
-const sdkTransformer = require("../../../../lib/processors/jsdoc/sdkTransformer");
+import test from "ava";
+import sinon from "sinon";
+import esmock from "esmock";
+import sdkTransformer from "../../../../lib/processors/jsdoc/sdkTransformer.js";
 
 test.afterEach.always((t) => {
 	sinon.restore();
@@ -9,11 +9,11 @@ test.afterEach.always((t) => {
 
 test.serial("sdkTransformer", async (t) => {
 	const transformerStub = sinon.stub().resolves("api.json content");
-	mock("../../../../lib/processors/jsdoc/lib/transformApiJson", transformerStub);
+	esmock("../../../../lib/processors/jsdoc/lib/transformApiJson", transformerStub);
 	const createResourceStub = sinon.stub(require("@ui5/fs").resourceFactory, "createResource")
 		.returns("result resource");
 
-	const sdkTransformer = mock.reRequire("../../../../lib/processors/jsdoc/sdkTransformer");
+	const sdkTransformer = esmock.reRequire("../../../../lib/processors/jsdoc/sdkTransformer");
 
 	const res = await sdkTransformer({
 		apiJsonPath: "/some/path/api.json",
@@ -53,7 +53,7 @@ test.serial("sdkTransformer", async (t) => {
 		string: "api.json content"
 	}, "createResource called with correct arguments");
 
-	mock.stop("../../../../lib/processors/jsdoc/lib/transformApiJson");
+	esmock.stop("../../../../lib/processors/jsdoc/lib/transformApiJson");
 });
 
 test("sdkTransformer missing parameters", async (t) => {

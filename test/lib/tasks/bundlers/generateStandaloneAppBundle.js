@@ -1,16 +1,15 @@
-const test = require("ava");
-const chai = require("chai");
+import test from "ava";
+import chai from "chai";
 chai.use(require("chai-fs"));
-const sinon = require("sinon");
-const mock = require("mock-require");
-
-let generateStandaloneAppBundle = require("../../../../lib/tasks/bundlers/generateStandaloneAppBundle");
+import sinon from "sinon";
+import esmock from "esmock";
+import generateStandaloneAppBundle from "../../../../lib/tasks/bundlers/generateStandaloneAppBundle.js";
 
 test.beforeEach((t) => {
 	// Stubbing processors/bundlers/moduleBundler
 	t.context.moduleBundlerStub = sinon.stub();
 	t.context.moduleBundlerStub.resolves([{bundle: "I am a resource", sourceMap: "I am a source map"}]);
-	mock("../../../../lib/processors/bundlers/moduleBundler", t.context.moduleBundlerStub);
+	esmock("../../../../lib/processors/bundlers/moduleBundler", t.context.moduleBundlerStub);
 
 	t.context.taskUtil = {
 		getTag: sinon.stub().returns(false),
@@ -24,11 +23,11 @@ test.beforeEach((t) => {
 	};
 
 	// Re-require tested module
-	generateStandaloneAppBundle = mock.reRequire("../../../../lib/tasks/bundlers/generateStandaloneAppBundle");
+	generateStandaloneAppBundle = esmock.reRequire("../../../../lib/tasks/bundlers/generateStandaloneAppBundle");
 });
 
 test.afterEach.always((t) => {
-	mock.stopAll();
+	esmock.stopAll();
 	sinon.restore();
 });
 

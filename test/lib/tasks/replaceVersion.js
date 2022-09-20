@@ -1,7 +1,6 @@
-const test = require("ava");
-
-const replaceVersion = require("../../../lib/tasks/replaceVersion");
-const ui5Fs = require("@ui5/fs");
+import test from "ava";
+import replaceVersion from "../../../lib/tasks/replaceVersion.js";
+import ui5Fs from "@ui5/fs";
 const resourceFactory = ui5Fs.resourceFactory;
 const DuplexCollection = ui5Fs.DuplexCollection;
 

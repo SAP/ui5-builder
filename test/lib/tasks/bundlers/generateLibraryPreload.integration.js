@@ -1,22 +1,21 @@
-const test = require("ava");
-const path = require("path");
-const chai = require("chai");
+import test from "ava";
+import path from "node:path";
+import chai from "chai";
 chai.use(require("chai-fs"));
 const assert = chai.assert;
 
-const ui5Fs = require("@ui5/fs");
+import ui5Fs from "@ui5/fs";
 const resourceFactory = ui5Fs.resourceFactory;
 const DuplexCollection = ui5Fs.DuplexCollection;
 
-const {generateProjectGraph} = require("@ui5/project");
-
-const ui5Builder = require("../../../../");
+import { generateProjectGraph } from "@ui5/project";
+import ui5Builder from "../../../../";
 const {generateLibraryPreload, taskRepository} = ui5Builder.tasks;
 
 const libraryDPath = path.join(__dirname, "..", "..", "..", "fixtures", "library.d");
 const sapUiCorePath = path.join(__dirname, "..", "..", "..", "fixtures", "sap.ui.core");
 
-const recursive = require("recursive-readdir");
+import recursive from "recursive-readdir";
 
 const findFiles = (folder) => {
 	return new Promise((resolve, reject) => {
