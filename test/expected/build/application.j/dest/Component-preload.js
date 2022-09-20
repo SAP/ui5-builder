@@ -1,7 +1,7 @@
 //@ui5-bundle application/j/Component-preload.js
 sap.ui.require.preload({
 	"application/j/Component.js":function(){
-sap.ui.define(["sap/ui/core/UIComponent"],function(n){"use strict";return n.extend("application.j.Component",{metadata:{manifest:"json"}})});
+sap.ui.define(["sap/ui/core/UIComponent"],function(n){return n.extend("application.j.Component",{metadata:{manifest:"json"}})});
 },
 	"application/j/changes/coding/MyExtension.js":function(){
 sap.ui.define([],function(){return{}});

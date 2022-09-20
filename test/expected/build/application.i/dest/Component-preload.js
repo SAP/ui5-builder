@@ -1,7 +1,7 @@
 //@ui5-bundle application/i/Component-preload.js
 sap.ui.require.preload({
 	"application/i/Component.js":function(){
-sap.ui.define(["sap/ui/core/UIComponent"],function(n){"use strict";return n.extend("application.i.Component",{metadata:{manifest:"json"}})});
+sap.ui.define(["sap/ui/core/UIComponent"],function(n){return n.extend("application.i.Component",{metadata:{manifest:"json"}})});
 },
 	"application/i/changes/changes-bundle.json":'[{"fileName":"id_456_addField","fileType":"change","changeType":"hideControl","component":"application.i.Component","content":{},"selector":{"id":"control1"},"layer":"VENDOR","texts":{},"namespace":"apps/application.i.Component/changes","creation":"2023-10-30T13:52:40.4754350Z","originalLanguage":"","conditions":{},"support":{"generator":"did it","user":"SAP"}},{"fileName":"id_123_addField","fileType":"change","changeType":"hideControl","component":"application.i.Component","content":{},"selector":{"id":"control1"},"layer":"CUSTOMER","texts":{},"namespace":"apps/application.i.Component/changes","creation":"2025-10-30T13:52:40.4754350Z","originalLanguage":"","conditions":{},"support":{"generator":"did it","user":"Max Mustermann"}}]',
 	"application/i/changes/coding/MyExtension.js":function(){

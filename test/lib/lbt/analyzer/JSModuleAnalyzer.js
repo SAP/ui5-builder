@@ -837,7 +837,7 @@ test("Invalid ui5 bundle comment", (t) => {
 if(!('xxx'in Node.prototype)){}
 //@ui5-bundle-raw-includes sap/ui/thirdparty/aaa.js
 (function(g,f){g.AAA=f();}(this,(function(){})));
-sap.ui.define("my/module", ["sap/ui/core/UIComponent"],function(n){"use strict";return 47+n});`;
+sap.ui.define("my/module", ["sap/ui/core/UIComponent"],function(n){return 47+n});`;
 	const info = analyzeString(content, "modules/bundle-evo_invalid_comment.js");
 	t.is(info.name, "my/module.js",
 		"module name matches");

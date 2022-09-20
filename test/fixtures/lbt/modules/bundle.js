@@ -1,7 +1,7 @@
-sap.ui.predefine("sap/m/CheckBox",["sap/ui/core/Control"],function(o){"use strict";var n=o.extend("sap.m.CheckBox");return n});
-sap.ui.predefine("sap/ui/core/Core",[],function(){"use strict";return {}});
-sap.ui.predefine("todo/Component",["sap/ui/core/UIComponent"],function(e){"use strict";return e.extend("todo.Component",{metadata:{manifest:"json"}})});
-sap.ui.predefine("todo/controller/App.controller",["sap/ui/core/mvc/Controller"],function(e){"use strict";return e.extend("todo.controller.App")});
+sap.ui.predefine("sap/m/CheckBox",["sap/ui/core/Control"],function(o){var n=o.extend("sap.m.CheckBox");return n});
+sap.ui.predefine("sap/ui/core/Core",[],function(){return {}});
+sap.ui.predefine("todo/Component",["sap/ui/core/UIComponent"],function(e){return e.extend("todo.Component",{metadata:{manifest:"json"}})});
+sap.ui.predefine("todo/controller/App.controller",["sap/ui/core/mvc/Controller"],function(e){return e.extend("todo.controller.App")});
 jQuery.sap.registerPreloadedModules({
 "version":"2.0",
 "modules":{

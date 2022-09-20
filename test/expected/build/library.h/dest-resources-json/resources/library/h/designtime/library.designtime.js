@@ -1,5 +1,5 @@
 /*!
  * Some fancy copyright
  */
-var myexport=function(){"use strict";String("asd")}();
+var myexport=function(){String("asd")}();
 //# sourceMappingURL=library.designtime.js.map
