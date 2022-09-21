@@ -13,15 +13,14 @@ test.beforeEach((t) => {
 
 test.afterEach.always((t) => {
 	t.context.sinon.restore();
-	esmock.stopAll();
 });
 
-function setupSmartTemplateAnalyzerWithStubbedLogger({context}) {
+async function setupSmartTemplateAnalyzerWithStubbedLogger({context}) {
 	const {sinon} = context;
 	context.warningLogSpy = sinon.spy(loggerInstance, "warn");
 	sinon.stub(logger, "getLogger").returns(loggerInstance);
 	context.SmartTemplateAnalyzerWithStubbedLogger =
-		esmock.reRequire("../../../../lib/lbt/analyzer/SmartTemplateAnalyzer");
+		await esmock("../../../../lib/lbt/analyzer/SmartTemplateAnalyzer");
 }
 
 test("analyze: with Component.js", async (t) => {
@@ -532,7 +531,7 @@ test("_analyzeAST: get template name from ast (ArrowFunction with implicit retur
 	t.is(templateName, "sap.fe.templates.Page.view.Page");
 });
 
-test.serial("_analyzeAST: get template name from ast (async factory function)", (t) => {
+test.serial("_analyzeAST: get template name from ast (async factory function)", async (t) => {
 	const code = `sap.ui.define(["a", "sap/suite/ui/generic/template/lib/TemplateAssembler"],
 	async function (a, TemplateAssembler) {
 		return TemplateAssembler.getTemplateComponent(getMethods,
@@ -548,7 +547,7 @@ test.serial("_analyzeAST: get template name from ast (async factory function)", 
 				}
 			}
 	);});`;
-	setupSmartTemplateAnalyzerWithStubbedLogger(t);
+	await setupSmartTemplateAnalyzerWithStubbedLogger(t);
 	const {SmartTemplateAnalyzerWithStubbedLogger} = t.context;
 	const ast = parseUtils.parseJS(code);
 	const analyzer = new SmartTemplateAnalyzerWithStubbedLogger();
@@ -591,7 +590,7 @@ test("_analyzeAST: unable to get template name from ast (ArrowFunction with impl
 	t.is(templateName, "");
 });
 
-test.serial("_analyzeAST: get template name from ast (async arrow factory function)", (t) => {
+test.serial("_analyzeAST: get template name from ast (async arrow factory function)", async (t) => {
 	const code = `sap.ui.define(["a", "sap/suite/ui/generic/template/lib/TemplateAssembler"],
 	async (a, TemplateAssembler) => {
 		return TemplateAssembler.getTemplateComponent(getMethods,
@@ -607,7 +606,7 @@ test.serial("_analyzeAST: get template name from ast (async arrow factory functi
 				}
 			}
 	);});`;
-	setupSmartTemplateAnalyzerWithStubbedLogger(t);
+	await setupSmartTemplateAnalyzerWithStubbedLogger(t);
 	const {SmartTemplateAnalyzerWithStubbedLogger} = t.context;
 	const ast = parseUtils.parseJS(code);
 	const analyzer = new SmartTemplateAnalyzerWithStubbedLogger();
@@ -615,7 +614,7 @@ test.serial("_analyzeAST: get template name from ast (async arrow factory functi
 	t.is(templateName, "sap.fe.templates.Page.view.Page");
 });
 
-test.serial("_analyzeAST: get template name from ast (async arrow factory function implicit return)", (t) => {
+test.serial("_analyzeAST: get template name from ast (async arrow factory function implicit return)", async (t) => {
 	const code = `sap.ui.define(["a", "sap/suite/ui/generic/template/lib/TemplateAssembler"],
 	async (a, TemplateAssembler) => TemplateAssembler.getTemplateComponent(getMethods,
 			"sap.fe.templates.Page.Component", {
@@ -630,7 +629,7 @@ test.serial("_analyzeAST: get template name from ast (async arrow factory functi
 				}
 			}
 	));`;
-	setupSmartTemplateAnalyzerWithStubbedLogger(t);
+	await setupSmartTemplateAnalyzerWithStubbedLogger(t);
 	const {SmartTemplateAnalyzerWithStubbedLogger} = t.context;
 	const ast = parseUtils.parseJS(code);
 	const analyzer = new SmartTemplateAnalyzerWithStubbedLogger();

@@ -3,18 +3,20 @@ import esmock from "esmock";
 import sinon from "sinon";
 
 
-test.beforeEach((t) => {
+test.beforeEach(async (t) => {
 	// Spying logger of processors/bootstrapHtmlTransformer
 	t.context.getEncodingFromAliasStub = sinon.stub().returns("node encoding name");
 	t.context.nonAsciiEscaperStub = sinon.stub().resolves();
 	t.context.nonAsciiEscaperStub.getEncodingFromAlias = t.context.getEncodingFromAliasStub;
-	esmock("../../../../lib/processors/nonAsciiEscaper", t.context.nonAsciiEscaperStub);
-	t.context.escapePropertiesFile = esmock.reRequire("../../../../lib/lbt/utils/escapePropertiesFile");
+
+	t.context.escapePropertiesFile = await esmock("../../../../lib/lbt/utils/escapePropertiesFile", {
+		"../../../../lib/processors/nonAsciiEscaper": t.context.nonAsciiEscaperStub
+	});
 });
 
 test.afterEach.always((t) => {
 	sinon.restore();
-	esmock.stopAll();
+	esmock.purge(t.context.escapePropertiesFile);
 });
 
 test.serial("propertiesFileSourceEncoding UTF-8", async (t) => {

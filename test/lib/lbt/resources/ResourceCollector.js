@@ -3,24 +3,24 @@ import sinon from "sinon";
 import esmock from "esmock";
 import { Resource } from "@ui5/fs";
 import LocatorResourcePool from "../../../../lib/lbt/resources/LocatorResourcePool.js";
-import ResourceCollector from "../../../../lib/lbt/resources/ResourceCollector.js";
+// import ResourceCollector from "../../../../lib/lbt/resources/ResourceCollector.js";
+let ResourceCollector;
 
-test.beforeEach((t) => {
+test.beforeEach(async (t) => {
 	// Spying logger of processors/bootstrapHtmlTransformer
-	const log = require("@ui5/logger");
+	const log = await esmock("@ui5/logger");
 	const loggerInstance = log.getLogger("lbt:resources:ResourceCollector");
-	esmock("@ui5/logger", {
-		getLogger: () => loggerInstance
-	});
-	esmock.reRequire("@ui5/logger");
 	t.context.logWarnSpy = sinon.spy(loggerInstance, "warn");
 
-	// Re-require tested module
-	ResourceCollector = esmock.reRequire("../../../../lib/lbt/resources/ResourceCollector");
+	ResourceCollector = esmock("../../../../lib/lbt/resources/ResourceCollector", {
+		"@ui5/logger": {
+			getLogger: () => loggerInstance
+		}
+	});
 });
 
 test.afterEach.always((t) => {
-	esmock.stop("@ui5/logger");
+	esmock.purge("../../../../lib/lbt/resources/ResourceCollector");
 	t.context.logWarnSpy.restore();
 });
 

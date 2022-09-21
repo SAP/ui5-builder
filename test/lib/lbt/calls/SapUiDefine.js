@@ -11,11 +11,11 @@ function parse(code) {
 	return ast.body[0].expression;
 }
 
-function setupSapUiDefineCallWithStubbedLogger({context}) {
+async function setupSapUiDefineCallWithStubbedLogger({context}) {
 	const {sinon} = context;
 	context.warningLogSpy = sinon.spy(loggerInstance, "warn");
 	sinon.stub(logger, "getLogger").returns(loggerInstance);
-	context.SapUiDefineCallWithStubbedLogger = esmock.reRequire("../../../../lib/lbt/calls/SapUiDefine");
+	context.SapUiDefineCallWithStubbedLogger = await esmock("../../../../lib/lbt/calls/SapUiDefine");
 }
 
 test.beforeEach((t) => {
@@ -111,8 +111,8 @@ test("Find Import Name (destructuring)", (t) => {
 	t.is(call.findImportName("invalid1.js"), null);
 });
 
-test.serial("Find Import Name (async function)", (t) => {
-	setupSapUiDefineCallWithStubbedLogger(t);
+test.serial("Find Import Name (async function)", async (t) => {
+	await setupSapUiDefineCallWithStubbedLogger(t);
 	const {SapUiDefineCallWithStubbedLogger, warningLogSpy} = t.context;
 	const ast = parse("sap.ui.define(['wanted'], async function(johndoe) {});");
 	const call = new SapUiDefineCallWithStubbedLogger(ast, "FileSystemName");
@@ -120,8 +120,8 @@ test.serial("Find Import Name (async function)", (t) => {
 	t.is(warningLogSpy.callCount, 0, "Warning log is not called");
 });
 
-test.serial("Find Import Name (async arrow function)", (t) => {
-	setupSapUiDefineCallWithStubbedLogger(t);
+test.serial("Find Import Name (async arrow function)", async (t) => {
+	await setupSapUiDefineCallWithStubbedLogger(t);
 	const {SapUiDefineCallWithStubbedLogger, warningLogSpy} = t.context;
 	const ast = parse("sap.ui.define(['wanted'], async (johndoe) => {return johndoe});");
 	const call = new SapUiDefineCallWithStubbedLogger(ast, "FileSystemName");
@@ -129,8 +129,8 @@ test.serial("Find Import Name (async arrow function)", (t) => {
 	t.is(warningLogSpy.callCount, 0, "Warning log is not called");
 });
 
-test.serial("Find Import Name (async arrow function with implicit return)", (t) => {
-	setupSapUiDefineCallWithStubbedLogger(t);
+test.serial("Find Import Name (async arrow function with implicit return)", async (t) => {
+	await setupSapUiDefineCallWithStubbedLogger(t);
 	const {SapUiDefineCallWithStubbedLogger, warningLogSpy} = t.context;
 	const ast = parse("sap.ui.define(['wanted'], async (johndoe) => johndoe);");
 	const call = new SapUiDefineCallWithStubbedLogger(ast, "FileSystemName");

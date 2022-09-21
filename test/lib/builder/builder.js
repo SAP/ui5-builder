@@ -7,7 +7,6 @@ import { promisify } from "node:util";
 const readFile = promisify(fs.readFile);
 const assert = chai.assert;
 import sinon from "sinon";
-import esmock from "esmock";
 import { generateProjectGraph } from "@ui5/project";
 import taskRepository from "../../../lib/tasks/taskRepository.js";
 
@@ -118,7 +117,6 @@ async function checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, 
 
 test.afterEach.always((t) => {
 	sinon.restore();
-	esmock.stopAll();
 });
 
 test.serial("Build application.a", async (t) => {

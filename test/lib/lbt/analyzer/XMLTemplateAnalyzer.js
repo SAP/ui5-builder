@@ -5,7 +5,6 @@ import sinon from "sinon";
 import esmock from "esmock";
 
 test.afterEach.always((t) => {
-	esmock.stopAll();
 	sinon.restore();
 });
 
@@ -67,7 +66,7 @@ test.serial("integration: Analysis of an xml view with core:require from databin
 		error: errorLogStub
 	};
 	sinon.stub(logger, "getLogger").returns(myLoggerInstance);
-	const XMLTemplateAnalyzerWithStubbedLogger = esmock.reRequire("../../../../lib/lbt/analyzer/XMLTemplateAnalyzer");
+	const XMLTemplateAnalyzerWithStubbedLogger = await esmock("../../../../lib/lbt/analyzer/XMLTemplateAnalyzer");
 
 	const xml = `<mvc:View
 	xmlns="sap.m"
@@ -126,7 +125,7 @@ test.serial("integration: Analysis of an xml view with core:require from databin
 		verbose: verboseLogStub
 	};
 	sinon.stub(logger, "getLogger").returns(myLoggerInstance);
-	const XMLTemplateAnalyzerWithStubbedLogger = esmock.reRequire("../../../../lib/lbt/analyzer/XMLTemplateAnalyzer");
+	const XMLTemplateAnalyzerWithStubbedLogger = await esmock("../../../../lib/lbt/analyzer/XMLTemplateAnalyzer");
 
 	const xml = `<mvc:View
 	xmlns="sap.m"
@@ -178,7 +177,7 @@ test.serial("integration: Analysis of an xml view with core:require from express
 		verbose: verboseLogStub
 	};
 	sinon.stub(logger, "getLogger").returns(myLoggerInstance);
-	const XMLTemplateAnalyzerWithStubbedLogger = esmock.reRequire("../../../../lib/lbt/analyzer/XMLTemplateAnalyzer");
+	const XMLTemplateAnalyzerWithStubbedLogger = await esmock("../../../../lib/lbt/analyzer/XMLTemplateAnalyzer");
 
 	const xml = `<mvc:View
 	xmlns="sap.m"

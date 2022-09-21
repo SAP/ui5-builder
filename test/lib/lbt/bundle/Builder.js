@@ -12,7 +12,6 @@ import ResourcePool from "../../../../lib/lbt/resources/ResourcePool.js";
 const SOURCE_MAPPING_URL = "//" + "# sourceMappingURL";
 
 test.afterEach.always((t) => {
-	esmock.stopAll();
 	sinon.restore();
 });
 
@@ -24,7 +23,7 @@ test.serial("writePreloadModule: with invalid json content", async (t) => {
 		verbose: verboseLogStub
 	};
 	sinon.stub(logger, "getLogger").returns(myLoggerInstance);
-	const BuilderWithStub = esmock.reRequire("../../../../lib/lbt/bundle/Builder");
+	const BuilderWithStub = await esmock("../../../../lib/lbt/bundle/Builder");
 	const invalidJsonContent = `{
 	"a": 47,
 	"b": {{include: asd}}
@@ -686,7 +685,7 @@ test.serial("integration: createBundle with bundleInfo", async (t) => {
 		warn: warnLogStub
 	};
 	sinon.stub(logger, "getLogger").returns(myLoggerInstance);
-	const BuilderWithStub = esmock.reRequire("../../../../lib/lbt/bundle/Builder");
+	const BuilderWithStub = await esmock("../../../../lib/lbt/bundle/Builder");
 
 	const pool = new ResourcePool();
 	pool.addResource({

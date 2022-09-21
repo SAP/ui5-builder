@@ -12,15 +12,14 @@ test.beforeEach((t) => {
 
 test.afterEach.always((t) => {
 	t.context.sinon.restore();
-	esmock.stopAll();
 });
 
-function setupFioriElementsAnalyzerWithStubbedLogger({context}) {
+async function setupFioriElementsAnalyzerWithStubbedLogger({context}) {
 	const {sinon} = context;
 	context.warningLogSpy = sinon.spy(loggerInstance, "warn");
 	sinon.stub(logger, "getLogger").returns(loggerInstance);
 	context.FioriElementsAnalyzerWithStubbedLogger =
-		esmock.reRequire("../../../../lib/lbt/analyzer/FioriElementsAnalyzer");
+		await esmock("../../../../lib/lbt/analyzer/FioriElementsAnalyzer");
 }
 
 test("analyze: with Component.js", async (t) => {
@@ -362,7 +361,7 @@ test("_analyzeAST: unable to get template name from ast (ArrowFunction with impl
 	t.is(templateName, "");
 });
 
-test.serial("_analyzeAST: get template name from ast (async function)", (t) => {
+test.serial("_analyzeAST: get template name from ast (async function)", async (t) => {
 	const code = `sap.ui.define(["a", "sap/fe/core/TemplateAssembler"], async function(a, TemplateAssembler){
 		return TemplateAssembler.getTemplateComponent(getMethods,
 		"sap.fe.templates.Page.Component", {
@@ -376,7 +375,7 @@ test.serial("_analyzeAST: get template name from ast (async function)", (t) => {
 				"manifest": "json"
 			}
 		});});`;
-	setupFioriElementsAnalyzerWithStubbedLogger(t);
+	await setupFioriElementsAnalyzerWithStubbedLogger(t);
 	const {FioriElementsAnalyzerWithStubbedLogger} = t.context;
 	const ast = parseUtils.parseJS(code);
 	const analyzer = new FioriElementsAnalyzerWithStubbedLogger();
@@ -384,7 +383,7 @@ test.serial("_analyzeAST: get template name from ast (async function)", (t) => {
 	t.is(templateName, "sap.fe.templates.Page.view.Page");
 });
 
-test.serial("_analyzeAST: get template name from ast (async ArrowFunction)", (t) => {
+test.serial("_analyzeAST: get template name from ast (async ArrowFunction)", async (t) => {
 	const code = `sap.ui.define(["a", "sap/fe/core/TemplateAssembler"], async (a, TemplateAssembler) => {
 		return TemplateAssembler.getTemplateComponent(getMethods,
 		"sap.fe.templates.Page.Component", {
@@ -398,7 +397,7 @@ test.serial("_analyzeAST: get template name from ast (async ArrowFunction)", (t)
 				"manifest": "json"
 			}
 		});});`;
-	setupFioriElementsAnalyzerWithStubbedLogger(t);
+	await setupFioriElementsAnalyzerWithStubbedLogger(t);
 	const {FioriElementsAnalyzerWithStubbedLogger} = t.context;
 	const ast = parseUtils.parseJS(code);
 	const analyzer = new FioriElementsAnalyzerWithStubbedLogger();
@@ -406,7 +405,7 @@ test.serial("_analyzeAST: get template name from ast (async ArrowFunction)", (t)
 	t.is(templateName, "sap.fe.templates.Page.view.Page");
 });
 
-test.serial("_analyzeAST: get template name from ast (async ArrowFunction with implicit return)", (t) => {
+test.serial("_analyzeAST: get template name from ast (async ArrowFunction with implicit return)", async (t) => {
 	const code = `sap.ui.define(["a", "sap/fe/core/TemplateAssembler"],
 	async (a, TemplateAssembler) => TemplateAssembler.getTemplateComponent(getMethods,
 		"sap.fe.templates.Page.Component", {
@@ -420,7 +419,7 @@ test.serial("_analyzeAST: get template name from ast (async ArrowFunction with i
 				"manifest": "json"
 			}
 		}));`;
-	setupFioriElementsAnalyzerWithStubbedLogger(t);
+	await setupFioriElementsAnalyzerWithStubbedLogger(t);
 	const {FioriElementsAnalyzerWithStubbedLogger} = t.context;
 	const ast = parseUtils.parseJS(code);
 	const analyzer = new FioriElementsAnalyzerWithStubbedLogger();
