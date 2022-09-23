@@ -1,10 +1,13 @@
 import test from "ava";
 import sinon from "sinon";
 import esmock from "esmock";
+import ui5fs from "@ui5/fs";
+const { resourceFactory } = ui5fs;
 
-import { resourceFactory } from "@ui5/fs";
+test.beforeEach(async (t) => {
+	const {default: XMLTemplateAnalyzer} = await import("../../../lib/lbt/analyzer/XMLTemplateAnalyzer.js");
+	t.context.XMLTemplateAnalyzerAnalyzeViewSpy = sinon.spy(XMLTemplateAnalyzer.prototype, "analyzeView");
 
-test.beforeEach((t) => {
 	t.context.resourceListCreatorLog = {
 		error: sinon.stub(),
 		verbose: sinon.stub()
@@ -14,22 +17,19 @@ test.beforeEach((t) => {
 		warn: sinon.stub(),
 		verbose: sinon.stub()
 	};
-	const logger = require("@ui5/logger");
-	sinon.stub(logger, "getLogger")
-		.callThrough() // Ensures that other loggers are not affected
-		.withArgs("builder:processors:resourceListCreator").returns(t.context.resourceListCreatorLog)
-		.withArgs("lbt:resources:ResourceCollector").returns(t.context.ResourceCollectorLog);
 
-	const XMLTemplateAnalyzer = require("../../../lib/lbt/analyzer/XMLTemplateAnalyzer");
-	t.context.XMLTemplateAnalyzerAnalyzeViewSpy = sinon.spy(XMLTemplateAnalyzer.prototype, "analyzeView");
+	const loggerStub = sinon.stub();
+	loggerStub.withArgs("builder:processors:resourceListCreator").returns(t.context.resourceListCreatorLog);
+	loggerStub.withArgs("blbt:resources:ResourceCollector").returns(t.context.ResourceCollectorLog);
 
-	// Re-require tested modules
-	esmock.reRequire("../../../lib/lbt/resources/ResourceCollector");
-	t.context.resourceListCreator = esmock.reRequire("../../../lib/processors/resourceListCreator");
+	t.context.resourceListCreator = await esmock("../../../lib/processors/resourceListCreator.js", {
+		"@ui5/logger": {
+			getLogger: loggerStub
+		}
+	});
 });
 
 test.afterEach.always((t) => {
-	esmock.stopAll();
 	sinon.restore();
 });
 
