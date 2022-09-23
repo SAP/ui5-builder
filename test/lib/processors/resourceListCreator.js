@@ -20,7 +20,7 @@ test.beforeEach(async (t) => {
 
 	const loggerStub = sinon.stub();
 	loggerStub.withArgs("builder:processors:resourceListCreator").returns(t.context.resourceListCreatorLog);
-	loggerStub.withArgs("blbt:resources:ResourceCollector").returns(t.context.ResourceCollectorLog);
+	loggerStub.withArgs("lbt:resources:ResourceCollector").returns(t.context.ResourceCollectorLog);
 
 	t.context.resourceListCreator = await esmock("../../../lib/processors/resourceListCreator.js", {
 		"@ui5/logger": {
