@@ -30,9 +30,9 @@
 		"unit-verbose": "rimraf test/tmp && cross-env UI5_LOG_LVL=verbose ava --verbose --serial",
 		"unit-watch": "rimraf test/tmp && ava --watch",
 		"unit-nyan": "rimraf test/tmp && ava --tap | tnyan",
-		"unit-xunit": "rimraf test/tmp && ava --tap --timeout=1m | tap-xunit --dontUseCommentsAsTestNames=true > test-results.xml",
+		"unit-xunit": "rimraf test/tmp && ava --node-arguments=\"--experimental-loader=@istanbuljs/esm-loader-hook\" --tap | tap-xunit --dontUseCommentsAsTestNames=true > test-results.xml",
 		"unit-inspect": "cross-env UI5_LOG_LVL=verbose ava debug --break",
-		"coverage": "nyc npm run unit",
+		"coverage": "rimraf test/tmp && nyc ava --node-arguments=\"--experimental-loader=@istanbuljs/esm-loader-hook\"",
 		"coverage-xunit": "nyc --reporter=text --reporter=text-summary --reporter=cobertura npm run unit-xunit",
 		"jsdoc": "npm run jsdoc-generate && open-cli jsdocs/index.html",
 		"jsdoc-generate": "jsdoc -c ./jsdoc.json -t $(node -p 'path.dirname(require.resolve(\"docdash\"))') ./lib/ || (echo 'Error during JSDoc generation! Check log.' && exit 1)",
@@ -41,7 +41,7 @@
 		"version": "git-chglog --sort semver --next-tag v$npm_package_version -o CHANGELOG.md && git add CHANGELOG.md",
 		"postversion": "git push --follow-tags",
 		"release-note": "git-chglog --sort semver -c .chglog/release-config.yml v$npm_package_version",
-		"depcheck": "depcheck --ignores docdash --ignore-patterns lib/processors/jsdoc/lib/ui5"
+		"depcheck": "depcheck --ignores docdash,@istanbuljs/esm-loader-hook --ignore-patterns lib/processors/jsdoc/lib/ui5"
 	},
 	"files": [
 		"index.js",
@@ -56,12 +56,12 @@
 		"files": [
 			"test/lib/**/*.js"
 		],
+		"ignoredByWatcher": [
+			"test/tmp/**"
+		],
 		"nodeArguments": [
 			"--loader=esmock",
 			"--no-warnings"
-		],
-		"ignoredByWatcher": [
-			"test/tmp/**"
 		]
 	},
 	"nyc": {
@@ -77,7 +77,7 @@
 			"coverage/**",
 			"test/**",
 			".eslintrc.js",
-			"jsdoc-plugin.js"
+			"jsdoc-plugin.cjs"
 		],
 		"check-coverage": true,
 		"statements": 85,
