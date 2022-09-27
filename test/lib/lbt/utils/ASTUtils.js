@@ -1,5 +1,6 @@
 import test from "ava";
-import { parseJS } from "../../../../lib/lbt/utils/parseUtils.js";
+import parseUtils from "../../../../lib/lbt/utils/parseUtils.js";
+const { parseJS } = parseUtils;
 import ASTUtils from "../../../../lib/lbt/utils/ASTUtils.js";
 
 /*

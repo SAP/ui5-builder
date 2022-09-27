@@ -9,7 +9,7 @@ const resourceFactory = ui5Fs.resourceFactory;
 const DuplexCollection = ui5Fs.DuplexCollection;
 
 import { generateProjectGraph } from "@ui5/project";
-import ui5Builder from "../../../../";
+import ui5Builder from "../../../../index.cjs";
 const {generateLibraryPreload, taskRepository} = ui5Builder.tasks;
 
 const libraryDPath = path.join(__dirname, "..", "..", "..", "fixtures", "library.d");

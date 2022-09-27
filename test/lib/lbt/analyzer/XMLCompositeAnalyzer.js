@@ -1,5 +1,6 @@
 import test from "ava";
-import { parseJS } from "../../../../lib/lbt/utils/parseUtils.js";
+import parseUtils from "../../../../lib/lbt/utils/parseUtils.js";
+const { parseJS } = parseUtils;
 import XMLCompositeAnalyzer from "../../../../lib/lbt/analyzer/XMLCompositeAnalyzer.js";
 import ModuleInfo from "../../../../lib/lbt/resources/ModuleInfo.js";
 import sinonGlobal from "sinon";

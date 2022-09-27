@@ -2,7 +2,7 @@ import test from "ava";
 import generateVersionInfo from "../../../lib/tasks/generateVersionInfo.js";
 import path from "node:path";
 import ui5Fs from "@ui5/fs";
-const resourceFactory = ui5Fs.resourceFactory;
+const { resourceFactory } = ui5Fs;
 import sinon from "sinon";
 import esmock from "esmock";
 import logger from "@ui5/logger";

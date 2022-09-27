@@ -1,5 +1,6 @@
 import test from "ava";
-import { parseJS, Syntax } from "../../../../lib/lbt/utils/parseUtils.js";
+import parseUtils from "../../../../lib/lbt/utils/parseUtils.js";
+const { parseJS, Syntax } = parseUtils;
 import SapUiDefineCall from "../../../../lib/lbt/calls/SapUiDefine.js";
 import logger from "@ui5/logger";
 const loggerInstance = logger.getLogger();
