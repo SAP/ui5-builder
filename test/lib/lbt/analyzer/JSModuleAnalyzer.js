@@ -6,9 +6,14 @@ import test from "ava";
 
 import fs from "node:fs";
 import path from "node:path";
-import { parseJS } from "../../../../lib/lbt/utils/parseUtils.js";
+import parseUtils from "../../../../lib/lbt/utils/parseUtils.js";
+const { parseJS } = parseUtils;
 import ModuleInfo from "../../../../lib/lbt/resources/ModuleInfo.js";
 import JSModuleAnalyzer from "../../../../lib/lbt/analyzer/JSModuleAnalyzer.js";
+
+import { fileURLToPath } from "node:url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const EXPECTED_MODULE_NAME = "sap/ui/testmodule.js";
 
@@ -72,7 +77,7 @@ function getConditionalDependencies(info) {
 	return info.dependencies.filter((dep) => info.isConditionalDependency(dep));
 }
 
-function analyzeModule(
+async function analyzeModule(
 	t,
 	file,
 	name,
@@ -83,7 +88,7 @@ function analyzeModule(
 	rawModule
 ) {
 	//
-	analyze(file, name).then( (info) => {
+	return analyze(file, name).then( (info) => {
 		t.is(info.name, name, "module name should match");
 		let deps = info.dependencies;
 		if ( ignoreImplicitDependencies ) {
@@ -116,46 +121,45 @@ function analyzeModule(
 			t.false(info.rawModule,
 				"ui5 module");
 		}
-	}).then(() => t.end(), (e) => t.fail(`failed to analyze module with error: ${e.message}`));
+	}); // .then(() => t.end(), (e) => t.fail(`failed to analyze module with error: ${e.message}`));
 }
 
-test.cb("DeclareToplevel", analyzeModule,
+test("DeclareToplevel", analyzeModule,
 	"modules/declare_toplevel.js", EXPECTED_MODULE_NAME, EXPECTED_DECLARE_DEPENDENCIES);
 
-test.cb("DeclareFunctionExprScope", analyzeModule,
+test("DeclareFunctionExprScope", analyzeModule,
 	"modules/declare_function_expr_scope.js", EXPECTED_MODULE_NAME, EXPECTED_DECLARE_DEPENDENCIES);
 
-test.cb("DeclareFunctionInvocationScope", analyzeModule,
+test("DeclareFunctionInvocationScope", analyzeModule,
 	"modules/declare_function_invocation_scope.js", EXPECTED_MODULE_NAME, EXPECTED_DECLARE_DEPENDENCIES);
 
-test.cb("DefineToplevelNamed", analyzeModule,
+test("DefineToplevelNamed", analyzeModule,
 	"modules/define_toplevel_named.js", EXPECTED_MODULE_NAME, EXPECTED_DEFINE_DEPENDENCIES_NO_LEGACY);
 
-test.cb("DefineToplevelUnnamed", analyzeModule,
+test("DefineToplevelUnnamed", analyzeModule,
 	"modules/define_toplevel_unnamed.js", "modules/define_toplevel_unnamed.js", EXPECTED_DEFINE_DEPENDENCIES_NO_LEGACY);
 
-test.cb("DefineWithLegacyCalls", analyzeModule,
+test("DefineWithLegacyCalls", analyzeModule,
 	"modules/define_with_legacy_calls.js", "modules/define_with_legacy_calls.js",
 	EXPECTED_DEFINE_DEPENDENCIES_WITH_LEGACY);
 
-test.cb("OldStyleModuleWithoutDeclare", function(t) {
-	analyze("modules/no_declare_but_requires.js", null).then((info) => {
+test("OldStyleModuleWithoutDeclare", async function(t) {
+	return await analyze("modules/no_declare_but_requires.js", null).then((info) => {
 		t.is(info.name, null, "module name should be null");
 		t.true(info.rawModule, "raw module");
 		assertModuleNamesEqual(t,
 			info.dependencies,
 			["dependency1.js", "dependency2.js", "jquery.sap.global.js"],
 			"dependencies should be correct");
-		t.end();
 	});
 });
 
-test.cb("NotAnUI5Module", analyzeModule,
+test("NotAnUI5Module", analyzeModule,
 	"modules/not_a_module.js", "modules/not_a_module.js",
 	NO_DEPENDENCIES, NO_DEPENDENCIES, NO_DEPENDENCIES, NO_DEPENDENCIES, true);
 
-test.cb("AMDSpecialDependenciesShouldBeIgnored", (t) => {
-	analyzeModule(t,
+test("AMDSpecialDependenciesShouldBeIgnored", async (t) => {
+	return await analyzeModule(t,
 		"modules/amd_special_dependencies.js",
 		"modules/amd_special_dependencies.js",
 		["modules/dep1.js", "dep2.js", "utils/dep1.js", "ui5loader-autoconfig.js"],
@@ -164,8 +168,8 @@ test.cb("AMDSpecialDependenciesShouldBeIgnored", (t) => {
 	);
 });
 
-test.cb("AMDMultipleModulesFirstUnnamed", (t) => {
-	analyzeModule(t,
+test("AMDMultipleModulesFirstUnnamed", async (t) => {
+	return await analyzeModule(t,
 		"modules/amd_multiple_modules_first_unnamed.js",
 		"modules/amd_multiple_modules_first_unnamed.js",
 		["modules/dep1.js", "dep2.js", "utils/dep1.js", "ui5loader-autoconfig.js"],
@@ -174,8 +178,8 @@ test.cb("AMDMultipleModulesFirstUnnamed", (t) => {
 	);
 });
 
-test.cb("AMDMultipleModulesOtherThanFirstOneUnnamed", (t) => {
-	analyzeModule(t,
+test("AMDMultipleModulesOtherThanFirstOneUnnamed", async (t) => {
+	return await analyzeModule(t,
 		"modules/amd_multiple_modules_other_than_first_one_unnamed.js",
 		"modules/amd_multiple_modules_other_than_first_one_unnamed.js",
 		["modules/dep1.js", "dep2.js", "utils/dep1.js", "ui5loader-autoconfig.js"],
@@ -184,8 +188,8 @@ test.cb("AMDMultipleModulesOtherThanFirstOneUnnamed", (t) => {
 	);
 });
 
-test.cb("AMDMultipleNamedModulesNoneMatchingFileName", (t) => {
-	analyzeModule(t,
+test("AMDMultipleNamedModulesNoneMatchingFileName", async (t) => {
+	return await analyzeModule(t,
 		"modules/amd_multiple_named_modules_none_matching_filename.js",
 		"modules/amd_multiple_named_modules_none_matching_filename.js",
 		["dep2.js", "utils/dep1.js", "ui5loader-autoconfig.js"],
@@ -194,8 +198,8 @@ test.cb("AMDMultipleNamedModulesNoneMatchingFileName", (t) => {
 	);
 });
 
-test.cb("AMDMultipleNamedModulesOneMatchingFileName", (t) => {
-	analyzeModule(t,
+test("AMDMultipleNamedModulesOneMatchingFileName", async (t) => {
+	return await analyzeModule(t,
 		"modules/amd_multiple_named_modules_one_matching_filename.js",
 		"modules/amd_multiple_named_modules_one_matching_filename.js",
 		["modules/dep1.js", "dep2.js", "utils/dep1.js", "ui5loader-autoconfig.js"],
@@ -214,8 +218,8 @@ test("AMDMultipleUnnamedModules", async (t) => {
 	}
 });
 
-test.cb("AMDSingleNamedModule", (t) => {
-	analyzeModule(t,
+test("AMDSingleNamedModule", async (t) => {
+	return await analyzeModule(t,
 		"modules/amd_single_named_module.js",
 		"alternative/name.js",
 		["alternative/dep1.js", "dep2.js", "ui5loader-autoconfig.js"],
@@ -224,8 +228,8 @@ test.cb("AMDSingleNamedModule", (t) => {
 	);
 });
 
-test.cb("AMDSingleUnnamedModule", (t) => {
-	analyzeModule(t,
+test("AMDSingleUnnamedModule", async (t) => {
+	return await analyzeModule(t,
 		"modules/amd_single_unnamed_module.js",
 		"modules/amd_single_unnamed_module.js",
 		["modules/dep1.js", "dep2.js", "ui5loader-autoconfig.js"],
@@ -265,8 +269,8 @@ test("AMDMultipleModulesWithConflictBetweenTwoNamed", async (t) => {
 	}
 });
 
-test.cb("OldStyleBundle", (t) => {
-	analyzeModule(t,
+test("OldStyleBundle", async (t) => {
+	return await analyzeModule(t,
 		"modules/bundle-oldstyle.js",
 		"sap-ui-core.js",
 		[
@@ -327,8 +331,8 @@ test.cb("OldStyleBundle", (t) => {
 	);
 });
 
-test.cb("OldStyleBundleV2", (t) => {
-	analyzeModule(t,
+test("OldStyleBundleV2", async (t) => {
+	return await analyzeModule(t,
 		"modules/bundle-oldstyle-v2.js",
 		"sap-ui-core.js",
 		[
@@ -389,8 +393,8 @@ test.cb("OldStyleBundleV2", (t) => {
 	);
 });
 
-test.cb("EvoBundle", (t) => {
-	analyzeModule(t,
+test("EvoBundle", async (t) => {
+	return await analyzeModule(t,
 		"modules/bundle-evo.js",
 		"sap-ui-core.js",
 		[
