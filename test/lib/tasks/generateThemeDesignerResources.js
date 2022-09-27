@@ -2,36 +2,35 @@ import test from "ava";
 import sinon from "sinon";
 import esmock from "esmock";
 
-test.beforeEach((t) => {
-	const ui5Fs = require("@ui5/fs");
+test.beforeEach(async (t) => {
+	const ui5Fs = await import("@ui5/fs");
+	const { fsInterface, ReaderCollectionPrioritized } = ui5Fs;
 
-	t.context.fsInterfaceStub = sinon.stub(ui5Fs, "fsInterface");
+	t.context.fsInterfaceStub = sinon.stub(fsInterface);
 	t.context.fsInterfaceStub.returns({});
 
-	t.context.ReaderCollectionPrioritizedStub = sinon.stub(ui5Fs, "ReaderCollectionPrioritized");
+	t.context.ReaderCollectionPrioritizedStub = sinon.stub(ReaderCollectionPrioritized);
 	t.context.ReaderCollectionPrioritizedStub.returns({
 		byPath: sinon.stub()
 	});
 
 	t.context.ResourceStub = sinon.stub();
-
-	esmock("@ui5/fs", {
-		ReaderCollectionPrioritized: t.context.ReaderCollectionPrioritizedStub,
-		fsInterface: t.context.fsInterfaceStub,
-		Resource: t.context.ResourceStub
-	});
-
 	t.context.libraryLessGeneratorStub = sinon.stub();
 
-	esmock("../../../lib/processors/libraryLessGenerator", t.context.libraryLessGeneratorStub);
-
-	// Re-require tested module
-	t.context.generateThemeDesignerResources = esmock.reRequire("../../../lib/tasks/generateThemeDesignerResources");
+	t.context.generateThemeDesignerResources = await esmock("../../../lib/tasks/generateThemeDesignerResources", {
+		"../../../lib/processors/libraryLessGenerator": t.context.libraryLessGeneratorStub,
+		"@ui5/fs": {
+			ReaderCollectionPrioritized:
+				t.context.ReaderCollectionPrioritizedStub,
+			fsInterface: t.context.fsInterfaceStub,
+			Resource: t.context.ResourceStub,
+		},
+	});
 });
 
 test.afterEach.always((t) => {
 	sinon.restore();
-	esmock.stopAll();
+	esmock.purge("../../../lib/tasks/generateThemeDesignerResources");
 });
 
 test.serial("generateThemeDesignerResources: Library", async (t) => {

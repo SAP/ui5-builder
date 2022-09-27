@@ -1,7 +1,7 @@
 import test from "ava";
 
-import { resourceFactory } from "@ui5/fs";
-import { fsInterface } from "@ui5/fs";
+import ui5Fs from "@ui5/fs";
+const { resourceFactory, fsInterface } = ui5Fs;
 
 import themeBuilderProcessor from "../../../lib/processors/themeBuilder.js";
 import { ThemeBuilder } from "../../../lib/processors/themeBuilder.js";

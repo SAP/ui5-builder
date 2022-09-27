@@ -1,7 +1,8 @@
 import test from "ava";
 import path from "node:path";
 import chai from "chai";
-chai.use(require("chai-fs"));
+import chaiFs from "chai-fs";
+chai.use(chaiFs);
 import fs from "graceful-fs";
 import { promisify } from "node:util";
 const readFile = promisify(fs.readFile);
