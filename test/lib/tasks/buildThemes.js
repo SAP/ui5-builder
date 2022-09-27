@@ -1,7 +1,7 @@
 import test from "ava";
 import sinon from "sinon";
 import esmock from "esmock";
-import buildThemes from "../../../lib/tasks/buildThemes.js";
+let buildThemes;
 
 test.before(async () => {
 	// Enable verbose logging to also cover verbose logging code
@@ -19,21 +19,20 @@ test.beforeEach(async (t) => {
 
 	t.context.ReaderCollectionPrioritizedStub = sinon.stub(ReaderCollectionPrioritized);
 	t.context.comboByGlob = sinon.stub();
-	t.context.ReaderCollectionPrioritizedStub.returns({byGlob: t.context.comboByGlob});
+	t.context.ReaderCollectionPrioritizedStub.returns({_byGlob: t.context.comboByGlob});
 
-	esmock("@ui5/fs", {
-		ReaderCollectionPrioritized: t.context.ReaderCollectionPrioritizedStub,
-		fsInterface: t.context.fsInterfaceStub
+	buildThemes = await esmock("../../../lib/tasks/buildThemes.js", {
+		"@ui5/fs": {
+			ReaderCollectionPrioritized: t.context.ReaderCollectionPrioritizedStub,
+			fsInterface: t.context.fsInterfaceStub
+		},
+		"../../../lib/processors/themeBuilder": t.context.themeBuilderStub
 	});
-	esmock("../../../lib/processors/themeBuilder", t.context.themeBuilderStub);
-
-	// Re-require tested module
-	// buildThemes = esmock.reRequire("../../../lib/tasks/buildThemes");
 });
 
 test.afterEach.always((t) => {
 	sinon.restore();
-	// esmock.stopAll();
+	esmock.purge(buildThemes);
 });
 
 test.serial("buildThemes", async (t) => {
@@ -42,7 +41,7 @@ test.serial("buildThemes", async (t) => {
 	const lessResource = {};
 
 	const workspace = {
-		byGlob: async (globPattern) => {
+		_byGlob: async (globPattern) => {
 			if (globPattern === "/resources/test/library.source.less") {
 				return [lessResource];
 			} else {
@@ -96,7 +95,7 @@ test.serial("buildThemes (compress = false)", async (t) => {
 	const lessResource = {};
 
 	const workspace = {
-		byGlob: async (globPattern) => {
+		_byGlob: async (globPattern) => {
 			if (globPattern === "/resources/test/library.source.less") {
 				return [lessResource];
 			} else {
@@ -150,7 +149,7 @@ test.serial("buildThemes (cssVariables = true)", async (t) => {
 	const lessResource = {};
 
 	const workspace = {
-		byGlob: async (globPattern) => {
+		_byGlob: async (globPattern) => {
 			if (globPattern === "/resources/test/library.source.less") {
 				return [lessResource];
 			} else {
@@ -239,7 +238,7 @@ test.serial("buildThemes (filtering libraries)", async (t) => {
 
 	const workspaceByGlob = sinon.stub();
 	const workspace = {
-		byGlob: workspaceByGlob,
+		_byGlob: workspaceByGlob,
 		write: sinon.stub()
 	};
 
@@ -319,7 +318,7 @@ test.serial("buildThemes (filtering themes)", async (t) => {
 
 	const workspaceByGlob = sinon.stub();
 	const workspace = {
-		byGlob: workspaceByGlob,
+		_byGlob: workspaceByGlob,
 		write: sinon.stub()
 	};
 
@@ -428,7 +427,7 @@ test.serial("buildThemes (filtering libraries + themes)", async (t) => {
 
 	const workspaceByGlob = sinon.stub();
 	const workspace = {
-		byGlob: workspaceByGlob,
+		_byGlob: workspaceByGlob,
 		write: sinon.stub()
 	};
 
