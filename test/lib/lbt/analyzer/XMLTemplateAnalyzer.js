@@ -60,13 +60,15 @@ test("integration: Analysis of an xml view with data binding in properties", asy
 });
 
 test.serial("integration: Analysis of an xml view with core:require from databinding", async (t) => {
-	const logger = require("@ui5/logger");
 	const errorLogStub = sinon.stub();
 	const myLoggerInstance = {
 		error: errorLogStub
 	};
-	sinon.stub(logger, "getLogger").returns(myLoggerInstance);
-	const XMLTemplateAnalyzerWithStubbedLogger = await esmock("../../../../lib/lbt/analyzer/XMLTemplateAnalyzer");
+	const XMLTemplateAnalyzerWithStubbedLogger = await esmock("../../../../lib/lbt/analyzer/XMLTemplateAnalyzer.js", {
+		"@ui5/logger": {
+			getLogger: sinon.stub().returns(myLoggerInstance)
+		}
+	});
 
 	const xml = `<mvc:View
 	xmlns="sap.m"
@@ -119,13 +121,15 @@ test.serial("integration: Analysis of an xml view with core:require from databin
 });
 
 test.serial("integration: Analysis of an xml view with core:require from databinding in template", async (t) => {
-	const logger = require("@ui5/logger");
 	const verboseLogStub = sinon.stub();
 	const myLoggerInstance = {
 		verbose: verboseLogStub
 	};
-	sinon.stub(logger, "getLogger").returns(myLoggerInstance);
-	const XMLTemplateAnalyzerWithStubbedLogger = await esmock("../../../../lib/lbt/analyzer/XMLTemplateAnalyzer");
+	const XMLTemplateAnalyzerWithStubbedLogger = await esmock("../../../../lib/lbt/analyzer/XMLTemplateAnalyzer.js", {
+		"@ui5/logger": {
+			getLogger: sinon.stub().returns(myLoggerInstance)
+		}
+	});
 
 	const xml = `<mvc:View
 	xmlns="sap.m"
@@ -171,13 +175,15 @@ test.serial("integration: Analysis of an xml view with core:require from databin
 });
 
 test.serial("integration: Analysis of an xml view with core:require from expression binding in template", async (t) => {
-	const logger = require("@ui5/logger");
 	const verboseLogStub = sinon.stub();
 	const myLoggerInstance = {
 		verbose: verboseLogStub
 	};
-	sinon.stub(logger, "getLogger").returns(myLoggerInstance);
-	const XMLTemplateAnalyzerWithStubbedLogger = await esmock("../../../../lib/lbt/analyzer/XMLTemplateAnalyzer");
+	const XMLTemplateAnalyzerWithStubbedLogger = await esmock("../../../../lib/lbt/analyzer/XMLTemplateAnalyzer.js", {
+		"@ui5/logger": {
+			getLogger: sinon.stub().returns(myLoggerInstance)
+		}
+	});
 
 	const xml = `<mvc:View
 	xmlns="sap.m"
