@@ -2,8 +2,6 @@ import test from "ava";
 import parseUtils from "../../../../lib/lbt/utils/parseUtils.js";
 const { parseJS, Syntax } = parseUtils;
 import SapUiDefineCall from "../../../../lib/lbt/calls/SapUiDefine.js";
-import logger from "@ui5/logger";
-const loggerInstance = logger.getLogger();
 import sinonGlobal from "sinon";
 import esmock from "esmock";
 
@@ -14,9 +12,14 @@ function parse(code) {
 
 async function setupSapUiDefineCallWithStubbedLogger({context}) {
 	const {sinon} = context;
-	context.warningLogSpy = sinon.spy(loggerInstance, "warn");
-	sinon.stub(logger, "getLogger").returns(loggerInstance);
-	context.SapUiDefineCallWithStubbedLogger = await esmock("../../../../lib/lbt/calls/SapUiDefine");
+	context.warningLogSpy = sinon.spy();
+	context.SapUiDefineCallWithStubbedLogger = await esmock("../../../../lib/lbt/calls/SapUiDefine.js", {
+		"@ui5/logger": {
+			getLogger: {
+				warn: context.warningLogSpy
+			}
+		}
+	});
 }
 
 test.beforeEach((t) => {
@@ -25,7 +28,6 @@ test.beforeEach((t) => {
 
 test.afterEach.always((t) => {
 	t.context.sinon.restore();
-	esmock.stopAll();
 });
 
 test("Empty Define", (t) => {
