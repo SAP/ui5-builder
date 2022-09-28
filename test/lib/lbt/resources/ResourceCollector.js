@@ -1,7 +1,8 @@
 import test from "ava";
 import sinon from "sinon";
 import esmock from "esmock";
-import { Resource } from "@ui5/fs";
+import ui5Fs from "@ui5/fs";
+const { Resource } = ui5Fs;
 import LocatorResourcePool from "../../../../lib/lbt/resources/LocatorResourcePool.js";
 // import ResourceCollector from "../../../../lib/lbt/resources/ResourceCollector.js";
 let ResourceCollector;

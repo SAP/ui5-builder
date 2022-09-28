@@ -1,6 +1,7 @@
 import test from "ava";
 import LocatorResourcePool from "../../../../lib/lbt/resources/LocatorResourcePool.js";
-import { Resource } from "@ui5/fs";
+import ui5Fs from "@ui5/fs";
+const { Resource } = ui5Fs;
 
 test("getIgnoreMissingModules", (t) => {
 	const resourcePool = new LocatorResourcePool({ignoreMissingModules: true});

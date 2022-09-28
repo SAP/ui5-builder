@@ -1,5 +1,6 @@
 import test from "ava";
-import { parseJS, Syntax } from "../../../../lib/lbt/utils/parseUtils.js";
+import parseUtils from "../../../../lib/lbt/utils/parseUtils.js";
+const { parseJS, Syntax } = parseUtils;
 
 test("invalid options", (t) => {
 	t.throws(function() {

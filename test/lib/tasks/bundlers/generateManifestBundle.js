@@ -2,7 +2,8 @@ import test from "ava";
 import sinon from "sinon";
 import esmock from "esmock";
 import chai from "chai";
-chai.use(require("chai-fs"));
+import chaiFS from "chai-fs";
+chai.use(chaiFS);
 import generateManifestBundle from "../../../../lib/tasks/bundlers/generateManifestBundle.js";
 
 test.serial("generateManifestBundle", async (t) => {

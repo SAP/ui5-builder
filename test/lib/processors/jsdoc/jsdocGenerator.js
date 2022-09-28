@@ -4,6 +4,10 @@ import sinon from "sinon";
 import esmock from "esmock";
 import jsdocGenerator from "../../../../lib/processors/jsdoc/jsdocGenerator.js";
 
+import { fileURLToPath } from "node:url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 test("generateJsdocConfig", async (t) => {
 	const res = await jsdocGenerator._generateJsdocConfig({
 		sourcePath: "/some/source/path",
@@ -60,23 +64,21 @@ test("generateJsdocConfig", async (t) => {
 });
 
 test.serial("writeJsdocConfig", async (t) => {
-	esmock("graceful-fs", {
-		writeFile: (configPath, configContent, callback) => {
-			t.deepEqual(configPath, path.join("/", "some", "path", "jsdoc-config.json"),
-				"Correct config path supplied");
-			t.is(configContent, "some config", "Correct config content supplied");
-			callback();
-		}
-	});
-	esmock.reRequire("graceful-fs");
+	const jsdocGenerator = esmock("../../../../lib/processors/jsdoc/jsdocGenerator", {
+		"graceful-fs": {
+			writeFile: (configPath, configContent, callback) => {
+				t.deepEqual(configPath, path.join("/", "some", "path", "jsdoc-config.json"),
+					"Correct config path supplied");
+				t.is(configContent, "some config", "Correct config content supplied");
+				callback();
+			}
+		}});
 
-	// Re-require tested module
-	const jsdocGenerator = esmock.reRequire("../../../../lib/processors/jsdoc/jsdocGenerator");
 	const res = await jsdocGenerator._writeJsdocConfig("/some/path", "some config");
 
 	t.deepEqual(res, path.join("/", "some", "path", "jsdoc-config.json"), "Correct config path returned");
 
-	esmock.stop("graceful-fs");
+	esmock.purge("../../../../lib/processors/jsdoc/jsdocGenerator");
 });
 
 test.serial("buildJsdoc", async (t) => {
@@ -87,7 +89,6 @@ test.serial("buildJsdoc", async (t) => {
 			callback(exitCode);
 		}
 	});
-	const jsdocGenerator = esmock.reRequire("../../../../lib/processors/jsdoc/jsdocGenerator");
 
 	await jsdocGenerator._buildJsdoc({
 		sourcePath: "/some/path",
