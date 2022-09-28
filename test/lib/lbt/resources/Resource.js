@@ -5,7 +5,7 @@ import esmock from "esmock";
 test.serial("Resource: buffer", async (t) => {
 	const readFileStub = sinon.stub().callsArgWith(1, null, Buffer.from("content"));
 
-	const Resource = await esmock("../../../../lib/lbt/resources/Resource", {
+	const Resource = await esmock("../../../../lib/lbt/resources/Resource.js", {
 		"graceful-fs": {
 			readFile: readFileStub,
 		},
@@ -23,7 +23,7 @@ test.serial("Resource: buffer", async (t) => {
 
 test.serial("Resource: string", async (t) => {
 	const readFileStub = sinon.stub().callsArgWith(1, null, Buffer.from("content"));
-	const Resource = await esmock("../../../../lib/lbt/resources/Resource", {
+	const Resource = await esmock("../../../../lib/lbt/resources/Resource.js", {
 		"graceful-fs": {
 			readFile: readFileStub,
 		},
@@ -40,13 +40,13 @@ test.serial("Resource: string", async (t) => {
 });
 
 test.serial("Resource: constructor", async (t) => {
-	const Resource = await esmock("../../../../lib/lbt/resources/Resource"); // Import unmocked
+	const Resource = await esmock("../../../../lib/lbt/resources/Resource.js"); // Import unmocked
 	const resource = new Resource({}, "name", "file");
 	t.is(resource.fileSize, -1, "called once");
 });
 
 test.serial("Resource: constructor with stat", async (t) => {
-	const Resource = await esmock("../../../../lib/lbt/resources/Resource"); // Import unmocked
+	const Resource = await esmock("../../../../lib/lbt/resources/Resource.js"); // Import unmocked
 	const resource = new Resource({}, "name", "file", {size: 47});
 	t.is(resource.fileSize, 47, "called once");
 });

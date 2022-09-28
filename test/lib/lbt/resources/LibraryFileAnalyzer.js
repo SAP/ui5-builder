@@ -1,5 +1,5 @@
 import test from "ava";
-import LibraryFileAnalyzer from "../../../../lib/lbt/resources/LibraryFileAnalyzer.js";
+import getDependencyInfos from "../../../../lib/lbt/resources/LibraryFileAnalyzer.js";
 
 test("extract packaging info from .library file", (t) => {
 	const libraryFile = `\
@@ -48,7 +48,7 @@ test("extract packaging info from .library file", (t) => {
 		}
 	];
 
-	const actual = LibraryFileAnalyzer.getDependencyInfos("a.library", libraryFile);
+	const actual = getDependencyInfos("a.library", libraryFile);
 
 	t.deepEqual(Object.keys(actual), expectedInfos.map((exp) => exp.name),
 		"Method should return the expected set of modules");
