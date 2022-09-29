@@ -24,7 +24,7 @@ sap.ui.define([], function () {
 		 */
 		Fizz: "Fizz",
 		/**
-		 * Bar
+		 * Buzz
 		 * @public
 		 */
 		Buzz: "Buzz",

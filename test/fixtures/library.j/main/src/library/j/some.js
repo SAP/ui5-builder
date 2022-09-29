@@ -3,16 +3,13 @@
  */
 sap.ui.define([
 	"sap/ui/core/Control",
-	"./dependency",
-	"./dependency2",
-	"./dependency-es6-1",
-	"./dependency-es6-2",
-	"./dependency-es6-3"
-], (Control, { MyValidEnum, ThisIsEnumToo: RenamedEnum }, library, es6_1, es6_2, es6_3) => {
+	"./library",
+	"./library-core"
+], (Control, { MyValidEnum, ThisIsEnumToo: RenamedEnum }, coreLibrary) => {
 
-	const { AnotherValidEnum } = library;
+	const { AnotherValidEnum } = coreLibrary;
 	const { Buzz } = AnotherValidEnum;
-	const { AnotherValidEnum: Zzz } = library;
+	const { AnotherValidEnum: AnotherRenamedEnum } = coreLibrary;
 	const { H1 } = sap.ui.core.TitleLevel;
 	const { Value2: RenamedValue2 } = RenamedEnum;
 
@@ -26,11 +23,11 @@ sap.ui.define([
 	 * @version ${version}
 	 *
 	 * @public
-	 * @alias testlib.ValidPropertyDefaultValue
+	 * @alias library.j.ValidPropertyDefaultValue
 	 * @ui5-metamodel text
 	 */
 	var ValidPropertyDefaultValue = Control.extend(
-		"testlib.ValidPropertyDefaultValue",
+		"library.j.ValidPropertyDefaultValue",
 		{
 			metadata: {
 				properties: {
@@ -38,7 +35,7 @@ sap.ui.define([
 					 * validPropertyDefaultValueEnumSimpleDestructuring
 					 */
 					validPropertyDefaultValueEnumSimpleDestructuring: {
-						type: "testlib.AnotherValidEnum",
+						type: "library.j.core.AnotherValidEnum",
 						group: "Misc",
 						defaultValue: AnotherValidEnum.Buzz,
 					},
@@ -47,7 +44,7 @@ sap.ui.define([
 					 * validPropertyDefaultValueEnumChainedDestructuring
 					 */
 					validPropertyDefaultValueEnumChainedDestructuring: {
-						type: "testlib.AnotherValidEnum",
+						type: "library.j.core.AnotherValidEnum",
 						group: "Misc",
 						defaultValue: Buzz,
 					},
@@ -56,16 +53,16 @@ sap.ui.define([
 					 * validPropertyDefaultValueEnumDestructuringWithRename
 					 */
 					validPropertyDefaultValueEnumDestructuringWithRename: {
-						type: "testlib.AnotherValidEnum",
+						type: "library.j.core.AnotherValidEnum",
 						group: "Misc",
-						defaultValue: Zzz.Fizz,
+						defaultValue: AnotherRenamedEnum.Fizz,
 					},
 
 					/**
 					 * validPropertyDefaultValueEnumDestructuringWithRenameInArguments
 					 */
 					validPropertyDefaultValueEnumDestructuringWithRenameInArguments: {
-						type: "testlib.ThisIsEnumToo",
+						type: "library.j.ThisIsEnumToo",
 						group: "Misc",
 						defaultValue: RenamedEnum.Value1,
 					},
@@ -74,7 +71,7 @@ sap.ui.define([
 					 * validPropertyDefaultValueEnumDestructuringWithRenameInArgumentsAndLocalVar
 					 */
 					validPropertyDefaultValueEnumDestructuringWithRenameInArgumentsAndLocalVar: {
-						type: "testlib.ThisIsEnumToo",
+						type: "library.j.ThisIsEnumToo",
 						group: "Misc",
 						defaultValue: RenamedValue2,
 					},
@@ -83,7 +80,7 @@ sap.ui.define([
 					 * validPropertyDefaultValueEnumViaDestructuringInArrowFn
 					 */
 					validPropertyDefaultValueEnumViaDestructuringInArrowFn: {
-						type: "testlib.MyValidEnum",
+						type: "library.j.MyValidEnum",
 						group: "Misc",
 						defaultValue: MyValidEnum.Foo,
 					},

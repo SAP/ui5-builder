@@ -5,11 +5,11 @@ sap.ui.define([
 	"sap/ui/core/Control",
 	"./library",
 	"./library-core"
-], (Control, { MyValidEnum, ThisIsEnumToo: RenamedEnum }, library) => {
+], (Control, { MyValidEnum, ThisIsEnumToo: RenamedEnum }, coreLibrary) => {
 
-	const { AnotherValidEnum } = library;
+	const { AnotherValidEnum } = coreLibrary;
 	const { Buzz } = AnotherValidEnum;
-	const { AnotherValidEnum: AnotherRenamedEnum } = library;
+	const { AnotherValidEnum: AnotherRenamedEnum } = coreLibrary;
 	const { H1 } = sap.ui.core.TitleLevel;
 	const { Value2: RenamedValue2 } = RenamedEnum;
 

@@ -880,7 +880,7 @@ test.serial("Build library.i with manifest info taken from .library and library.
 	t.pass();
 });
 
-test.only("Build library.j with JSDoc build only", async (t) => {
+test.serial("Build library.j with JSDoc build only", async (t) => {
 	const destPath = path.join("test", "tmp", "build", "library.j", "dest");
 	const expectedPath = path.join("test", "expected", "build", "library.j", "dest");
 
@@ -893,10 +893,6 @@ test.only("Build library.j with JSDoc build only", async (t) => {
 		includedTasks: ["generateJsdoc"],
 		excludedTasks: ["*"]
 	});
-
-	// // Beautify api.json, so that it can be better read and compared
-	const apiJsonPath = path.join(destPath, "test-resources", "library", "j", "designtime", "api.json");
-	fs.writeFileSync(apiJsonPath, JSON.stringify(JSON.parse(fs.readFileSync(apiJsonPath, "utf-8")), null, "\t"));
 
 	const expectedFiles = await findFiles(expectedPath);
 	// Check for all directories and files

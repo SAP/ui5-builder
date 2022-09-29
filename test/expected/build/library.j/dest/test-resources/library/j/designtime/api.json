@@ -4,17 +4,91 @@
 	"library": "library.j",
 	"symbols": [
 		{
+			"kind": "enum",
+			"name": "library.j.core.AnotherValidEnum",
+			"basename": "AnotherValidEnum",
+			"resource": "library/j/library-core.js",
+			"module": "library/j/library-core",
+			"static": true,
+			"visibility": "public",
+			"description": "AnotherValidEnum",
+			"ui5-metamodel": true,
+			"ui5-metadata": {
+				"stereotype": "enum"
+			},
+			"properties": [
+				{
+					"name": "Buzz",
+					"visibility": "public",
+					"static": true,
+					"type": "string",
+					"description": "Buzz"
+				},
+				{
+					"name": "Fizz",
+					"visibility": "public",
+					"static": true,
+					"type": "string",
+					"description": "Fizz"
+				}
+			]
+		},
+		{
 			"kind": "class",
-			"name": "library.j.aaa",
-			"basename": "aaa",
-			"resource": "library/j/dependency-es6-2.js",
-			"module": "library/j/dependency-es6-2",
+			"name": "library.j.Foo",
+			"basename": "Foo",
+			"resource": "library/j/ES6.features.1.js",
+			"module": "library/j/ES6.features.1",
+			"static": true,
+			"visibility": "public",
+			"extends": "library.j.Bar",
+			"description": "My super documentation of this class",
+			"constructor": {
+				"visibility": "public"
+			}
+		},
+		{
+			"kind": "enum",
+			"name": "library.j.MyValidEnum",
+			"basename": "MyValidEnum",
+			"resource": "library/j/library.js",
+			"module": "library/j/library",
+			"export": "MyValidEnum",
+			"static": true,
+			"visibility": "public",
+			"description": "MyValidEnum",
+			"ui5-metamodel": true,
+			"ui5-metadata": {
+				"stereotype": "enum"
+			},
+			"properties": [
+				{
+					"name": "Bar",
+					"visibility": "public",
+					"static": true,
+					"type": "string",
+					"description": "Bar"
+				},
+				{
+					"name": "Foo",
+					"visibility": "public",
+					"static": true,
+					"type": "string",
+					"description": "Foo"
+				}
+			]
+		},
+		{
+			"kind": "class",
+			"name": "library.j.SubControl",
+			"basename": "SubControl",
+			"resource": "library/j/ES6.features.2.js",
+			"module": "library/j/ES6.features.2",
 			"export": "",
 			"static": true,
 			"visibility": "public",
 			"since": "1.22",
-			"extends": "library.j.a",
-			"ui5-metamodel": true,
+			"extends": "library.j.Control",
 			"ui5-metadata": {
 				"properties": [
 					{
@@ -48,7 +122,7 @@
 						"description": "Initial settings for the new control"
 					}
 				],
-				"description": "Constructor for a new library.j.aaa."
+				"description": "Constructor for a new library.j.SubControl."
 			},
 			"methods": [
 				{
@@ -79,7 +153,7 @@
 							"description": "Constructor function for the metadata object; if not given, it defaults to the metadata implementation used by this class"
 						}
 					],
-					"description": "Creates a new subclass of class library.j.aaa with name <code>sClassName</code> and enriches it with the information contained in <code>oClassInfo</code>.\n\n<code>oClassInfo</code> might contain the same kind of information as described in {@link library.j.a.extend}."
+					"description": "Creates a new subclass of class library.j.SubControl with name <code>sClassName</code> and enriches it with the information contained in <code>oClassInfo</code>.\n\n<code>oClassInfo</code> might contain the same kind of information as described in {@link library.j.Control.extend}."
 				},
 				{
 					"name": "getMetadata",
@@ -89,7 +163,7 @@
 						"type": "sap.ui.base.Metadata",
 						"description": "Metadata object describing this class"
 					},
-					"description": "Returns a metadata object for class library.j.aaa."
+					"description": "Returns a metadata object for class library.j.SubControl."
 				},
 				{
 					"name": "getMyProp",
@@ -123,85 +197,12 @@
 			]
 		},
 		{
-			"kind": "class",
-			"name": "library.j.Foo",
-			"basename": "Foo",
-			"resource": "library/j/dependency-es6-1.js",
-			"module": "library/j/dependency-es6-1",
-			"static": true,
-			"visibility": "public",
-			"extends": "library.j.Bar",
-			"description": "My super documentation of this class",
-			"constructor": {
-				"visibility": "public"
-			}
-		},
-		{
 			"kind": "enum",
-			"name": "testlib.AnotherValidEnum",
-			"basename": "AnotherValidEnum",
-			"resource": "library/j/dependency2.js",
-			"module": "library/j/dependency2",
-			"static": true,
-			"visibility": "public",
-			"description": "AnotherValidEnum",
-			"ui5-metamodel": true,
-			"ui5-metadata": {
-				"stereotype": "enum"
-			},
-			"properties": [
-				{
-					"name": "Buzz",
-					"visibility": "public",
-					"static": true,
-					"type": "string",
-					"description": "Bar"
-				},
-				{
-					"name": "Fizz",
-					"visibility": "public",
-					"static": true,
-					"type": "string",
-					"description": "Fizz"
-				}
-			]
-		},
-		{
-			"kind": "enum",
-			"name": "testlib.MyValidEnum",
-			"basename": "MyValidEnum",
-			"resource": "library/j/dependency.js",
-			"module": "library/j/dependency",
-			"static": true,
-			"visibility": "public",
-			"description": "MyValidEnum",
-			"ui5-metamodel": true,
-			"ui5-metadata": {
-				"stereotype": "enum"
-			},
-			"properties": [
-				{
-					"name": "Bar",
-					"visibility": "public",
-					"static": true,
-					"type": "string",
-					"description": "Bar"
-				},
-				{
-					"name": "Foo",
-					"visibility": "public",
-					"static": true,
-					"type": "string",
-					"description": "Foo"
-				}
-			]
-		},
-		{
-			"kind": "enum",
-			"name": "testlib.ThisIsEnumToo",
+			"name": "library.j.ThisIsEnumToo",
 			"basename": "ThisIsEnumToo",
-			"resource": "library/j/dependency.js",
-			"module": "library/j/dependency",
+			"resource": "library/j/library.js",
+			"module": "library/j/library",
+			"export": "ThisIsEnumToo",
 			"static": true,
 			"visibility": "public",
 			"description": "ThisIsEnumToo",
@@ -214,20 +215,20 @@
 					"visibility": "public",
 					"static": true,
 					"type": "string",
-					"description": "Foo"
+					"description": "Value1"
 				},
 				{
 					"name": "Value2",
 					"visibility": "public",
 					"static": true,
 					"type": "string",
-					"description": "Bar"
+					"description": "Value2"
 				}
 			]
 		},
 		{
 			"kind": "class",
-			"name": "testlib.ValidPropertyDefaultValue",
+			"name": "library.j.ValidPropertyDefaultValue",
 			"basename": "ValidPropertyDefaultValue",
 			"resource": "library/j/some.js",
 			"module": "library/j/some",
@@ -242,7 +243,7 @@
 				"properties": [
 					{
 						"name": "validPropertyDefaultValueEnumSimpleDestructuring",
-						"type": "testlib.AnotherValidEnum",
+						"type": "library.j.core.AnotherValidEnum",
 						"defaultValue": "Buzz",
 						"group": "Misc",
 						"visibility": "public",
@@ -254,7 +255,7 @@
 					},
 					{
 						"name": "validPropertyDefaultValueEnumChainedDestructuring",
-						"type": "testlib.AnotherValidEnum",
+						"type": "library.j.core.AnotherValidEnum",
 						"defaultValue": "Buzz",
 						"group": "Misc",
 						"visibility": "public",
@@ -266,7 +267,7 @@
 					},
 					{
 						"name": "validPropertyDefaultValueEnumDestructuringWithRename",
-						"type": "testlib.AnotherValidEnum",
+						"type": "library.j.core.AnotherValidEnum",
 						"defaultValue": "Fizz",
 						"group": "Misc",
 						"visibility": "public",
@@ -278,7 +279,7 @@
 					},
 					{
 						"name": "validPropertyDefaultValueEnumDestructuringWithRenameInArguments",
-						"type": "testlib.ThisIsEnumToo",
+						"type": "library.j.ThisIsEnumToo",
 						"defaultValue": "Value1",
 						"group": "Misc",
 						"visibility": "public",
@@ -290,7 +291,7 @@
 					},
 					{
 						"name": "validPropertyDefaultValueEnumDestructuringWithRenameInArgumentsAndLocalVar",
-						"type": "testlib.ThisIsEnumToo",
+						"type": "library.j.ThisIsEnumToo",
 						"defaultValue": "Value2",
 						"group": "Misc",
 						"visibility": "public",
@@ -302,7 +303,7 @@
 					},
 					{
 						"name": "validPropertyDefaultValueEnumViaDestructuringInArrowFn",
-						"type": "testlib.MyValidEnum",
+						"type": "library.j.MyValidEnum",
 						"defaultValue": "Foo",
 						"group": "Misc",
 						"visibility": "public",
@@ -359,7 +360,7 @@
 							"description": "Constructor function for the metadata object; if not given, it defaults to the metadata implementation used by this class"
 						}
 					],
-					"description": "Creates a new subclass of class testlib.ValidPropertyDefaultValue with name <code>sClassName</code> and enriches it with the information contained in <code>oClassInfo</code>.\n\n<code>oClassInfo</code> might contain the same kind of information as described in {@link sap.ui.core.Control.extend}."
+					"description": "Creates a new subclass of class library.j.ValidPropertyDefaultValue with name <code>sClassName</code> and enriches it with the information contained in <code>oClassInfo</code>.\n\n<code>oClassInfo</code> might contain the same kind of information as described in {@link sap.ui.core.Control.extend}."
 				},
 				{
 					"name": "getMetadata",
@@ -369,13 +370,13 @@
 						"type": "sap.ui.base.Metadata",
 						"description": "Metadata object describing this class"
 					},
-					"description": "Returns a metadata object for class testlib.ValidPropertyDefaultValue."
+					"description": "Returns a metadata object for class library.j.ValidPropertyDefaultValue."
 				},
 				{
 					"name": "getValidPropertyDefaultValueEnumChainedDestructuring",
 					"visibility": "public",
 					"returnValue": {
-						"type": "testlib.AnotherValidEnum",
+						"type": "library.j.core.AnotherValidEnum",
 						"description": "Value of property <code>validPropertyDefaultValueEnumChainedDestructuring</code>"
 					},
 					"description": "Gets current value of property {@link #getValidPropertyDefaultValueEnumChainedDestructuring validPropertyDefaultValueEnumChainedDestructuring}.\n\nvalidPropertyDefaultValueEnumChainedDestructuring\n\nDefault value is <code>Buzz</code>."
@@ -384,7 +385,7 @@
 					"name": "getValidPropertyDefaultValueEnumDestructuringWithRename",
 					"visibility": "public",
 					"returnValue": {
-						"type": "testlib.AnotherValidEnum",
+						"type": "library.j.core.AnotherValidEnum",
 						"description": "Value of property <code>validPropertyDefaultValueEnumDestructuringWithRename</code>"
 					},
 					"description": "Gets current value of property {@link #getValidPropertyDefaultValueEnumDestructuringWithRename validPropertyDefaultValueEnumDestructuringWithRename}.\n\nvalidPropertyDefaultValueEnumDestructuringWithRename\n\nDefault value is <code>Fizz</code>."
@@ -393,7 +394,7 @@
 					"name": "getValidPropertyDefaultValueEnumDestructuringWithRenameInArguments",
 					"visibility": "public",
 					"returnValue": {
-						"type": "testlib.ThisIsEnumToo",
+						"type": "library.j.ThisIsEnumToo",
 						"description": "Value of property <code>validPropertyDefaultValueEnumDestructuringWithRenameInArguments</code>"
 					},
 					"description": "Gets current value of property {@link #getValidPropertyDefaultValueEnumDestructuringWithRenameInArguments validPropertyDefaultValueEnumDestructuringWithRenameInArguments}.\n\nvalidPropertyDefaultValueEnumDestructuringWithRenameInArguments\n\nDefault value is <code>Value1</code>."
@@ -402,7 +403,7 @@
 					"name": "getValidPropertyDefaultValueEnumDestructuringWithRenameInArgumentsAndLocalVar",
 					"visibility": "public",
 					"returnValue": {
-						"type": "testlib.ThisIsEnumToo",
+						"type": "library.j.ThisIsEnumToo",
 						"description": "Value of property <code>validPropertyDefaultValueEnumDestructuringWithRenameInArgumentsAndLocalVar</code>"
 					},
 					"description": "Gets current value of property {@link #getValidPropertyDefaultValueEnumDestructuringWithRenameInArgumentsAndLocalVar validPropertyDefaultValueEnumDestructuringWithRenameInArgumentsAndLocalVar}.\n\nvalidPropertyDefaultValueEnumDestructuringWithRenameInArgumentsAndLocalVar\n\nDefault value is <code>Value2</code>."
@@ -411,7 +412,7 @@
 					"name": "getValidPropertyDefaultValueEnumSimpleDestructuring",
 					"visibility": "public",
 					"returnValue": {
-						"type": "testlib.AnotherValidEnum",
+						"type": "library.j.core.AnotherValidEnum",
 						"description": "Value of property <code>validPropertyDefaultValueEnumSimpleDestructuring</code>"
 					},
 					"description": "Gets current value of property {@link #getValidPropertyDefaultValueEnumSimpleDestructuring validPropertyDefaultValueEnumSimpleDestructuring}.\n\nvalidPropertyDefaultValueEnumSimpleDestructuring\n\nDefault value is <code>Buzz</code>."
@@ -429,7 +430,7 @@
 					"name": "getValidPropertyDefaultValueEnumViaDestructuringInArrowFn",
 					"visibility": "public",
 					"returnValue": {
-						"type": "testlib.MyValidEnum",
+						"type": "library.j.MyValidEnum",
 						"description": "Value of property <code>validPropertyDefaultValueEnumViaDestructuringInArrowFn</code>"
 					},
 					"description": "Gets current value of property {@link #getValidPropertyDefaultValueEnumViaDestructuringInArrowFn validPropertyDefaultValueEnumViaDestructuringInArrowFn}.\n\nvalidPropertyDefaultValueEnumViaDestructuringInArrowFn\n\nDefault value is <code>Foo</code>."
@@ -444,7 +445,7 @@
 					"parameters": [
 						{
 							"name": "sValidPropertyDefaultValueEnumChainedDestructuring",
-							"type": "testlib.AnotherValidEnum",
+							"type": "library.j.core.AnotherValidEnum",
 							"optional": true,
 							"defaultValue": "Buzz",
 							"description": "New value for property <code>validPropertyDefaultValueEnumChainedDestructuring</code>"
@@ -462,7 +463,7 @@
 					"parameters": [
 						{
 							"name": "sValidPropertyDefaultValueEnumDestructuringWithRename",
-							"type": "testlib.AnotherValidEnum",
+							"type": "library.j.core.AnotherValidEnum",
 							"optional": true,
 							"defaultValue": "Fizz",
 							"description": "New value for property <code>validPropertyDefaultValueEnumDestructuringWithRename</code>"
@@ -480,7 +481,7 @@
 					"parameters": [
 						{
 							"name": "sValidPropertyDefaultValueEnumDestructuringWithRenameInArguments",
-							"type": "testlib.ThisIsEnumToo",
+							"type": "library.j.ThisIsEnumToo",
 							"optional": true,
 							"defaultValue": "Value1",
 							"description": "New value for property <code>validPropertyDefaultValueEnumDestructuringWithRenameInArguments</code>"
@@ -498,7 +499,7 @@
 					"parameters": [
 						{
 							"name": "sValidPropertyDefaultValueEnumDestructuringWithRenameInArgumentsAndLocalVar",
-							"type": "testlib.ThisIsEnumToo",
+							"type": "library.j.ThisIsEnumToo",
 							"optional": true,
 							"defaultValue": "Value2",
 							"description": "New value for property <code>validPropertyDefaultValueEnumDestructuringWithRenameInArgumentsAndLocalVar</code>"
@@ -516,7 +517,7 @@
 					"parameters": [
 						{
 							"name": "sValidPropertyDefaultValueEnumSimpleDestructuring",
-							"type": "testlib.AnotherValidEnum",
+							"type": "library.j.core.AnotherValidEnum",
 							"optional": true,
 							"defaultValue": "Buzz",
 							"description": "New value for property <code>validPropertyDefaultValueEnumSimpleDestructuring</code>"
@@ -552,7 +553,7 @@
 					"parameters": [
 						{
 							"name": "sValidPropertyDefaultValueEnumViaDestructuringInArrowFn",
-							"type": "testlib.MyValidEnum",
+							"type": "library.j.MyValidEnum",
 							"optional": true,
 							"defaultValue": "Foo",
 							"description": "New value for property <code>validPropertyDefaultValueEnumViaDestructuringInArrowFn</code>"

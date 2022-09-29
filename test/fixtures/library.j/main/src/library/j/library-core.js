@@ -3,11 +3,11 @@
  */
 sap.ui.define([], function () {
 	sap.ui.getCore().initLibrary({
-		name: "testlib",
+		name: "library.j.core",
 		version: "${version}",
 		dependencies: ["sap.ui.core"],
-		designtime: "testlib/designtime/library.designtime",
-		types: ["testlib.AnotherValidEnum"],
+		designtime: "library/j/core/designtime/library.designtime",
+		types: ["library.j.core.AnotherValidEnum"],
 	});
 
 	/**
@@ -17,18 +17,18 @@ sap.ui.define([], function () {
 	 * @public
 	 * @ui5-metamodel This enumeration also will be described in the UI5 (legacy) designtime metamodel
 	 */
-	testlib.AnotherValidEnum = {
+	library.j.core.AnotherValidEnum = {
 		/**
 		 * Fizz
 		 * @public
 		 */
 		Fizz: "Fizz",
 		/**
-		 * Bar
+		 * Buzz
 		 * @public
 		 */
 		Buzz: "Buzz",
 	};
 
-	return testlib;
+	return library.j.core;
 });

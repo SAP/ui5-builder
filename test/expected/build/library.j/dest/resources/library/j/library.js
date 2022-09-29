@@ -38,12 +38,12 @@ sap.ui.define([], function () {
 	 */
 	library.j.ThisIsEnumToo = {
 		/**
-		 * Foo
+		 * Value1
 		 * @public
 		 */
 		Value1: "Value1",
 		/**
-		 * Bar
+		 * Value2
 		 * @public
 		 */
 		Value2: "Value2",
