@@ -3,11 +3,11 @@
  */
 sap.ui.define([], function () {
 	sap.ui.getCore().initLibrary({
-		name: "testlib",
+		name: "library.j",
 		version: "${version}",
 		dependencies: ["sap.ui.core"],
-		designtime: "testlib/designtime/library.designtime",
-		types: ["testlib.MyValidEnum"],
+		designtime: "library.j/designtime/library.designtime",
+		types: ["library.j.MyValidEnum"],
 	});
 
 	/**
@@ -17,7 +17,7 @@ sap.ui.define([], function () {
 	 * @public
 	 * @ui5-metamodel This enumeration also will be described in the UI5 (legacy) designtime metamodel
 	 */
-	testlib.MyValidEnum = {
+	library.j.MyValidEnum = {
 		/**
 		 * Foo
 		 * @public
@@ -36,7 +36,7 @@ sap.ui.define([], function () {
 	 * @enum {string}
 	 * @public
 	 */
-	testlib.ThisIsEnumToo = {
+	library.j.ThisIsEnumToo = {
 		/**
 		 * Foo
 		 * @public
@@ -49,5 +49,5 @@ sap.ui.define([], function () {
 		Value2: "Value2",
 	};
 
-	return testlib;
+	return library.j;
 });
