@@ -3,6 +3,9 @@ import sinon from "sinon";
 import esmock from "esmock";
 let buildThemes;
 
+// import fsInterface from "@ui5/fs/fsInterface";
+// import ReaderCollectionPrioritized from "@ui5/fs/ReaderCollectionPrioritized";
+
 test.before(async () => {
 	// Enable verbose logging to also cover verbose logging code
 	const { default: logger } = await import("@ui5/logger");
@@ -10,22 +13,21 @@ test.before(async () => {
 });
 
 test.beforeEach(async (t) => {
-	const ui5Fs = await import("@ui5/fs");
-	const { fsInterface, ReaderCollectionPrioritized } = ui5Fs;
+	// const fsInterface = await import("@ui5/fs/fsInterface");
+	// const ReaderCollectionPrioritized = await import("@ui5/fs/ReaderCollectionPrioritized");
+	// const { fsInterface, ReaderCollectionPrioritized } = ui5Fs;
 	// Stubbing processors/themeBuilder
 	t.context.themeBuilderStub = sinon.stub();
-	t.context.fsInterfaceStub = sinon.stub(fsInterface);
+	t.context.fsInterfaceStub = sinon.stub();
 	t.context.fsInterfaceStub.returns({});
 
-	t.context.ReaderCollectionPrioritizedStub = sinon.stub(ReaderCollectionPrioritized);
+	t.context.ReaderCollectionPrioritizedStub = sinon.stub();
 	t.context.comboByGlob = sinon.stub();
-	t.context.ReaderCollectionPrioritizedStub.returns({_byGlob: t.context.comboByGlob});
+	t.context.ReaderCollectionPrioritizedStub.returns({byGlob: t.context.comboByGlob});
 
 	buildThemes = await esmock("../../../lib/tasks/buildThemes.js", {
-		"@ui5/fs": {
-			ReaderCollectionPrioritized: t.context.ReaderCollectionPrioritizedStub,
-			fsInterface: t.context.fsInterfaceStub
-		},
+		"@ui5/fs/fsInterface": t.context.fsInterfaceStub,
+		"@ui5/fs/ReaderCollectionPrioritized": t.context.ReaderCollectionPrioritizedStub,
 		"../../../lib/processors/themeBuilder": t.context.themeBuilderStub
 	});
 });
@@ -41,7 +43,7 @@ test.serial("buildThemes", async (t) => {
 	const lessResource = {};
 
 	const workspace = {
-		_byGlob: async (globPattern) => {
+		byGlob: async (globPattern) => {
 			if (globPattern === "/resources/test/library.source.less") {
 				return [lessResource];
 			} else {
@@ -95,7 +97,7 @@ test.serial("buildThemes (compress = false)", async (t) => {
 	const lessResource = {};
 
 	const workspace = {
-		_byGlob: async (globPattern) => {
+		byGlob: async (globPattern) => {
 			if (globPattern === "/resources/test/library.source.less") {
 				return [lessResource];
 			} else {
@@ -149,7 +151,7 @@ test.serial("buildThemes (cssVariables = true)", async (t) => {
 	const lessResource = {};
 
 	const workspace = {
-		_byGlob: async (globPattern) => {
+		byGlob: async (globPattern) => {
 			if (globPattern === "/resources/test/library.source.less") {
 				return [lessResource];
 			} else {
@@ -238,7 +240,7 @@ test.serial("buildThemes (filtering libraries)", async (t) => {
 
 	const workspaceByGlob = sinon.stub();
 	const workspace = {
-		_byGlob: workspaceByGlob,
+		byGlob: workspaceByGlob,
 		write: sinon.stub()
 	};
 
@@ -318,7 +320,7 @@ test.serial("buildThemes (filtering themes)", async (t) => {
 
 	const workspaceByGlob = sinon.stub();
 	const workspace = {
-		_byGlob: workspaceByGlob,
+		byGlob: workspaceByGlob,
 		write: sinon.stub()
 	};
 
@@ -427,7 +429,7 @@ test.serial("buildThemes (filtering libraries + themes)", async (t) => {
 
 	const workspaceByGlob = sinon.stub();
 	const workspace = {
-		_byGlob: workspaceByGlob,
+		byGlob: workspaceByGlob,
 		write: sinon.stub()
 	};
 
