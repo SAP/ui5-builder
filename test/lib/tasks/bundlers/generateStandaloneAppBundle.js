@@ -1,15 +1,14 @@
 import test from "ava";
 import chai from "chai";
-chai.use(require("chai-fs"));
+import chaiFs from "chai-fs";
+chai.use(chaiFs);
 import sinon from "sinon";
 import esmock from "esmock";
-import generateStandaloneAppBundle from "../../../../lib/tasks/bundlers/generateStandaloneAppBundle.js";
 
-test.beforeEach((t) => {
+test.beforeEach(async (t) => {
 	// Stubbing processors/bundlers/moduleBundler
 	t.context.moduleBundlerStub = sinon.stub();
 	t.context.moduleBundlerStub.resolves([{bundle: "I am a resource", sourceMap: "I am a source map"}]);
-	esmock("../../../../lib/processors/bundlers/moduleBundler", t.context.moduleBundlerStub);
 
 	t.context.taskUtil = {
 		getTag: sinon.stub().returns(false),
@@ -21,13 +20,12 @@ test.beforeEach((t) => {
 			OmitFromBuildResult: "<OmitFromBuildResult>"
 		}
 	};
-
-	// Re-require tested module
-	generateStandaloneAppBundle = esmock.reRequire("../../../../lib/tasks/bundlers/generateStandaloneAppBundle");
+	t.context.generateStandaloneAppBundle = await esmock("../../../../lib/tasks/bundlers/generateStandaloneAppBundle.js", {
+		"../../../../lib/processors/bundlers/moduleBundler.js": t.context.moduleBundlerStub
+	});
 });
 
 test.afterEach.always((t) => {
-	esmock.stopAll();
 	sinon.restore();
 });
 
@@ -40,6 +38,7 @@ function createDummyResource(id) {
 }
 
 test.serial("execute module bundler and write results", async (t) => {
+	const {generateStandaloneAppBundle} = t.context;
 	let dummyResourceId = 0;
 	const dummyReaderWriter = {
 		_byGlob: async function() {
@@ -87,6 +86,7 @@ test.serial("execute module bundler and write results", async (t) => {
 });
 
 test.serial("execute module bundler and write results without namespace", async (t) => {
+	const {generateStandaloneAppBundle} = t.context;
 	let dummyResourceId = 0;
 	const dummyReaderWriter = {
 		_byGlob: async function() {
@@ -123,6 +123,7 @@ test.serial("execute module bundler and write results without namespace", async 
 
 
 test.serial("execute module bundler and write results in evo mode", async (t) => {
+	const {generateStandaloneAppBundle} = t.context;
 	let dummyResourceId = 0;
 
 	const ui5LoaderDummyResource = {
@@ -168,7 +169,7 @@ test.serial("execute module bundler and write results in evo mode", async (t) =>
 });
 
 test.serial("execute module bundler with taskUtil", async (t) => {
-	const {taskUtil} = t.context;
+	const {generateStandaloneAppBundle, taskUtil} = t.context;
 
 	const dummyResource1 = createDummyResource("1.js");
 	const dummyResource2 = createDummyResource("2-dbg.js");
@@ -303,8 +304,7 @@ test.serial("execute module bundler with taskUtil", async (t) => {
 test.serial("Error: Failed to resolve non-debug name", async (t) => {
 	// NOTE: This scenario is not expected to happen as the "minify" task sets the IsDebugVariant tag
 	// only for resources that adhere to the debug file name pattern
-
-	const {taskUtil} = t.context;
+	const {generateStandaloneAppBundle, taskUtil} = t.context;
 	const dummyResource1 = createDummyResource("1.js");
 	taskUtil.getTag.withArgs(dummyResource1, taskUtil.STANDARD_TAGS.IsDebugVariant).returns(true);
 

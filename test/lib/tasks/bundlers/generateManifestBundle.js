@@ -13,11 +13,10 @@ test.serial("generateManifestBundle", async (t) => {
 		byGlob: byGlobStub,
 		write: writeStub
 	};
-
 	const manifestBundlerStub = sinon.stub().resolves(["some new resource", "some other new resource"]);
-	esmock("../../../../lib/processors/bundlers/manifestBundler", manifestBundlerStub);
-	const generateManifestBundle = esmock.reRequire("../../../../lib/tasks/bundlers/generateManifestBundle");
-
+	const generateManifestBundle = await esmock("../../../../lib/tasks/bundlers/generateManifestBundle.js", {
+		"../../../../lib/processors/bundlers/manifestBundler": manifestBundlerStub
+	});
 
 	await generateManifestBundle({
 		workspace,
@@ -46,8 +45,6 @@ test.serial("generateManifestBundle", async (t) => {
 		"workspace.write got called with the correct arguments");
 	t.is(writeStub.getCall(1).args[0], "some other new resource",
 		"workspace.write got called with the correct arguments");
-
-	esmock.stop("../../../../lib/processors/bundlers/manifestBundler");
 });
 
 test.serial("generateManifestBundle with no resources", async (t) => {
@@ -57,9 +54,9 @@ test.serial("generateManifestBundle with no resources", async (t) => {
 	};
 
 	const manifestBundlerStub = sinon.stub().resolves([]);
-	esmock("../../../../lib/processors/bundlers/manifestBundler", manifestBundlerStub);
-	const generateManifestBundle = esmock.reRequire("../../../../lib/tasks/bundlers/generateManifestBundle");
-
+	const generateManifestBundle = await esmock("../../../../lib/tasks/bundlers/generateManifestBundle.js", {
+		"../../../../lib/processors/bundlers/manifestBundler": manifestBundlerStub
+	});
 
 	await generateManifestBundle({
 		workspace,
@@ -73,8 +70,6 @@ test.serial("generateManifestBundle with no resources", async (t) => {
 		"workspace.byGlob got called with the correct arguments");
 
 	t.is(manifestBundlerStub.callCount, 0, "manifestBundler not called");
-
-	esmock.stop("../../../../lib/processors/bundlers/manifestBundler");
 });
 
 test("generateManifestBundle with missing parameters", async (t) => {

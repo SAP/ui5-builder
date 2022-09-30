@@ -3,7 +3,7 @@ import sinon from "sinon";
 import esmock from "esmock";
 import ModuleName from "../../../../lib/lbt/utils/ModuleName.js";
 
-test.beforeEach((t) => {
+test.beforeEach(async (t) => {
 	t.context.log = {
 		warn: sinon.stub(),
 		verbose: sinon.stub(),
@@ -31,21 +31,17 @@ test.beforeEach((t) => {
 		filter: sinon.stub()
 	};
 
-	t.context.ReaderCollectionPrioritizedStub = sinon.stub();
-	t.context.ReaderCollectionPrioritizedStub.returns(t.context.combo);
-	esmock("@ui5/fs", {
-		ReaderCollectionPrioritized: t.context.ReaderCollectionPrioritizedStub
-	});
-
+	t.context.ReaderCollectionPrioritizedStub = sinon.stub().returns(t.context.combo);
 	t.context.moduleBundlerStub = sinon.stub().resolves([]);
-	esmock("../../../../lib/processors/bundlers/moduleBundler", t.context.moduleBundlerStub);
 
-	t.context.generateBundle = esmock.reRequire("../../../../lib/tasks/bundlers/generateBundle");
+	t.context.generateBundle = await esmock("../../../../lib/tasks/bundlers/generateBundle.js", {
+		"@ui5/fs/ReaderCollectionPrioritized": t.context.ReaderCollectionPrioritizedStub,
+		"../../../../lib/processors/bundlers/moduleBundler": t.context.moduleBundlerStub
+	});
 });
 
 test.afterEach.always(() => {
 	sinon.restore();
-	esmock.stopAll();
 });
 
 test.serial("generateBundle: No taskUtil, no bundleOptions", async (t) => {

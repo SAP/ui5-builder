@@ -1,16 +1,17 @@
 import test from "ava";
+import {fileURLToPath} from "node:url";
 import path from "node:path";
 import chai from "chai";
-chai.use(require("chai-fs"));
+import chaiFs from "chai-fs";
+chai.use(chaiFs);
 const assert = chai.assert;
-
 import {createAdapter, createResource} from "@ui5/fs/resourceFactory";
 import DuplexCollection from "@ui5/fs/DuplexCollection";
+import {graphFromObject} from "@ui5/project/graph";
+import generateLibraryPreload from "@ui5/builder/tasks/bundlers/generateLibraryPreload";
+import * as taskRepository from "@ui5/builder/taskRepository";
 
-import { generateProjectGraph } from "@ui5/project";
-import ui5Builder from "../../../../index.cjs";
-const {generateLibraryPreload, taskRepository} = ui5Builder.tasks;
-
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const libraryDPath = path.join(__dirname, "..", "..", "..", "fixtures", "library.d");
 const sapUiCorePath = path.join(__dirname, "..", "..", "..", "fixtures", "sap.ui.core");
 
@@ -34,7 +35,7 @@ test("integration: build library.d with library preload", async (t) => {
 	const excludedTasks = ["*"];
 	const includedTasks = ["generateLibraryPreload"];
 
-	const graph = await generateProjectGraph.usingObject({
+	const graph = await graphFromObject({
 		dependencyTree: libraryDTree
 	});
 	graph.setTaskRepository(taskRepository);
@@ -87,7 +88,7 @@ test("integration: build sap.ui.core with library preload", async (t) => {
 	const excludedTasks = ["*"];
 	const includedTasks = ["minify", "generateLibraryPreload"];
 
-	const graph = await generateProjectGraph.usingObject({
+	const graph = await graphFromObject({
 		dependencyTree: sapUiCoreTree
 	});
 	graph.setTaskRepository(taskRepository);

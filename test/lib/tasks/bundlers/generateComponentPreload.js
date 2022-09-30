@@ -3,7 +3,7 @@ import sinon from "sinon";
 import esmock from "esmock";
 import logger from "@ui5/logger";
 
-test.beforeEach((t) => {
+test.beforeEach(async (t) => {
 	t.context.log = {
 		warn: sinon.stub(),
 		verbose: sinon.stub(),
@@ -21,14 +21,14 @@ test.beforeEach((t) => {
 	t.context.byGlob = t.context.workspace.byGlob;
 
 	t.context.moduleBundlerStub = sinon.stub().resolves([]);
-	esmock("../../../../lib/processors/bundlers/moduleBundler", t.context.moduleBundlerStub);
 
-	t.context.generateComponentPreload = esmock.reRequire("../../../../lib/tasks/bundlers/generateComponentPreload");
+	t.context.generateComponentPreload = await esmock("../../../../lib/tasks/bundlers/generateComponentPreload.js", {
+		"../../../../lib/processors/bundlers/moduleBundler": t.context.moduleBundlerStub
+	});
 });
 
 test.afterEach.always(() => {
 	sinon.restore();
-	esmock.stopAll();
 });
 
 test.serial("generateComponentPreload - one namespace", async (t) => {

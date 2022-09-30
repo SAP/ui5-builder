@@ -2,10 +2,11 @@ import test from "ava";
 import fs from "node:fs";
 import path from "node:path";
 import chai from "chai";
-chai.use(require("chai-fs"));
+import chaiFs from "chai-fs";
+chai.use(chaiFs);
 const assert = chai.assert;
 
-import { generateProjectGraph } from "@ui5/project";
+import { graphFromObject } from "@ui5/project/graph";
 import taskRepository from "../../../lib/tasks/taskRepository.js";
 
 const applicationGPath = path.join(__dirname, "..", "..", "fixtures", "application.g");
@@ -30,7 +31,7 @@ test("integration: Build application.g with manifestBundler", async (t) => {
 	const excludedTasks = ["escapeNonAsciiCharacters", "generateVersionInfo"];
 	const includedTasks = ["generateCachebusterInfo"];
 
-	const graph = await generateProjectGraph.usingObject({
+	const graph = await graphFromObject({
 		dependencyTree: applicationGTree
 	});
 
@@ -66,7 +67,7 @@ test("integration: Build application.g with manifestBundler and cachebuster usin
 	const excludedTasks = ["escapeNonAsciiCharacters", "generateVersionInfo"];
 	const includedTasks = ["generateCachebusterInfo"];
 
-	const graph = await generateProjectGraph.usingObject({
+	const graph = await graphFromObject({
 		dependencyTree: applicationGTreeWithCachebusterHash
 	});
 

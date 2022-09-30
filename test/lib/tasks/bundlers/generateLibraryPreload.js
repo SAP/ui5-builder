@@ -1,15 +1,13 @@
 import test from "ava";
 import sinon from "sinon";
 import esmock from "esmock";
-import logger from "@ui5/logger";
 
-test.beforeEach((t) => {
+test.beforeEach(async (t) => {
 	t.context.log = {
 		warn: sinon.stub(),
 		verbose: sinon.stub(),
 		error: sinon.stub()
 	};
-	sinon.stub(logger, "getLogger").withArgs("builder:tasks:bundlers:generateLibraryPreload").returns(t.context.log);
 
 	t.context.workspace = {
 		byGlob: sinon.stub().resolves([]),
@@ -22,14 +20,17 @@ test.beforeEach((t) => {
 	t.context.secondByGlob = t.context.workspace.byGlob.onSecondCall();
 
 	t.context.moduleBundlerStub = sinon.stub().resolves([]);
-	esmock("../../../../lib/processors/bundlers/moduleBundler", t.context.moduleBundlerStub);
 
-	t.context.generateLibraryPreload = esmock.reRequire("../../../../lib/tasks/bundlers/generateLibraryPreload");
+	t.context.generateLibraryPreload = await esmock("../../../../lib/tasks/bundlers/generateLibraryPreload.js", {
+		"../../../../lib/processors/bundlers/moduleBundler.js": t.context.moduleBundlerStub,
+		"@ui5/logger": {
+			getLogger: sinon.stub().withArgs("builder:tasks:bundlers:generateLibraryPreload").returns(t.context.log)
+		}
+	});
 });
 
 test.afterEach.always(() => {
 	sinon.restore();
-	esmock.stopAll();
 });
 
 test.serial("generateLibraryPreload", async (t) => {
