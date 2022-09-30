@@ -17,7 +17,13 @@
 		"tool"
 	],
 	"type": "module",
-	"exports": "./index.js",
+	"exports": {
+		"./processors/*": "./lib/processors/*.js",
+		"./processors/jsdoc/lib/": null,
+		"./tasks/*": "./lib/tasks/*.js",
+		"./tasks/bundlers/utils/": null,
+		"./package.json": "./package.json"
+	},
 	"engines": {
 		"node": ">= 16.13.2",
 		"npm": ">= 8"
