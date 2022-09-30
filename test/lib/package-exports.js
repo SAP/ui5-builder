@@ -81,3 +81,10 @@ test("no export of tasks/bundlers/utils/createModuleNameMapping", async (t) => {
 		code: "ERR_PACKAGE_PATH_NOT_EXPORTED"
 	});
 });
+
+test.only("no export of tasks/taskRepository", async (t) => {
+	// Should only be exported as @ui5/builder/taskRepository
+	await t.throwsAsync(import("@ui5/builder/tasks/taskRepository"), {
+		code: "ERR_PACKAGE_PATH_NOT_EXPORTED"
+	});
+});
