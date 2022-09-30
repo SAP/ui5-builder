@@ -1,7 +1,6 @@
 import test from "ava";
 import nonAsciiEscaper from "../../../lib/processors/nonAsciiEscaper.js";
-import ui5fs from "@ui5/fs";
-const { Resource } = ui5fs;
+import Resource from "@ui5/fs/Resource";
 
 /**
  * Executes string escaping. Returns <code>undefined</code> if nothing was escaped.

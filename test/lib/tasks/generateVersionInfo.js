@@ -1,8 +1,7 @@
 import test from "ava";
 import generateVersionInfo from "../../../lib/tasks/generateVersionInfo.js";
 import path from "node:path";
-import ui5Fs from "@ui5/fs";
-const { resourceFactory } = ui5Fs;
+import {createAdapter, createResource} from "@ui5/fs/resourceFactory";
 import sinon from "sinon";
 import esmock from "esmock";
 import logger from "@ui5/logger";
@@ -33,7 +32,7 @@ const createProjectMetadata = (names, version) => {
 
 
 function createWorkspace() {
-	return resourceFactory.createAdapter({
+	return createAdapter({
 		virBasePath: "/",
 		project: createProjectMetadata(["test", "lib"], "2.0.0")
 	});
@@ -46,7 +45,7 @@ function createDependencies(oOptions = {
 	oOptions = Object.assign(oOptions, {
 		project: createProjectMetadata(["test", "lib3"], "3.0.0")
 	});
-	return resourceFactory.createAdapter(oOptions);
+	return createAdapter(oOptions);
 }
 
 async function createOptions(t, options) {
@@ -120,7 +119,7 @@ test.serial("integration: Library without i18n bundle file", async (t) => {
 	t.context.dependencies = createDependencies();
 
 	t.context.resources = [];
-	t.context.resources.push(resourceFactory.createResource({
+	t.context.resources.push(createResource({
 		path: "/resources/test/lib/.library",
 		string: `
 			<?xml version="1.0" encoding="UTF-8" ?>
@@ -195,7 +194,7 @@ const createManifestResource = async (dependencies, resourceFactory, names, deps
 	if (embeddedBy !== undefined) {
 		content["sap.app"]["embeddedBy"] = embeddedBy;
 	}
-	await dependencies.write(resourceFactory.createResource({
+	await dependencies.write(createResource({
 		path: `/resources/${names.join("/")}/manifest.json`,
 		string: JSON.stringify(content, null, 2)
 	}));
@@ -208,7 +207,7 @@ const createManifestResource = async (dependencies, resourceFactory, names, deps
  * @returns {Promise<void>}
  */
 async function createDotLibrary(dependencies, resourceFactory, names) {
-	await dependencies.write(resourceFactory.createResource({
+	await dependencies.write(createResource({
 		path: `/resources/${names.join("/")}/.library`,
 		string: `
 			<?xml version="1.0" encoding="UTF-8" ?>
@@ -243,7 +242,7 @@ function createDepWorkspace(names, oOptions = {
 	oOptions = Object.assign(oOptions, {
 		project: createProjectMetadata(names)
 	});
-	return resourceFactory.createAdapter(oOptions);
+	return createAdapter(oOptions);
 }
 
 test.serial("integration: sibling eager to lazy", async (t) => {
@@ -282,7 +281,7 @@ test.serial("integration: sibling eager to lazy", async (t) => {
 			rootProject: createProjectMetadata(["myname"], "1.33.7")
 		},
 		workspace,
-		dependencies: resourceFactory.createReaderCollection({
+		dependencies: createReaderCollection({
 			name: "dependencies",
 			readers: [dependenciesA, dependenciesB, dependenciesC]
 		})
@@ -363,7 +362,7 @@ test.serial("integration: sibling lazy to eager", async (t) => {
 			rootProject: createProjectMetadata(["myname"], "1.33.7")
 		},
 		workspace,
-		dependencies: resourceFactory.createReaderCollection({
+		dependencies: createReaderCollection({
 			name: "dependencies",
 			readers: [dependenciesA, dependenciesB, dependenciesC]
 		})
@@ -443,7 +442,7 @@ test.serial("integration: children eager to lazy", async (t) => {
 			rootProject: createProjectMetadata(["myname"], "1.33.7")
 		},
 		workspace,
-		dependencies: resourceFactory.createReaderCollection({
+		dependencies: createReaderCollection({
 			name: "dependencies",
 			readers: [dependenciesA, dependenciesB, dependenciesC]
 		})
@@ -527,7 +526,7 @@ test.serial("integration: children lazy to eager", async (t) => {
 			rootProject: createProjectMetadata(["myname"], "1.33.7")
 		},
 		workspace,
-		dependencies: resourceFactory.createReaderCollection({
+		dependencies: createReaderCollection({
 			name: "dependencies",
 			readers: [dependenciesA, dependenciesB, dependenciesC]
 		})
@@ -626,7 +625,7 @@ test.serial("integration: Library with dependencies and subcomponent complex sce
 			rootProject: createProjectMetadata(["myname"], "1.33.7")
 		},
 		workspace,
-		dependencies: resourceFactory.createReaderCollection({
+		dependencies: createReaderCollection({
 			name: "dependencies",
 			readers: [dependenciesA, dependenciesB, dependenciesC, dependenciesD, dependenciesE]
 		})
@@ -771,7 +770,7 @@ test.serial("integration: Library with dependencies and subcomponent bigger scen
 			rootProject: createProjectMetadata(["myname"], "1.33.7")
 		},
 		workspace,
-		dependencies: resourceFactory.createReaderCollection({
+		dependencies: createReaderCollection({
 			name: "dependencies",
 			readers: [dependenciesA, dependenciesB, dependenciesC, dependenciesD, dependenciesE]
 		})

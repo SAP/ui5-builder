@@ -1,11 +1,10 @@
 import test from "ava";
 import sinon from "sinon";
 import esmock from "esmock";
-import ui5Fs from "@ui5/fs";
-const resourceFactory = ui5Fs.resourceFactory;
+import {createAdapter} from "@ui5/fs/resourceFactory";
 
 function createWorkspace() {
-	return resourceFactory.createAdapter({
+	return createAdapter({
 		virBasePath: "/",
 		project: {
 			metadata: {

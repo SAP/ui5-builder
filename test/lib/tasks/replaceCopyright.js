@@ -1,14 +1,13 @@
 import test from "ava";
 import replaceCopyright from "../../../lib/tasks/replaceCopyright.js";
-import ui5Fs from "@ui5/fs";
-const resourceFactory = ui5Fs.resourceFactory;
-const DuplexCollection = ui5Fs.DuplexCollection;
+import {createAdapter, createResource} from "@ui5/fs/resourceFactory";
+import DuplexCollection from "@ui5/fs/DuplexCollection";
 
 test("integration: replace copyright", async (t) => {
-	const reader = resourceFactory.createAdapter({
+	const reader = createAdapter({
 		virBasePath: "/"
 	});
-	const writer = resourceFactory.createAdapter({
+	const writer = createAdapter({
 		virBasePath: "/"
 	});
 	const workspace = new DuplexCollection({reader, writer});
@@ -32,7 +31,7 @@ console.log('HelloWorld');`;
  */
 console.log('HelloWorld');`;
 
-	const resource = resourceFactory.createResource({
+	const resource = createResource({
 		path: "/test.js",
 		string: content
 	});
@@ -58,10 +57,10 @@ console.log('HelloWorld');`;
 
 
 test("test.xml: replace @copyright@", async (t) => {
-	const reader = resourceFactory.createAdapter({
+	const reader = createAdapter({
 		virBasePath: "/"
 	});
-	const writer = resourceFactory.createAdapter({
+	const writer = createAdapter({
 		virBasePath: "/"
 	});
 	const workspace = new DuplexCollection({reader, writer});
@@ -82,7 +81,7 @@ test("test.xml: replace @copyright@", async (t) => {
  -->
 <xml></xml>`;
 
-	const resource = resourceFactory.createResource({
+	const resource = createResource({
 		path: "/test.xml",
 		string: content
 	});

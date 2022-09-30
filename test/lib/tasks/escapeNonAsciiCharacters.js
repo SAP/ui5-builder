@@ -1,14 +1,13 @@
 import test from "ava";
 import escapeNonAsciiCharacters from "../../../lib/tasks/escapeNonAsciiCharacters.js";
-import ui5Fs from "@ui5/fs";
-const resourceFactory = ui5Fs.resourceFactory;
-const DuplexCollection = ui5Fs.DuplexCollection;
+import {createAdapter} from "@ui5/fs/resourceFactory";
+import DuplexCollection from "@ui5/fs/DuplexCollection";
 
 test("integration: escape non ascii characters (utf8, default)", async (t) => {
-	const reader = resourceFactory.createAdapter({
+	const reader = createAdapter({
 		virBasePath: "/"
 	});
-	const writer = resourceFactory.createAdapter({
+	const writer = createAdapter({
 		virBasePath: "/"
 	});
 	const workspace = new DuplexCollection({reader, writer});
@@ -27,7 +26,7 @@ street=Stra\\u00dfe:\\u2665
 zip=PLZ:
 city=Ort:`;
 
-	const resource = resourceFactory.createResource({
+	const resource = createResource({
 		path: "/i18n.properties",
 		string: content
 	});
@@ -51,10 +50,10 @@ city=Ort:`;
 });
 
 test("integration: escape non ascii characters source encoding being (ISO-8859-1)", async (t) => {
-	const reader = resourceFactory.createAdapter({
+	const reader = createAdapter({
 		virBasePath: "/"
 	});
-	const writer = resourceFactory.createAdapter({
+	const writer = createAdapter({
 		virBasePath: "/"
 	});
 	const workspace = new DuplexCollection({reader, writer});
@@ -74,7 +73,7 @@ street=Stra\\u00dfe:
 zip=PLZ:
 city=Ort:`;
 
-	const resource = resourceFactory.createResource({
+	const resource = createResource({
 		path: "/i18n.properties",
 		buffer: content
 	});
@@ -98,10 +97,10 @@ city=Ort:`;
 });
 
 test("integration: escape non ascii characters source encoding being empty", async (t) => {
-	const reader = resourceFactory.createAdapter({
+	const reader = createAdapter({
 		virBasePath: "/"
 	});
-	const writer = resourceFactory.createAdapter({
+	const writer = createAdapter({
 		virBasePath: "/"
 	});
 	const workspace = new DuplexCollection({reader, writer});
@@ -117,10 +116,10 @@ test("integration: escape non ascii characters source encoding being empty", asy
 });
 
 test("integration: escape non ascii characters source encoding being UTF-16", async (t) => {
-	const reader = resourceFactory.createAdapter({
+	const reader = createAdapter({
 		virBasePath: "/"
 	});
-	const writer = resourceFactory.createAdapter({
+	const writer = createAdapter({
 		virBasePath: "/"
 	});
 	const workspace = new DuplexCollection({reader, writer});

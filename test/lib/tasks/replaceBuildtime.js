@@ -1,14 +1,13 @@
 import test from "ava";
 import replaceBuildtime from "../../../lib/tasks/replaceBuildtime.js";
-import ui5Fs from "@ui5/fs";
-const resourceFactory = ui5Fs.resourceFactory;
-const DuplexCollection = ui5Fs.DuplexCollection;
+import {createAdapter, createResource} from "@ui5/fs/resourceFactory";
+import DuplexCollection from "@ui5/fs/DuplexCollection";
 
 test("integration: replace version", async (t) => {
-	const reader = resourceFactory.createAdapter({
+	const reader = createAdapter({
 		virBasePath: "/"
 	});
-	const writer = resourceFactory.createAdapter({
+	const writer = createAdapter({
 		virBasePath: "/"
 	});
 
@@ -16,7 +15,7 @@ test("integration: replace version", async (t) => {
 	const expectedPrefix = "// timestamp";
 	const expectedDatePattern = /^\d{8}-\d{4}$/;
 
-	const resource = resourceFactory.createResource({
+	const resource = createResource({
 		path: "/test.js",
 		string: content
 	});

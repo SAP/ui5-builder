@@ -4,9 +4,8 @@ import chai from "chai";
 chai.use(require("chai-fs"));
 const assert = chai.assert;
 
-import ui5Fs from "@ui5/fs";
-const resourceFactory = ui5Fs.resourceFactory;
-const DuplexCollection = ui5Fs.DuplexCollection;
+import {createAdapter, createResource} from "@ui5/fs/resourceFactory";
+import DuplexCollection from "@ui5/fs/DuplexCollection";
 
 import { generateProjectGraph } from "@ui5/project";
 import ui5Builder from "../../../../index.cjs";
@@ -136,19 +135,19 @@ const sapUiCoreTree = {
 
 
 test("integration: generateLibraryPreload", async (t) => {
-	const reader = resourceFactory.createAdapter({
+	const reader = createAdapter({
 		virBasePath: "/"
 	});
-	await reader.write(resourceFactory.createResource({
+	await reader.write(createResource({
 		path: "/resources/my/test/lib/library.js",
 		string: ""
 	}));
 
-	const writer = resourceFactory.createAdapter({
+	const writer = createAdapter({
 		virBasePath: "/"
 	});
 	const duplexCollection = new DuplexCollection({reader, writer});
-	const dependencies = resourceFactory.createAdapter({
+	const dependencies = createAdapter({
 		virBasePath: "/"
 	});
 
@@ -182,39 +181,39 @@ test("integration: generateLibraryPreload", async (t) => {
 });
 
 test("integration: generateLibraryPreload with designtime and support files", async (t) => {
-	const reader = resourceFactory.createAdapter({
+	const reader = createAdapter({
 		virBasePath: "/"
 	});
-	await reader.write(resourceFactory.createResource({
+	await reader.write(createResource({
 		path: "/resources/my/test/lib/library.js",
 		string: ""
 	}));
 
 	// designtime
-	await reader.write(resourceFactory.createResource({
+	await reader.write(createResource({
 		path: "/resources/my/test/lib/designtime/foo.js",
 		string: ""
 	}));
-	await reader.write(resourceFactory.createResource({
+	await reader.write(createResource({
 		path: "/resources/my/test/lib/some.designtime.js",
 		string: ""
 	}));
 
 	// support
-	await reader.write(resourceFactory.createResource({
+	await reader.write(createResource({
 		path: "/resources/my/test/lib/some.support.js",
 		string: ""
 	}));
-	await reader.write(resourceFactory.createResource({
+	await reader.write(createResource({
 		path: "/resources/my/test/lib/support/foo.support.js",
 		string: ""
 	}));
 
-	const writer = resourceFactory.createAdapter({
+	const writer = createAdapter({
 		virBasePath: "/"
 	});
 	const duplexCollection = new DuplexCollection({reader, writer});
-	const dependencies = resourceFactory.createAdapter({
+	const dependencies = createAdapter({
 		virBasePath: "/"
 	});
 

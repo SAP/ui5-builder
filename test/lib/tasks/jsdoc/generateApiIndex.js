@@ -1,6 +1,5 @@
 import test from "ava";
 import sinon from "sinon";
-import ui5Fs from "@ui5/fs";
 import esmock from "esmock";
 import generateApiIndex from "../../../../lib/tasks/jsdoc/generateApiIndex.js";
 
@@ -11,6 +10,7 @@ test.afterEach.always((t) => {
 
 test.serial("generateApiIndex", async (t) => {
 	const apiIndexGeneratorStub = sinon.stub().resolves(["resource A", "resource B"]);
+	// mock with esmock
 	const fsInterfaceStub = sinon.stub(ui5Fs, "fsInterface").returns("custom fs");
 	esmock("../../../../lib/processors/jsdoc/apiIndexGenerator", apiIndexGeneratorStub);
 

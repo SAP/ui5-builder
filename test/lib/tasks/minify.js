@@ -1,9 +1,8 @@
 import test from "ava";
 import sinon from "sinon";
 import minify from "../../../lib/tasks/minify.js";
-import ui5Fs from "@ui5/fs";
-const resourceFactory = ui5Fs.resourceFactory;
-const DuplexCollection = ui5Fs.DuplexCollection;
+import {createAdapter, createWorkspace} from "@ui5/fs/resourceFactory";
+import DuplexCollection from "@ui5/fs/DuplexCollection";
 
 // Node.js itself tries to parse sourceMappingURLs in all JavaScript files. This is unwanted and might even lead to
 // obscure errors when dynamically generating Data-URI soruceMappingURL values.
@@ -11,10 +10,10 @@ const DuplexCollection = ui5Fs.DuplexCollection;
 const SOURCE_MAPPING_URL = "//" + "# sourceMappingURL";
 
 function createWorkspace() {
-	const reader = resourceFactory.createAdapter({
+	const reader = createAdapter({
 		virBasePath: "/"
 	});
-	const writer = resourceFactory.createAdapter({
+	const writer = createAdapter({
 		virBasePath: "/"
 	});
 	const workspace = new DuplexCollection({reader: reader, writer: writer});
@@ -41,7 +40,7 @@ function test(paramA) {
 	console.log(variableA);
 }
 test();`;
-	const testResource = resourceFactory.createResource({
+	const testResource = createResource({
 		path: "/test.js",
 		string: content
 	});
@@ -106,7 +105,7 @@ function test(paramA) {
 	console.log(variableA);
 }
 test();`;
-	const testResource = resourceFactory.createResource({
+	const testResource = createResource({
 		path: "/test.js",
 		string: content
 	});
@@ -161,7 +160,7 @@ function test(paramA) {
 	console.log(variableA);
 }
 test();`;
-	const testResource = resourceFactory.createResource({
+	const testResource = createResource({
 		path: "/test.js",
 		string: content
 	});
@@ -208,7 +207,7 @@ function test(paramA) {
 	console.log(variableA);
 }
 test();`;
-	const testResource = resourceFactory.createResource({
+	const testResource = createResource({
 		path: "/test.js",
 		string: content
 	});

@@ -1,7 +1,6 @@
 import test from "ava";
 import minifier from "../../../lib/processors/minifier.js";
-import ui5Fs from "@ui5/fs";
-const resourceFactory = ui5Fs.resourceFactory;
+import {createResource} from "@ui5/fs/resourceFactory";
 
 // Node.js itself tries to parse sourceMappingURLs in all JavaScript files. This is unwanted and might even lead to
 // obscure errors when dynamically generating Data-URI soruceMappingURL values.
@@ -19,7 +18,7 @@ test("Basic minifier", async (t) => {
  }
 myFun();
 `;
-	const testResource = resourceFactory.createResource({
+	const testResource = createResource({
 		path: "/test.controller.js",
 		string: content
 	});
@@ -62,15 +61,15 @@ function test3(paramA) {
 test3();`;
 
 	const testResources = [
-		resourceFactory.createResource({
+		createResource({
 			path: "/test1.controller.js",
 			string: content1
 		}),
-		resourceFactory.createResource({
+		createResource({
 			path: "/test2.fragment.js",
 			string: content2
 		}),
-		resourceFactory.createResource({
+		createResource({
 			path: "/test3.designtime.js",
 			string: content3
 		})
@@ -145,7 +144,7 @@ function test(paramA) {
 }
 test();
 `;
-	const testResource = resourceFactory.createResource({
+	const testResource = createResource({
 		path: "/test.view.js",
 		string: content
 	});
@@ -176,7 +175,7 @@ function test(paramA) {
 }
 test();`;
 
-	const testResource = resourceFactory.createResource({
+	const testResource = createResource({
 		path: "/test.js",
 		string: content
 	});
@@ -199,7 +198,7 @@ function test(paramA) {
 }
 test();`;
 
-	const testResource = resourceFactory.createResource({
+	const testResource = createResource({
 		path: "/test.js",
 		string: content
 	});
@@ -222,7 +221,7 @@ function test(paramA) {
 }
 test();`;
 
-	const testResource = resourceFactory.createResource({
+	const testResource = createResource({
 		path: "/test.js",
 		string: content
 	});
@@ -247,7 +246,7 @@ function test(paramA) {
 }
 test();`;
 
-	const testResource = resourceFactory.createResource({
+	const testResource = createResource({
 		path: "/test.js",
 		string: content
 	});
@@ -273,7 +272,7 @@ function test(paramA) {
 }
 test();`;
 
-	const testResource = resourceFactory.createResource({
+	const testResource = createResource({
 		path: "/test.js",
 		string: content
 	});
@@ -292,7 +291,7 @@ test("minification error", async (t) => {
 	const content = `
 this code can't be parsed!`;
 
-	const testResource = resourceFactory.createResource({
+	const testResource = createResource({
 		path: "/test.js",
 		string: content
 	});

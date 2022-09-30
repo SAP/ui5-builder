@@ -1,8 +1,7 @@
 import test from "ava";
 import sinon from "sinon";
 import esmock from "esmock";
-import ui5Fs from "@ui5/fs";
-const { Resource } = ui5Fs;
+import Resource from "@ui5/fs/Resource";
 import LocatorResourcePool from "../../../../lib/lbt/resources/LocatorResourcePool.js";
 
 test.beforeEach(async (t) => {
