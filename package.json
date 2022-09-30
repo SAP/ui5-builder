@@ -21,7 +21,9 @@
 		"./processors/*": "./lib/processors/*.js",
 		"./processors/jsdoc/lib/": null,
 		"./tasks/*": "./lib/tasks/*.js",
+		"./tasks/taskRepository": null,
 		"./tasks/bundlers/utils/": null,
+		"./taskRepository": "./lib/tasks/taskRepository.js",
 		"./package.json": "./package.json"
 	},
 	"engines": {
