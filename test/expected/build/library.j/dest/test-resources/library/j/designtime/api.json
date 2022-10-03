@@ -7,8 +7,9 @@
 			"kind": "enum",
 			"name": "library.j.core.AnotherValidEnum",
 			"basename": "AnotherValidEnum",
-			"resource": "library/j/library-core.js",
-			"module": "library/j/library-core",
+			"resource": "library/j/core/library.js",
+			"module": "library/j/core/library",
+			"export": "AnotherValidEnum",
 			"static": true,
 			"visibility": "public",
 			"description": "AnotherValidEnum",
@@ -37,8 +38,9 @@
 			"kind": "class",
 			"name": "library.j.Foo",
 			"basename": "Foo",
-			"resource": "library/j/ES6.features.1.js",
-			"module": "library/j/ES6.features.1",
+			"resource": "library/j/Foo.js",
+			"module": "library/j/Foo",
+			"export": "",
 			"static": true,
 			"visibility": "public",
 			"extends": "library.j.Bar",
@@ -82,14 +84,15 @@
 			"kind": "class",
 			"name": "library.j.SubControl",
 			"basename": "SubControl",
-			"resource": "library/j/ES6.features.2.js",
-			"module": "library/j/ES6.features.2",
+			"resource": "library/j/SubControl.js",
+			"module": "library/j/SubControl",
 			"export": "",
 			"static": true,
 			"visibility": "public",
 			"since": "1.22",
-			"extends": "library.j.Control",
+			"extends": "sap.ui.core.Control",
 			"ui5-metadata": {
+				"stereotype": "control",
 				"properties": [
 					{
 						"name": "MyProp",
@@ -153,7 +156,7 @@
 							"description": "Constructor function for the metadata object; if not given, it defaults to the metadata implementation used by this class"
 						}
 					],
-					"description": "Creates a new subclass of class library.j.SubControl with name <code>sClassName</code> and enriches it with the information contained in <code>oClassInfo</code>.\n\n<code>oClassInfo</code> might contain the same kind of information as described in {@link library.j.Control.extend}."
+					"description": "Creates a new subclass of class library.j.SubControl with name <code>sClassName</code> and enriches it with the information contained in <code>oClassInfo</code>.\n\n<code>oClassInfo</code> might contain the same kind of information as described in {@link sap.ui.core.Control.extend}."
 				},
 				{
 					"name": "getMetadata",
@@ -230,8 +233,8 @@
 			"kind": "class",
 			"name": "library.j.ValidPropertyDefaultValue",
 			"basename": "ValidPropertyDefaultValue",
-			"resource": "library/j/some.js",
-			"module": "library/j/some",
+			"resource": "library/j/ValidPropertyDefaultValue.js",
+			"module": "library/j/ValidPropertyDefaultValue",
 			"export": "",
 			"static": true,
 			"visibility": "public",

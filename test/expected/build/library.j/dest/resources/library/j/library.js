@@ -6,7 +6,7 @@ sap.ui.define([], function () {
 		name: "library.j",
 		version: "${version}",
 		dependencies: ["sap.ui.core"],
-		designtime: "library.j/designtime/library.designtime",
+		designtime: "library/j/designtime/library.designtime",
 		types: ["library.j.MyValidEnum"],
 	});
 

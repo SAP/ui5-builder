@@ -6,7 +6,6 @@ sap.ui.define([
 	"./library",
 	"./library-core"
 ], (Control, { MyValidEnum, ThisIsEnumToo: RenamedEnum }, coreLibrary) => {
-
 	const { AnotherValidEnum } = coreLibrary;
 	const { Buzz } = AnotherValidEnum;
 	const { AnotherValidEnum: AnotherRenamedEnum } = coreLibrary;
@@ -61,20 +60,22 @@ sap.ui.define([
 					/**
 					 * validPropertyDefaultValueEnumDestructuringWithRenameInArguments
 					 */
-					validPropertyDefaultValueEnumDestructuringWithRenameInArguments: {
-						type: "library.j.ThisIsEnumToo",
-						group: "Misc",
-						defaultValue: RenamedEnum.Value1,
-					},
+					validPropertyDefaultValueEnumDestructuringWithRenameInArguments:
+						{
+							type: "library.j.ThisIsEnumToo",
+							group: "Misc",
+							defaultValue: RenamedEnum.Value1,
+						},
 
 					/**
 					 * validPropertyDefaultValueEnumDestructuringWithRenameInArgumentsAndLocalVar
 					 */
-					validPropertyDefaultValueEnumDestructuringWithRenameInArgumentsAndLocalVar: {
-						type: "library.j.ThisIsEnumToo",
-						group: "Misc",
-						defaultValue: RenamedValue2,
-					},
+					validPropertyDefaultValueEnumDestructuringWithRenameInArgumentsAndLocalVar:
+						{
+							type: "library.j.ThisIsEnumToo",
+							group: "Misc",
+							defaultValue: RenamedValue2,
+						},
 
 					/**
 					 * validPropertyDefaultValueEnumViaDestructuringInArrowFn
