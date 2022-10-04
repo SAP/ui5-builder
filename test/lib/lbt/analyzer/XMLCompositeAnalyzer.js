@@ -1,6 +1,5 @@
 import test from "ava";
-import parseUtils from "../../../../lib/lbt/utils/parseUtils.js";
-const {parseJS} = parseUtils;
+import {parseJS} from "../../../../lib/lbt/utils/parseUtils.js";
 import XMLCompositeAnalyzer from "../../../../lib/lbt/analyzer/XMLCompositeAnalyzer.js";
 import ModuleInfo from "../../../../lib/lbt/resources/ModuleInfo.js";
 import sinonGlobal from "sinon";
@@ -28,7 +27,7 @@ test("integration: XMLComposite code with VariableDeclaration", (t) => {
 	const code = `sap.ui.define([
 		'jquery.sap.global', 'sap/ui/core/XMLComposite'],
 		function(jQuery, XMLComposite) {
-		
+
 		var ButtonList = XMLComposite.extend("composites.ButtonList", {});
 		return ButtonList;
 	});`;
@@ -47,7 +46,7 @@ test("integration: XMLComposite code", (t) => {
 	const code = `sap.ui.define([
 		'jquery.sap.global', 'sap/ui/core/XMLComposite'],
 		function(jQuery, XMLComposite) {
-		
+
 		return XMLComposite.extend("composites.ButtonList", {});
 	});`;
 
@@ -97,7 +96,7 @@ test.serial("integration: XMLComposite code (async factory function)", async (t)
 	const code = `sap.ui.define([
 		'jquery.sap.global', 'sap/ui/core/XMLComposite'],
 		async function(jQuery, XMLComposite) {
-		
+
 		return XMLComposite.extend("composites.ButtonList", {});
 	});`;
 	await setupXMLCompositeAnalyzerWithStubbedLogger(t);
@@ -172,7 +171,7 @@ test("analyze: not an XMLComposite module", (t) => {
 	const code = `sap.ui.define([
 		'jquery.sap.global', 'sap/ui/core/XMLComposite'],
 		function(jQuery, XMLComposite) {
-		
+
 		return {};
 	});`;
 
@@ -196,7 +195,7 @@ test("analyze: XMLComposite VariableDeclaration code", (t) => {
 	const code = `sap.ui.define([
 		'jquery.sap.global', 'sap/ui/core/XMLComposite'],
 		function(jQuery, XMLComposite) {
-		
+
 		var ButtonList = XMLComposite.extend("composites.ButtonList", {});
 		return ButtonList;
 	});`;
@@ -228,7 +227,7 @@ test("analyze: XMLComposite Expression code", (t) => {
 	const code = `sap.ui.define([
 		'jquery.sap.global', 'sap/ui/core/XMLComposite'],
 		function(jQuery, XMLComposite) {
-		
+
 		jQuery.sap.test = XMLComposite.extend("composites.ButtonList", {});
 	});`;
 

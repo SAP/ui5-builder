@@ -3,8 +3,7 @@ import test from "ava";
 
 import fs from "node:fs";
 import path from "node:path";
-import parseUtils from "../../../../lib/lbt/utils/parseUtils.js";
-const {parseJS} = parseUtils;
+import {parseJS} from "../../../../lib/lbt/utils/parseUtils.js";
 import ModuleInfo from "../../../../lib/lbt/resources/ModuleInfo.js";
 import JSModuleAnalyzer from "../../../../lib/lbt/analyzer/JSModuleAnalyzer.js";
 

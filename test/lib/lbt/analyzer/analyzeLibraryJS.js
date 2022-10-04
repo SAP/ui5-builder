@@ -22,7 +22,7 @@ test.serial("analyze: library.js with non supported property", async (t) => {
 sap.ui.define([
 	'sap/ui/core/Core',
 ], function(Core) {
-	
+
 	sap.ui.getCore().initLibrary({
 		name : "library.test",
 		version: "1.0.0",
@@ -58,13 +58,15 @@ sap.ui.define([
 });`;
 
 	const librayJSPath = "library/test/library.js";
-	const logger = await esmock("@ui5/logger");
 	const errorLogStub = sinon.stub();
 	const myLoggerInstance = {
 		error: errorLogStub
 	};
-	sinon.stub(logger, "getLogger").returns(myLoggerInstance);
-	const analyzeLibraryJSWithStubbedLogger = await esmock("../../../../lib/lbt/analyzer/analyzeLibraryJS");
+	const analyzeLibraryJSWithStubbedLogger = await esmock("../../../../lib/lbt/analyzer/analyzeLibraryJS.js", {
+		"@ui5/logger": {
+			getLogger: sinon.stub().returns(myLoggerInstance)
+		}
+	});
 
 	const mockResource = createMockResource(libraryJS, librayJSPath);
 
@@ -87,7 +89,7 @@ test.serial("analyze: library.js with SpreadExpression", async (t) => {
 sap.ui.define([
 	'sap/ui/core/Core',
 ], function(Core) {
-	
+
 	const myExtensions = {myProperty1: "Value1", myProperty2: "Value2"};
 	sap.ui.getCore().initLibrary({
 		...myExtensions,
@@ -122,7 +124,7 @@ test.serial("analyze: library.js with property 'noLibraryCSS'", async (t) => {
 sap.ui.define([
 	'sap/ui/core/Core',
 ], function(Core) {
-	
+
 	sap.ui.getCore().initLibrary({
 		name : "library.test",
 		version: "1.0.0",
