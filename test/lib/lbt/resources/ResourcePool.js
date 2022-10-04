@@ -2,7 +2,7 @@ import test from "ava";
 import ModuleInfo from "../../../../lib/lbt/resources/ModuleInfo.js";
 import ResourcePool from "../../../../lib/lbt/resources/ResourcePool.js";
 import ResourceFilterList from "../../../../lib/lbt/resources/ResourceFilterList.js";
-import LibraryFileAnalyzer from "../../../../lib/lbt/resources/LibraryFileAnalyzer.js";
+import {LibraryFileAnalyzer} from "../../../../lib/lbt/resources/LibraryFileAnalyzer.js";
 import sinon from "sinon";
 
 test("findResources: based on pattern", async (t) => {

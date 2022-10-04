@@ -1,7 +1,6 @@
 import test from "ava";
-import parseUtils from "../../../../lib/lbt/utils/parseUtils.js";
-const {parseJS} = parseUtils;
-import ASTUtils from "../../../../lib/lbt/utils/ASTUtils.js";
+import {parseJS} from "../../../../lib/lbt/utils/parseUtils.js";
+import * as ASTUtils from "../../../../lib/lbt/utils/ASTUtils.js";
 
 /*
  * remove start/end properties before comparing AST nodes

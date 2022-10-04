@@ -1,6 +1,6 @@
 import test from "ava";
-import parseUtils from "../../../../lib/lbt/utils/parseUtils.js";
-const {parseJS, Syntax} = parseUtils;
+import {Syntax as EspreeSyntax, VisitorKeys as EspreeVisitorKeys} from "espree";
+import {parseJS, Syntax, VisitorKeys} from "../../../../lib/lbt/utils/parseUtils.js";
 
 test("invalid options", (t) => {
 	t.throws(function() {
@@ -11,7 +11,11 @@ test("invalid options", (t) => {
 });
 
 test("Syntax export", (t) => {
-	t.deepEqual(Syntax, require("espree").Syntax, "Syntax is a 1:1 export of the espree export with the same name");
+	t.is(Syntax, EspreeSyntax, "Syntax is a 1:1 export of the espree export with the same name");
+});
+
+test("VisitorKeys export", (t) => {
+	t.is(VisitorKeys, EspreeVisitorKeys, "VisitorKeys is a 1:1 export of the espree export with the same name");
 });
 
 test("successful parse step", (t) => {
