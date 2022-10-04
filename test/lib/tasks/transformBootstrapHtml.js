@@ -1,9 +1,8 @@
 import test from "ava";
 import sinon from "sinon";
 import esmock from "esmock";
-import transformBootstrapHtml from "../../../lib/tasks/transformBootstrapHtml.js";
 
-test.beforeEach((t) => {
+test.beforeEach(async (t) => {
 	// Spying logger of tasks/transformBootstrapHtml
 	const log = require("@ui5/logger");
 	const loggerInstance = log.getLogger("builder:tasks:transformBootstrapHtml");
@@ -17,8 +16,7 @@ test.beforeEach((t) => {
 	t.context.bootstrapHtmlTransformerStub = sinon.stub();
 	esmock("../../../lib/processors/bootstrapHtmlTransformer", t.context.bootstrapHtmlTransformerStub);
 
-	// Re-require tested module
-	transformBootstrapHtml = esmock.reRequire("../../../lib/tasks/transformBootstrapHtml");
+	t.context.transformBootstrapHtml = await esmock("../../../lib/tasks/transformBootstrapHtml.js");
 });
 
 test.afterEach.always((t) => {
@@ -28,6 +26,8 @@ test.afterEach.always((t) => {
 });
 
 test.serial("Transforms index.html resource", async (t) => {
+	const {transformBootstrapHtml} = t.context;
+
 	t.plan(5);
 
 	const resource = {};
@@ -68,6 +68,8 @@ test.serial("Transforms index.html resource", async (t) => {
 });
 
 test.serial("Transforms index.html resource without namespace", async (t) => {
+	const {transformBootstrapHtml} = t.context;
+
 	t.plan(5);
 
 	const resource = {};
@@ -107,6 +109,8 @@ test.serial("Transforms index.html resource without namespace", async (t) => {
 });
 
 test.serial("No index.html resource exists", async (t) => {
+	const {transformBootstrapHtml} = t.context;
+
 	t.plan(4);
 
 	const workspace = {

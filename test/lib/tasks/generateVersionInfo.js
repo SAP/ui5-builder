@@ -1,5 +1,4 @@
 import test from "ava";
-import generateVersionInfo from "../../../lib/tasks/generateVersionInfo.js";
 import path from "node:path";
 import * as resourceFactory from "@ui5/fs/resourceFactory";
 import sinon from "sinon";
@@ -65,6 +64,8 @@ async function createOptions(t, options) {
 }
 
 async function assertCreatedVersionInfo(t, oExpectedVersionInfo, oOptions) {
+	const {generateVersionInfo} = t.context;
+
 	await generateVersionInfo(oOptions);
 
 	const resource = await oOptions.workspace.byPath("/resources/sap-ui-version.json");
@@ -91,7 +92,7 @@ async function assertCreatedVersionInfo(t, oExpectedVersionInfo, oOptions) {
 	t.deepEqual(currentVersionInfo, oExpectedVersionInfo, "Correct content");
 }
 
-test.beforeEach((t) => {
+test.beforeEach(async (t) => {
 	t.context.verboseLogStub = sinon.stub();
 	t.context.errorLogStub = sinon.stub();
 	t.context.warnLogStub = sinon.stub();
@@ -106,11 +107,10 @@ test.beforeEach((t) => {
 		isLevelEnabled: () => true
 	});
 	esmock.reRequire("../../../lib/processors/versionInfoGenerator");
-	generateVersionInfo = esmock.reRequire("../../../lib/tasks/generateVersionInfo");
+	t.context.generateVersionInfo = await esmock("../../../lib/tasks/generateVersionInfo.js");
 });
 
 test.afterEach.always((t) => {
-	esmock.stopAll();
 	sinon.restore();
 });
 

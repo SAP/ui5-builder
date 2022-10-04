@@ -2,9 +2,8 @@ import test from "ava";
 import yazl from "yazl";
 import sinon from "sinon";
 import esmock from "esmock";
-import manifestBundler from "../../../../lib/processors/bundlers/manifestBundler.js";
 
-test.beforeEach((t) => {
+test.beforeEach(async (t) => {
 	// Stubbing logger of processors/bundlers/manifestBundler
 	const log = require("@ui5/logger");
 	const loggerInstance = log.getLogger("builder:processors:bundlers:manifestBundler");
@@ -16,8 +15,7 @@ test.beforeEach((t) => {
 	t.context.logWarnSpy = sinon.stub(loggerInstance, "warn");
 	t.context.logErrorSpy = sinon.stub(loggerInstance, "error");
 
-	// Re-require tested module
-	manifestBundler = esmock.reRequire("../../../../lib/processors/bundlers/manifestBundler");
+	t.context.manifestBundler = await esmock("../../../../lib/processors/bundlers/manifestBundler.js");
 
 
 	const zip = new yazl.ZipFile();
@@ -26,11 +24,11 @@ test.beforeEach((t) => {
 });
 
 test.afterEach.always(() => {
-	esmock.stopAll();
 	sinon.restore();
 });
 
 test.serial("manifestBundler with empty resources", async (t) => {
+	const {manifestBundler} = t.context;
 	const resources = [];
 	const options = {};
 	await manifestBundler({resources, options});
@@ -41,6 +39,7 @@ test.serial("manifestBundler with empty resources", async (t) => {
 });
 
 test.serial("manifestBundler with manifest path not starting with '/resources'", async (t) => {
+	const {manifestBundler} = t.context;
 	const resources = [];
 	resources.push({
 		name: "manifest.json",
@@ -69,6 +68,7 @@ test.serial("manifestBundler with manifest path not starting with '/resources'",
 });
 
 test.serial("manifestBundler with manifest without i18n section in sap.app", async (t) => {
+	const {manifestBundler} = t.context;
 	const resources = [];
 	resources.push({
 		name: "manifest.json",
@@ -96,6 +96,7 @@ test.serial("manifestBundler with manifest without i18n section in sap.app", asy
 });
 
 test.serial("manifestBundler with manifest with i18n string", async (t) => {
+	const {manifestBundler} = t.context;
 	const resources = [];
 	resources.push({
 		name: "manifest.json",
@@ -132,6 +133,7 @@ test.serial("manifestBundler with manifest with i18n string", async (t) => {
 });
 
 test.serial("manifestBundler with manifest with i18n object (bundleUrl)", async (t) => {
+	const {manifestBundler} = t.context;
 	const resources = [];
 	const manifestString = JSON.stringify({
 		"sap.app": {
@@ -179,6 +181,7 @@ test.serial("manifestBundler with manifest with i18n object (bundleUrl)", async 
 });
 
 test.serial("manifestBundler with manifest with i18n object (bundleName)", async (t) => {
+	const {manifestBundler} = t.context;
 	const resources = [];
 	const manifestString = JSON.stringify({
 		"sap.app": {
@@ -227,6 +230,7 @@ test.serial("manifestBundler with manifest with i18n object (bundleName)", async
 });
 
 test.serial("manifestBundler with manifest with i18n enhanceWith", async (t) => {
+	const {manifestBundler} = t.context;
 	const resources = [];
 	const manifestString = JSON.stringify({
 		"sap.app": {
@@ -295,6 +299,7 @@ test.serial("manifestBundler with manifest with i18n enhanceWith", async (t) => 
 });
 
 test.serial("manifestBundler with manifest with missing i18n files", async (t) => {
+	const {manifestBundler} = t.context;
 	const resources = [];
 	const manifestString = JSON.stringify({
 		"sap.app": {
@@ -345,6 +350,7 @@ test.serial("manifestBundler with manifest with missing i18n files", async (t) =
 });
 
 test.serial("manifestBundler with manifest with ui5:// url", async (t) => {
+	const {manifestBundler} = t.context;
 	const resources = [];
 	const manifestString = JSON.stringify({
 		"sap.app": {
