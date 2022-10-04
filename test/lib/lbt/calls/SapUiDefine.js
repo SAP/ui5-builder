@@ -1,6 +1,5 @@
 import test from "ava";
-import parseUtils from "../../../../lib/lbt/utils/parseUtils.js";
-const {parseJS, Syntax} = parseUtils;
+import {parseJS, Syntax} from "../../../../lib/lbt/utils/parseUtils.js";
 import SapUiDefineCall from "../../../../lib/lbt/calls/SapUiDefine.js";
 import sinonGlobal from "sinon";
 import esmock from "esmock";
