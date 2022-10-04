@@ -70,7 +70,7 @@ test("no export of processors/jsdoc/lib/ui5/plugin", async (t) => {
 	await t.throwsAsync(import("@ui5/builder/processors/jsdoc/lib/ui5/plugin"), {
 		code: "ERR_PACKAGE_PATH_NOT_EXPORTED"
 	});
-	await t.throwsAsync(import("@ui5/builder/processors/jsdoc/lib/ui5/plugin.js"), {
+	await t.throwsAsync(import("@ui5/builder/processors/jsdoc/lib/ui5/plugin.cjs"), {
 		code: "ERR_PACKAGE_PATH_NOT_EXPORTED"
 	});
 });

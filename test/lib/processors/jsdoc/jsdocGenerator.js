@@ -24,7 +24,7 @@ test("generateJsdocConfig", async (t) => {
 
 	const backslashRegex = /\\/g;
 
-	const pluginPath = path.join(jsdocGeneratorPath, "lib", "ui5", "plugin.js")
+	const pluginPath = path.join(jsdocGeneratorPath, "lib", "ui5", "plugin.cjs")
 		.replace(backslashRegex, "\\\\");
 	const templatePath = path.join(jsdocGeneratorPath, "lib", "ui5", "template")
 		.replace(backslashRegex, "\\\\");

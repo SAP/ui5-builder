@@ -9,7 +9,7 @@ test.afterEach.always((t) => {
 
 test.serial("sdkTransformer", async (t) => {
 	const transformerStub = sinon.stub().resolves("api.json content");
-	esmock("../../../../lib/processors/jsdoc/lib/transformApiJson", transformerStub);
+	esmock("../../../../lib/processors/jsdoc/lib/transformApiJson.cjs", transformerStub);
 	const createResourceStub = sinon.stub(require("@ui5/fs").resourceFactory, "createResource")
 		.returns("result resource");
 
