@@ -4,7 +4,7 @@ import sinon from "sinon";
 import esmock from "esmock";
 import jsdocGenerator from "../../../../lib/processors/jsdoc/jsdocGenerator.js";
 
-import { fileURLToPath } from "node:url";
+import {fileURLToPath} from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 

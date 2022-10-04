@@ -4,7 +4,7 @@ import chai from "chai";
 import chaiFs from "chai-fs";
 chai.use(chaiFs);
 import fs from "graceful-fs";
-import { promisify } from "node:util";
+import {promisify} from "node:util";
 const readFile = promisify(fs.readFile);
 const assert = chai.assert;
 import sinon from "sinon";

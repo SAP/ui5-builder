@@ -46,7 +46,7 @@ test("export of package.json", (t) => {
 	"tasks/transformBootstrapHtml",
 	{exportedSpecifier: "taskRepository", mappedModule: "../../lib/tasks/taskRepository.js"},
 ].forEach((v) => {
-	let exportedSpecifier, mappedModule;
+	let exportedSpecifier; let mappedModule;
 	if (typeof v === "string") {
 		exportedSpecifier = v;
 	} else {

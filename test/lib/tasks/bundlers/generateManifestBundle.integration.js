@@ -7,7 +7,7 @@ chai.use(chaiFs);
 const assert = chai.assert;
 import extractZip from "extract-zip";
 import recursive from "recursive-readdir";
-import { graphFromObject } from "@ui5/project/graph";
+import {graphFromObject} from "@ui5/project/graph";
 import * as taskRepository from "../../../../lib/tasks/taskRepository.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

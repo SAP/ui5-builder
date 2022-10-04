@@ -4,7 +4,7 @@ import test from "ava";
 import sinon from "sinon";
 import esmock from "esmock";
 import Builder from "../../../../lib/lbt/bundle/Builder.js";
-import { __localFunctions__ } from "../../../../lib/lbt/bundle/Builder.js";
+import {__localFunctions__} from "../../../../lib/lbt/bundle/Builder.js";
 import ResourcePool from "../../../../lib/lbt/resources/ResourcePool.js";
 
 // Node.js itself tries to parse sourceMappingURLs in all JavaScript files. This is unwanted and might even lead to

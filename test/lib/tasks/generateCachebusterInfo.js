@@ -6,7 +6,7 @@ import chaiFs from "chai-fs";
 chai.use(chaiFs);
 const assert = chai.assert;
 
-import { graphFromObject } from "@ui5/project/graph";
+import {graphFromObject} from "@ui5/project/graph";
 import taskRepository from "../../../lib/tasks/taskRepository.js";
 
 const applicationGPath = path.join(__dirname, "..", "..", "fixtures", "application.g");

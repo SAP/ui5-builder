@@ -1,5 +1,5 @@
 import test from "ava";
-import { Readable } from "node:stream";
+import {Readable} from "node:stream";
 import stringReplacer from "../../../lib/processors/stringReplacer.js";
 
 const getStringFromStream = (stream) => {

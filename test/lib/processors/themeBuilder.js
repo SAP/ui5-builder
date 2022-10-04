@@ -3,7 +3,7 @@ import {createAdapter} from "@ui5/fs/resourceFactory";
 import fsInterface from "@ui5/fs/fsInterface";
 
 import themeBuilderProcessor from "../../../lib/processors/themeBuilder.js";
-import { ThemeBuilder } from "../../../lib/processors/themeBuilder.js";
+import {ThemeBuilder} from "../../../lib/processors/themeBuilder.js";
 
 function prepareResources({library} = {}) {
 	const input =

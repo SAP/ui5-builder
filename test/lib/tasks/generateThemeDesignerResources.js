@@ -4,7 +4,7 @@ import esmock from "esmock";
 
 test.beforeEach(async (t) => {
 	const ui5Fs = await import("@ui5/fs");
-	const { fsInterface, ReaderCollectionPrioritized } = ui5Fs;
+	const {fsInterface, ReaderCollectionPrioritized} = ui5Fs;
 
 	t.context.fsInterfaceStub = sinon.stub(fsInterface);
 	t.context.fsInterfaceStub.returns({});

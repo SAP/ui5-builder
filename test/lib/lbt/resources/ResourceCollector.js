@@ -24,19 +24,19 @@ test.afterEach.always((t) => {
 
 
 test.serial("add: empty constructor dummy params", (t) => {
-	const { ResourceCollector } = t.context;
+	const {ResourceCollector} = t.context;
 	const resourceCollector = new ResourceCollector({}, {});
 	t.is(resourceCollector.resources.size, 0, "empty");
 });
 
 test.serial("add: empty constructor", (t) => {
-	const { ResourceCollector } = t.context;
+	const {ResourceCollector} = t.context;
 	const resourceCollector = new ResourceCollector();
 	t.is(resourceCollector.resources.size, 0, "empty");
 });
 
 test.serial("setExternalResources: empty filters", (t) => {
-	const { ResourceCollector } = t.context;
+	const {ResourceCollector} = t.context;
 	const resourceCollector = new ResourceCollector();
 	resourceCollector.setExternalResources({
 		"testcomp": []
@@ -46,7 +46,7 @@ test.serial("setExternalResources: empty filters", (t) => {
 });
 
 test.serial("createOrphanFilters: filters", (t) => {
-	const { ResourceCollector } = t.context;
+	const {ResourceCollector} = t.context;
 	const resourceCollector = new ResourceCollector();
 	resourceCollector.setExternalResources({
 		"testcomp": ["test"],
@@ -60,7 +60,7 @@ test.serial("createOrphanFilters: filters", (t) => {
 });
 
 test.serial("visitResource: path", async (t) => {
-	const { ResourceCollector } = t.context;
+	const {ResourceCollector} = t.context;
 	const resourceCollector = new ResourceCollector();
 	await resourceCollector.visitResource({getPath: () => "mypath", getSize: async () => 13});
 	t.is(t.context.logWarnSpy.callCount, 1);
@@ -68,7 +68,7 @@ test.serial("visitResource: path", async (t) => {
 });
 
 test.serial("visitResource: library.source.less", async (t) => {
-	const { ResourceCollector } = t.context;
+	const {ResourceCollector} = t.context;
 	const resourceCollector = new ResourceCollector();
 	t.is(resourceCollector.themePackages.size, 0, "initially there is no theme package");
 	await resourceCollector.visitResource({
@@ -79,7 +79,7 @@ test.serial("visitResource: library.source.less", async (t) => {
 });
 
 test.serial("visitResource: ensure proper matching of indicator files", async (t) => {
-	const { ResourceCollector } = t.context;
+	const {ResourceCollector} = t.context;
 	const resourceCollector = new ResourceCollector();
 	t.is(resourceCollector.components.size, 0, "initially there are no prefixes");
 	await resourceCollector.visitResource({
@@ -102,7 +102,7 @@ test.serial("visitResource: ensure proper matching of indicator files", async (t
 });
 
 test.serial("groupResourcesByComponents: external resources", async (t) => {
-	const { ResourceCollector } = t.context;
+	const {ResourceCollector} = t.context;
 	const resourceCollector = new ResourceCollector();
 	resourceCollector.setExternalResources({
 		"testcomp": ["my/file.js"]
@@ -114,7 +114,7 @@ test.serial("groupResourcesByComponents: external resources", async (t) => {
 });
 
 test.serial("groupResourcesByComponents: theme", async (t) => {
-	const { ResourceCollector } = t.context;
+	const {ResourceCollector} = t.context;
 	const resourceCollector = new ResourceCollector();
 	await resourceCollector.visitResource({getPath: () => "/resources/themes/a/.theming", getSize: async () => 13});
 	t.is(resourceCollector.themePackages.size, 1, "1 theme was added");
@@ -124,7 +124,7 @@ test.serial("groupResourcesByComponents: theme", async (t) => {
 });
 
 test.serial("determineResourceDetails: properties", async (t) => {
-	const { ResourceCollector } = t.context;
+	const {ResourceCollector} = t.context;
 	const resourceCollector = new ResourceCollector({
 		getModuleInfo: async (moduleInfo) => {
 			return {
@@ -149,7 +149,7 @@ test.serial("determineResourceDetails: properties", async (t) => {
 });
 
 test.serial("determineResourceDetails: view.xml", async (t) => {
-	const { ResourceCollector } = t.context;
+	const {ResourceCollector} = t.context;
 	const resourceCollector = new ResourceCollector();
 	const enrichWithDependencyInfoStub = sinon.stub(resourceCollector, "enrichWithDependencyInfo")
 		.returns(Promise.resolve());
@@ -160,7 +160,7 @@ test.serial("determineResourceDetails: view.xml", async (t) => {
 });
 
 test.serial("determineResourceDetails: Debug bundle (without non-debug variant)", async (t) => {
-	const { ResourceCollector } = t.context;
+	const {ResourceCollector} = t.context;
 	const resourceCollector = new ResourceCollector();
 
 	const enrichWithDependencyInfoStub = sinon.stub(resourceCollector, "enrichWithDependencyInfo").resolves();
@@ -176,7 +176,7 @@ test.serial("determineResourceDetails: Debug bundle (without non-debug variant)"
 });
 
 test.serial("determineResourceDetails: Debug bundle (with non-debug variant)", async (t) => {
-	const { ResourceCollector } = t.context;
+	const {ResourceCollector} = t.context;
 	const resourceCollector = new ResourceCollector();
 
 	const enrichWithDependencyInfoStub = sinon.stub(resourceCollector, "enrichWithDependencyInfo")
@@ -211,7 +211,7 @@ test.serial("determineResourceDetails: Debug bundle (with non-debug variant)", a
 });
 
 test.serial("determineResourceDetails: Debug files and non-debug files", async (t) => {
-	const { ResourceCollector } = t.context;
+	const {ResourceCollector} = t.context;
 	const resourceCollector = new ResourceCollector();
 
 	const enrichWithDependencyInfoStub = sinon.stub(resourceCollector, "enrichWithDependencyInfo")
@@ -263,7 +263,7 @@ test.serial("determineResourceDetails: Debug files and non-debug files", async (
 });
 
 test.serial("enrichWithDependencyInfo: add infos to resourceinfo", async (t) => {
-	const { ResourceCollector } = t.context;
+	const {ResourceCollector} = t.context;
 	const resourceCollector = new ResourceCollector({
 		getModuleInfo: async () => {
 			return {
@@ -350,7 +350,7 @@ define('b', ['a'], (a) => a + 'b');
 	const pool = new LocatorResourcePool();
 	await pool.prepare( resources );
 
-	const { ResourceCollector } = t.context;
+	const {ResourceCollector} = t.context;
 	const resourceCollector = new ResourceCollector(pool);
 	await Promise.all(resources.map((resource) => resourceCollector.visitResource(resource)));
 
@@ -415,7 +415,7 @@ test.serial("integration: Analyze debug bundle", async (t) => {
 	const pool = new LocatorResourcePool();
 	await pool.prepare( resources );
 
-	const { ResourceCollector } = t.context;
+	const {ResourceCollector} = t.context;
 	const resourceCollector = new ResourceCollector(pool);
 	await Promise.all(resources.map((resource) => resourceCollector.visitResource(resource)));
 

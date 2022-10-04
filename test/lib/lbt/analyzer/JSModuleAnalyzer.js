@@ -4,11 +4,11 @@ import test from "ava";
 import fs from "node:fs";
 import path from "node:path";
 import parseUtils from "../../../../lib/lbt/utils/parseUtils.js";
-const { parseJS } = parseUtils;
+const {parseJS} = parseUtils;
 import ModuleInfo from "../../../../lib/lbt/resources/ModuleInfo.js";
 import JSModuleAnalyzer from "../../../../lib/lbt/analyzer/JSModuleAnalyzer.js";
 
-import { fileURLToPath } from "node:url";
+import {fileURLToPath} from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
