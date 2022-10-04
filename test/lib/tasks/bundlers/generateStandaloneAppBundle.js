@@ -20,9 +20,10 @@ test.beforeEach(async (t) => {
 			OmitFromBuildResult: "<OmitFromBuildResult>"
 		}
 	};
-	t.context.generateStandaloneAppBundle = await esmock("../../../../lib/tasks/bundlers/generateStandaloneAppBundle.js", {
-		"../../../../lib/processors/bundlers/moduleBundler.js": t.context.moduleBundlerStub
-	});
+	t.context.generateStandaloneAppBundle =
+		await esmock("../../../../lib/tasks/bundlers/generateStandaloneAppBundle.js", {
+			"../../../../lib/processors/bundlers/moduleBundler.js": t.context.moduleBundlerStub
+		});
 });
 
 test.afterEach.always((t) => {

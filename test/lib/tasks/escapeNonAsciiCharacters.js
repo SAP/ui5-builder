@@ -1,6 +1,6 @@
 import test from "ava";
 import escapeNonAsciiCharacters from "../../../lib/tasks/escapeNonAsciiCharacters.js";
-import {createAdapter} from "@ui5/fs/resourceFactory";
+import {createAdapter, createResource} from "@ui5/fs/resourceFactory";
 import DuplexCollection from "@ui5/fs/DuplexCollection";
 
 test("integration: escape non ascii characters (utf8, default)", async (t) => {

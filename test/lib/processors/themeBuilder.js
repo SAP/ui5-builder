@@ -1,5 +1,5 @@
 import test from "ava";
-import {createAdapter} from "@ui5/fs/resourceFactory";
+import {createAdapter, createResource} from "@ui5/fs/resourceFactory";
 import fsInterface from "@ui5/fs/fsInterface";
 
 import themeBuilderProcessor from "../../../lib/processors/themeBuilder.js";

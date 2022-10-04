@@ -44,7 +44,9 @@ test("export of package.json", (t) => {
 	"tasks/replaceVersion",
 	"tasks/replaceBuildtime",
 	"tasks/transformBootstrapHtml",
-	{exportedSpecifier: "taskRepository", mappedModule: "../../lib/tasks/taskRepository.js"},
+
+	// Internal modules (only to be used by @ui5/* packages)
+	{exportedSpecifier: "internal/taskRepository", mappedModule: "../../lib/tasks/taskRepository.js"},
 ].forEach((v) => {
 	let exportedSpecifier; let mappedModule;
 	if (typeof v === "string") {
@@ -82,8 +84,8 @@ test("no export of tasks/bundlers/utils/createModuleNameMapping", async (t) => {
 	});
 });
 
-test.only("no export of tasks/taskRepository", async (t) => {
-	// Should only be exported as @ui5/builder/taskRepository
+test("no export of tasks/taskRepository", async (t) => {
+	// Should only be exported as @ui5/builder/internal/taskRepository
 	await t.throwsAsync(import("@ui5/builder/tasks/taskRepository"), {
 		code: "ERR_PACKAGE_PATH_NOT_EXPORTED"
 	});

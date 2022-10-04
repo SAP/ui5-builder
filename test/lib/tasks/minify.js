@@ -1,7 +1,7 @@
 import test from "ava";
 import sinon from "sinon";
 import minify from "../../../lib/tasks/minify.js";
-import {createAdapter, createWorkspace} from "@ui5/fs/resourceFactory";
+import * as resourceFactory from "@ui5/fs/resourceFactory";
 import DuplexCollection from "@ui5/fs/DuplexCollection";
 
 // Node.js itself tries to parse sourceMappingURLs in all JavaScript files. This is unwanted and might even lead to
@@ -10,10 +10,10 @@ import DuplexCollection from "@ui5/fs/DuplexCollection";
 const SOURCE_MAPPING_URL = "//" + "# sourceMappingURL";
 
 function createWorkspace() {
-	const reader = createAdapter({
+	const reader = resourceFactory.createAdapter({
 		virBasePath: "/"
 	});
-	const writer = createAdapter({
+	const writer = resourceFactory.createAdapter({
 		virBasePath: "/"
 	});
 	const workspace = new DuplexCollection({reader: reader, writer: writer});
@@ -40,7 +40,7 @@ function test(paramA) {
 	console.log(variableA);
 }
 test();`;
-	const testResource = createResource({
+	const testResource = resourceFactory.createResource({
 		path: "/test.js",
 		string: content
 	});
@@ -105,7 +105,7 @@ function test(paramA) {
 	console.log(variableA);
 }
 test();`;
-	const testResource = createResource({
+	const testResource = resourceFactory.createResource({
 		path: "/test.js",
 		string: content
 	});
@@ -160,7 +160,7 @@ function test(paramA) {
 	console.log(variableA);
 }
 test();`;
-	const testResource = createResource({
+	const testResource = resourceFactory.createResource({
 		path: "/test.js",
 		string: content
 	});
@@ -207,7 +207,7 @@ function test(paramA) {
 	console.log(variableA);
 }
 test();`;
-	const testResource = createResource({
+	const testResource = resourceFactory.createResource({
 		path: "/test.js",
 		string: content
 	});

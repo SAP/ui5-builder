@@ -11,7 +11,7 @@ test.afterEach.always((t) => {
 test.serial("generateApiIndex", async (t) => {
 	const apiIndexGeneratorStub = sinon.stub().resolves(["resource A", "resource B"]);
 	// mock with esmock
-	const fsInterfaceStub = sinon.stub(ui5Fs, "fsInterface").returns("custom fs");
+	const fsInterfaceStub = sinon.stub().returns("custom fs");
 	esmock("../../../../lib/processors/jsdoc/apiIndexGenerator", apiIndexGeneratorStub);
 
 	class ReaderCollectionPrioritizedStubClass {
