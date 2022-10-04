@@ -23,8 +23,8 @@
 		"./tasks/*": "./lib/tasks/*.js",
 		"./tasks/taskRepository": null,
 		"./tasks/bundlers/utils/": null,
-		"./taskRepository": "./lib/tasks/taskRepository.js",
-		"./package.json": "./package.json"
+		"./package.json": "./package.json",
+		"./internal/taskRepository": "./lib/tasks/taskRepository.js"
 	},
 	"engines": {
 		"node": ">= 16.13.2",
