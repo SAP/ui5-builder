@@ -29,17 +29,17 @@ function createDependencies() {
 	};
 }
 
-test.beforeEach((t) => {
+test.beforeEach(async (t) => {
 	t.context.resourceListCreatorStub = sinon.stub();
 	t.context.resourceListCreatorStub.returns(Promise.resolve([]));
-	esmock("../../../lib/processors/resourceListCreator", t.context.resourceListCreatorStub);
 
-	t.context.generateResourcesJson = esmock.reRequire("../../../lib/tasks/generateResourcesJson");
+	t.context.generateResourcesJson = await esmock("../../../lib/tasks/generateResourcesJson.js", {
+		"../../../lib/processors/resourceListCreator": t.context.resourceListCreatorStub
+	});
 });
 
 test.afterEach.always((t) => {
 	sinon.restore();
-	esmock.stopAll();
 });
 
 test.serial("Missing 'dependencies' parameter", async (t) => {
@@ -82,7 +82,7 @@ test.serial("empty resources (sap.ui.core)", async (t) => {
 });
 
 test.serial("empty resources (my.lib)", async (t) => {
-	const generateResourcesJson = require("../../../lib/tasks/generateResourcesJson");
+	const {generateResourcesJson} = t.context;
 
 	const result = await generateResourcesJson({
 		workspace: createWorkspace(),
@@ -99,7 +99,7 @@ test.serial("empty resources (my.lib)", async (t) => {
 });
 
 test.serial("empty resources (my.lib with dependencies)", async (t) => {
-	const generateResourcesJson = require("../../../lib/tasks/generateResourcesJson");
+	const {generateResourcesJson} = t.context;
 
 	const dependencyResources = [{"dependency": "resources"}];
 	const dependencies = {
@@ -123,7 +123,7 @@ test.serial("empty resources (my.lib with dependencies)", async (t) => {
 });
 
 test.serial("Resources omitted from build result should be ignored", async (t) => {
-	const generateResourcesJson = require("../../../lib/tasks/generateResourcesJson");
+	const {generateResourcesJson} = t.context;
 
 	const resource1 = {};
 	const resource2 = {};

@@ -1,7 +1,7 @@
 import test from "ava";
 import sinon from "sinon";
 import esmock from "esmock";
-import ModuleName from "../../../../lib/lbt/utils/ModuleName.js";
+import * as ModuleName from "../../../../lib/lbt/utils/ModuleName.js";
 
 test.beforeEach(async (t) => {
 	t.context.log = {
@@ -34,9 +34,18 @@ test.beforeEach(async (t) => {
 	t.context.ReaderCollectionPrioritizedStub = sinon.stub().returns(t.context.combo);
 	t.context.moduleBundlerStub = sinon.stub().resolves([]);
 
+	const ModuleName = await esmock("../../../../lib/lbt/utils/ModuleName.js");
+	t.context.getNonDebugName = sinon.stub().callsFake((...args) => {
+		return ModuleName.getNonDebugName(...args);
+	});
+
 	t.context.generateBundle = await esmock("../../../../lib/tasks/bundlers/generateBundle.js", {
 		"@ui5/fs/ReaderCollectionPrioritized": t.context.ReaderCollectionPrioritizedStub,
 		"../../../../lib/processors/bundlers/moduleBundler": t.context.moduleBundlerStub
+	}, {
+		"../../../../lib/lbt/utils/ModuleName.js": {
+			getNonDebugName: t.context.getNonDebugName
+		}
 	});
 });
 
@@ -523,7 +532,7 @@ test.serial("generateBundle: Throws error when non-debug name can't be resolved"
 	const {
 		generateBundle, moduleBundlerStub,
 		workspace, dependencies, combo,
-		taskUtil
+		taskUtil, getNonDebugName
 	} = t.context;
 
 	const resources = [
@@ -544,7 +553,7 @@ test.serial("generateBundle: Throws error when non-debug name can't be resolved"
 	const bundleOptions = {optimize: false};
 
 	taskUtil.getTag.returns(true);
-	sinon.stub(ModuleName, "getNonDebugName").returns(false);
+	getNonDebugName.returns(false);
 
 	await t.throwsAsync(generateBundle({
 		workspace,

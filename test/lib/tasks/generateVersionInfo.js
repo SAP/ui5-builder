@@ -1,9 +1,11 @@
 import test from "ava";
 import path from "node:path";
+import {fileURLToPath} from "node:url";
 import * as resourceFactory from "@ui5/fs/resourceFactory";
 import sinon from "sinon";
 import esmock from "esmock";
-import logger from "@ui5/logger";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const projectCache = {};
 
@@ -98,16 +100,22 @@ test.beforeEach(async (t) => {
 	t.context.warnLogStub = sinon.stub();
 	t.context.infoLogStub = sinon.stub();
 	t.context.sillyLogStub = sinon.stub();
-	sinon.stub(logger, "getLogger").returns({
+	t.context.log = {
 		verbose: t.context.verboseLogStub,
 		error: t.context.errorLogStub,
 		warn: t.context.warnLogStub,
 		info: t.context.infoLogStub,
 		silly: t.context.sillyLogStub,
 		isLevelEnabled: () => true
+	};
+
+	t.context.generateVersionInfo = await esmock("../../../lib/tasks/generateVersionInfo.js", {
+
+	}, {
+		"@ui5/logger": {
+			getLogger: sinon.stub().withArgs("builder:processors:versionInfoGenerator").returns(t.context.log)
+		}
 	});
-	esmock.reRequire("../../../lib/processors/versionInfoGenerator");
-	t.context.generateVersionInfo = await esmock("../../../lib/tasks/generateVersionInfo.js");
 });
 
 test.afterEach.always((t) => {
