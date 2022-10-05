@@ -1,33 +1,31 @@
 import test from "ava";
-import sinon from "sinon";
+import sinonGlobal from "sinon";
 import esmock from "esmock";
-import generateApiIndex from "../../../../lib/tasks/jsdoc/generateApiIndex.js";
+
+test.beforeEach(async (t) => {
+	const sinon = t.context.sinon = sinonGlobal.createSandbox();
+
+	t.context.ReaderCollectionPrioritizedStubClass = sinon.stub();
+	t.context.fsInterfaceStub = sinon.stub().returns("custom fs");
+
+	t.context.apiIndexGeneratorStub = sinon.stub().resolves(["resource A", "resource B"]);
+
+	t.context.generateApiIndex = await esmock("../../../../lib/tasks/jsdoc/generateApiIndex.js", {
+		"@ui5/fs/ReaderCollectionPrioritized": t.context.ReaderCollectionPrioritizedStubClass,
+		"@ui5/fs/fsInterface": t.context.fsInterfaceStub,
+		"../../../../lib/processors/jsdoc/apiIndexGenerator": t.context.apiIndexGeneratorStub
+	});
+});
 
 test.afterEach.always((t) => {
-	esmock.stopAll();
-	sinon.restore();
+	t.context.sinon.restore();
 });
 
 test.serial("generateApiIndex", async (t) => {
-	const apiIndexGeneratorStub = sinon.stub().resolves(["resource A", "resource B"]);
-	// mock with esmock
-	const fsInterfaceStub = sinon.stub().returns("custom fs");
-	esmock("../../../../lib/processors/jsdoc/apiIndexGenerator", apiIndexGeneratorStub);
-
-	class ReaderCollectionPrioritizedStubClass {
-		constructor(parameters) {
-			t.deepEqual(parameters, {
-				name: "generateApiIndex - workspace + dependencies: some.project",
-				readers: [workspace, dependencies]
-			}, "ReaderCollectionPrioritized got called with the correct arguments");
-		}
-	}
-
-	esmock("@ui5/fs", {
-		ReaderCollectionPrioritized: ReaderCollectionPrioritizedStubClass,
-		fsInterface: fsInterfaceStub
-	});
-	const generateApiIndex = esmock.reRequire("../../../../lib/tasks/jsdoc/generateApiIndex");
+	const {
+		sinon, generateApiIndex, apiIndexGeneratorStub,
+		ReaderCollectionPrioritizedStubClass, fsInterfaceStub
+	} = t.context;
 
 	const writeStub = sinon.stub().resolves();
 	const workspace = {
@@ -41,6 +39,13 @@ test.serial("generateApiIndex", async (t) => {
 			projectName: "some.project"
 		}
 	});
+
+	t.is(ReaderCollectionPrioritizedStubClass.callCount, 1);
+	t.true(ReaderCollectionPrioritizedStubClass.calledWithNew());
+	t.deepEqual(ReaderCollectionPrioritizedStubClass.getCall(0).args, [{
+		name: "generateApiIndex - workspace + dependencies: some.project",
+		readers: [workspace, dependencies]
+	}], "ReaderCollectionPrioritized got called with the correct arguments");
 
 	t.is(fsInterfaceStub.callCount, 1, "fsInterface got called once");
 	t.true(fsInterfaceStub.getCall(0).args[0] instanceof ReaderCollectionPrioritizedStubClass,
@@ -63,6 +68,7 @@ test.serial("generateApiIndex", async (t) => {
 });
 
 test("generateApiIndex with missing parameters", async (t) => {
+	const {generateApiIndex} = t.context;
 	await t.throwsAsync(generateApiIndex(), {
 		instanceOf: TypeError
 	}, "TypeError thrown");
