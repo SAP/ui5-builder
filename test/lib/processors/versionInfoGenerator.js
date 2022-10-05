@@ -19,7 +19,6 @@ test.beforeEach(async (t) => {
 });
 
 test.afterEach.always((t) => {
-	esmock.stopAll();
 	sinon.restore();
 });
 

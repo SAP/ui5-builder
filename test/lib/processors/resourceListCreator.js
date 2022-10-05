@@ -1,11 +1,11 @@
 import test from "ava";
-import sinon from "sinon";
+import sinonGlobal from "sinon";
 import esmock from "esmock";
 import {createResource} from "@ui5/fs/resourceFactory";
+import XMLTemplateAnalyzer from "../../../lib/lbt/analyzer/XMLTemplateAnalyzer.js";
 
 test.beforeEach(async (t) => {
-	const {default: XMLTemplateAnalyzer} = await import("../../../lib/lbt/analyzer/XMLTemplateAnalyzer.js");
-	t.context.XMLTemplateAnalyzerAnalyzeViewSpy = sinon.spy(XMLTemplateAnalyzer.prototype, "analyzeView");
+	const sinon = t.context.sinon = sinonGlobal.createSandbox();
 
 	t.context.resourceListCreatorLog = {
 		error: sinon.stub(),
@@ -17,19 +17,28 @@ test.beforeEach(async (t) => {
 		verbose: sinon.stub()
 	};
 
-	const loggerStub = sinon.stub();
-	loggerStub.withArgs("builder:processors:resourceListCreator").returns(t.context.resourceListCreatorLog);
-	loggerStub.withArgs("lbt:resources:ResourceCollector").returns(t.context.ResourceCollectorLog);
+	class XMLTemplateAnalyzerSpy extends XMLTemplateAnalyzer {}
+	t.context.XMLTemplateAnalyzerAnalyzeViewSpy = sinon.spy(XMLTemplateAnalyzerSpy.prototype, "analyzeView");
 
 	t.context.resourceListCreator = await esmock("../../../lib/processors/resourceListCreator.js", {
 		"@ui5/logger": {
-			getLogger: loggerStub
-		}
+			getLogger: sinon.stub().withArgs("builder:processors:resourceListCreator")
+				.returns(t.context.resourceListCreatorLog)
+		},
+		"../../../lib/lbt/resources/ResourceCollector.js":
+			await esmock("../../../lib/lbt/resources/ResourceCollector.js", {
+				"@ui5/logger": {
+					getLogger: sinon.stub().withArgs("lbt:resources:ResourceCollector")
+						.returns(t.context.ResourceCollectorLog)
+				}
+			})
+	}, {
+		"../../../lib/lbt/analyzer/XMLTemplateAnalyzer.js": XMLTemplateAnalyzerSpy
 	});
 });
 
 test.afterEach.always((t) => {
-	sinon.restore();
+	t.context.sinon.restore();
 });
 
 test.serial("Empty resources", async (t) => {
@@ -440,7 +449,7 @@ sap.ui.require.preload({
 
 test.serial("Bundles with subModules should not cause analyzing the same module multiple times", async (t) => {
 	const {
-		resourceListCreator, resourceListCreatorLog, ResourceCollectorLog, XMLTemplateAnalyzerAnalyzeViewSpy
+		sinon, resourceListCreator, resourceListCreatorLog, ResourceCollectorLog, XMLTemplateAnalyzerAnalyzeViewSpy
 	} = t.context;
 
 	const myAppManifestJsonResource = createResource({
