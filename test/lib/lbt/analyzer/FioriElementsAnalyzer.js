@@ -385,7 +385,7 @@ test.serial("_analyzeAST: get template name from ast (async function)", (t) => {
 });
 
 test.serial("_analyzeAST: get template name from ast (async ArrowFunction)", (t) => {
-	const {sinon, FioriElementsAnalyzer} = t.context;
+	const {FioriElementsAnalyzer} = t.context;
 	const code = `sap.ui.define(["a", "sap/fe/core/TemplateAssembler"], async (a, TemplateAssembler) => {
 		return TemplateAssembler.getTemplateComponent(getMethods,
 		"sap.fe.templates.Page.Component", {

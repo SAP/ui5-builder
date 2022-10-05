@@ -1,7 +1,6 @@
 import test from "ava";
 import sinon from "sinon";
 import esmock from "esmock";
-import * as ModuleName from "../../../../lib/lbt/utils/ModuleName.js";
 
 test.beforeEach(async (t) => {
 	t.context.log = {

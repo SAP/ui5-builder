@@ -135,7 +135,7 @@ test("getModuleInfo", async (t) => {
 });
 
 test("getModuleInfo: determineDependencyInfo for raw js resources", async (t) => {
-	const {sinon, ResourcePool, LibraryFileAnalyzerGetDependencyInfosStub} = t.context;
+	const {ResourcePool, LibraryFileAnalyzerGetDependencyInfosStub} = t.context;
 
 	const resourcePool = new ResourcePool();
 	const code = `function One() {return 1;}`;
