@@ -1,10 +1,10 @@
 import test from "ava";
-import globalSinon from "sinon";
+import sinonGlobal from "sinon";
 import esmock from "esmock";
 import sdkTransformer from "../../../../lib/processors/jsdoc/sdkTransformer.js";
 
 test.beforeEach(async (t) => {
-	const sinon = t.context.sinon = globalSinon.createSandbox();
+	const sinon = t.context.sinon = sinonGlobal.createSandbox();
 
 	t.context.transformApiJsonStub = sinon.stub().resolves("api.json content");
 
