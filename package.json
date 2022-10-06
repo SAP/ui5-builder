@@ -24,7 +24,8 @@
 		"./tasks/taskRepository": null,
 		"./tasks/bundlers/utils/": null,
 		"./package.json": "./package.json",
-		"./internal/taskRepository": "./lib/tasks/taskRepository.js"
+		"./internal/taskRepository": "./lib/tasks/taskRepository.js",
+		"./internal/jsdoc/template/publish": "./lib/processors/jsdoc/lib/ui5/template/publish.cjs"
 	},
 	"engines": {
 		"node": ">= 16.13.2",
