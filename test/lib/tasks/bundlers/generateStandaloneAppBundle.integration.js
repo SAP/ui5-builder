@@ -7,7 +7,7 @@ chai.use(chaiFs);
 const assert = chai.assert;
 import sinon from "sinon";
 import {graphFromObject} from "@ui5/project/graph";
-import * as taskRepository from "@ui5/builder/taskRepository";
+import * as taskRepository from "../../../../lib/tasks/taskRepository.js";
 import recursive from "recursive-readdir";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

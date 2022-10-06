@@ -8,8 +8,8 @@ const assert = chai.assert;
 import {createAdapter, createResource} from "@ui5/fs/resourceFactory";
 import DuplexCollection from "@ui5/fs/DuplexCollection";
 import {graphFromObject} from "@ui5/project/graph";
-import generateLibraryPreload from "@ui5/builder/tasks/bundlers/generateLibraryPreload";
-import * as taskRepository from "@ui5/builder/taskRepository";
+import generateLibraryPreload from "../../../../lib/tasks/bundlers/generateLibraryPreload.js";
+import * as taskRepository from "../../../../lib/tasks/taskRepository.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const libraryDPath = path.join(__dirname, "..", "..", "..", "fixtures", "library.d");

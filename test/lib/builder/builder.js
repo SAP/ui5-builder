@@ -1,5 +1,7 @@
 import test from "ava";
 import path from "node:path";
+import {fileURLToPath} from "node:url";
+import {createRequire} from "node:module";
 import chai from "chai";
 import chaiFs from "chai-fs";
 chai.use(chaiFs);
@@ -9,7 +11,12 @@ const readFile = promisify(fs.readFile);
 const assert = chai.assert;
 import sinon from "sinon";
 import {graphFromObject, graphFromPackageDependencies} from "@ui5/project/graph";
-import taskRepository from "../../../lib/tasks/taskRepository.js";
+import * as taskRepository from "../../../lib/tasks/taskRepository.js";
+
+// Using CommonsJS require as importing json files causes an ExperimentalWarning
+const require = createRequire(import.meta.url);
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const applicationAPath = path.join(__dirname, "..", "..", "fixtures", "application.a");
 const applicationGPath = path.join(__dirname, "..", "..", "fixtures", "application.g");
@@ -922,7 +929,7 @@ test.serial("Build library.i, bundling library.h with build manifest", async (t)
 	const resultBuildManifestPath = path.join(__dirname,
 		"..", "..", "tmp", "build", "library.i", "bundle-library.h-build-manifest", ".ui5", "build-manifest.json");
 
-	const log = require("@ui5/logger");
+
 	log.setLevel("verbose");
 	const graph1 = await graphFromObject({
 		dependencyTree: libraryHTree
