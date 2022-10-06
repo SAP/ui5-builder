@@ -2,7 +2,8 @@
 sap.ui.require.preload({
 	"application/k/subcomponentB/Component.js":function(){
 sap.ui.define(["sap/ui/core/UIComponent"], function(UIComponent){
-		return UIComponent.extend('application.k.subcomponentB.Component', {
+	"use strict";
+	return UIComponent.extend('application.k.subcomponentB.Component', {
 		metadata: {
 			manifest: "json"
 		}

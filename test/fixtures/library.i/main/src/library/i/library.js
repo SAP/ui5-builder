@@ -5,7 +5,8 @@ sap.ui.define([
 	'sap/ui/core/Core',
 ], function(Core) {
 
-	
+	"use strict";
+
 	sap.ui.getCore().initLibrary({
 		name : "library.i",
 		version: "${version}",

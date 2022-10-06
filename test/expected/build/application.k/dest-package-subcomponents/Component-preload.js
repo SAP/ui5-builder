@@ -2,7 +2,8 @@
 sap.ui.require.preload({
 	"application/k/Component.js":function(){
 sap.ui.define(["sap/ui/core/UIComponent"], function(UIComponent){
-		return UIComponent.extend('application.k.Component', {
+	"use strict";
+	return UIComponent.extend('application.k.Component', {
 		metadata: {
 			manifest: "json"
 		}
@@ -12,7 +13,8 @@ sap.ui.define(["sap/ui/core/UIComponent"], function(UIComponent){
 	"application/k/manifest.json":'{"_version":"1.1.0","sap.app":{"_version":"1.1.0","id":"application.k","type":"application","applicationVersion":{"version":"${version}"},"embeds":["embedded"],"title":"{{title}}"},"customCopyrightString":"${copyright}"}',
 	"application/k/subcomponentA/Component.js":function(){
 sap.ui.define(["sap/ui/core/UIComponent"], function(UIComponent){
-		return UIComponent.extend('application.k.subcomponentA.Component', {
+	"use strict";
+	return UIComponent.extend('application.k.subcomponentA.Component', {
 		metadata: {
 			manifest: "json"
 		}
@@ -22,7 +24,8 @@ sap.ui.define(["sap/ui/core/UIComponent"], function(UIComponent){
 	"application/k/subcomponentA/manifest.json":'{"_version":"1.1.0","sap.app":{"_version":"1.1.0","id":"application.k.subcomponentA","type":"application","applicationVersion":{"version":"1.2.2"},"embeds":["embedded"],"title":"{{title}}"}}',
 	"application/k/subcomponentB/Component.js":function(){
 sap.ui.define(["sap/ui/core/UIComponent"], function(UIComponent){
-		return UIComponent.extend('application.k.subcomponentB.Component', {
+	"use strict";
+	return UIComponent.extend('application.k.subcomponentB.Component', {
 		metadata: {
 			manifest: "json"
 		}

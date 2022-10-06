@@ -7,7 +7,8 @@
  */
 var myexport = (function() {
 
-	
+	"use strict";
+
 	String("asd");
 
 }());

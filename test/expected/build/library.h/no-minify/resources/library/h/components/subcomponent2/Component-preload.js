@@ -2,7 +2,8 @@
 sap.ui.require.preload({
 	"library/h/components/subcomponent2/Component.js":function(){
 sap.ui.define(["sap/ui/core/UIComponent"], function(UIComponent){
-		return UIComponent.extend('application.g.Component', {
+	"use strict";
+	return UIComponent.extend('application.g.Component', {
 	});
 });
 }
