@@ -53,7 +53,6 @@
 		"depcheck": "depcheck --ignores @ui5/builder,docdash,@istanbuljs/esm-loader-hook,catharsis --parsers='**/*.js:es6,**/*.cjs:es6'"
 	},
 	"files": [
-		"index.js",
 		"CHANGELOG.md",
 		"CONTRIBUTING.md",
 		"jsdoc.json",
