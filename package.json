@@ -108,7 +108,7 @@
 		"@ui5/logger": "^2.0.1",
 		"cheerio": "1.0.0-rc.9",
 		"escape-unicode": "^0.2.0",
-		"escope": "^3.6.0",
+		"escope": "^4.0.0",
 		"espree": "^6.2.1",
 		"globby": "^11.1.0",
 		"graceful-fs": "^4.2.10",
