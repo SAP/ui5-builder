@@ -13,10 +13,6 @@ import sinon from "sinon";
 import {graphFromObject, graphFromPackageDependencies} from "@ui5/project/graph";
 import * as taskRepository from "../../../lib/tasks/taskRepository.js";
 import logger from "@ui5/logger";
-import { * as zzz } from "@ui5/project/graph";
-
-
-console.log(zzz);
 
 // Using CommonsJS require as importing json files causes an ExperimentalWarning
 const require = createRequire(import.meta.url);
