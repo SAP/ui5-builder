@@ -2,7 +2,16 @@
 All notable changes to this project will be documented in this file.  
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-A list of unreleased changes can be found [here](https://github.com/SAP/ui5-builder/compare/v2.11.6...HEAD).
+A list of unreleased changes can be found [here](https://github.com/SAP/ui5-builder/compare/v2.11.7...HEAD).
+
+<a name="v2.11.7"></a>
+## [v2.11.7] - 2022-10-16
+### Dependency Updates
+- Bump escope from 3.6.0 to 4.0.0 [`852b37f`](https://github.com/SAP/ui5-builder/commit/852b37f549f3927decbc1b40cc6055325472d625)
+
+### Reverts
+- [FIX] package.json: Downgrade es5-ext dependency ([#798](https://github.com/SAP/ui5-builder/issues/798))
+
 
 <a name="v2.11.6"></a>
 ## [v2.11.6] - 2022-10-12
@@ -654,6 +663,7 @@ to load the custom bundle file instead.
 - Add ability to configure component preloads and custom bundles [`2241e5f`](https://github.com/SAP/ui5-builder/commit/2241e5ff98fd95f1f80cc74959655ae7a9c660e7)
 
 
+[v2.11.7]: https://github.com/SAP/ui5-builder/compare/v2.11.6...v2.11.7
 [v2.11.6]: https://github.com/SAP/ui5-builder/compare/v2.11.5...v2.11.6
 [v2.11.5]: https://github.com/SAP/ui5-builder/compare/v2.11.4...v2.11.5
 [v2.11.4]: https://github.com/SAP/ui5-builder/compare/v2.11.3...v2.11.4
