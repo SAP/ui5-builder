@@ -1,4 +1,3 @@
-/* eslint-disable ava/no-unknown-modifiers */
 import test from "ava";
 
 import fs from "node:fs";
