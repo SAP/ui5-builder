@@ -139,7 +139,7 @@
 	},
 	"devDependencies": {
 		"@istanbuljs/esm-loader-hook": "^0.2.0",
-		"@ui5/project": "github:SAP/ui5-project#c6d9c0f12b3db114f4ef7324128228cb84dc66c1",
+		"@ui5/project": "github:SAP/ui5-project#ed265ee31f06728a9ea6d35456feaeada1df42e2",
 		"ava": "^4.3.3",
 		"chai": "^4.3.4",
 		"chai-fs": "^2.0.0",
