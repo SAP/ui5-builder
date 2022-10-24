@@ -9,6 +9,12 @@ test("export of package.json", (t) => {
 	t.truthy(require("@ui5/builder/package.json").version);
 });
 
+// Check number of definied exports
+test("check number of exports", (t) => {
+	const packageJson = require("@ui5/builder/package.json");
+	t.is(Object.keys(packageJson.exports).length, 8);
+});
+
 // Public API contract (exported modules)
 [
 	"processors/bundlers/flexChangesBundler",
