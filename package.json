@@ -19,10 +19,10 @@
 	"type": "module",
 	"exports": {
 		"./processors/*": "./lib/processors/*.js",
-		"./processors/jsdoc/lib/": null,
+		"./processors/jsdoc/lib/*": null,
 		"./tasks/*": "./lib/tasks/*.js",
 		"./tasks/taskRepository": null,
-		"./tasks/bundlers/utils/": null,
+		"./tasks/bundlers/utils/*": null,
 		"./package.json": "./package.json",
 		"./internal/taskRepository": "./lib/tasks/taskRepository.js",
 		"./internal/jsdoc/template/publish": "./lib/processors/jsdoc/lib/ui5/template/publish.cjs"
