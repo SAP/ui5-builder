@@ -164,8 +164,8 @@ test.serial("integration: Library without i18n bundle file", async (t) => {
 
 /**
  *
- * @param {@ui5/fs.DuplexCollection} dependencies
- * @param {@ui5/fs.resourceFactory} resourceFactory
+ * @param {@ui5/fs/DuplexCollection} dependencies
+ * @param {@ui5/fs/resourceFactory} resourceFactory
  * @param {string[]} names e.g. ["lib", "a"]
  * @param {object[]} deps
  * @param {string[]} [embeds]
@@ -209,8 +209,8 @@ const createManifestResource = async (dependencies, resourceFactory, names, deps
 };
 
 /**
- * @param {@ui5/fs.DuplexCollection} dependencies
- * @param {@ui5/fs.resourceFactory} resourceFactory
+ * @param {@ui5/fs/DuplexCollection} dependencies
+ * @param {@ui5/fs/resourceFactory} resourceFactory
  * @param {string[]} names e.g. ["lib", "a"]
  * @returns {Promise<void>}
  */
@@ -233,8 +233,8 @@ async function createDotLibrary(dependencies, resourceFactory, names) {
 
 /**
  *
- * @param {@ui5/fs.DuplexCollection} dependencies
- * @param {@ui5/fs.resourceFactory} resourceFactory
+ * @param {@ui5/fs/DuplexCollection} dependencies
+ * @param {@ui5/fs/resourceFactory} resourceFactory
  * @param {string[]} names e.g. ["lib", "a"]
  * @param {object[]} deps
  * @param {string[]} [embeds]
