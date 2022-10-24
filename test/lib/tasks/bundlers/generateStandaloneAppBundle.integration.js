@@ -30,7 +30,6 @@ test.afterEach.always((t) => {
 	sinon.restore();
 });
 
-
 test("integration: build application.b standalone", async (t) => {
 	const destPath = "./test/tmp/build/application.b/standalone";
 	const expectedPath = "./test/expected/build/application.b/standalone";

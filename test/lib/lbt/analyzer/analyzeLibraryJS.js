@@ -22,7 +22,7 @@ test.serial("analyze: library.js with non supported property", async (t) => {
 sap.ui.define([
 	'sap/ui/core/Core',
 ], function(Core) {
-
+	"use strict";
 	sap.ui.getCore().initLibrary({
 		name : "library.test",
 		version: "1.0.0",
@@ -89,7 +89,7 @@ test.serial("analyze: library.js with SpreadExpression", async (t) => {
 sap.ui.define([
 	'sap/ui/core/Core',
 ], function(Core) {
-
+	"use strict";
 	const myExtensions = {myProperty1: "Value1", myProperty2: "Value2"};
 	sap.ui.getCore().initLibrary({
 		...myExtensions,
@@ -124,7 +124,7 @@ test.serial("analyze: library.js with property 'noLibraryCSS'", async (t) => {
 sap.ui.define([
 	'sap/ui/core/Core',
 ], function(Core) {
-
+	"use strict";
 	sap.ui.getCore().initLibrary({
 		name : "library.test",
 		version: "1.0.0",

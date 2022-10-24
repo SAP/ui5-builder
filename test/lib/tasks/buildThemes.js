@@ -3,9 +3,6 @@ import sinon from "sinon";
 import esmock from "esmock";
 let buildThemes;
 
-// import fsInterface from "@ui5/fs/fsInterface";
-// import ReaderCollectionPrioritized from "@ui5/fs/ReaderCollectionPrioritized";
-
 test.before(async () => {
 	// Enable verbose logging to also cover verbose logging code
 	const {default: logger} = await import("@ui5/logger");
@@ -13,9 +10,6 @@ test.before(async () => {
 });
 
 test.beforeEach(async (t) => {
-	// const fsInterface = await import("@ui5/fs/fsInterface");
-	// const ReaderCollectionPrioritized = await import("@ui5/fs/ReaderCollectionPrioritized");
-	// const { fsInterface, ReaderCollectionPrioritized } = ui5Fs;
 	// Stubbing processors/themeBuilder
 	t.context.themeBuilderStub = sinon.stub();
 	t.context.fsInterfaceStub = sinon.stub();
@@ -32,9 +26,8 @@ test.beforeEach(async (t) => {
 	});
 });
 
-test.afterEach.always((t) => {
+test.afterEach.always(() => {
 	sinon.restore();
-	esmock.purge(buildThemes);
 });
 
 test.serial("buildThemes", async (t) => {

@@ -139,7 +139,7 @@ test("DefineWithLegacyCalls", analyzeModule,
 	EXPECTED_DEFINE_DEPENDENCIES_WITH_LEGACY);
 
 test("OldStyleModuleWithoutDeclare", async function(t) {
-	return await analyze("modules/no_declare_but_requires.js", null).then((info) => {
+	await analyze("modules/no_declare_but_requires.js", null).then((info) => {
 		t.is(info.name, null, "module name should be null");
 		t.true(info.rawModule, "raw module");
 		assertModuleNamesEqual(t,
@@ -154,7 +154,7 @@ test("NotAnUI5Module", analyzeModule,
 	NO_DEPENDENCIES, NO_DEPENDENCIES, NO_DEPENDENCIES, NO_DEPENDENCIES, true);
 
 test("AMDSpecialDependenciesShouldBeIgnored", async (t) => {
-	return await analyzeModule(t,
+	await analyzeModule(t,
 		"modules/amd_special_dependencies.js",
 		"modules/amd_special_dependencies.js",
 		["modules/dep1.js", "dep2.js", "utils/dep1.js", "ui5loader-autoconfig.js"],
@@ -164,7 +164,7 @@ test("AMDSpecialDependenciesShouldBeIgnored", async (t) => {
 });
 
 test("AMDMultipleModulesFirstUnnamed", async (t) => {
-	return await analyzeModule(t,
+	await analyzeModule(t,
 		"modules/amd_multiple_modules_first_unnamed.js",
 		"modules/amd_multiple_modules_first_unnamed.js",
 		["modules/dep1.js", "dep2.js", "utils/dep1.js", "ui5loader-autoconfig.js"],
@@ -174,7 +174,7 @@ test("AMDMultipleModulesFirstUnnamed", async (t) => {
 });
 
 test("AMDMultipleModulesOtherThanFirstOneUnnamed", async (t) => {
-	return await analyzeModule(t,
+	await analyzeModule(t,
 		"modules/amd_multiple_modules_other_than_first_one_unnamed.js",
 		"modules/amd_multiple_modules_other_than_first_one_unnamed.js",
 		["modules/dep1.js", "dep2.js", "utils/dep1.js", "ui5loader-autoconfig.js"],
@@ -184,7 +184,7 @@ test("AMDMultipleModulesOtherThanFirstOneUnnamed", async (t) => {
 });
 
 test("AMDMultipleNamedModulesNoneMatchingFileName", async (t) => {
-	return await analyzeModule(t,
+	await analyzeModule(t,
 		"modules/amd_multiple_named_modules_none_matching_filename.js",
 		"modules/amd_multiple_named_modules_none_matching_filename.js",
 		["dep2.js", "utils/dep1.js", "ui5loader-autoconfig.js"],
@@ -194,7 +194,7 @@ test("AMDMultipleNamedModulesNoneMatchingFileName", async (t) => {
 });
 
 test("AMDMultipleNamedModulesOneMatchingFileName", async (t) => {
-	return await analyzeModule(t,
+	await analyzeModule(t,
 		"modules/amd_multiple_named_modules_one_matching_filename.js",
 		"modules/amd_multiple_named_modules_one_matching_filename.js",
 		["modules/dep1.js", "dep2.js", "utils/dep1.js", "ui5loader-autoconfig.js"],
@@ -214,7 +214,7 @@ test("AMDMultipleUnnamedModules", async (t) => {
 });
 
 test("AMDSingleNamedModule", async (t) => {
-	return await analyzeModule(t,
+	await analyzeModule(t,
 		"modules/amd_single_named_module.js",
 		"alternative/name.js",
 		["alternative/dep1.js", "dep2.js", "ui5loader-autoconfig.js"],
@@ -224,7 +224,7 @@ test("AMDSingleNamedModule", async (t) => {
 });
 
 test("AMDSingleUnnamedModule", async (t) => {
-	return await analyzeModule(t,
+	await analyzeModule(t,
 		"modules/amd_single_unnamed_module.js",
 		"modules/amd_single_unnamed_module.js",
 		["modules/dep1.js", "dep2.js", "ui5loader-autoconfig.js"],
@@ -265,7 +265,7 @@ test("AMDMultipleModulesWithConflictBetweenTwoNamed", async (t) => {
 });
 
 test("OldStyleBundle", async (t) => {
-	return await analyzeModule(t,
+	await analyzeModule(t,
 		"modules/bundle-oldstyle.js",
 		"sap-ui-core.js",
 		[
@@ -327,7 +327,7 @@ test("OldStyleBundle", async (t) => {
 });
 
 test("OldStyleBundleV2", async (t) => {
-	return await analyzeModule(t,
+	await analyzeModule(t,
 		"modules/bundle-oldstyle-v2.js",
 		"sap-ui-core.js",
 		[
@@ -389,7 +389,7 @@ test("OldStyleBundleV2", async (t) => {
 });
 
 test("EvoBundle", async (t) => {
-	return await analyzeModule(t,
+	await analyzeModule(t,
 		"modules/bundle-evo.js",
 		"sap-ui-core.js",
 		[

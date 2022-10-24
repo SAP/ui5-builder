@@ -14,8 +14,6 @@ test.serial("Resource: buffer", async (t) => {
 	const resource = new Resource({}, "name", "file");
 	const res = await resource.buffer();
 
-	esmock.purge(Resource);
-
 	t.is(readFileStub.callCount, 1, "called once");
 	t.is(readFileStub.getCall(0).args[0], "file", "called with file parameter");
 	t.is(res.toString(), "content", "File content returned correctly");
@@ -31,8 +29,6 @@ test.serial("Resource: string", async (t) => {
 
 	const resource = new Resource({}, "name", "file");
 	const res = await resource.string();
-
-	esmock.purge(Resource);
 
 	t.is(readFileStub.callCount, 1, "called once");
 	t.is(readFileStub.getCall(0).args[0], "file", "called with file parameter");

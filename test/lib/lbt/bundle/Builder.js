@@ -56,8 +56,6 @@ test.serial("writePreloadModule: with invalid json content", async (t) => {
 
 	t.true(result, "result is true");
 	t.is(writeStub.callCount, 1, "Writer is called once");
-
-	esmock.purge(BuilderWithStub);
 });
 
 test("integration: createBundle with exposedGlobals", async (t) => {
@@ -800,8 +798,6 @@ ${SOURCE_MAPPING_URL}=library-preload.js.map
 		`The info might not work as expected. ` +
 		`The name must match the bundle filename (incl. extension such as '.js')`
 	]);
-
-	esmock.purge(BuilderWithStub);
 });
 
 test("integration: createBundle using predefine calls with source maps and a single, simple source", async (t) => {

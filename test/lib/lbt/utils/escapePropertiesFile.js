@@ -16,7 +16,6 @@ test.beforeEach(async (t) => {
 
 test.afterEach.always((t) => {
 	sinon.restore();
-	esmock.purge(t.context.escapePropertiesFile);
 });
 
 test.serial("propertiesFileSourceEncoding UTF-8", async (t) => {

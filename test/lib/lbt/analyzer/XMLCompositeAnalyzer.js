@@ -27,7 +27,7 @@ test("integration: XMLComposite code with VariableDeclaration", (t) => {
 	const code = `sap.ui.define([
 		'jquery.sap.global', 'sap/ui/core/XMLComposite'],
 		function(jQuery, XMLComposite) {
-
+		"use strict";
 		var ButtonList = XMLComposite.extend("composites.ButtonList", {});
 		return ButtonList;
 	});`;
@@ -46,7 +46,7 @@ test("integration: XMLComposite code", (t) => {
 	const code = `sap.ui.define([
 		'jquery.sap.global', 'sap/ui/core/XMLComposite'],
 		function(jQuery, XMLComposite) {
-
+		"use strict";
 		return XMLComposite.extend("composites.ButtonList", {});
 	});`;
 
@@ -96,7 +96,7 @@ test.serial("integration: XMLComposite code (async factory function)", async (t)
 	const code = `sap.ui.define([
 		'jquery.sap.global', 'sap/ui/core/XMLComposite'],
 		async function(jQuery, XMLComposite) {
-
+		"use strict";
 		return XMLComposite.extend("composites.ButtonList", {});
 	});`;
 	await setupXMLCompositeAnalyzerWithStubbedLogger(t);
@@ -171,7 +171,7 @@ test("analyze: not an XMLComposite module", (t) => {
 	const code = `sap.ui.define([
 		'jquery.sap.global', 'sap/ui/core/XMLComposite'],
 		function(jQuery, XMLComposite) {
-
+		"use strict";
 		return {};
 	});`;
 
@@ -195,7 +195,7 @@ test("analyze: XMLComposite VariableDeclaration code", (t) => {
 	const code = `sap.ui.define([
 		'jquery.sap.global', 'sap/ui/core/XMLComposite'],
 		function(jQuery, XMLComposite) {
-
+		"use strict";
 		var ButtonList = XMLComposite.extend("composites.ButtonList", {});
 		return ButtonList;
 	});`;
@@ -227,7 +227,7 @@ test("analyze: XMLComposite Expression code", (t) => {
 	const code = `sap.ui.define([
 		'jquery.sap.global', 'sap/ui/core/XMLComposite'],
 		function(jQuery, XMLComposite) {
-
+		"use strict";
 		jQuery.sap.test = XMLComposite.extend("composites.ButtonList", {});
 	});`;
 
