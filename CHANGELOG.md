@@ -2,10 +2,17 @@
 All notable changes to this project will be documented in this file.  
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-A list of unreleased changes can be found [here](https://github.com/SAP/ui5-builder/compare/v2.11.7...HEAD).
+A list of unreleased changes can be found [here](https://github.com/SAP/ui5-builder/compare/v2.11.8...HEAD).
+
+<a name="v2.11.8"></a>
+## [v2.11.8] - 2022-10-28
+### Bug Fixes
+- **ComponentAnalyzer:** Fix detection of rootView [`acb3d9f`](https://github.com/SAP/ui5-builder/commit/acb3d9fd7fc60ad61ac88d68cb0fd5296b795e9f)
+- **XMLTemplateAnalyzer:** Fix detection of nested views [`1cbfd82`](https://github.com/SAP/ui5-builder/commit/1cbfd82396e5fa78455e0a696e9229a2e8a337fc)
+
 
 <a name="v2.11.7"></a>
-## [v2.11.7] - 2022-10-16
+## [v2.11.7] - 2022-10-20
 ### Dependency Updates
 - Bump escope from 3.6.0 to 4.0.0 [`852b37f`](https://github.com/SAP/ui5-builder/commit/852b37f549f3927decbc1b40cc6055325472d625)
 
@@ -663,6 +670,7 @@ to load the custom bundle file instead.
 - Add ability to configure component preloads and custom bundles [`2241e5f`](https://github.com/SAP/ui5-builder/commit/2241e5ff98fd95f1f80cc74959655ae7a9c660e7)
 
 
+[v2.11.8]: https://github.com/SAP/ui5-builder/compare/v2.11.7...v2.11.8
 [v2.11.7]: https://github.com/SAP/ui5-builder/compare/v2.11.6...v2.11.7
 [v2.11.6]: https://github.com/SAP/ui5-builder/compare/v2.11.5...v2.11.6
 [v2.11.5]: https://github.com/SAP/ui5-builder/compare/v2.11.4...v2.11.5
