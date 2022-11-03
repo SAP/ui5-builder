@@ -79,7 +79,7 @@
 			"text-summary"
 		],
 		"exclude": [
-			"lib/processors/jsdoc/lib/**",
+			"lib/processors/jsdoc/lib/ui5/template/**",
 			"docs/**",
 			"jsdocs/**",
 			"coverage/**",

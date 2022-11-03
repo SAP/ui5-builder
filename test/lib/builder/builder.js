@@ -890,8 +890,7 @@ test.serial("Build library.j with JSDoc build only", async (t) => {
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
-		includedTasks: ["generateJsdoc"],
-		excludedTasks: ["*"]
+		jsdoc: true
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
