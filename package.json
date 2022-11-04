@@ -79,7 +79,8 @@
 			"text-summary"
 		],
 		"exclude": [
-			"lib/processors/jsdoc/lib/ui5/template/**",
+			"lib/processors/jsdoc/lib/ui5/**",
+			"lib/processors/jsdoc/lib/createIndexFiles.cjs",
 			"docs/**",
 			"jsdocs/**",
 			"coverage/**",
