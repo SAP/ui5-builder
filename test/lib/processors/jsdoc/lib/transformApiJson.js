@@ -64,16 +64,103 @@ test("Basic test without symbols", async (t) => {
 	});
 });
 
-test("Test with library, control, enum", async (t) => {
+test("Reading dependency api.json paths", async (t) => {
 	const {sinon, transformApiJson} = t.context;
 
 	const apiJsonPath = "/test-resources/sap/ui5/tooling/test/designtime/api.json";
 	const fakeTargetPath = "/ignore/this/path/resource/will/be/returned";
 	const dotLibraryPath = "/resources/sap/ui5/tooling/test/.library";
 	const dependencyApiJsonPaths = [
-		"/resources/some/path/x/api.json",
-		"/resources/some/path/y/api.json"
+		"/test-resources/sap/ui/core/designtime/api.json",
+		"/test-resources/some/library/not/found/api.json" // to test the error case when reading the file
 	];
+
+	const readFile = sinon.stub().yieldsAsync(new Error("Not found!"));
+
+	readFile.withArgs("/test-resources/sap/ui5/tooling/test/designtime/api.json").yieldsAsync(null, JSON.stringify(
+		{
+			"$schema-ref": "http://schemas.sap.com/sapui5/designtime/api.json/1.0",
+			"version": "2.1.0",
+			"library": "sap.ui5.tooling.test",
+			"symbols": []
+		}
+	));
+
+	readFile.withArgs("/test-resources/sap/ui/core/designtime/api.json").yieldsAsync(null, JSON.stringify(
+		{
+			"$schema-ref": "http://schemas.sap.com/sapui5/designtime/api.json/1.0",
+			"version": "1.111.1",
+			"library": "sap.ui.core",
+			"symbols": []
+		}
+	));
+
+	const readdir = sinon.stub().yieldsAsync(new Error("Not found!"));
+
+	const fs = {readFile, readdir};
+
+	const apiJsonContent = await transformApiJson(
+		apiJsonPath, fakeTargetPath, dotLibraryPath, dependencyApiJsonPaths, "", {
+			fs,
+			returnOutputFiles: true
+		}
+	);
+
+	t.deepEqual(JSON.parse(apiJsonContent), {
+		"$schema-ref": "http://schemas.sap.com/sapui5/designtime/api.json/1.0",
+		"version": "2.1.0",
+		"library": "sap.ui5.tooling.test",
+		"symbols": []
+	});
+});
+
+test("Reading dependency api.json paths from directory", async (t) => {
+	const {sinon, transformApiJson} = t.context;
+
+	const apiJsonPath = "/test-resources/sap/ui5/tooling/test/designtime/api.json";
+	const fakeTargetPath = "/ignore/this/path/resource/will/be/returned";
+	const dotLibraryPath = "/resources/sap/ui5/tooling/test/.library";
+	const dependencyApiJsonPaths = "/api-jsons";
+
+	const readFile = sinon.stub().yieldsAsync(new Error("Not found!"));
+
+	readFile.withArgs("/test-resources/sap/ui5/tooling/test/designtime/api.json").yieldsAsync(null, JSON.stringify(
+		{
+			"$schema-ref": "http://schemas.sap.com/sapui5/designtime/api.json/1.0",
+			"version": "2.1.0",
+			"library": "sap.ui5.tooling.test",
+			"symbols": []
+		}
+	));
+
+	const readdir = sinon.stub().yieldsAsync(new Error("Not found!"));
+
+	readdir.withArgs("/api-jsons").yieldsAsync(null, ["lib1-api.json", "lib2-api.json"]);
+
+	const fs = {readFile, readdir};
+
+	const apiJsonContent = await transformApiJson(
+		apiJsonPath, fakeTargetPath, dotLibraryPath, dependencyApiJsonPaths, "", {
+			fs,
+			returnOutputFiles: true
+		}
+	);
+
+	t.deepEqual(JSON.parse(apiJsonContent), {
+		"$schema-ref": "http://schemas.sap.com/sapui5/designtime/api.json/1.0",
+		"version": "2.1.0",
+		"library": "sap.ui5.tooling.test",
+		"symbols": []
+	});
+});
+
+test("Test with library, control, enum", async (t) => {
+	const {sinon, transformApiJson} = t.context;
+
+	const apiJsonPath = "/test-resources/sap/ui5/tooling/test/designtime/api.json";
+	const fakeTargetPath = "/ignore/this/path/resource/will/be/returned";
+	const dotLibraryPath = "/resources/sap/ui5/tooling/test/.library";
+	const dependencyApiJsonPaths = [];
 
 	const readFile = sinon.stub().yieldsAsync(new Error("Not found!"));
 
@@ -91,7 +178,6 @@ test("Test with library, control, enum", async (t) => {
 		</library>`);
 
 	readFile.withArgs("/test-resources/sap/ui5/tooling/test/designtime/api.json").yieldsAsync(null, JSON.stringify(
-
 		{
 			"$schema-ref": "http://schemas.sap.com/sapui5/designtime/api.json/1.0",
 			"version": "2.1.0",
@@ -133,6 +219,13 @@ test("Test with library, control, enum", async (t) => {
 					},
 					"ui5-metadata": {
 						"stereotype": "control",
+						"specialSettings": [
+							{
+								"name": "specialControlData",
+								"type": "any",
+								"visibility": "public"
+							}
+						],
 						"properties": [
 							{
 								"name": "value",
@@ -141,6 +234,9 @@ test("Test with library, control, enum", async (t) => {
 								"group": "Misc",
 								"visibility": "public",
 								"description": "Property with type int",
+								"deprecated": {
+									"since": "2.0"
+								},
 								"methods": [
 									"getValue",
 									"setValue"
@@ -197,6 +293,9 @@ test("Test with library, control, enum", async (t) => {
 								"name": "press",
 								"visibility": "public",
 								"description": "Event is fired when the user clicks the control.",
+								"deprecated": {
+									"since": "2.0"
+								},
 								"methods": [
 									"attachPress",
 									"detachPress",
@@ -206,6 +305,7 @@ test("Test with library, control, enum", async (t) => {
 							{
 								"name": "change",
 								"visibility": "public",
+								"since": "1.4",
 								"description": "Fires when an item is changed.",
 								"parameters": {
 									"item": {
@@ -244,6 +344,7 @@ test("Test with library, control, enum", async (t) => {
 						{
 							"name": "change",
 							"visibility": "public",
+							"since": "1.4",
 							"parameters": [
 								{
 									"name": "oControlEvent",
@@ -293,7 +394,10 @@ test("Test with library, control, enum", async (t) => {
 									}
 								}
 							],
-							"description": "Event is fired when the user clicks the control."
+							"description": "Event is fired when the user clicks the control.",
+							"deprecated": {
+								"since": "2.0"
+							}
 						}
 					],
 					"methods": [
@@ -317,6 +421,7 @@ test("Test with library, control, enum", async (t) => {
 						{
 							"name": "attachChange",
 							"visibility": "public",
+							"since": "1.4",
 							"returnValue": {
 								"type": "this",
 								"description": "Reference to <code>this</code> in order to allow method chaining"
@@ -370,7 +475,10 @@ test("Test with library, control, enum", async (t) => {
 									"description": "Context object to call the event handler with. Defaults to this <code>sap.ui5.tooling.test.TestControl</code> itself"
 								}
 							],
-							"description": "Attaches event handler <code>fnFunction</code> to the {@link #event:press press} event of this <code>sap.ui5.tooling.test.TestControl</code>.\n\nWhen called, the context of the event handler (its <code>this</code>) will be bound to <code>oListener</code> if specified, otherwise it will be bound to this <code>sap.ui5.tooling.test.TestControl</code> itself.\n\nEvent is fired when the user clicks the control."
+							"description": "Attaches event handler <code>fnFunction</code> to the {@link #event:press press} event of this <code>sap.ui5.tooling.test.TestControl</code>.\n\nWhen called, the context of the event handler (its <code>this</code>) will be bound to <code>oListener</code> if specified, otherwise it will be bound to this <code>sap.ui5.tooling.test.TestControl</code> itself.\n\nEvent is fired when the user clicks the control.",
+							"deprecated": {
+								"since": "2.0"
+							}
 						},
 						{
 							"name": "destroyItems",
@@ -384,6 +492,7 @@ test("Test with library, control, enum", async (t) => {
 						{
 							"name": "detachChange",
 							"visibility": "public",
+							"since": "1.4",
 							"returnValue": {
 								"type": "this",
 								"description": "Reference to <code>this</code> in order to allow method chaining"
@@ -425,7 +534,10 @@ test("Test with library, control, enum", async (t) => {
 									"description": "Context object on which the given function had to be called"
 								}
 							],
-							"description": "Detaches event handler <code>fnFunction</code> from the {@link #event:press press} event of this <code>sap.ui5.tooling.test.TestControl</code>.\n\nThe passed function and listener object must match the ones used for event registration."
+							"description": "Detaches event handler <code>fnFunction</code> from the {@link #event:press press} event of this <code>sap.ui5.tooling.test.TestControl</code>.\n\nThe passed function and listener object must match the ones used for event registration.",
+							"deprecated": {
+								"since": "2.0"
+							}
 						},
 						{
 							"name": "extend",
@@ -460,11 +572,21 @@ test("Test with library, control, enum", async (t) => {
 						{
 							"name": "fancyFunction",
 							"visibility": "public",
-							"description": "Some fancy function"
+							"throws": [
+								{
+									"type": "Error",
+									"description": "In case something bad happens"
+								}
+							],
+							"description": "Some fancy function",
+							"deprecated": {
+								"since": "2.0"
+							}
 						},
 						{
 							"name": "fireChange",
 							"visibility": "protected",
+							"since": "1.4",
 							"returnValue": {
 								"type": "this",
 								"description": "Reference to <code>this</code> in order to allow method chaining"
@@ -502,7 +624,10 @@ test("Test with library, control, enum", async (t) => {
 									"description": "Parameters to pass along with the event"
 								}
 							],
-							"description": "Fires event {@link #event:press press} to attached listeners."
+							"description": "Fires event {@link #event:press press} to attached listeners.",
+							"deprecated": {
+								"since": "2.0"
+							}
 						},
 						{
 							"name": "getColor",
@@ -546,7 +671,10 @@ test("Test with library, control, enum", async (t) => {
 								"type": "int",
 								"description": "Value of property <code>value</code>"
 							},
-							"description": "Gets current value of property {@link #getValue value}.\n\nProperty with type int\n\nDefault value is <code>0</code>."
+							"description": "Gets current value of property {@link #getValue value}.\n\nProperty with type int\n\nDefault value is <code>0</code>.",
+							"deprecated": {
+								"since": "2.0"
+							}
 						},
 						{
 							"name": "indexOfItem",
@@ -665,7 +793,10 @@ test("Test with library, control, enum", async (t) => {
 									"description": "New value for property <code>value</code>"
 								}
 							],
-							"description": "Sets a new value for property {@link #getValue value}.\n\nProperty with type int\n\nWhen called with a value of <code>null</code> or <code>undefined</code>, the default value of the property will be restored.\n\nDefault value is <code>0</code>."
+							"description": "Sets a new value for property {@link #getValue value}.\n\nProperty with type int\n\nWhen called with a value of <code>null</code> or <code>undefined</code>, the default value of the property will be restored.\n\nDefault value is <code>0</code>.",
+							"deprecated": {
+								"since": "2.0"
+							}
 						}
 					]
 				},
@@ -765,6 +896,14 @@ test("Test with library, control, enum", async (t) => {
 				},
 				"ui5-metadata": {
 					"stereotype": "control",
+					"specialSettings": [
+						{
+							"name": "specialControlData",
+							"type": "any",
+							"visibility": "public",
+							"description": ""
+						}
+					],
 					"properties": [
 						{
 							"name": "color",
@@ -789,44 +928,45 @@ test("Test with library, control, enum", async (t) => {
 							"methods": [
 								"getValue",
 								"setValue"
-							]
+							],
+							"deprecatedText": "Deprecated as of version 2.0"
 						}
 					],
 					"aggregations": [
 						{
-							cardinality: "0..n",
-							description: "<p>Items to be rendered</p>",
-							linkEnabled: true,
-							methods: [
+							"name": "items",
+							"singularName": "item",
+							"type": "sap.ui.core.Control",
+							"cardinality": "0..n",
+							"visibility": "public",
+							"description": "<p>Items to be rendered</p>",
+							"methods": [
 								"getItems",
 								"destroyItems",
 								"insertItem",
 								"addItem",
 								"removeItem",
 								"indexOfItem",
-								"removeAllItems",
+								"removeAllItems"
 							],
-							name: "items",
-							singularName: "item",
-							type: "sap.ui.core.Control",
-							visibility: "public",
-						},
+							"linkEnabled": true
+						}
 					],
 					"associations": [
 						{
-							cardinality: "0..1",
-							description: "<p>Selected item</p>",
-							linkEnabled: true,
-							methods: [
+							"name": "selectedItem",
+							"singularName": "selectedItem",
+							"type": "sap.ui.core.Control",
+							"cardinality": "0..1",
+							"visibility": "public",
+							"description": "<p>Selected item</p>",
+							"methods": [
 								"getSelectedItem",
-								"setSelectedItem",
+								"setSelectedItem"
 							],
-							name: "selectedItem",
-							singularName: "selectedItem",
-							type: "sap.ui.core.Control",
-							visibility: "public",
-						},
-					],
+							"linkEnabled": true
+						}
+					]
 				},
 				"constructor": {
 					"visibility": "public",
@@ -868,6 +1008,7 @@ test("Test with library, control, enum", async (t) => {
 					{
 						"name": "change",
 						"visibility": "public",
+						"since": "1.4",
 						"parameters": [
 							{
 								"name": "oControlEvent",
@@ -899,7 +1040,7 @@ test("Test with library, control, enum", async (t) => {
 								"linkEnabled": true
 							}
 						],
-						"description": "<p>Fires when an item is changed.</p>"
+						"description": "<p>Fires when an item is changed.<br><br><i>Since: 1.4.</i></p>"
 					},
 					{
 						"name": "press",
@@ -926,7 +1067,11 @@ test("Test with library, control, enum", async (t) => {
 								"phoneName": "oControlEvent.getParameters"
 							}
 						],
-						"description": "<p>Event is fired when the user clicks the control.</p>"
+						"description": "<p>Event is fired when the user clicks the control.</p>",
+						"deprecated": {
+							"since": "2.0"
+						},
+						"deprecatedText": "Deprecated as of version 2.0"
 					}
 				],
 				"methods": [
@@ -964,6 +1109,7 @@ test("Test with library, control, enum", async (t) => {
 					{
 						"name": "attachChange",
 						"visibility": "public",
+						"since": "1.4",
 						"returnValue": {
 							"type": "this",
 							"description": "<p>Reference to <code>this</code> in order to allow method chaining</p>",
@@ -1060,7 +1206,11 @@ test("Test with library, control, enum", async (t) => {
 							}
 						],
 						"description": "<p>Attaches event handler <code>fnFunction</code> to the <a target=\"_self\" href=\"api/sap.ui5.tooling.test.TestControl#events/press\">press</a> event of this <code>sap.ui5.tooling.test.TestControl</code>.</p><p>When called, the context of the event handler (its <code>this</code>) will be bound to <code>oListener</code> if specified, otherwise it will be bound to this <code>sap.ui5.tooling.test.TestControl</code> itself.</p><p>Event is fired when the user clicks the control.</p>",
+						"deprecated": {
+							"since": "2.0"
+						},
 						"href": "api/sap.ui5.tooling.test.TestControl#methods/attachPress",
+						"deprecatedText": "Deprecated as of version 2.0",
 						"code": "<pre>attachPress(oData?, fnFunction, oListener?) : this</pre>"
 					},
 					{
@@ -1082,6 +1232,7 @@ test("Test with library, control, enum", async (t) => {
 					{
 						"name": "detachChange",
 						"visibility": "public",
+						"since": "1.4",
 						"returnValue": {
 							"type": "this",
 							"description": "<p>Reference to <code>this</code> in order to allow method chaining</p>",
@@ -1156,7 +1307,11 @@ test("Test with library, control, enum", async (t) => {
 							}
 						],
 						"description": "<p>Detaches event handler <code>fnFunction</code> from the <a target=\"_self\" href=\"api/sap.ui5.tooling.test.TestControl#events/press\">press</a> event of this <code>sap.ui5.tooling.test.TestControl</code>.</p><p>The passed function and listener object must match the ones used for event registration.</p>",
+						"deprecated": {
+							"since": "2.0"
+						},
 						"href": "api/sap.ui5.tooling.test.TestControl#methods/detachPress",
+						"deprecatedText": "Deprecated as of version 2.0",
 						"code": "<pre>detachPress(fnFunction, oListener?) : this</pre>"
 					},
 					{
@@ -1214,13 +1369,25 @@ test("Test with library, control, enum", async (t) => {
 					{
 						"name": "fancyFunction",
 						"visibility": "public",
+						"throws": [
+							{
+								"type": "Error",
+								"description": "<p>In case something bad happens</p>",
+								"linkEnabled": false
+							}
+						],
 						"description": "<p>Some fancy function</p>",
+						"deprecated": {
+							"since": "2.0"
+						},
 						"href": "api/sap.ui5.tooling.test.TestControl#methods/fancyFunction",
+						"deprecatedText": "Deprecated as of version 2.0",
 						"code": "<pre>fancyFunction() : void</pre>"
 					},
 					{
 						"name": "fireChange",
 						"visibility": "protected",
+						"since": "1.4",
 						"returnValue": {
 							"type": "this",
 							"description": "<p>Reference to <code>this</code> in order to allow method chaining</p>",
@@ -1288,7 +1455,11 @@ test("Test with library, control, enum", async (t) => {
 							}
 						],
 						"description": "<p>Fires event <a target=\"_self\" href=\"api/sap.ui5.tooling.test.TestControl#events/press\">press</a> to attached listeners.</p>",
+						"deprecated": {
+							"since": "2.0"
+						},
 						"href": "api/sap.ui5.tooling.test.TestControl#methods/firePress",
+						"deprecatedText": "Deprecated as of version 2.0",
 						"code": "<pre>firePress(mParameters?) : this</pre>"
 					},
 					{
@@ -1373,7 +1544,11 @@ test("Test with library, control, enum", async (t) => {
 							]
 						},
 						"description": "<p>Gets current value of property <a target=\"_self\" href=\"api/sap.ui5.tooling.test.TestControl#methods/getValue\">value</a>.</p><p>Property with type int</p><p>Default value is <code>0</code>.</p>",
+						"deprecated": {
+							"since": "2.0"
+						},
 						"href": "api/sap.ui5.tooling.test.TestControl#methods/getValue",
+						"deprecatedText": "Deprecated as of version 2.0",
 						"code": "<pre>getValue() : int</pre>"
 					},
 					{
@@ -1598,7 +1773,11 @@ test("Test with library, control, enum", async (t) => {
 							}
 						],
 						"description": "<p>Sets a new value for property <a target=\"_self\" href=\"api/sap.ui5.tooling.test.TestControl#methods/getValue\">value</a>.</p><p>Property with type int</p><p>When called with a value of <code>null</code> or <code>undefined</code>, the default value of the property will be restored.</p><p>Default value is <code>0</code>.</p>",
+						"deprecated": {
+							"since": "2.0"
+						},
 						"href": "api/sap.ui5.tooling.test.TestControl#methods/setValue",
+						"deprecatedText": "Deprecated as of version 2.0",
 						"code": "<pre>setValue(iValue?) : this</pre>"
 					}
 				],
