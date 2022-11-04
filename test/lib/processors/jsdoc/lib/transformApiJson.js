@@ -986,7 +986,94 @@ test("Test with docuindex.json reference", async (t) => {
 						"since": "2.0.0"
 					}
 				},
+				{
+					"kind": "class",
+					"name": "sap.ui5.tooling.test.TestControl",
+					"basename": "TestControl",
+					"resource": "sap/ui5/tooling/test/TestControl.js",
+					"module": "sap/ui5/tooling/test/TestControl",
+					"export": "",
+					"static": true,
+					"visibility": "public",
+					"extends": "sap.ui.core.Control",
+					"description": "This control is just for UI5 Tooling testing purposes.",
+					"ui5-metadata": {
+						"stereotype": "control"
+					},
+					"constructor": {
+						"visibility": "public",
+						"parameters": [
+							{
+								"name": "sId",
+								"type": "string",
+								"optional": true,
+								"description": "TEST DESCRIPTION",
+							},
+							{
+								"name": "mSettings",
+								"type": "object",
+								"optional": true,
+								"description": "TEST DESCRIPTION",
+							}
+						],
+						"description": "TEST DESCRIPTION",
+					},
+					"methods": [
+						{
+							"name": "extend",
+							"visibility": "public",
+							"static": true,
+							"returnValue": {
+								"type": "function",
+								"description": "TEST DESCRIPTION",
+							},
+							"parameters": [
+								{
+									"name": "sClassName",
+									"type": "string",
+									"optional": false,
+									"description": "TEST DESCRIPTION",
+								},
+								{
+									"name": "oClassInfo",
+									"type": "object",
+									"optional": true,
+									"description": "TEST DESCRIPTION",
+								},
+								{
+									"name": "FNMetaImpl",
+									"type": "function",
+									"optional": true,
+									"description": "TEST DESCRIPTION",
+								}
+							],
+							"description": "TEST DESCRIPTION",
+						},
+						{
+							"name": "getMetadata",
+							"visibility": "public",
+							"static": true,
+							"returnValue": {
+								"type": "sap.ui.core.ElementMetadata",
+								"description": "TEST DESCRIPTION",
+							},
+							"description": "TEST DESCRIPTION",
+						}
+					]
+				},
 			]
+		}
+	));
+
+	readFile.withArgs("/test-resources/sap/ui5/tooling/test/demokit/docuindex.json").yieldsAsync(null, JSON.stringify(
+		{
+			"explored": {
+				"entities": [
+					// {
+					// 	"id": "sap.ui5.tooling.test.TestControl"
+					// }
+				]
+			}
 		}
 	));
 
@@ -1001,6 +1088,7 @@ test("Test with docuindex.json reference", async (t) => {
 		}
 	);
 
+	/* eslint-disable max-len */
 	t.deepEqual(JSON.parse(apiJsonContent), {
 		"$schema-ref": "http://schemas.sap.com/sapui5/designtime/api.json/1.0",
 		"version": "2.1.0",
@@ -1014,6 +1102,13 @@ test("Test with docuindex.json reference", async (t) => {
 				export: "",
 				kind: "namespace",
 				module: "sap/ui5/tooling/test/library",
+				nodes: [
+					{
+						"name": "sap.ui5.tooling.test.TestControl",
+						"description": "<p>This control is just for UI5 Tooling testing purposes.</p>",
+						"href": "api/sap.ui5.tooling.test.TestControl",
+					}
+				],
 				name: "sap.ui5.tooling.test",
 				resource: "sap/ui5/tooling/test/library.js",
 				since: "1.0.0",
@@ -1021,6 +1116,133 @@ test("Test with docuindex.json reference", async (t) => {
 				subTitle: "Deprecated in version: 2.0.0",
 				title: "namespace sap.ui5.tooling.test",
 				visibility: "public",
+			},
+			{
+				"kind": "class",
+				"name": "sap.ui5.tooling.test.TestControl",
+				"basename": "TestControl",
+				"resource": "sap/ui5/tooling/test/TestControl.js",
+				"module": "sap/ui5/tooling/test/TestControl",
+				"export": "",
+				"static": true,
+				"visibility": "public",
+				"extends": "sap.ui.core.Control",
+				"description": "<p>This control is just for UI5 Tooling testing purposes.</p>",
+				"ui5-metadata": {
+					"stereotype": "control"
+				},
+				"constructor": {
+					"visibility": "public",
+					"parameters": [
+						{
+							"name": "sId",
+							"optional": true,
+							"description": "<p>TEST DESCRIPTION</p>",
+							"phoneName": "sId",
+							"depth": 0,
+							"types": [
+								{
+									"name": "string",
+									"linkEnabled": false
+								}
+							],
+							"defaultValue": ""
+						},
+						{
+							"name": "mSettings",
+							"optional": true,
+							"description": "<p>TEST DESCRIPTION</p>",
+							"phoneName": "mSettings",
+							"depth": 0,
+							"types": [
+								{
+									"name": "object",
+									"linkEnabled": false
+								}
+							],
+							"defaultValue": ""
+						}
+					],
+					"description": "<p>TEST DESCRIPTION</p>",
+					"references": [],
+					"codeExample": "<pre>new sap.ui5.tooling.test.TestControl(sId?, mSettings?)</pre>"
+				},
+				"methods": [
+					{
+						"name": "sap.ui5.tooling.test.TestControl.extend",
+						"visibility": "public",
+						"static": true,
+						"returnValue": {
+							"type": "function",
+							"description": "<p>TEST DESCRIPTION</p>",
+							"types": [
+								{
+									"value": "function"
+								}
+							]
+						},
+						"parameters": [
+							{
+								"name": "sClassName",
+								"optional": false,
+								"description": "<p>TEST DESCRIPTION</p>",
+								"types": [
+									{
+										"value": "string"
+									}
+								],
+								"defaultValue": ""
+							},
+							{
+								"name": "oClassInfo",
+								"optional": true,
+								"description": "<p>TEST DESCRIPTION</p>",
+								"types": [
+									{
+										"value": "object"
+									}
+								],
+								"defaultValue": ""
+							},
+							{
+								"name": "FNMetaImpl",
+								"optional": true,
+								"description": "<p>TEST DESCRIPTION</p>",
+								"types": [
+									{
+										"value": "function"
+									}
+								],
+								"defaultValue": ""
+							}
+						],
+						"description": "<p>TEST DESCRIPTION</p>",
+						"href": "api/sap.ui5.tooling.test.TestControl#methods/sap.ui5.tooling.test.TestControl.extend",
+						"code": "<pre>sap.ui5.tooling.test.TestControl.extend(sClassName, oClassInfo?, FNMetaImpl?) : function</pre>"
+					},
+					{
+						"name": "sap.ui5.tooling.test.TestControl.getMetadata",
+						"visibility": "public",
+						"static": true,
+						"returnValue": {
+							"type": "sap.ui.core.ElementMetadata",
+							"description": "<p>TEST DESCRIPTION</p>",
+							"types": [
+								{
+									"value": "sap.ui.core.ElementMetadata",
+									"href": "api/sap.ui.core.ElementMetadata",
+									"linkEnabled": true
+								}
+							]
+						},
+						"description": "<p>TEST DESCRIPTION</p>",
+						"href": "api/sap.ui5.tooling.test.TestControl#methods/sap.ui5.tooling.test.TestControl.getMetadata",
+						"code": "<pre>sap.ui5.tooling.test.TestControl.getMetadata() : sap.ui.core.ElementMetadata</pre>"
+					}
+				],
+				"displayName": "sap.ui5.tooling.test.TestControl",
+				"title": "class sap.ui5.tooling.test.TestControl",
+				"subTitle": "",
 			},
 			{
 				displayName: "sap",
@@ -1067,4 +1289,5 @@ test("Test with docuindex.json reference", async (t) => {
 			},
 		]
 	});
+	/* eslint-enable max-len */
 });
