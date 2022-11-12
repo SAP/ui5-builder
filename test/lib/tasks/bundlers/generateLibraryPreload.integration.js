@@ -38,9 +38,8 @@ test("integration: build library.d with library preload", async (t) => {
 	const graph = await graphFromObject({
 		dependencyTree: libraryDTree
 	});
-	graph.setTaskRepository(taskRepository);
 	await t.notThrowsAsync(graph.build({
-		destPath,
+		destPath, taskRepository,
 		excludedTasks,
 		includedTasks
 	}));
@@ -91,9 +90,8 @@ test("integration: build sap.ui.core with library preload", async (t) => {
 	const graph = await graphFromObject({
 		dependencyTree: sapUiCoreTree
 	});
-	graph.setTaskRepository(taskRepository);
 	await t.notThrowsAsync(graph.build({
-		destPath,
+		destPath, taskRepository,
 		excludedTasks,
 		includedTasks
 	}));

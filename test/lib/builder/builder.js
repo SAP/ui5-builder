@@ -135,9 +135,9 @@ test.serial("Build application.a", async (t) => {
 	const graph = await graphFromPackageDependencies({
 		cwd: applicationAPath
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo"]
 	});
 
@@ -156,9 +156,9 @@ test.serial("Build application.a with dependencies", async (t) => {
 	const graph = await graphFromObject({
 		dependencyTree: applicationATree
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		excludedTasks: [
 			"generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo",
 			"generateLibraryPreload", "escapeNonAsciiCharacters", "generateLibraryManifest"
@@ -181,9 +181,9 @@ test.serial("Build application.a with dependencies exclude", async (t) => {
 	const graph = await graphFromObject({
 		dependencyTree: applicationATree
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		excludedTasks: [
 			"generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo",
 			"generateLibraryPreload", "escapeNonAsciiCharacters", "generateLibraryManifest"
@@ -207,9 +207,9 @@ test.serial("Build application.a self-contained", async (t) => {
 	const graph = await graphFromObject({
 		dependencyTree: applicationATree
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		excludedTasks: ["generateComponentPreload", "generateVersionInfo"],
 		selfContained: true
 	});
@@ -229,9 +229,9 @@ test.serial("Build application.a with dependencies self-contained", async (t) =>
 	const graph = await graphFromObject({
 		dependencyTree: applicationATree
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		excludedTasks: [
 			"generateComponentPreload", "generateVersionInfo", "escapeNonAsciiCharacters",
 			"generateLibraryManifest"
@@ -259,18 +259,18 @@ test.serial("Build application.a and clean target path", async (t) => {
 	const graph2 = await graphFromObject({
 		dependencyTree: applicationATree
 	});
-	graph1.setTaskRepository(taskRepository);
 	await graph1.build({
 		graph: graph1,
 		destPath: destPathRubbishSubFolder,
-		excludedTasks: ["*"]
+		excludedTasks: ["*"],
+		taskRepository
 	});
-	graph2.setTaskRepository(taskRepository);
 	await graph2.build({
 		graph: graph2,
 		destPath,
 		cleanDest: true,
-		excludedTasks: ["*"]
+		excludedTasks: ["*"],
+		taskRepository
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -288,9 +288,9 @@ test.serial("Build application.g", async (t) => {
 	const graph = await graphFromObject({
 		dependencyTree: applicationGTree
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		excludedTasks: ["generateVersionInfo"]
 	});
 
@@ -309,9 +309,9 @@ test.serial("Build application.g with component preload paths", async (t) => {
 	const graph = await graphFromObject({
 		dependencyTree: applicationGTreeComponentPreloadPaths
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		excludedTasks: ["generateVersionInfo"]
 	});
 
@@ -330,9 +330,9 @@ test.serial("Build application.g with excludes", async (t) => {
 	const graph = await graphFromObject({
 		dependencyTree: applicationGTreeWithExcludes
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		excludedTasks: ["*"]
 	});
 
@@ -351,9 +351,9 @@ test.serial("Build application.h", async (t) => {
 	const graph = await graphFromObject({
 		dependencyTree: applicationHTree
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		excludedTasks: ["generateComponentPreload",
 			"generateStandaloneAppBundle", "generateVersionInfo"]
 	});
@@ -373,9 +373,9 @@ test.serial("Build application.h (no minify)", async (t) => {
 	const graph = await graphFromObject({
 		dependencyTree: applicationHTree
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		excludedTasks: ["minify", "generateComponentPreload",
 			"generateStandaloneAppBundle", "generateVersionInfo"]
 	});
@@ -395,9 +395,9 @@ test.serial("Build application.i", async (t) => {
 	const graph = await graphFromObject({
 		dependencyTree: applicationITree
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		excludedTasks: ["generateVersionInfo"]
 	});
 
@@ -416,9 +416,9 @@ test.serial("Build application.j", async (t) => {
 	const graph = await graphFromObject({
 		dependencyTree: applicationJTree
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		excludedTasks: ["generateVersionInfo"]
 	});
 
@@ -443,9 +443,9 @@ test.serial("Build application.j with resources.json and version info", async (t
 	const graph = await graphFromObject({
 		dependencyTree: applicationJTree
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		includedTasks: ["generateResourcesJson", "generateVersionInfo"]
 	});
 
@@ -464,9 +464,9 @@ test.serial("Build application.k (componentPreload excludes)", async (t) => {
 	const graph = await graphFromObject({
 		dependencyTree: applicationKTree
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		includedTasks: ["generateComponentPreload"],
 		excludedTasks: ["*"]
 	});
@@ -486,9 +486,9 @@ test.serial("Build application.k (package sub-components / componentPreload excl
 	const graph = await graphFromObject({
 		dependencyTree: applicationKPackageSubcomponentsTree
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		includedTasks: ["generateComponentPreload"],
 		excludedTasks: ["*"]
 	});
@@ -508,9 +508,9 @@ test.serial("Build application.l: minification excludes, w/ namespace", async (t
 	const graph = await graphFromObject({
 		dependencyTree: applicationLTree
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo"]
 	});
 
@@ -529,9 +529,9 @@ test.serial("Build application.ø", async (t) => {
 	const graph = await graphFromObject({
 		dependencyTree: applicationØTree
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		excludedTasks: ["generateVersionInfo"]
 	});
 
@@ -550,9 +550,9 @@ test.serial("Build library.d with copyright from .library file", async (t) => {
 	const graph = await graphFromObject({
 		dependencyTree: libraryDTree
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		excludedTasks: ["generateLibraryPreload"]
 	});
 
@@ -571,9 +571,9 @@ test.serial("Build library.e with copyright from metadata configuration of tree"
 	const graph = await graphFromObject({
 		dependencyTree: libraryETree
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		excludedTasks: ["generateLibraryPreload"]
 	});
 
@@ -596,9 +596,9 @@ test.serial("Build library.e with build manifest", async (t) => {
 	const graph = await graphFromObject({
 		dependencyTree: libraryETree
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		createBuildManifest: true
 	});
 	toISOStringStub.restore();
@@ -671,9 +671,9 @@ test.serial("Build library.h with custom bundles and component-preloads", async 
 	const graph = await graphFromObject({
 		dependencyTree: libraryHTree
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		excludedTasks: ["generateLibraryPreload"]
 	});
 
@@ -692,9 +692,9 @@ test.serial("Build library.h with custom bundles and component-preloads (no mini
 	const graph = await graphFromObject({
 		dependencyTree: libraryHTree
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		excludedTasks: ["minify", "generateLibraryPreload"]
 	});
 
@@ -717,9 +717,9 @@ test.serial("Build library.h w/ custom bundles, component-preloads, resources.js
 	const graph = await graphFromObject({
 		dependencyTree: libraryHTree
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		createBuildManifest: true,
 		includedTasks: ["generateResourcesJson"],
 		excludedTasks: ["generateLibraryPreload"]
@@ -866,9 +866,9 @@ test.serial("Build library.i with manifest info taken from .library and library.
 	const graph = await graphFromObject({
 		dependencyTree: libraryITree
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		excludedTasks: ["generateLibraryPreload", "minify"]
 	});
 
@@ -887,9 +887,9 @@ test.serial("Build library.j with JSDoc build only", async (t) => {
 	const graph = await graphFromObject({
 		dependencyTree: libraryJTree
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		includedTasks: ["generateJsdoc"],
 		excludedTasks: ["*"]
 	});
@@ -909,9 +909,9 @@ test.serial("Build library.i, bundling library.h", async (t) => {
 	const graph = await graphFromObject({
 		dependencyTree: libraryIBundlingHTree
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		excludedTasks: ["generateLibraryPreload"]
 	});
 
@@ -935,11 +935,12 @@ test.serial("Build library.i, bundling library.h with build manifest", async (t)
 	const graph1 = await graphFromObject({
 		dependencyTree: libraryHTree
 	});
-	graph1.setTaskRepository(taskRepository);
+
 
 	await graph1.build({
 		destPath: libraryHDestPath,
-		createBuildManifest: true
+		taskRepository,
+		createBuildManifest: true,
 	});
 
 	const projectTree = cloneProjectTree(libraryIBundlingHTree);
@@ -951,9 +952,9 @@ test.serial("Build library.i, bundling library.h with build manifest", async (t)
 	const graph2 = await graphFromObject({
 		dependencyTree: projectTree
 	});
-	graph2.setTaskRepository(taskRepository);
+
 	await graph2.build({
-		destPath,
+		destPath, taskRepository,
 		createBuildManifest: true
 	});
 	logger.setLevel("info");
@@ -1017,9 +1018,9 @@ test.serial("Build library.l", async (t) => {
 	const graph = await graphFromObject({
 		dependencyTree: libraryLTree
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		excludedTasks: ["generateLibraryManifest", "generateLibraryPreload"]
 	});
 
@@ -1038,9 +1039,9 @@ test.serial("Build theme.j even without an library", async (t) => {
 	const graph = await graphFromObject({
 		dependencyTree: themeJTree
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath
+		destPath, taskRepository,
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -1058,9 +1059,9 @@ test.serial("Build theme.j even without an library with resources.json", async (
 	const graph = await graphFromObject({
 		dependencyTree: themeJTree
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		includedTasks: [
 			"generateResourcesJson"
 		],
@@ -1085,9 +1086,9 @@ test.serial("Build theme.j with build manifest", async (t) => {
 	const graph = await graphFromObject({
 		dependencyTree: themeJTree
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		createBuildManifest: true
 	});
 	toISOStringStub.restore();
@@ -1141,9 +1142,9 @@ test.serial("Build library.ø", async (t) => {
 	const graph = await graphFromObject({
 		dependencyTree: libraryØTree
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath
+		destPath, taskRepository,
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -1169,9 +1170,9 @@ test.serial("Build library.coreBuildtime: replaceBuildtime", async (t) => {
 	const graph = await graphFromObject({
 		dependencyTree: libraryCoreBuildtimeTree
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		excludedTasks: ["generateLibraryManifest", "generateLibraryPreload"]
 	});
 
@@ -1192,9 +1193,9 @@ test.serial("Build library with theme configured for CSS variables", async (t) =
 	const graph = await graphFromObject({
 		dependencyTree: themeJTree
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		cssVariables: true,
 	});
 
@@ -1213,9 +1214,9 @@ test.serial("Build library with theme configured for CSS variables and theme des
 	const graph = await graphFromObject({
 		dependencyTree: themeJTree
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		cssVariables: true,
 		includedTasks: ["generateThemeDesignerResources"]
 	});
@@ -1235,9 +1236,9 @@ test.serial("Build theme-library with CSS variables", async (t) => {
 	const graph = await graphFromObject({
 		dependencyTree: themeLibraryETree
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		cssVariables: true
 	});
 
@@ -1256,9 +1257,9 @@ test.serial("Build theme-library with CSS variables and theme designer resources
 	const graph = await graphFromObject({
 		dependencyTree: themeLibraryETree
 	});
-	graph.setTaskRepository(taskRepository);
+
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		cssVariables: true,
 		includedTasks: ["generateThemeDesignerResources"]
 	});

@@ -40,9 +40,8 @@ test("integration: build application.b standalone", async (t) => {
 		dependencyTree: applicationBTree
 	});
 
-	graph.setTaskRepository(taskRepository);
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		excludedTasks,
 		includedTasks
 	});

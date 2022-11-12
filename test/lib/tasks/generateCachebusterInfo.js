@@ -38,9 +38,8 @@ test("integration: Build application.g", async (t) => {
 		dependencyTree: applicationGTree
 	});
 
-	graph.setTaskRepository(taskRepository);
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		excludedTasks,
 		includedTasks
 	});
@@ -74,9 +73,8 @@ test("integration: Build application.g with cachebuster using hashes", async (t)
 		dependencyTree: applicationGTreeWithCachebusterHash
 	});
 
-	graph.setTaskRepository(taskRepository);
 	await graph.build({
-		destPath,
+		destPath, taskRepository,
 		excludedTasks,
 		includedTasks
 	});
