@@ -8,13 +8,15 @@ sap.ui.define(
 		"./core/library",
 		"sap/external/thirdparty/library",
 		"sap/external2/thirdparty/library",
+		"sap/external3/thirdparty/library",
 	],
 	(
 		Control,
 		{ MyValidEnum, ThisIsEnumToo: RenamedEnum },
 		coreLibrary,
 		[arrPattern, {arrWith: {deep: arrPatternDeepDestruct}}],
-		{ objPattern: {deeply: {destructured: objPatternDeepDestruct}, objPattern1Lvl}, ...libraryExt }
+		{ objPattern: {deeply: {destructured: objPatternDeepDestruct}, objPattern1Lvl} },
+		libraryExt
 	) => {
 		const { AnotherValidEnum } = coreLibrary;
 		const { Buzz } = AnotherValidEnum;
@@ -63,7 +65,7 @@ sap.ui.define(
 						/**
 						 * validPropertyDefaultValueEnumNestedDestructuring
 						 */
-						 validPropertyDefaultValueEnumChainedDestructuring: {
+						 validPropertyDefaultValueEnumNestedDestructuring: {
 							type: "library.j.core.AnotherValidEnum",
 							group: "Misc",
 							defaultValue: BuzzRenamed
@@ -121,7 +123,7 @@ sap.ui.define(
 						 * validPropertyDefaultValueArrPattern
 						 */
 						 validPropertyDefaultValueArrPattern: {
-							type: "sap.external.thirdparty.library",
+							type: "sap.external.thirdparty",
 							group: "Misc",
 							defaultValue: arrPattern
 						},
@@ -130,7 +132,7 @@ sap.ui.define(
 						 * validPropertyDefaultValueArrPatternDeepDestruct
 						 */
 						 validPropertyDefaultValueArrPatternDeepDestruct: {
-							type: "sap.external.thirdparty.library.arrWith.deep",
+							type: "sap.external.thirdparty.arrWith.deep",
 							group: "Misc",
 							defaultValue: arrPatternDeepDestruct
 						},
@@ -139,7 +141,7 @@ sap.ui.define(
 						 * validPropertyDefaultValueArrPatternDeepDestruct
 						 */
 						 validPropertyDefaultValueObjPatternDeepDestruct: {
-							type: "sap.external2.thirdparty.library.objPattern.deeply",
+							type: "sap.external2.thirdparty.objPattern.deeply",
 							group: "Misc",
 							defaultValue: objPatternDeepDestruct
 						},
@@ -148,7 +150,7 @@ sap.ui.define(
 						 * validPropertyDefaultValueObjPatternNested
 						 */
 						 validPropertyDefaultValueObjPatternNested: {
-							type: "sap.external2.thirdparty.library.objPattern",
+							type: "sap.external2.thirdparty.objPattern",
 							group: "Misc",
 							defaultValue: objPattern1Lvl
 						},
@@ -157,7 +159,7 @@ sap.ui.define(
 						 * validPropertyDefaultValueArrPatternVarDef
 						 */
 						 validPropertyDefaultValueArrPatternVarDef: {
-							type: "sap.external2.thirdparty.library",
+							type: "sap.external2.thirdparty",
 							group: "Misc",
 							defaultValue: arrPatternVarDef
 						},
@@ -166,7 +168,7 @@ sap.ui.define(
 						 * validPropertyDefaultValueArrPatternVarDef
 						 */
 						 validPropertyDefaultValueArrPatternVarDefNestedAndRenamed: {
-							type: "sap.external2.thirdparty.library.nested",
+							type: "sap.external2.thirdparty.nested",
 							group: "Misc",
 							defaultValue: arrPatternVarDefNestedAndRenamed
 						}
