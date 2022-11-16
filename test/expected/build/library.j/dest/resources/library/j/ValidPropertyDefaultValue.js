@@ -132,7 +132,7 @@ sap.ui.define(
 						 * validPropertyDefaultValueArrPatternDeepDestruct
 						 */
 						 validPropertyDefaultValueArrPatternDeepDestruct: {
-							type: "sap.external.thirdparty.arrWith.deep",
+							type: "sap.external.thirdparty.arrWith",
 							group: "Misc",
 							defaultValue: arrPatternDeepDestruct
 						},
