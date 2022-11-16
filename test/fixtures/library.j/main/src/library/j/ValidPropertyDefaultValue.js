@@ -159,7 +159,7 @@ sap.ui.define(
 						 * validPropertyDefaultValueArrPatternVarDef
 						 */
 						 validPropertyDefaultValueArrPatternVarDef: {
-							type: "sap.external2.thirdparty",
+							type: "sap.external3.thirdparty",
 							group: "Misc",
 							defaultValue: arrPatternVarDef
 						},
@@ -168,7 +168,7 @@ sap.ui.define(
 						 * validPropertyDefaultValueArrPatternVarDef
 						 */
 						 validPropertyDefaultValueArrPatternVarDefNestedAndRenamed: {
-							type: "sap.external2.thirdparty.nested",
+							type: "sap.external3.thirdparty.nested",
 							group: "Misc",
 							defaultValue: arrPatternVarDefNestedAndRenamed
 						}
