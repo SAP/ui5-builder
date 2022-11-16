@@ -269,6 +269,18 @@
 						]
 					},
 					{
+						"name": "validPropertyDefaultValueEnumNestedDestructuring",
+						"type": "library.j.core.AnotherValidEnum",
+						"defaultValue": "Buzz",
+						"group": "Misc",
+						"visibility": "public",
+						"description": "validPropertyDefaultValueEnumNestedDestructuring",
+						"methods": [
+							"getValidPropertyDefaultValueEnumNestedDestructuring",
+							"setValidPropertyDefaultValueEnumNestedDestructuring"
+						]
+					},
+					{
 						"name": "validPropertyDefaultValueEnumDestructuringWithRename",
 						"type": "library.j.core.AnotherValidEnum",
 						"defaultValue": "Fizz",
@@ -327,6 +339,78 @@
 							"getValidPropertyDefaultValueEnumViaDestructuringGlobal",
 							"setValidPropertyDefaultValueEnumViaDestructuringGlobal"
 						]
+					},
+					{
+						"name": "validPropertyDefaultValueArrPattern",
+						"type": "sap.external.thirdparty",
+						"defaultValue": "arrPattern",
+						"group": "Misc",
+						"visibility": "public",
+						"description": "validPropertyDefaultValueArrPattern",
+						"methods": [
+							"getValidPropertyDefaultValueArrPattern",
+							"setValidPropertyDefaultValueArrPattern"
+						]
+					},
+					{
+						"name": "validPropertyDefaultValueArrPatternDeepDestruct",
+						"type": "sap.external.thirdparty.arrWith",
+						"defaultValue": "deep",
+						"group": "Misc",
+						"visibility": "public",
+						"description": "validPropertyDefaultValueArrPatternDeepDestruct",
+						"methods": [
+							"getValidPropertyDefaultValueArrPatternDeepDestruct",
+							"setValidPropertyDefaultValueArrPatternDeepDestruct"
+						]
+					},
+					{
+						"name": "validPropertyDefaultValueObjPatternDeepDestruct",
+						"type": "sap.external2.thirdparty.objPattern.deeply",
+						"defaultValue": "destructured",
+						"group": "Misc",
+						"visibility": "public",
+						"description": "validPropertyDefaultValueArrPatternDeepDestruct",
+						"methods": [
+							"getValidPropertyDefaultValueObjPatternDeepDestruct",
+							"setValidPropertyDefaultValueObjPatternDeepDestruct"
+						]
+					},
+					{
+						"name": "validPropertyDefaultValueObjPatternNested",
+						"type": "sap.external2.thirdparty.objPattern",
+						"defaultValue": "objPattern1Lvl",
+						"group": "Misc",
+						"visibility": "public",
+						"description": "validPropertyDefaultValueObjPatternNested",
+						"methods": [
+							"getValidPropertyDefaultValueObjPatternNested",
+							"setValidPropertyDefaultValueObjPatternNested"
+						]
+					},
+					{
+						"name": "validPropertyDefaultValueArrPatternVarDef",
+						"type": "sap.external3.thirdparty",
+						"defaultValue": "arrPatternVarDef",
+						"group": "Misc",
+						"visibility": "public",
+						"description": "validPropertyDefaultValueArrPatternVarDef",
+						"methods": [
+							"getValidPropertyDefaultValueArrPatternVarDef",
+							"setValidPropertyDefaultValueArrPatternVarDef"
+						]
+					},
+					{
+						"name": "validPropertyDefaultValueArrPatternVarDefNestedAndRenamed",
+						"type": "sap.external3.thirdparty.nested",
+						"defaultValue": "arrPatternVarDef",
+						"group": "Misc",
+						"visibility": "public",
+						"description": "validPropertyDefaultValueArrPatternVarDef",
+						"methods": [
+							"getValidPropertyDefaultValueArrPatternVarDefNestedAndRenamed",
+							"setValidPropertyDefaultValueArrPatternVarDefNestedAndRenamed"
+						]
 					}
 				]
 			},
@@ -376,6 +460,42 @@
 					"description": "Returns a metadata object for class library.j.ValidPropertyDefaultValue."
 				},
 				{
+					"name": "getValidPropertyDefaultValueArrPattern",
+					"visibility": "public",
+					"returnValue": {
+						"type": "sap.external.thirdparty",
+						"description": "Value of property <code>validPropertyDefaultValueArrPattern</code>"
+					},
+					"description": "Gets current value of property {@link #getValidPropertyDefaultValueArrPattern validPropertyDefaultValueArrPattern}.\n\nvalidPropertyDefaultValueArrPattern\n\nDefault value is <code>arrPattern</code>."
+				},
+				{
+					"name": "getValidPropertyDefaultValueArrPatternDeepDestruct",
+					"visibility": "public",
+					"returnValue": {
+						"type": "sap.external.thirdparty.arrWith",
+						"description": "Value of property <code>validPropertyDefaultValueArrPatternDeepDestruct</code>"
+					},
+					"description": "Gets current value of property {@link #getValidPropertyDefaultValueArrPatternDeepDestruct validPropertyDefaultValueArrPatternDeepDestruct}.\n\nvalidPropertyDefaultValueArrPatternDeepDestruct\n\nDefault value is <code>deep</code>."
+				},
+				{
+					"name": "getValidPropertyDefaultValueArrPatternVarDef",
+					"visibility": "public",
+					"returnValue": {
+						"type": "sap.external3.thirdparty",
+						"description": "Value of property <code>validPropertyDefaultValueArrPatternVarDef</code>"
+					},
+					"description": "Gets current value of property {@link #getValidPropertyDefaultValueArrPatternVarDef validPropertyDefaultValueArrPatternVarDef}.\n\nvalidPropertyDefaultValueArrPatternVarDef\n\nDefault value is <code>arrPatternVarDef</code>."
+				},
+				{
+					"name": "getValidPropertyDefaultValueArrPatternVarDefNestedAndRenamed",
+					"visibility": "public",
+					"returnValue": {
+						"type": "sap.external3.thirdparty.nested",
+						"description": "Value of property <code>validPropertyDefaultValueArrPatternVarDefNestedAndRenamed</code>"
+					},
+					"description": "Gets current value of property {@link #getValidPropertyDefaultValueArrPatternVarDefNestedAndRenamed validPropertyDefaultValueArrPatternVarDefNestedAndRenamed}.\n\nvalidPropertyDefaultValueArrPatternVarDef\n\nDefault value is <code>arrPatternVarDef</code>."
+				},
+				{
 					"name": "getValidPropertyDefaultValueEnumChainedDestructuring",
 					"visibility": "public",
 					"returnValue": {
@@ -412,6 +532,15 @@
 					"description": "Gets current value of property {@link #getValidPropertyDefaultValueEnumDestructuringWithRenameInArgumentsAndLocalVar validPropertyDefaultValueEnumDestructuringWithRenameInArgumentsAndLocalVar}.\n\nvalidPropertyDefaultValueEnumDestructuringWithRenameInArgumentsAndLocalVar\n\nDefault value is <code>Value2</code>."
 				},
 				{
+					"name": "getValidPropertyDefaultValueEnumNestedDestructuring",
+					"visibility": "public",
+					"returnValue": {
+						"type": "library.j.core.AnotherValidEnum",
+						"description": "Value of property <code>validPropertyDefaultValueEnumNestedDestructuring</code>"
+					},
+					"description": "Gets current value of property {@link #getValidPropertyDefaultValueEnumNestedDestructuring validPropertyDefaultValueEnumNestedDestructuring}.\n\nvalidPropertyDefaultValueEnumNestedDestructuring\n\nDefault value is <code>Buzz</code>."
+				},
+				{
 					"name": "getValidPropertyDefaultValueEnumSimpleDestructuring",
 					"visibility": "public",
 					"returnValue": {
@@ -437,6 +566,96 @@
 						"description": "Value of property <code>validPropertyDefaultValueEnumViaDestructuringInArrowFn</code>"
 					},
 					"description": "Gets current value of property {@link #getValidPropertyDefaultValueEnumViaDestructuringInArrowFn validPropertyDefaultValueEnumViaDestructuringInArrowFn}.\n\nvalidPropertyDefaultValueEnumViaDestructuringInArrowFn\n\nDefault value is <code>Foo</code>."
+				},
+				{
+					"name": "getValidPropertyDefaultValueObjPatternDeepDestruct",
+					"visibility": "public",
+					"returnValue": {
+						"type": "sap.external2.thirdparty.objPattern.deeply",
+						"description": "Value of property <code>validPropertyDefaultValueObjPatternDeepDestruct</code>"
+					},
+					"description": "Gets current value of property {@link #getValidPropertyDefaultValueObjPatternDeepDestruct validPropertyDefaultValueObjPatternDeepDestruct}.\n\nvalidPropertyDefaultValueArrPatternDeepDestruct\n\nDefault value is <code>destructured</code>."
+				},
+				{
+					"name": "getValidPropertyDefaultValueObjPatternNested",
+					"visibility": "public",
+					"returnValue": {
+						"type": "sap.external2.thirdparty.objPattern",
+						"description": "Value of property <code>validPropertyDefaultValueObjPatternNested</code>"
+					},
+					"description": "Gets current value of property {@link #getValidPropertyDefaultValueObjPatternNested validPropertyDefaultValueObjPatternNested}.\n\nvalidPropertyDefaultValueObjPatternNested\n\nDefault value is <code>objPattern1Lvl</code>."
+				},
+				{
+					"name": "setValidPropertyDefaultValueArrPattern",
+					"visibility": "public",
+					"returnValue": {
+						"type": "this",
+						"description": "Reference to <code>this</code> in order to allow method chaining"
+					},
+					"parameters": [
+						{
+							"name": "sValidPropertyDefaultValueArrPattern",
+							"type": "sap.external.thirdparty",
+							"optional": true,
+							"defaultValue": "arrPattern",
+							"description": "New value for property <code>validPropertyDefaultValueArrPattern</code>"
+						}
+					],
+					"description": "Sets a new value for property {@link #getValidPropertyDefaultValueArrPattern validPropertyDefaultValueArrPattern}.\n\nvalidPropertyDefaultValueArrPattern\n\nWhen called with a value of <code>null</code> or <code>undefined</code>, the default value of the property will be restored.\n\nDefault value is <code>arrPattern</code>."
+				},
+				{
+					"name": "setValidPropertyDefaultValueArrPatternDeepDestruct",
+					"visibility": "public",
+					"returnValue": {
+						"type": "this",
+						"description": "Reference to <code>this</code> in order to allow method chaining"
+					},
+					"parameters": [
+						{
+							"name": "sValidPropertyDefaultValueArrPatternDeepDestruct",
+							"type": "sap.external.thirdparty.arrWith",
+							"optional": true,
+							"defaultValue": "deep",
+							"description": "New value for property <code>validPropertyDefaultValueArrPatternDeepDestruct</code>"
+						}
+					],
+					"description": "Sets a new value for property {@link #getValidPropertyDefaultValueArrPatternDeepDestruct validPropertyDefaultValueArrPatternDeepDestruct}.\n\nvalidPropertyDefaultValueArrPatternDeepDestruct\n\nWhen called with a value of <code>null</code> or <code>undefined</code>, the default value of the property will be restored.\n\nDefault value is <code>deep</code>."
+				},
+				{
+					"name": "setValidPropertyDefaultValueArrPatternVarDef",
+					"visibility": "public",
+					"returnValue": {
+						"type": "this",
+						"description": "Reference to <code>this</code> in order to allow method chaining"
+					},
+					"parameters": [
+						{
+							"name": "sValidPropertyDefaultValueArrPatternVarDef",
+							"type": "sap.external3.thirdparty",
+							"optional": true,
+							"defaultValue": "arrPatternVarDef",
+							"description": "New value for property <code>validPropertyDefaultValueArrPatternVarDef</code>"
+						}
+					],
+					"description": "Sets a new value for property {@link #getValidPropertyDefaultValueArrPatternVarDef validPropertyDefaultValueArrPatternVarDef}.\n\nvalidPropertyDefaultValueArrPatternVarDef\n\nWhen called with a value of <code>null</code> or <code>undefined</code>, the default value of the property will be restored.\n\nDefault value is <code>arrPatternVarDef</code>."
+				},
+				{
+					"name": "setValidPropertyDefaultValueArrPatternVarDefNestedAndRenamed",
+					"visibility": "public",
+					"returnValue": {
+						"type": "this",
+						"description": "Reference to <code>this</code> in order to allow method chaining"
+					},
+					"parameters": [
+						{
+							"name": "sValidPropertyDefaultValueArrPatternVarDefNestedAndRenamed",
+							"type": "sap.external3.thirdparty.nested",
+							"optional": true,
+							"defaultValue": "arrPatternVarDef",
+							"description": "New value for property <code>validPropertyDefaultValueArrPatternVarDefNestedAndRenamed</code>"
+						}
+					],
+					"description": "Sets a new value for property {@link #getValidPropertyDefaultValueArrPatternVarDefNestedAndRenamed validPropertyDefaultValueArrPatternVarDefNestedAndRenamed}.\n\nvalidPropertyDefaultValueArrPatternVarDef\n\nWhen called with a value of <code>null</code> or <code>undefined</code>, the default value of the property will be restored.\n\nDefault value is <code>arrPatternVarDef</code>."
 				},
 				{
 					"name": "setValidPropertyDefaultValueEnumChainedDestructuring",
@@ -511,6 +730,24 @@
 					"description": "Sets a new value for property {@link #getValidPropertyDefaultValueEnumDestructuringWithRenameInArgumentsAndLocalVar validPropertyDefaultValueEnumDestructuringWithRenameInArgumentsAndLocalVar}.\n\nvalidPropertyDefaultValueEnumDestructuringWithRenameInArgumentsAndLocalVar\n\nWhen called with a value of <code>null</code> or <code>undefined</code>, the default value of the property will be restored.\n\nDefault value is <code>Value2</code>."
 				},
 				{
+					"name": "setValidPropertyDefaultValueEnumNestedDestructuring",
+					"visibility": "public",
+					"returnValue": {
+						"type": "this",
+						"description": "Reference to <code>this</code> in order to allow method chaining"
+					},
+					"parameters": [
+						{
+							"name": "sValidPropertyDefaultValueEnumNestedDestructuring",
+							"type": "library.j.core.AnotherValidEnum",
+							"optional": true,
+							"defaultValue": "Buzz",
+							"description": "New value for property <code>validPropertyDefaultValueEnumNestedDestructuring</code>"
+						}
+					],
+					"description": "Sets a new value for property {@link #getValidPropertyDefaultValueEnumNestedDestructuring validPropertyDefaultValueEnumNestedDestructuring}.\n\nvalidPropertyDefaultValueEnumNestedDestructuring\n\nWhen called with a value of <code>null</code> or <code>undefined</code>, the default value of the property will be restored.\n\nDefault value is <code>Buzz</code>."
+				},
+				{
 					"name": "setValidPropertyDefaultValueEnumSimpleDestructuring",
 					"visibility": "public",
 					"returnValue": {
@@ -563,6 +800,42 @@
 						}
 					],
 					"description": "Sets a new value for property {@link #getValidPropertyDefaultValueEnumViaDestructuringInArrowFn validPropertyDefaultValueEnumViaDestructuringInArrowFn}.\n\nvalidPropertyDefaultValueEnumViaDestructuringInArrowFn\n\nWhen called with a value of <code>null</code> or <code>undefined</code>, the default value of the property will be restored.\n\nDefault value is <code>Foo</code>."
+				},
+				{
+					"name": "setValidPropertyDefaultValueObjPatternDeepDestruct",
+					"visibility": "public",
+					"returnValue": {
+						"type": "this",
+						"description": "Reference to <code>this</code> in order to allow method chaining"
+					},
+					"parameters": [
+						{
+							"name": "sValidPropertyDefaultValueObjPatternDeepDestruct",
+							"type": "sap.external2.thirdparty.objPattern.deeply",
+							"optional": true,
+							"defaultValue": "destructured",
+							"description": "New value for property <code>validPropertyDefaultValueObjPatternDeepDestruct</code>"
+						}
+					],
+					"description": "Sets a new value for property {@link #getValidPropertyDefaultValueObjPatternDeepDestruct validPropertyDefaultValueObjPatternDeepDestruct}.\n\nvalidPropertyDefaultValueArrPatternDeepDestruct\n\nWhen called with a value of <code>null</code> or <code>undefined</code>, the default value of the property will be restored.\n\nDefault value is <code>destructured</code>."
+				},
+				{
+					"name": "setValidPropertyDefaultValueObjPatternNested",
+					"visibility": "public",
+					"returnValue": {
+						"type": "this",
+						"description": "Reference to <code>this</code> in order to allow method chaining"
+					},
+					"parameters": [
+						{
+							"name": "sValidPropertyDefaultValueObjPatternNested",
+							"type": "sap.external2.thirdparty.objPattern",
+							"optional": true,
+							"defaultValue": "objPattern1Lvl",
+							"description": "New value for property <code>validPropertyDefaultValueObjPatternNested</code>"
+						}
+					],
+					"description": "Sets a new value for property {@link #getValidPropertyDefaultValueObjPatternNested validPropertyDefaultValueObjPatternNested}.\n\nvalidPropertyDefaultValueObjPatternNested\n\nWhen called with a value of <code>null</code> or <code>undefined</code>, the default value of the property will be restored.\n\nDefault value is <code>objPattern1Lvl</code>."
 				}
 			]
 		}
