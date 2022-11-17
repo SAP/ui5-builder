@@ -354,7 +354,7 @@
 					},
 					{
 						"name": "validPropertyDefaultValueArrPatternDeepDestruct",
-						"type": "sap.external.thirdparty.arrWith",
+						"type": "sap.external.thirdparty.1.arrWith",
 						"defaultValue": "deep",
 						"group": "Misc",
 						"visibility": "public",
@@ -402,7 +402,7 @@
 					},
 					{
 						"name": "validPropertyDefaultValueArrPatternVarDefNestedAndRenamed",
-						"type": "sap.external3.thirdparty.nested",
+						"type": "sap.external3.thirdparty.1.nested",
 						"defaultValue": "arrPatternVarDef",
 						"group": "Misc",
 						"visibility": "public",
@@ -472,7 +472,7 @@
 					"name": "getValidPropertyDefaultValueArrPatternDeepDestruct",
 					"visibility": "public",
 					"returnValue": {
-						"type": "sap.external.thirdparty.arrWith",
+						"type": "sap.external.thirdparty.1.arrWith",
 						"description": "Value of property <code>validPropertyDefaultValueArrPatternDeepDestruct</code>"
 					},
 					"description": "Gets current value of property {@link #getValidPropertyDefaultValueArrPatternDeepDestruct validPropertyDefaultValueArrPatternDeepDestruct}.\n\nvalidPropertyDefaultValueArrPatternDeepDestruct\n\nDefault value is <code>deep</code>."
@@ -490,7 +490,7 @@
 					"name": "getValidPropertyDefaultValueArrPatternVarDefNestedAndRenamed",
 					"visibility": "public",
 					"returnValue": {
-						"type": "sap.external3.thirdparty.nested",
+						"type": "sap.external3.thirdparty.1.nested",
 						"description": "Value of property <code>validPropertyDefaultValueArrPatternVarDefNestedAndRenamed</code>"
 					},
 					"description": "Gets current value of property {@link #getValidPropertyDefaultValueArrPatternVarDefNestedAndRenamed validPropertyDefaultValueArrPatternVarDefNestedAndRenamed}.\n\nvalidPropertyDefaultValueArrPatternVarDef\n\nDefault value is <code>arrPatternVarDef</code>."
@@ -613,7 +613,7 @@
 					"parameters": [
 						{
 							"name": "sValidPropertyDefaultValueArrPatternDeepDestruct",
-							"type": "sap.external.thirdparty.arrWith",
+							"type": "sap.external.thirdparty.1.arrWith",
 							"optional": true,
 							"defaultValue": "deep",
 							"description": "New value for property <code>validPropertyDefaultValueArrPatternDeepDestruct</code>"
@@ -649,7 +649,7 @@
 					"parameters": [
 						{
 							"name": "sValidPropertyDefaultValueArrPatternVarDefNestedAndRenamed",
-							"type": "sap.external3.thirdparty.nested",
+							"type": "sap.external3.thirdparty.1.nested",
 							"optional": true,
 							"defaultValue": "arrPatternVarDef",
 							"description": "New value for property <code>validPropertyDefaultValueArrPatternVarDefNestedAndRenamed</code>"
