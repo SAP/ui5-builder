@@ -731,7 +731,7 @@ test("ES2022: PrivateIdentifier, PropertyDefinition, StaticBlock", (t) => {
 			static #privateStaticField = sap.ui.requireSync('static/module4');
 			static [sap.ui.requireSync('static/module5')] = "module5";
 
-			// Even though the filed is on instance level, the computed key is evaluated when the class is declared
+			// Even though the field is on instance level, the computed key is evaluated when the class is declared
 			[sap.ui.requireSync('static/module6')] = "module6";
 
 			// Conditional dependencies
@@ -750,7 +750,7 @@ test("ES2022: PrivateIdentifier, PropertyDefinition, StaticBlock", (t) => {
 		}
 
 	});`;
-	const info = analyzeString(content, "modules/ChainExpression.js");
+	const info = analyzeString(content, "modules/ES2022.js");
 
 	const expected = [
 		"conditional/module1.js",
