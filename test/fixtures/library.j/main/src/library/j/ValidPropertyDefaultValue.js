@@ -14,7 +14,7 @@ sap.ui.define(
 		Control,
 		{ MyValidEnum, ThisIsEnumToo: RenamedEnum },
 		coreLibrary,
-		[arrPattern, {arrWith: {deep: arrPatternDeepDestruct}}],
+		[ {arrPattern}, {arrWith: {deep: arrPatternDeepDestruct}}],
 		{ objPattern: {deeply: {destructured: objPatternDeepDestruct}, objPattern1Lvl} },
 		libraryExt
 	) => {
@@ -24,7 +24,7 @@ sap.ui.define(
 		const { AnotherValidEnum: AnotherRenamedEnum } = coreLibrary;
 		const { H1 } = sap.ui.core.TitleLevel;
 		const { Value2: RenamedValue2 } = RenamedEnum;
-		const [ arrPatternVarDef, {nested: {arrPatternVarDef: arrPatternVarDefNestedAndRenamed}} ] = libraryExt;
+		const [ {arrPatternVarDef}, {nested: {arrPatternVarDef: arrPatternVarDefNestedAndRenamed}} ] = libraryExt;
 
 		/**
 		 * @class
@@ -123,7 +123,7 @@ sap.ui.define(
 						 * validPropertyDefaultValueArrPattern
 						 */
 						 validPropertyDefaultValueArrPattern: {
-							type: "sap.external.thirdparty",
+							type: "sap.external.thirdparty.0",
 							group: "Misc",
 							defaultValue: arrPattern
 						},
@@ -159,7 +159,7 @@ sap.ui.define(
 						 * validPropertyDefaultValueArrPatternVarDef
 						 */
 						 validPropertyDefaultValueArrPatternVarDef: {
-							type: "sap.external3.thirdparty",
+							type: "sap.external3.thirdparty.0",
 							group: "Misc",
 							defaultValue: arrPatternVarDef
 						},
