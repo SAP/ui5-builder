@@ -2,7 +2,16 @@
 All notable changes to this project will be documented in this file.  
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-A list of unreleased changes can be found [here](https://github.com/SAP/ui5-builder/compare/v2.11.8...HEAD).
+A list of unreleased changes can be found [here](https://github.com/SAP/ui5-builder/compare/v2.11.9...HEAD).
+
+<a name="v2.11.9"></a>
+## [v2.11.9] - 2022-11-30
+### Bug Fixes
+- **transformApiJson:** Fix regression in UI5 Tooling scenario [`819c808`](https://github.com/SAP/ui5-builder/commit/819c808010963b84bfe33e109a7b2a5412096f78)
+
+### Dependency Updates
+- Bump less-openui5 from 0.11.2 to 0.11.3 [`1bbe5f5`](https://github.com/SAP/ui5-builder/commit/1bbe5f561fb35c646a27cbe4d03050101ff68d7c)
+
 
 <a name="v2.11.8"></a>
 ## [v2.11.8] - 2022-10-28
@@ -670,6 +679,7 @@ to load the custom bundle file instead.
 - Add ability to configure component preloads and custom bundles [`2241e5f`](https://github.com/SAP/ui5-builder/commit/2241e5ff98fd95f1f80cc74959655ae7a9c660e7)
 
 
+[v2.11.9]: https://github.com/SAP/ui5-builder/compare/v2.11.8...v2.11.9
 [v2.11.8]: https://github.com/SAP/ui5-builder/compare/v2.11.7...v2.11.8
 [v2.11.7]: https://github.com/SAP/ui5-builder/compare/v2.11.6...v2.11.7
 [v2.11.6]: https://github.com/SAP/ui5-builder/compare/v2.11.5...v2.11.6
