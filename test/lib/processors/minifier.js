@@ -1,4 +1,5 @@
 import test from "ava";
+import sinon from "sinon";
 import minifier from "../../../lib/processors/minifier.js";
 import {createResource} from "@ui5/fs/resourceFactory";
 
@@ -6,7 +7,6 @@ import {createResource} from "@ui5/fs/resourceFactory";
 // obscure errors when dynamically generating Data-URI soruceMappingURL values.
 // Therefore use this constant to never write the actual string.
 const SOURCE_MAPPING_URL = "//" + "# sourceMappingURL";
-
 
 test("Basic minifier", async (t) => {
 	const content = `/*!
@@ -38,6 +38,72 @@ ${SOURCE_MAPPING_URL}=test.controller.js.map`;
 		`"sources":["test-dbg.controller.js"],` +
 		`"mappings":";;;AAGC,SAASA,OAAOC,GACfC,OAAOC,IAAIC,QAAQ,aACnBC,QAAQC,IAAI,qBACb,CACDC"}`;
 	t.deepEqual(await sourceMapResource.getString(), expectedSourceMap, "Correct source map content");
+});
+
+test("Basic minifier with taskUtil and useWorkers: true", async (t) => {
+	const taskUtilMock = {
+		registerCleanupTask: sinon.stub()
+	};
+	const content = `/*!
+ * \${copyright}
+ */
+ function myFunc(myArg) {
+ 	jQuery.sap.require("something");
+ 	console.log("Something required")
+ }
+myFun();
+`;
+	const testResource = createResource({
+		path: "/test.controller.js",
+		string: content
+	});
+	const [{resource, dbgResource, sourceMapResource}] = await minifier({
+		resources: [testResource],
+		taskUtil: taskUtilMock,
+		options: {
+			useWorkers: true
+		}
+	});
+
+	const expected = `/*!
+ * \${copyright}
+ */
+function myFunc(e){jQuery.sap.require("something");console.log("Something required")}myFun();
+${SOURCE_MAPPING_URL}=test.controller.js.map`;
+	t.deepEqual(await resource.getString(), expected, "Correct minified content");
+	t.deepEqual(await dbgResource.getString(), content, "Correct debug content");
+	const expectedSourceMap = `{"version":3,"file":"test.controller.js",` +
+		`"names":["myFunc","myArg","jQuery","sap","require","console","log","myFun"],` +
+		`"sources":["test-dbg.controller.js"],` +
+		`"mappings":";;;AAGC,SAASA,OAAOC,GACfC,OAAOC,IAAIC,QAAQ,aACnBC,QAAQC,IAAI,qBACb,CACDC"}`;
+	t.deepEqual(await sourceMapResource.getString(), expectedSourceMap, "Correct source map content");
+
+	// Call to registerCleanupTask indicates worker pool was used
+	t.is(taskUtilMock.registerCleanupTask.callCount, 1, "taskUtil#registerCleanupTask got called once");
+});
+
+test("minifier with useWorkers: true and missing taskUtil", async (t) => {
+	const content = `/*!
+ * \${copyright}
+ */
+ function myFunc(myArg) {
+ 	jQuery.sap.require("something");
+ 	console.log("Something required")
+ }
+myFun();
+`;
+	const testResource = createResource({
+		path: "/test.controller.js",
+		string: content
+	});
+	await t.throwsAsync(minifier({
+		resources: [testResource],
+		options: {
+			useWorkers: true
+		}
+	}), {
+		message: "Minifier: Option 'useWorkers' requires a taskUtil instance to be provided"
+	}, "Threw with expected error message");
 });
 
 test("Multiple resources", async (t) => {
@@ -321,3 +387,5 @@ this code can't be parsed!`;
 	t.regex(error.message, /pos/, "Error should contain pos");
 	t.regex(error.message, /line/, "Error should contain line");
 });
+
+
