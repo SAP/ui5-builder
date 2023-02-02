@@ -16,7 +16,7 @@ test("Basic minifier", async (t) => {
  	jQuery.sap.require("something");
  	console.log("Something required")
  }
-myFun();
+myFunc();
 `;
 	const testResource = createResource({
 		path: "/test.controller.js",
@@ -29,14 +29,14 @@ myFun();
 	const expected = `/*!
  * \${copyright}
  */
-function myFunc(e){jQuery.sap.require("something");console.log("Something required")}myFun();
+function myFunc(e){jQuery.sap.require("something");console.log("Something required")}myFunc();
 ${SOURCE_MAPPING_URL}=test.controller.js.map`;
 	t.deepEqual(await resource.getString(), expected, "Correct minified content");
 	t.deepEqual(await dbgResource.getString(), content, "Correct debug content");
 	const expectedSourceMap = `{"version":3,"file":"test.controller.js",` +
-		`"names":["myFunc","myArg","jQuery","sap","require","console","log","myFun"],` +
+		`"names":["myFunc","myArg","jQuery","sap","require","console","log"],` +
 		`"sources":["test-dbg.controller.js"],` +
-		`"mappings":";;;AAGC,SAASA,OAAOC,GACfC,OAAOC,IAAIC,QAAQ,aACnBC,QAAQC,IAAI,qBACb,CACDC"}`;
+		`"mappings":";;;AAGC,SAASA,OAAOC,GACfC,OAAOC,IAAIC,QAAQ,aACnBC,QAAQC,IAAI,qBACb,CACDN"}`;
 	t.deepEqual(await sourceMapResource.getString(), expectedSourceMap, "Correct source map content");
 });
 
@@ -51,7 +51,7 @@ test("Basic minifier with taskUtil and useWorkers: true", async (t) => {
  	jQuery.sap.require("something");
  	console.log("Something required")
  }
-myFun();
+myFunc();
 `;
 	const testResource = createResource({
 		path: "/test.controller.js",
@@ -68,14 +68,14 @@ myFun();
 	const expected = `/*!
  * \${copyright}
  */
-function myFunc(e){jQuery.sap.require("something");console.log("Something required")}myFun();
+function myFunc(e){jQuery.sap.require("something");console.log("Something required")}myFunc();
 ${SOURCE_MAPPING_URL}=test.controller.js.map`;
 	t.deepEqual(await resource.getString(), expected, "Correct minified content");
 	t.deepEqual(await dbgResource.getString(), content, "Correct debug content");
 	const expectedSourceMap = `{"version":3,"file":"test.controller.js",` +
-		`"names":["myFunc","myArg","jQuery","sap","require","console","log","myFun"],` +
+		`"names":["myFunc","myArg","jQuery","sap","require","console","log"],` +
 		`"sources":["test-dbg.controller.js"],` +
-		`"mappings":";;;AAGC,SAASA,OAAOC,GACfC,OAAOC,IAAIC,QAAQ,aACnBC,QAAQC,IAAI,qBACb,CACDC"}`;
+		`"mappings":";;;AAGC,SAASA,OAAOC,GACfC,OAAOC,IAAIC,QAAQ,aACnBC,QAAQC,IAAI,qBACb,CACDN"}`;
 	t.deepEqual(await sourceMapResource.getString(), expectedSourceMap, "Correct source map content");
 
 	// Call to registerCleanupTask indicates worker pool was used
@@ -90,7 +90,7 @@ test("minifier with useWorkers: true and missing taskUtil", async (t) => {
  	jQuery.sap.require("something");
  	console.log("Something required")
  }
-myFun();
+myFunc();
 `;
 	const testResource = createResource({
 		path: "/test.controller.js",
