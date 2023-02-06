@@ -1,5 +1,4 @@
 # Changelog
-
 All notable changes to this project will be documented in this file.  
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
@@ -21,7 +20,6 @@ A list of unreleased changes can be found [here](https://github.com/SAP/ui5-buil
 ## [v3.0.0] - 2023-02-XX
 
 ### Breaking Changes
-
 - Transform to ES Modules ([#790](https://github.com/SAP/ui5-builder/issues/790)) [`a439aa9`](https://github.com/SAP/ui5-builder/commit/a439aa9f679dfe2e18b8c540f54876f94c0de119)
 - **generateJsDoc:** Remove internal 'buildContext' parameter [`4ec80c8`](https://github.com/SAP/ui5-builder/commit/4ec80c874e177b658b1cd819431b6cb0660ded87)
 - Removal of manifestBundler and generateManifestBundle ([#838](https://github.com/SAP/ui5-builder/issues/838)) [`07a5be2`](https://github.com/SAP/ui5-builder/commit/07a5be2b6d9aa23cf78ddd17951c832d6dec7bef)
@@ -34,7 +32,6 @@ A list of unreleased changes can be found [here](https://github.com/SAP/ui5-buil
 - **libraryLessGenerator:** Throw error when import can't be inlined [`d2be9bb`](https://github.com/SAP/ui5-builder/commit/d2be9bb68600ec97b9bc007f348f87ad456fb5a3)
 
 ### BREAKING CHANGE
-
 This package has been transformed to ES Modules. Therefore it no longer provides a CommonJS export.
 If your project uses CommonJS, it needs to be converted to ESM or use a dynamic import.
 
@@ -79,7 +76,6 @@ process takes place. Existing 'beforeTask' and 'afterTask' configuration of
 custom tasks might need to be adapted to cater for this change.
 
 ### Features
-
 - Support ES2022 language features ([#848](https://github.com/SAP/ui5-builder/issues/848)) [`f9b8457`](https://github.com/SAP/ui5-builder/commit/f9b845726731a0e02ec4a499e2a1a82a639174a8)
 - **jsdoc:** Support destructuring of enums for defaultValue ([#775](https://github.com/SAP/ui5-builder/issues/775)) [`523f365`](https://github.com/SAP/ui5-builder/commit/523f365cb917997c5031d245309c21e9e4b3e311)
 - **builder:** Improve support for ES6+ syntax  ([#774](https://github.com/SAP/ui5-builder/issues/774)) [`90385fe`](https://github.com/SAP/ui5-builder/commit/90385feb7cea1e5b864cff035b01263a492972a9)
@@ -92,7 +88,6 @@ custom tasks might need to be adapted to cater for this change.
 - Add minify task and processor ([#666](https://github.com/SAP/ui5-builder/issues/666)) [`a3af604`](https://github.com/SAP/ui5-builder/commit/a3af604ff0a12fb9241dcd105cf0aec8d718a299)
 
 ### Bug Fixes
-
 - **package.json:** Downgrade es5-ext dependency [`2b71707`](https://github.com/SAP/ui5-builder/commit/2b71707683480b26aab9957c09e5d22bce8a6450)
 - **minify:** Change default to not omit source map resources [`6d75a49`](https://github.com/SAP/ui5-builder/commit/6d75a495224590097332fc061c66cfe0e8f4c151)
 - Avoid redundant bundle creation ([#741](https://github.com/SAP/ui5-builder/issues/741)) [`13c8405`](https://github.com/SAP/ui5-builder/commit/13c840585946401d238936dfa38a6f70a73e9ed0)
@@ -107,7 +102,6 @@ custom tasks might need to be adapted to cater for this change.
 - **Bundler:** Sort raw modules by default [`0e11b69`](https://github.com/SAP/ui5-builder/commit/0e11b6965a1d2e63a96e9b738e38975b5ac755bc)
 
 ### Dependency Updates
-
 - Bump less-openui5 from 0.11.4 to 0.11.5 [`bf46354`](https://github.com/SAP/ui5-builder/commit/bf463541b7651db1dee167057eddc94181f5c1da)
 - Bump less-openui5 from 0.11.3 to 0.11.4 [`b7a507f`](https://github.com/SAP/ui5-builder/commit/b7a507fbc34076f5bf95f92f058fd2c58d79a455)
 - Bump less-openui5 from 0.11.2 to 0.11.3 [`28e684b`](https://github.com/SAP/ui5-builder/commit/28e684b85e7eb621f210041702e2a316d1d0eb62)
