@@ -33,9 +33,6 @@ A list of unreleased changes can be found [here]({{ .Info.RepositoryURL }}/compa
 {{ end -}}
 {{ end -}}
 
-<a name="v3.0.0"></a>
-## [v3.0.0] - 2023-02-XX
-
 ### Breaking Changes
 - Transform to ES Modules ([#790](https://github.com/SAP/ui5-builder/issues/790)) [`a439aa9`](https://github.com/SAP/ui5-builder/commit/a439aa9f679dfe2e18b8c540f54876f94c0de119)
 - **generateJsDoc:** Remove internal 'buildContext' parameter [`4ec80c8`](https://github.com/SAP/ui5-builder/commit/4ec80c874e177b658b1cd819431b6cb0660ded87)

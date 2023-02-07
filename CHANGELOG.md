@@ -16,54 +16,201 @@ A list of unreleased changes can be found [here](https://github.com/SAP/ui5-buil
 - **minify task:** Use workerpool for terser ([#875](https://github.com/SAP/ui5-builder/issues/875)) [`ff4c6fb`](https://github.com/SAP/ui5-builder/commit/ff4c6fbd81c912239cd578fdcd452364ac4ae859)
 
 
-<a name="v3.0.0"></a>
-## [v3.0.0] - 2023-02-XX
+<a name="v3.0.0-rc.3"></a>
+## [v3.0.0-rc.3] - 2023-01-24
 
+<a name="v3.0.0-rc.2"></a>
+## [v3.0.0-rc.2] - 2023-01-23
+### Dependency Updates
+- Bump rimraf from 3.0.2 to 4.1.1 ([#873](https://github.com/SAP/ui5-builder/issues/873)) [`ddb9660`](https://github.com/SAP/ui5-builder/commit/ddb96602fea5b96ba37afdebda0993d847462f52)
+
+
+<a name="v3.0.0-rc.1"></a>
+## [v3.0.0-rc.1] - 2023-01-11
 ### Breaking Changes
-- Transform to ES Modules ([#790](https://github.com/SAP/ui5-builder/issues/790)) [`a439aa9`](https://github.com/SAP/ui5-builder/commit/a439aa9f679dfe2e18b8c540f54876f94c0de119)
-- **generateJsDoc:** Remove internal 'buildContext' parameter [`4ec80c8`](https://github.com/SAP/ui5-builder/commit/4ec80c874e177b658b1cd819431b6cb0660ded87)
-- Removal of manifestBundler and generateManifestBundle ([#838](https://github.com/SAP/ui5-builder/issues/838)) [`07a5be2`](https://github.com/SAP/ui5-builder/commit/07a5be2b6d9aa23cf78ddd17951c832d6dec7bef)
-- **JSDoc:** Fail build when jsdoc command failed ([#845](https://github.com/SAP/ui5-builder/issues/845)) [`c2916b4`](https://github.com/SAP/ui5-builder/commit/c2916b4f1d49b5500e4b51143d4e6065ac200eef)
-- Remove build execution ([#740](https://github.com/SAP/ui5-builder/issues/740)) [`af2e956`](https://github.com/SAP/ui5-builder/commit/af2e956f6cba1275669160328e32df3fffa782d0)
-- Enable modern preload bundles without dependencies ([#739](https://github.com/SAP/ui5-builder/issues/739)) [`97cfa6c`](https://github.com/SAP/ui5-builder/commit/97cfa6cd3eadff57bcc18816534c7751551ebdb8)
-- Require Node.js >= 16.18.0 / npm >= 8 [`dbf6c06`](https://github.com/SAP/ui5-builder/commit/dbf6c0694693070f73e9f96edef90f094d5bf721)
-- **generateResourcesJson:** Make 'dependencies' parameter mandatory [`268dd16`](https://github.com/SAP/ui5-builder/commit/268dd16091c515ec0c922ea23af437d9aa8bf3ea)
-- **moduleBundler:** Always default to `optimize: true` ([#685](https://github.com/SAP/ui5-builder/issues/685)) [`de5837c`](https://github.com/SAP/ui5-builder/commit/de5837c43449ea61deae3b2f02f9973f3fa37992)
 - **libraryLessGenerator:** Throw error when import can't be inlined [`d2be9bb`](https://github.com/SAP/ui5-builder/commit/d2be9bb68600ec97b9bc007f348f87ad456fb5a3)
 
+
+<a name="v3.0.0-rc.0"></a>
+## [v3.0.0-rc.0] - 2022-12-23
+
+<a name="v3.0.0-beta.6"></a>
+## [v3.0.0-beta.6] - 2022-12-13
+
+<a name="v3.0.0-beta.5"></a>
+## [v3.0.0-beta.5] - 2022-12-12
+### Breaking Changes
+- **generateJsDoc:** Remove internal 'buildContext' parameter [`4ec80c8`](https://github.com/SAP/ui5-builder/commit/4ec80c874e177b658b1cd819431b6cb0660ded87)
+
+### Dependency Updates
+- Bump less-openui5 from 0.11.4 to 0.11.5 [`bf46354`](https://github.com/SAP/ui5-builder/commit/bf463541b7651db1dee167057eddc94181f5c1da)
+
+
+<a name="v3.0.0-beta.4"></a>
+## [v3.0.0-beta.4] - 2022-12-01
+### Dependency Updates
+- Bump less-openui5 from 0.11.3 to 0.11.4 [`b7a507f`](https://github.com/SAP/ui5-builder/commit/b7a507fbc34076f5bf95f92f058fd2c58d79a455)
+- Bump less-openui5 from 0.11.2 to 0.11.3 [`28e684b`](https://github.com/SAP/ui5-builder/commit/28e684b85e7eb621f210041702e2a316d1d0eb62)
+
+
+<a name="v3.0.0-beta.3"></a>
+## [v3.0.0-beta.3] - 2022-11-30
+### Features
+- **jsdoc:** Support destructuring of enums for defaultValue ([#775](https://github.com/SAP/ui5-builder/issues/775)) [`523f365`](https://github.com/SAP/ui5-builder/commit/523f365cb917997c5031d245309c21e9e4b3e311)
+
+
+<a name="v3.0.0-beta.2"></a>
+## [v3.0.0-beta.2] - 2022-11-29
+### Breaking Changes
+- Removal of manifestBundler and generateManifestBundle ([#838](https://github.com/SAP/ui5-builder/issues/838)) [`07a5be2`](https://github.com/SAP/ui5-builder/commit/07a5be2b6d9aa23cf78ddd17951c832d6dec7bef)
+- **JSDoc:** Fail build when jsdoc command failed ([#845](https://github.com/SAP/ui5-builder/issues/845)) [`c2916b4`](https://github.com/SAP/ui5-builder/commit/c2916b4f1d49b5500e4b51143d4e6065ac200eef)
+
+### Features
+- Support ES2022 language features ([#848](https://github.com/SAP/ui5-builder/issues/848)) [`f9b8457`](https://github.com/SAP/ui5-builder/commit/f9b845726731a0e02ec4a499e2a1a82a639174a8)
+
 ### BREAKING CHANGE
-This package has been transformed to ES Modules. Therefore it no longer provides a CommonJS export.
-If your project uses CommonJS, it needs to be converted to ESM or use a dynamic import.
-
-For more information see also:
-
-- https://sap.github.io/ui5-tooling/updates/migrate-v3/
-- https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c
 
 The `jsdocGenerator` processor and the corresponding `generateJsdoc` task will now throw an error when JSDoc reports an error (exit code != 0). This will also fail the build when running `ui5 build jsdoc`.
 
 The manifestBundler processor and generateManifestBundle task has been removed because it is no longer required for the HTML5 repository in Cloud Foundry.
 
-- builder.js has been removed. Use ui5-project builder instead
-- Tasks now rely on Project instances being available on Resources (see https://github.com/SAP/ui5-fs/pull/381)
-- TaskRepository#addTask has been removed. Custom tasks need to be added to the project graph instead
-- TaskUtil#get/set/clearTag now requires a Project instance to be provided. Path strings are no longer sufficient
+
+<a name="v3.0.0-beta.1"></a>
+## [v3.0.0-beta.1] - 2022-11-07
+
+<a name="v3.0.0-alpha.12"></a>
+## [v3.0.0-alpha.12] - 2022-10-24
+### Breaking Changes
+- Transform to native ESM ([#790](https://github.com/SAP/ui5-builder/issues/790)) [`a439aa9`](https://github.com/SAP/ui5-builder/commit/a439aa9f679dfe2e18b8c540f54876f94c0de119)
+
+### BREAKING CHANGE
+
+This package has been transformed to native ESM. Therefore it no longer provides a CommonJS export.
+If your project uses CommonJS, it needs to be converted to ESM or use a dynamic import.
+
+For more information see also:
+- https://sap.github.io/ui5-tooling/updates/migrate-v3/
+- https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c
+
+
+<a name="v3.0.0-alpha.11"></a>
+## [v3.0.0-alpha.11] - 2022-10-20
+### Bug Fixes
+- **package.json:** Downgrade es5-ext dependency [`2b71707`](https://github.com/SAP/ui5-builder/commit/2b71707683480b26aab9957c09e5d22bce8a6450)
+
+### Dependency Updates
+- Bump escope from 3.6.0 to 4.0.0 [`e25af0d`](https://github.com/SAP/ui5-builder/commit/e25af0d9c1184916aa037b4b4ca23d15c5f2a408)
+
+### Features
+- **builder:** Improve support for ES6+ syntax  ([#774](https://github.com/SAP/ui5-builder/issues/774)) [`90385fe`](https://github.com/SAP/ui5-builder/commit/90385feb7cea1e5b864cff035b01263a492972a9)
+- **jsdoc:** Improve support for ES6+ syntax  ([#785](https://github.com/SAP/ui5-builder/issues/785)) [`187a6a3`](https://github.com/SAP/ui5-builder/commit/187a6a35000145d70bf41e0d8b724e5ea8d8dc78)
+
+### Reverts
+- [FIX] package.json: Downgrade es5-ext dependency
+
+
+<a name="v3.0.0-alpha.10"></a>
+## [v3.0.0-alpha.10] - 2022-08-09
+
+<a name="v3.0.0-alpha.9"></a>
+## [v3.0.0-alpha.9] - 2022-07-27
+### Bug Fixes
+- **minify:** Change default to not omit source map resources [`6d75a49`](https://github.com/SAP/ui5-builder/commit/6d75a495224590097332fc061c66cfe0e8f4c151)
+
+
+<a name="v3.0.0-alpha.8"></a>
+## [v3.0.0-alpha.8] - 2022-07-15
+
+<a name="v3.0.0-alpha.7"></a>
+## [v3.0.0-alpha.7] - 2022-06-14
+### Breaking Changes
+- Remove build execution ([#740](https://github.com/SAP/ui5-builder/issues/740)) [`af2e956`](https://github.com/SAP/ui5-builder/commit/af2e956f6cba1275669160328e32df3fffa782d0)
+
+### Bug Fixes
+- Avoid redundant bundle creation ([#741](https://github.com/SAP/ui5-builder/issues/741)) [`13c8405`](https://github.com/SAP/ui5-builder/commit/13c840585946401d238936dfa38a6f70a73e9ed0)
+
+### Features
+- Enable modern preload bundles without dependencies ([#739](https://github.com/SAP/ui5-builder/issues/739)) [`97cfa6c`](https://github.com/SAP/ui5-builder/commit/97cfa6cd3eadff57bcc18816534c7751551ebdb8)
+
+### BREAKING CHANGE
+
+* builder.js has been removed. Use ui5-project builder instead
+* Tasks now rely on Project instances being available on Resources (see https://github.com/SAP/ui5-fs/pull/381)
+* TaskRepository#addTask has been removed. Custom tasks need to be added to the project graph instead
+* TaskUtil#get/set/clearTag now requires a Project instance to be provided. Path strings are no longer sufficient
   and will cause an exception to be thrown
-  
+
+
+<a name="v3.0.0-alpha.6"></a>
+## [v3.0.0-alpha.6] - 2022-04-26
+### Bug Fixes
+- **JSModuleAnalyzer:** Fix detection of bundle name ([#705](https://github.com/SAP/ui5-builder/issues/705)) [`aaeafd4`](https://github.com/SAP/ui5-builder/commit/aaeafd4a1fd194dd08e5ae47c29d90f0b4c7d197)
+- **generateResourcesJson:** Add raw-module info for debug bundles ([#736](https://github.com/SAP/ui5-builder/issues/736)) [`3b918e8`](https://github.com/SAP/ui5-builder/commit/3b918e83bfd38342778ecd4c58e648e99ad7cffc)
+
+
+<a name="v3.0.0-alpha.5"></a>
+## [v3.0.0-alpha.5] - 2022-04-14
+### Bug Fixes
+- **LibraryBuilder:** Align task order of "generateComponentPreload" [`aea061d`](https://github.com/SAP/ui5-builder/commit/aea061d9d6c2ac0c11484dcc08bdcda23ab62986)
+
+### Features
+- **generateThemeDesignerResources task:** Create css_variables.less ([#730](https://github.com/SAP/ui5-builder/issues/730)) [`34e69be`](https://github.com/SAP/ui5-builder/commit/34e69be95fc8ec1961b24b7e2580c2c993d814d3)
+
+### BREAKING CHANGE
+
 For library projects, the task "generateComponentPreload" is now
 executed after tasks "generateLibraryManifest" and
 "generateManifestBundle" instead of before them.
 
+
+<a name="v3.0.0-alpha.4"></a>
+## [v3.0.0-alpha.4] - 2022-04-05
+### Features
+- **builder:** Add cssVariables option ([#728](https://github.com/SAP/ui5-builder/issues/728)) [`30d58e1`](https://github.com/SAP/ui5-builder/commit/30d58e1081c1bdc665f13952ecbe5c400b5f4ed7)
+
+
+<a name="v3.0.0-alpha.3"></a>
+## [v3.0.0-alpha.3] - 2022-03-10
+### Bug Fixes
+- **LocatorResourcePool:** Wait for resources in prepare step ([#719](https://github.com/SAP/ui5-builder/issues/719)) [`1b7f93f`](https://github.com/SAP/ui5-builder/commit/1b7f93f4988340d7a6575be3191a02e6c295ebd0)
+
+
+<a name="v3.0.0-alpha.2"></a>
+## [v3.0.0-alpha.2] - 2022-02-25
+### Bug Fixes
+- **XMLTemplateAnalyzer:** Analyze core:require of FragmentDefinition [`af075ed`](https://github.com/SAP/ui5-builder/commit/af075edf784d9f1ba162a34f0bf150dbcbc0f479)
+
+### Features
+- Generate source maps for bundles ([#695](https://github.com/SAP/ui5-builder/issues/695)) [`8a20c42`](https://github.com/SAP/ui5-builder/commit/8a20c4257a1ebe4d613b0595be93cd45d900f580)
+- **replaceVersion/Copyright:** Also process test-resources ([#693](https://github.com/SAP/ui5-builder/issues/693)) [`a0d4bc2`](https://github.com/SAP/ui5-builder/commit/a0d4bc2a80d61e042786207af4bdbda6c3ddfe31)
+
+
+<a name="v3.0.0-alpha.1"></a>
+## [v3.0.0-alpha.1] - 2022-01-25
+### Breaking Changes
+- Require Node.js >= 16.13.2 / npm >= 8 [`dbf6c06`](https://github.com/SAP/ui5-builder/commit/dbf6c0694693070f73e9f96edef90f094d5bf721)
+- **generateResourcesJson:** Make 'dependencies' parameter mandatory [`268dd16`](https://github.com/SAP/ui5-builder/commit/268dd16091c515ec0c922ea23af437d9aa8bf3ea)
+- **moduleBundler:** Always default to `optimize: true` ([#685](https://github.com/SAP/ui5-builder/issues/685)) [`de5837c`](https://github.com/SAP/ui5-builder/commit/de5837c43449ea61deae3b2f02f9973f3fa37992)
+
+### Bug Fixes
+- **Bundler:** Ensure reproducibility for bundles with multiple parts ([#689](https://github.com/SAP/ui5-builder/issues/689)) [`6f4588b`](https://github.com/SAP/ui5-builder/commit/6f4588b3eb687178e557ac4fb36481104f9681a0)
+- **generateResourcesJson:** Don't list resources omitted from build result [`9608c51`](https://github.com/SAP/ui5-builder/commit/9608c5177f86494ba689d2e799b4378fec9ed6fa)
+- **generateResourcesJson:** Analyze debug bundles ([#669](https://github.com/SAP/ui5-builder/issues/669)) [`f27513a`](https://github.com/SAP/ui5-builder/commit/f27513a259b30d39e260790781b6d435b4ab088b)
+
+### Features
+- Support ES2021 language features [`e749b6a`](https://github.com/SAP/ui5-builder/commit/e749b6ae0838f923b27dd0d7d34da2174c433f5f)
+- Add minify task and processor ([#666](https://github.com/SAP/ui5-builder/issues/666)) [`a3af604`](https://github.com/SAP/ui5-builder/commit/a3af604ff0a12fb9241dcd105cf0aec8d718a299)
+
+### BREAKING CHANGE
+
 Support for older Node.js and npm releases has been dropped.
-Only Node.js v16.18.0 and npm v8 or higher are supported.
+Only Node.js v16.13.2 and npm v8 or higher are supported.
 
 The following tasks have been removed:
-
 - createDebugFiles
 - uglify
 
 The following processors have been removed:
-
 - debugFileCreator
 - resourceCopier
 - uglifier
@@ -75,38 +222,12 @@ Note: The minify task is executed earlier, before the bundling
 process takes place. Existing 'beforeTask' and 'afterTask' configuration of
 custom tasks might need to be adapted to cater for this change.
 
-### Features
-- Support ES2022 language features ([#848](https://github.com/SAP/ui5-builder/issues/848)) [`f9b8457`](https://github.com/SAP/ui5-builder/commit/f9b845726731a0e02ec4a499e2a1a82a639174a8)
-- **jsdoc:** Support destructuring of enums for defaultValue ([#775](https://github.com/SAP/ui5-builder/issues/775)) [`523f365`](https://github.com/SAP/ui5-builder/commit/523f365cb917997c5031d245309c21e9e4b3e311)
-- **builder:** Improve support for ES6+ syntax  ([#774](https://github.com/SAP/ui5-builder/issues/774)) [`90385fe`](https://github.com/SAP/ui5-builder/commit/90385feb7cea1e5b864cff035b01263a492972a9)
-- **jsdoc:** Improve support for ES6+ syntax  ([#785](https://github.com/SAP/ui5-builder/issues/785)) [`187a6a3`](https://github.com/SAP/ui5-builder/commit/187a6a35000145d70bf41e0d8b724e5ea8d8dc78)
-- **generateThemeDesignerResources task:** Create css_variables.less ([#730](https://github.com/SAP/ui5-builder/issues/730)) [`34e69be`](https://github.com/SAP/ui5-builder/commit/34e69be95fc8ec1961b24b7e2580c2c993d814d3)
-- **builder:** Add cssVariables option ([#728](https://github.com/SAP/ui5-builder/issues/728)) [`30d58e1`](https://github.com/SAP/ui5-builder/commit/30d58e1081c1bdc665f13952ecbe5c400b5f4ed7)
-- Generate source maps for bundles ([#695](https://github.com/SAP/ui5-builder/issues/695)) [`8a20c42`](https://github.com/SAP/ui5-builder/commit/8a20c4257a1ebe4d613b0595be93cd45d900f580)
-- **replaceVersion/Copyright:** Also process test-resources ([#693](https://github.com/SAP/ui5-builder/issues/693)) [`a0d4bc2`](https://github.com/SAP/ui5-builder/commit/a0d4bc2a80d61e042786207af4bdbda6c3ddfe31)
-- Support ES2022 language features [`e749b6a`](https://github.com/SAP/ui5-builder/commit/e749b6ae0838f923b27dd0d7d34da2174c433f5f)
-- Add minify task and processor ([#666](https://github.com/SAP/ui5-builder/issues/666)) [`a3af604`](https://github.com/SAP/ui5-builder/commit/a3af604ff0a12fb9241dcd105cf0aec8d718a299)
 
+<a name="v3.0.0-alpha.0"></a>
+## [v3.0.0-alpha.0] - 2021-12-14
 ### Bug Fixes
-- **package.json:** Downgrade es5-ext dependency [`2b71707`](https://github.com/SAP/ui5-builder/commit/2b71707683480b26aab9957c09e5d22bce8a6450)
-- **minify:** Change default to not omit source map resources [`6d75a49`](https://github.com/SAP/ui5-builder/commit/6d75a495224590097332fc061c66cfe0e8f4c151)
-- Avoid redundant bundle creation ([#741](https://github.com/SAP/ui5-builder/issues/741)) [`13c8405`](https://github.com/SAP/ui5-builder/commit/13c840585946401d238936dfa38a6f70a73e9ed0)
-- **JSModuleAnalyzer:** Fix detection of bundle name ([#705](https://github.com/SAP/ui5-builder/issues/705)) [`aaeafd4`](https://github.com/SAP/ui5-builder/commit/aaeafd4a1fd194dd08e5ae47c29d90f0b4c7d197)
-- **generateResourcesJson:** Add raw-module info for debug bundles ([#736](https://github.com/SAP/ui5-builder/issues/736)) [`3b918e8`](https://github.com/SAP/ui5-builder/commit/3b918e83bfd38342778ecd4c58e648e99ad7cffc)
-- **LibraryBuilder:** Align task order of "generateComponentPreload" [`aea061d`](https://github.com/SAP/ui5-builder/commit/aea061d9d6c2ac0c11484dcc08bdcda23ab62986)
-- **LocatorResourcePool:** Wait for resources in prepare step ([#719](https://github.com/SAP/ui5-builder/issues/719)) [`1b7f93f`](https://github.com/SAP/ui5-builder/commit/1b7f93f4988340d7a6575be3191a02e6c295ebd0)
-- **XMLTemplateAnalyzer:** Analyze core:require of FragmentDefinition [`af075ed`](https://github.com/SAP/ui5-builder/commit/af075edf784d9f1ba162a34f0bf150dbcbc0f479)
-- **Bundler:** Ensure reproducibility for bundles with multiple parts ([#689](https://github.com/SAP/ui5-builder/issues/689)) [`6f4588b`](https://github.com/SAP/ui5-builder/commit/6f4588b3eb687178e557ac4fb36481104f9681a0)
-- **generateResourcesJson:** Don't list resources omitted from build result [`9608c51`](https://github.com/SAP/ui5-builder/commit/9608c5177f86494ba689d2e799b4378fec9ed6fa)
-- **generateResourcesJson:** Analyze debug bundles ([#669](https://github.com/SAP/ui5-builder/issues/669)) [`f27513a`](https://github.com/SAP/ui5-builder/commit/f27513a259b30d39e260790781b6d435b4ab088b)
 - **Bundler:** Sort raw modules by default [`0e11b69`](https://github.com/SAP/ui5-builder/commit/0e11b6965a1d2e63a96e9b738e38975b5ac755bc)
 
-### Dependency Updates
-- Bump less-openui5 from 0.11.4 to 0.11.5 [`bf46354`](https://github.com/SAP/ui5-builder/commit/bf463541b7651db1dee167057eddc94181f5c1da)
-- Bump less-openui5 from 0.11.3 to 0.11.4 [`b7a507f`](https://github.com/SAP/ui5-builder/commit/b7a507fbc34076f5bf95f92f058fd2c58d79a455)
-- Bump less-openui5 from 0.11.2 to 0.11.3 [`28e684b`](https://github.com/SAP/ui5-builder/commit/28e684b85e7eb621f210041702e2a316d1d0eb62)
-- Bump escope from 3.6.0 to 4.0.0 [`e25af0d`](https://github.com/SAP/ui5-builder/commit/e25af0d9c1184916aa037b4b4ca23d15c5f2a408)
-- Bump rimraf from 3.0.2 to 4.1.1 ([#873](https://github.com/SAP/ui5-builder/issues/873)) [`ddb9660`](https://github.com/SAP/ui5-builder/commit/ddb96602fea5b96ba37afdebda0993d847462f52)
 
 <a name="v2.11.2"></a>
 ## [v2.11.2] - 2021-11-17
