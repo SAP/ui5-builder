@@ -121,6 +121,54 @@ custom tasks might need to be adapted to cater for this change.
 - Bump less-openui5 from 0.11.2 to 0.11.3 [`28e684b`](https://github.com/SAP/ui5-builder/commit/28e684b85e7eb621f210041702e2a316d1d0eb62)
 - Bump escope from 3.6.0 to 4.0.0 [`e25af0d`](https://github.com/SAP/ui5-builder/commit/e25af0d9c1184916aa037b4b4ca23d15c5f2a408)
 - Bump rimraf from 3.0.2 to 4.1.1 ([#873](https://github.com/SAP/ui5-builder/issues/873)) [`ddb9660`](https://github.com/SAP/ui5-builder/commit/ddb96602fea5b96ba37afdebda0993d847462f52)
+- Bump jsdoc from 3.6.11 to 4.0.0 ([#821](https://github.com/SAP/ui5-builder/issues/821)) [`6d05117`](https://github.com/SAP/ui5-builder/commit/6d0511785069d12a588b2ad9fa31de828700fef0)
+
+<a name="v2.11.9"></a>
+## [v2.11.9] - 2022-11-30
+### Bug Fixes
+- **transformApiJson:** Fix regression in UI5 Tooling scenario [`819c808`](https://github.com/SAP/ui5-builder/commit/819c808010963b84bfe33e109a7b2a5412096f78)
+
+### Dependency Updates
+- Bump less-openui5 from 0.11.2 to 0.11.3 [`1bbe5f5`](https://github.com/SAP/ui5-builder/commit/1bbe5f561fb35c646a27cbe4d03050101ff68d7c)
+
+
+<a name="v2.11.8"></a>
+## [v2.11.8] - 2022-10-28
+### Bug Fixes
+- **ComponentAnalyzer:** Fix detection of rootView [`acb3d9f`](https://github.com/SAP/ui5-builder/commit/acb3d9fd7fc60ad61ac88d68cb0fd5296b795e9f)
+- **XMLTemplateAnalyzer:** Fix detection of nested views [`1cbfd82`](https://github.com/SAP/ui5-builder/commit/1cbfd82396e5fa78455e0a696e9229a2e8a337fc)
+
+
+<a name="v2.11.7"></a>
+## [v2.11.7] - 2022-10-20
+### Dependency Updates
+- Bump escope from 3.6.0 to 4.0.0 [`852b37f`](https://github.com/SAP/ui5-builder/commit/852b37f549f3927decbc1b40cc6055325472d625)
+
+### Reverts
+- [FIX] package.json: Downgrade es5-ext dependency ([#798](https://github.com/SAP/ui5-builder/issues/798))
+
+
+<a name="v2.11.6"></a>
+## [v2.11.6] - 2022-10-12
+### Bug Fixes
+- **package.json:** Downgrade es5-ext dependency ([#798](https://github.com/SAP/ui5-builder/issues/798)) [`0e18008`](https://github.com/SAP/ui5-builder/commit/0e18008d86da93c5c8743b17ac0091afc3064d78)
+
+
+<a name="v2.11.5"></a>
+## [v2.11.5] - 2022-05-04
+
+
+<a name="v2.11.4"></a>
+## [v2.11.4] - 2022-02-21
+### Bug Fixes
+- **generateFlexChangesBundle:** Fix minUI5Version check for UI5 v1.100.0+ ([#706](https://github.com/SAP/ui5-builder/issues/706)) [`fb1217a`](https://github.com/SAP/ui5-builder/commit/fb1217ac536c20da81526f82f2ecb03686815942)
+
+
+<a name="v2.11.3"></a>
+## [v2.11.3] - 2021-12-14
+### Bug Fixes
+- Enable buildThemes for libraries without .library [`7b941a7`](https://github.com/SAP/ui5-builder/commit/7b941a797210463a9fa8ca50753662c5db373aa6)
+
 
 <a name="v2.11.2"></a>
 ## [v2.11.2] - 2021-11-17
@@ -753,12 +801,19 @@ to load the custom bundle file instead.
 
 {{- if .Versions }}
 {{ range .Versions -}}
-{{ if .Tag.Previous -}}
+{{ if and .Tag.Previous (ne .Tag.Name "v3.0.0") -}}
 [{{ .Tag.Name }}]: {{ $.Info.RepositoryURL }}/compare/{{ .Tag.Previous.Name }}...{{ .Tag.Name }}
 {{ end -}}
 {{ end -}}
 {{ end -}}
 [v3.0.0]: https://github.com/SAP/ui5-builder/compare/v2.11.2...v3.0.0
+[v2.11.9]: https://github.com/SAP/ui5-builder/compare/v2.11.8...v2.11.9
+[v2.11.8]: https://github.com/SAP/ui5-builder/compare/v2.11.7...v2.11.8
+[v2.11.7]: https://github.com/SAP/ui5-builder/compare/v2.11.6...v2.11.7
+[v2.11.6]: https://github.com/SAP/ui5-builder/compare/v2.11.5...v2.11.6
+[v2.11.5]: https://github.com/SAP/ui5-builder/compare/v2.11.4...v2.11.5
+[v2.11.4]: https://github.com/SAP/ui5-builder/compare/v2.11.3...v2.11.4
+[v2.11.3]: https://github.com/SAP/ui5-builder/compare/v2.11.2...v2.11.3
 [v2.11.2]: https://github.com/SAP/ui5-builder/compare/v2.11.1...v2.11.2
 [v2.11.1]: https://github.com/SAP/ui5-builder/compare/v2.11.0...v2.11.1
 [v2.11.0]: https://github.com/SAP/ui5-builder/compare/v2.10.0...v2.11.0
