@@ -1417,3 +1417,48 @@ Line: 1
 Column: 5
 Char: <`, "error message for unencoded <");
 });
+
+test.serial("default manifest creation with sap.cloud", async (t) => {
+	const {manifestCreator, errorLogStub, getProjectVersion} = t.context;
+	const prefix = "/resources/sap/ui/mine/";
+	const libraryResource = {
+		getPath: () => {
+			return prefix + ".library";
+		},
+		getString: async () => {
+			return `<?xml version="1.0" encoding="UTF-8" ?>
+				<library xmlns="http://www.sap.com/sap.ui.library.xsd" >
+					<name>library.e</name>
+					<vendor>SAP SE</vendor>
+					<copyright>my copyright</copyright>
+					<version>1.0.0</version>
+					<documentation>Library E</documentation>
+
+					<dependencies>
+					    <dependency>
+					      <libraryName>sap.ui.core</libraryName>
+					    </dependency>
+					</dependencies>
+
+					<appData>
+						<manifest xmlns="http://www.sap.com/ui5/buildext/manifest">
+							<sap.cloud>
+								<public>true</public>
+								<service>my.fancy.service</service>
+							</sap.cloud>
+						</manifest>
+					</appData>
+				</library>`;
+		}
+	};
+
+	const expectedManifestContentObjectModified = expectedManifestContentObject();
+	delete expectedManifestContentObjectModified["sap.app"]["i18n"];
+	expectedManifestContentObjectModified["sap.cloud"] = {};
+	expectedManifestContentObjectModified["sap.cloud"]["public"] = true;
+	expectedManifestContentObjectModified["sap.cloud"]["service"] = "my.fancy.service";
+	const expectedManifestContent = JSON.stringify(expectedManifestContentObjectModified, null, 2);
+	const result = await manifestCreator({libraryResource, resources: [], getProjectVersion, options: {}});
+	t.is(await result.getString(), expectedManifestContent, "Correct result returned");
+	t.is(errorLogStub.callCount, 0);
+});
