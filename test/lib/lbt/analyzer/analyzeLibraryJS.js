@@ -154,3 +154,38 @@ sap.ui.define([
 	t.is(result.elements[0], "library.test.MenuItem", "The libraryjs is correctly analyzed");
 	t.true(result.noLibraryCSS, "The 'noLibraryCSS' property is correctly 'true'");
 });
+
+test.serial("analyze: library.js with AMD defined initLibrary", async (t) => {
+	const libraryJS = `
+sap.ui.define([
+	'sap/ui/core/Core',
+], function(Core) {
+	"use strict";
+	var thisLib = Core.initLibrary({
+		name : "library.test",
+		version: "1.0.0",
+		noLibraryCSS: true,
+		elements: [
+			"library.test.MenuItem"
+		],
+	});
+	return thisLib;
+});`;
+
+	const librayJSPath = "library/test/library.js";
+	const errorLogStub = sinon.stub();
+	const analyzeLibraryJSWithStubbedLogger = await esmock("../../../../lib/lbt/analyzer/analyzeLibraryJS", {
+		"@ui5/logger": {
+			getLogger: () => ({
+				error: errorLogStub
+			})
+		}
+	});
+
+	const mockResource = createMockResource(libraryJS, librayJSPath);
+
+	const result = await analyzeLibraryJSWithStubbedLogger(mockResource);
+
+	t.is(errorLogStub.callCount, 0, "Error log is not called");
+	t.is(result.elements[0], "library.test.MenuItem", "The libraryjs is correctly analyzed");
+});
