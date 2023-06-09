@@ -2,13 +2,16 @@ import test from "ava";
 import sinon from "sinon";
 import esmock from "esmock";
 
-function createMockResource(content, path) {
+function createMockResource(content, path, name = "library.js") {
 	return {
 		async getBuffer() {
 			return content;
 		},
 		getPath() {
 			return path;
+		},
+		getName() {
+			return name;
 		}
 	};
 }
@@ -172,6 +175,7 @@ sap.ui.define([
 	return thisLib;
 });`;
 
+	const librayName = "library.js";
 	const librayJSPath = "library/test/library.js";
 	const errorLogStub = sinon.stub();
 	const analyzeLibraryJSWithStubbedLogger = await esmock("../../../../lib/lbt/analyzer/analyzeLibraryJS", {
@@ -182,7 +186,7 @@ sap.ui.define([
 		}
 	});
 
-	const mockResource = createMockResource(libraryJS, librayJSPath);
+	const mockResource = createMockResource(libraryJS, librayJSPath, librayName);
 
 	const result = await analyzeLibraryJSWithStubbedLogger(mockResource);
 
