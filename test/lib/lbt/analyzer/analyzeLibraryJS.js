@@ -159,7 +159,7 @@ sap.ui.define([
 });
 
 test.serial("analyze: library.js with AMD defined initLibrary", async (t) => {
-	const libraryJS = `
+	let libraryJS = `
 sap.ui.define([
 	'sap/ui/core/Core',
 ], function(Core) {
@@ -186,10 +186,67 @@ sap.ui.define([
 		}
 	});
 
-	const mockResource = createMockResource(libraryJS, librayJSPath, librayName);
-
-	const result = await analyzeLibraryJSWithStubbedLogger(mockResource);
-
+	let mockResource = createMockResource(libraryJS, librayJSPath, librayName);
+	let result = await analyzeLibraryJSWithStubbedLogger(mockResource);
 	t.is(errorLogStub.callCount, 0, "Error log is not called");
 	t.is(result.elements[0], "library.test.MenuItem", "The libraryjs is correctly analyzed");
+
+
+	libraryJS = `
+sap.ui.define([
+	'sap/ui/core/Lib',
+], function(Lib) {
+	"use strict";
+	var thisLib = Lib.init({
+		name : "library.test",
+		version: "1.0.0",
+		noLibraryCSS: true,
+		elements: [
+			"library.test.MenuItem"
+		],
+	});
+	return thisLib;
+});`;
+
+	mockResource = createMockResource(libraryJS, librayJSPath, librayName);
+	result = await analyzeLibraryJSWithStubbedLogger(mockResource);
+	t.is(errorLogStub.callCount, 0, "Error log is not called");
+	t.is(result.elements[0], "library.test.MenuItem", "The libraryjs is correctly analyzed");
+});
+
+test.serial("analyze: library.js with unknonwn initLibrary call", async (t) => {
+	const libraryJS = `
+sap.ui.define([
+	'sap/ui/core/Core',
+], function(Core) {
+	"use strict";
+	var thisLib = SomeGlobalVar.initLibrary({
+		name : "library.test",
+		version: "1.0.0",
+		noLibraryCSS: true,
+		elements: [
+			"library.test.MenuItem"
+		],
+	});
+	return thisLib;
+});`;
+
+	const librayName = "library.js";
+	const librayJSPath = "library/test/library.js";
+	const errorLogStub = sinon.stub();
+	const analyzeLibraryJSWithStubbedLogger = await esmock("../../../../lib/lbt/analyzer/analyzeLibraryJS", {
+		"@ui5/logger": {
+			getLogger: () => ({
+				error: errorLogStub
+			})
+		}
+	});
+
+	const mockResource = createMockResource(libraryJS, librayJSPath, librayName);
+	const result = await analyzeLibraryJSWithStubbedLogger(mockResource);
+	t.is(errorLogStub.callCount, 0, "Error log is not called");
+	t.deepEqual(result.types, [], "initLibrary is a method with unknown source and is not analyzed");
+	t.deepEqual(result.controls, [], "initLibrary is a method with unknown source and is not analyzed");
+	t.deepEqual(result.elements, [], "initLibrary is a method with unknown source and is not analyzed");
+	t.deepEqual(result.interfaces, [], "initLibrary is a method with unknown source and is not analyzed");
 });
