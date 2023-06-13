@@ -214,7 +214,7 @@ sap.ui.define([
 	t.is(result.elements[0], "library.test.MenuItem", "The libraryjs is correctly analyzed");
 });
 
-test.serial("analyze: library.js with unknonwn initLibrary call", async (t) => {
+test.serial("analyze: library.js with unknown initLibrary call", async (t) => {
 	const libraryJS = `
 sap.ui.define([
 	'sap/ui/core/Core',
