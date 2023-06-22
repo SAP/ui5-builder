@@ -76,16 +76,13 @@ async function analyzeModule(
 	expectedDependencies,
 	expectedConditionalDependencies,
 	expectedSubmodules,
-	ignoreImplicitDependencies,
 	rawModule
 ) {
 	//
 	return analyze(file, name).then( (info) => {
 		t.is(info.name, name, "module name should match");
-		let deps = info.dependencies;
-		if ( ignoreImplicitDependencies ) {
-			deps = deps.filter((dep) => !info.isImplicitDependency(dep));
-		}
+		const deps = info.dependencies;
+
 		if ( expectedDependencies != null ) {
 			assertModuleNamesEqual(t,
 				deps,
@@ -350,8 +347,7 @@ test("OldStyleBundle", async (t) => {
 			"sap/ui/base/ManagedObject.js",
 			"sap/ui/core/Core.js",
 			"sap/ui/thirdparty/jquery-mobile-custom.js"
-		],
-		/* ignoreImplicitDependencies: */ true
+		]
 	);
 });
 
@@ -412,8 +408,7 @@ test("OldStyleBundleV2", async (t) => {
 			"sap/ui/base/ManagedObject.js",
 			"sap/ui/core/Core.js",
 			"sap/ui/thirdparty/jquery-mobile-custom.js"
-		],
-		/* ignoreImplicitDependencies: */ true
+		]
 	);
 });
 
@@ -495,8 +490,7 @@ test("EvoBundle", async (t) => {
 			"sap/ui/Device.js",
 			"sap/ui/thirdparty/jquery.js",
 			"sap/ui/thirdparty/jquery-mobile-custom.js"
-		],
-		/* ignoreImplicitDependencies: */ true
+		]
 	);
 });
 
