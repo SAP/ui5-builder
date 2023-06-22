@@ -434,8 +434,7 @@ test.serial("integration: Analyze debug bundle", async (t) => {
 	t.is(myRawModuleBundle.requiresTopLevelScope, false);
 	t.deepEqual(myRawModuleBundle.included,
 		new Set(["a.js", "b.js"]));
-	t.deepEqual(myRawModuleBundle.required,
-		new Set([]));
+	t.is(myRawModuleBundle.required, null);
 
 	const myRawModuleBundleDbg = resourceInfoList.resourcesByName.get("myBundle-dbg.js");
 	t.is(myRawModuleBundleDbg.name, "myBundle-dbg.js");
@@ -444,6 +443,5 @@ test.serial("integration: Analyze debug bundle", async (t) => {
 	t.is(myRawModuleBundleDbg.requiresTopLevelScope, false);
 	t.deepEqual(myRawModuleBundleDbg.included,
 		new Set(["a.js"]));
-	t.deepEqual(myRawModuleBundleDbg.required,
-		new Set());
+	t.is(myRawModuleBundleDbg.required, null);
 });
