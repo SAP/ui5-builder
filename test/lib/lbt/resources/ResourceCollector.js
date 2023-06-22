@@ -276,7 +276,7 @@ test.serial("enrichWithDependencyInfo: add infos to resourceinfo", async (t) => 
 					return dep.includes("implicit");
 				},
 				dependencies: [
-					"mydependency.conditional", "mydependency.implicit", "mydependency"
+					"mydependency.conditional", "mydependency"
 				],
 				subModules: [
 					"mySubmodule"
