@@ -457,9 +457,7 @@ test("_analyze: call twice to simulate busy", async (t) => {
 	sinon.stub(analyzer._parser, "parseString").callsArgWith(1, false, "parse-result");
 	sinon.stub(analyzer, "_analyzeNode").returns();
 
-	const moduleInfo = {
-		addImplicitDependency: function() {}
-	};
+	const moduleInfo = {};
 
 	// first call sets it to busy
 	const resultPromise = analyzer._analyze(null, moduleInfo, true);
@@ -479,20 +477,13 @@ test("_analyze: node", async (t) => {
 	sinon.stub(analyzer._parser, "parseString").callsArgWith(1, false, "parse-result");
 	const stubAnalyzeNode = sinon.stub(analyzer, "_analyzeNode").returns();
 
-	const moduleInfo = {
-		addImplicitDependency: function() {}
-	};
-	const stubAddImplicitDependency = sinon.spy(moduleInfo, "addImplicitDependency");
+	const moduleInfo = {};
 
 	await analyzer._analyze(null, moduleInfo, true);
 
 	t.true(stubAnalyzeNode.calledOnce, "_analyzeNode was called");
 	t.is(stubAnalyzeNode.getCall(0).args[0], "parse-result",
 		"_analyzeNode should be called with the result");
-
-	t.true(stubAddImplicitDependency.calledOnce, "addImplicitDependency was called once");
-	t.is(stubAddImplicitDependency.getCall(0).args[0], "sap/ui/core/Fragment.js",
-		"addImplicitDependency should be called with the dependency name");
 });
 
 test("_analyze: viewRootNode", async (t) => {
@@ -512,10 +503,8 @@ test("_analyze: viewRootNode", async (t) => {
 test("_analyzeViewRootNode: process node", async (t) => {
 	const analyzer = new XMLTemplateAnalyzer();
 	analyzer.info = {
-		addImplicitDependency: function() {},
 		addDependency: function() {}
 	};
-	const stubAddImplicitDependency = sinon.spy(analyzer.info, "addImplicitDependency");
 	const stubAddDependency = sinon.spy(analyzer.info, "addDependency");
 
 	const stubAnalyzeChildren = sinon.stub(analyzer, "_analyzeChildren").returns();
@@ -536,10 +525,6 @@ test("_analyzeViewRootNode: process node", async (t) => {
 	t.deepEqual(stubAnalyzeChildren.getCall(0).args[0], node,
 		"_analyzeChildren should be called with the result");
 
-	t.true(stubAddImplicitDependency.calledOnce, "addImplicitDependency was called");
-	t.is(stubAddImplicitDependency.getCall(0).args[0], "sap/ui/core/mvc/XMLView.js",
-		"addImplicitDependency should be called with the dependency name");
-
 	t.is(stubAddDependency.callCount, 2, "addDependency was called twice");
 	t.is(stubAddDependency.getCall(0).args[0], "myController.controller.js",
 		"addDependency should be called with the dependency name");
@@ -550,10 +535,8 @@ test("_analyzeViewRootNode: process node", async (t) => {
 test("_analyzeCoreRequire: Catches error when attribute can't be parsed", async (t) => {
 	const analyzer = new XMLTemplateAnalyzer();
 	analyzer.info = {
-		addImplicitDependency: function() {},
 		addDependency: function() {}
 	};
-	const stubAddImplicitDependency = sinon.spy(analyzer.info, "addImplicitDependency");
 	const stubAddDependency = sinon.spy(analyzer.info, "addDependency");
 
 	const node = {
@@ -572,7 +555,6 @@ test("_analyzeCoreRequire: Catches error when attribute can't be parsed", async 
 	};
 	await analyzer._analyzeCoreRequire(node);
 
-	t.is(stubAddImplicitDependency.callCount, 0, "addImplicitDependency was never called");
 	t.is(stubAddDependency.callCount, 0, "addDependency was never called");
 });
 
