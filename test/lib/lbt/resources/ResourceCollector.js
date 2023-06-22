@@ -272,9 +272,6 @@ test.serial("enrichWithDependencyInfo: add infos to resourceinfo", async (t) => 
 				isConditionalDependency: (dep) => {
 					return dep.includes("conditional");
 				},
-				isImplicitDependency: (dep) => {
-					return dep.includes("implicit");
-				},
 				dependencies: [
 					"mydependency.conditional", "mydependency"
 				],

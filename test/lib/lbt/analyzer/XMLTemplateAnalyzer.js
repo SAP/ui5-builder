@@ -99,8 +99,7 @@ test.serial("integration: Analysis of an xml view with core:require from databin
 			"sap/m/Button.js"
 		], "Dependencies should come from the XML template");
 	t.true(
-		!moduleInfo.isConditionalDependency("sap/m/Button.js") &&
-		!moduleInfo.isImplicitDependency("sap/m/Button.js"),
+		!moduleInfo.isConditionalDependency("sap/m/Button.js"),
 		"A control outside of template:if should become a strict dependency");
 
 	t.is(errorLogStub.callCount, 1, "should be called 1 time");
@@ -327,8 +326,6 @@ test("integration: Analysis of an xml view with nested views", async (t) => {
 			"myapp/views/MyTemplateView2.view.tmpl",
 			"myapp/views/MyHTMLView2.view.html"
 		], "Dependencies should come from the XML template");
-	t.false(moduleInfo.isImplicitDependency("sap/ui/core/mvc/XMLView.js"),
-		"XMLView is a strict dependency as the XMLView also has a nested XMLView");
 });
 
 test("integration: Analysis of an xml fragment", async (t) => {

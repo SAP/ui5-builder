@@ -545,8 +545,6 @@ test("ES6 Syntax", async (t) => {
 	expected.forEach((dep) => {
 		t.is(info.isConditionalDependency(dep), /^conditional\//.test(dep),
 			`only dependencies to 'conditional/*' modules should be conditional (${dep})`);
-		t.is(info.isImplicitDependency(dep), !/^(?:conditional|static)\//.test(dep),
-			`all dependencies other than 'conditional/*' and 'static/*' should be implicit (${dep})`);
 		t.false(info.dynamicDependencies,
 			`no use of dynamic dependencies should have been detected (${dep})`);
 		t.false(info.rawModule,
@@ -566,8 +564,6 @@ test("ES6 Syntax (with dynamic dependencies)", async (t) => {
 	expected.forEach((dep) => {
 		t.is(info.isConditionalDependency(dep), /^conditional\//.test(dep),
 			`only dependencies to 'conditional/*' modules should be conditional (${dep})`);
-		t.is(info.isImplicitDependency(dep), !/^(?:conditional|static)\//.test(dep),
-			`all dependencies other than 'conditional/*' and 'static/*' should be implicit (${dep})`);
 		t.true(info.dynamicDependencies,
 			`use of dynamic dependencies should have been detected (${dep})`);
 		t.false(info.rawModule,
@@ -585,8 +581,6 @@ test("ES6 Async Module", async (t) => {
 	expected.forEach((dep) => {
 		t.is(info.isConditionalDependency(dep), /^conditional\//.test(dep),
 			`only dependencies to 'conditional/*' modules should be conditional (${dep})`);
-		t.is(info.isImplicitDependency(dep), !/^(?:conditional|static)\//.test(dep),
-			`all dependencies other than 'conditional/*' and 'static/*' should be implicit (${dep})`);
 		t.false(info.dynamicDependencies,
 			`no use of dynamic dependencies should have been detected (${dep})`);
 		t.false(info.rawModule,
@@ -606,8 +600,6 @@ test("ES6 Template Literal", async (t) => {
 	expected.forEach((dep) => {
 		t.is(info.isConditionalDependency(dep), /^conditional\//.test(dep),
 			`only dependencies to 'conditional/*' modules should be conditional (${dep})`);
-		t.is(info.isImplicitDependency(dep), !/^(?:conditional|static)\//.test(dep),
-			`all dependencies other than 'conditional/*' and 'static/*' should be implicit (${dep})`);
 		t.false(info.dynamicDependencies,
 			`no use of dynamic dependencies should have been detected (${dep})`);
 		t.false(info.rawModule,
@@ -628,8 +620,6 @@ test("ES6 Template Literal with Expression", async (t) => {
 	expected.forEach((dep) => {
 		t.is(info.isConditionalDependency(dep), /^conditional\//.test(dep),
 			`only dependencies to 'conditional/*' modules should be conditional (${dep})`);
-		t.is(info.isImplicitDependency(dep), !/^(?:conditional|static)\//.test(dep),
-			`all dependencies other than 'conditional/*' and 'static/*' should be implicit (${dep})`);
 		t.true(info.dynamicDependencies,
 			`use of dynamic dependencies should have been detected (${dep})`);
 		t.false(info.rawModule,
@@ -650,8 +640,6 @@ test("ES6 Template Literal in sap.ui.predefine", async (t) => {
 	expected.forEach((dep) => {
 		t.is(info.isConditionalDependency(dep), /^conditional\//.test(dep),
 			`only dependencies to 'conditional/*' modules should be conditional (${dep})`);
-		t.is(info.isImplicitDependency(dep), !/^(?:conditional|static)\//.test(dep),
-			`all dependencies other than 'conditional/*' and 'static/*' should be implicit (${dep})`);
 		t.false(info.dynamicDependencies,
 			`no use of dynamic dependencies should have been detected (${dep})`);
 		t.false(info.rawModule,
@@ -681,8 +669,6 @@ test("ChainExpression", (t) => {
 	expected.forEach((dep) => {
 		t.is(info.isConditionalDependency(dep), /^conditional\//.test(dep),
 			`only dependencies to 'conditional/*' modules should be conditional (${dep})`);
-		t.is(info.isImplicitDependency(dep), !/^(?:conditional|static)\//.test(dep),
-			`all dependencies other than 'conditional/*' and 'static/*' should be implicit (${dep})`);
 	});
 	t.false(info.dynamicDependencies,
 		`no use of dynamic dependencies should have been detected`);
@@ -721,8 +707,6 @@ test("LogicalExpression", (t) => {
 	expected.forEach((dep) => {
 		t.is(info.isConditionalDependency(dep), /^conditional\//.test(dep),
 			`only dependencies to 'conditional/*' modules should be conditional (${dep})`);
-		t.is(info.isImplicitDependency(dep), !/^(?:conditional|static)\//.test(dep),
-			`all dependencies other than 'conditional/*' and 'static/*' should be implicit (${dep})`);
 	});
 	t.false(info.dynamicDependencies,
 		`no use of dynamic dependencies should have been detected`);
@@ -784,8 +768,6 @@ test("ES2022: PrivateIdentifier, PropertyDefinition, StaticBlock", (t) => {
 	expected.forEach((dep) => {
 		t.is(info.isConditionalDependency(dep), /^conditional\//.test(dep),
 			`only dependencies to 'conditional/*' modules should be conditional (${dep})`);
-		t.is(info.isImplicitDependency(dep), !/^(?:conditional|static)\//.test(dep),
-			`all dependencies other than 'conditional/*' and 'static/*' should be implicit (${dep})`);
 	});
 	t.false(info.dynamicDependencies,
 		`no use of dynamic dependencies should have been detected`);
@@ -813,8 +795,6 @@ test("Conditional import (declare/require)", async (t) => {
 	expected.forEach((dep) => {
 		t.is(info.isConditionalDependency(dep), /^conditional\//.test(dep),
 			`only dependencies to 'conditional/*' modules should be conditional (${dep})`);
-		t.is(info.isImplicitDependency(dep), !/^(?:conditional|static)\//.test(dep),
-			`all dependencies other than 'conditional/*' and 'static/*' should be implicit (${dep})`);
 		t.false(info.dynamicDependencies,
 			`no use of dynamic dependencies should have been detected (${dep})`);
 		t.false(info.rawModule,
@@ -833,8 +813,6 @@ test("Dynamic import (declare/require/conditional)", async (t) => {
 	expected.forEach((dep) => {
 		t.is(info.isConditionalDependency(dep), /^conditional\//.test(dep),
 			`only dependencies to 'conditional/*' modules should be conditional (${dep})`);
-		t.is(info.isImplicitDependency(dep), !/^(?:conditional|static)\//.test(dep),
-			`all dependencies other than 'conditional/*' and 'static/*' should be implicit (${dep})`);
 		t.true(info.dynamicDependencies,
 			`use of dynamic dependencies should have been detected (${dep})`);
 		t.false(info.rawModule,
