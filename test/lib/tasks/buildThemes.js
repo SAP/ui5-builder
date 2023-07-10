@@ -19,21 +19,25 @@ test.beforeEach(async (t) => {
 	t.context.comboByGlob = sinon.stub();
 	t.context.ReaderCollectionPrioritizedStub.returns({byGlob: t.context.comboByGlob});
 
-	buildThemes = await esmock("../../../lib/tasks/buildThemes.js", {
+	buildThemes = await esmock.p("../../../lib/tasks/buildThemes.js", {
 		"@ui5/fs/fsInterface": t.context.fsInterfaceStub,
 		"@ui5/fs/ReaderCollectionPrioritized": t.context.ReaderCollectionPrioritizedStub,
-		"../../../lib/processors/themeBuilder": t.context.themeBuilderStub
+		"../../../lib/processors/themeBuilderWorker": t.context.themeBuilderStub
 	});
 });
 
-test.afterEach.always(() => {
+test.afterEach.always((t) => {
+	esmock.purge(buildThemes);
 	sinon.restore();
 });
 
 test.serial("buildThemes", async (t) => {
-	t.plan(6);
+	t.plan(4);
 
-	const lessResource = {};
+	const lessResource = {
+		getPath: sinon.stub().returns("/resources/test/library.source.less"),
+		getBuffer: sinon.stub().returns(new Buffer("/** test comment */"))
+	};
 
 	const workspace = {
 		byGlob: async (globPattern) => {
@@ -46,9 +50,9 @@ test.serial("buildThemes", async (t) => {
 		write: sinon.stub()
 	};
 
-	const cssResource = {};
-	const cssRtlResource = {};
-	const jsonParametersResource = {};
+	const cssResource = {path: "/cssResource", transferable: new Uint8Array(2)};
+	const cssRtlResource = {path: "/cssRtlResource", transferable: new Uint8Array(2)};
+	const jsonParametersResource = {path: "/jsonParametersResource", transferable: new Uint8Array(2)};
 
 	t.context.themeBuilderStub.returns([
 		cssResource,
@@ -67,27 +71,25 @@ test.serial("buildThemes", async (t) => {
 	t.is(t.context.themeBuilderStub.callCount, 1,
 		"Processor should be called once");
 
-	t.deepEqual(t.context.themeBuilderStub.getCall(0).args[0], {
-		resources: [lessResource],
-		fs: {},
-		options: {
-			compress: true, // default
-			cssVariables: false // default
-		}
-	}, "Processor should be called with expected arguments");
+	t.deepEqual(
+		t.context.themeBuilderStub.getCall(0).args[0].options,
+		{compress: true, cssVariables: false}, "Processor should be called with expected arguments");
+
+	t.is(t.context.themeBuilderStub.getCall(0).args[0].themeResources.length,
+		1, "Processor should be called with expected arguments");
 
 	t.is(workspace.write.callCount, 3,
 		"workspace.write should be called 3 times");
-	t.true(workspace.write.calledWithExactly(cssResource));
-	t.true(workspace.write.calledWithExactly(cssRtlResource));
-	t.true(workspace.write.calledWithExactly(jsonParametersResource));
 });
 
 
 test.serial("buildThemes (compress = false)", async (t) => {
-	t.plan(6);
+	t.plan(4);
 
-	const lessResource = {};
+	const lessResource = {
+		getPath: sinon.stub().returns("/resources/test/library.source.less"),
+		getBuffer: sinon.stub().returns(new Buffer("/** test comment */"))
+	};
 
 	const workspace = {
 		byGlob: async (globPattern) => {
@@ -100,9 +102,9 @@ test.serial("buildThemes (compress = false)", async (t) => {
 		write: sinon.stub()
 	};
 
-	const cssResource = {};
-	const cssRtlResource = {};
-	const jsonParametersResource = {};
+	const cssResource = {path: "/cssResource", transferable: new Uint8Array(2)};
+	const cssRtlResource = {path: "/cssRtlResource", transferable: new Uint8Array(2)};
+	const jsonParametersResource = {path: "/jsonParametersResource", transferable: new Uint8Array(2)};
 
 	t.context.themeBuilderStub.returns([
 		cssResource,
@@ -122,26 +124,23 @@ test.serial("buildThemes (compress = false)", async (t) => {
 	t.is(t.context.themeBuilderStub.callCount, 1,
 		"Processor should be called once");
 
-	t.deepEqual(t.context.themeBuilderStub.getCall(0).args[0], {
-		resources: [lessResource],
-		fs: {},
-		options: {
-			compress: false,
-			cssVariables: false
-		}
-	}, "Processor should be called with expected arguments");
+	t.deepEqual(t.context.themeBuilderStub.getCall(0).args[0].options,
+		{compress: false, cssVariables: false}, "Processor should be called with expected arguments");
+
+	t.is(t.context.themeBuilderStub.getCall(0).args[0].themeResources.length,
+		1, "Processor should be called with expected arguments");
 
 	t.is(workspace.write.callCount, 3,
 		"workspace.write should be called 3 times");
-	t.true(workspace.write.calledWithExactly(cssResource));
-	t.true(workspace.write.calledWithExactly(cssRtlResource));
-	t.true(workspace.write.calledWithExactly(jsonParametersResource));
 });
 
 test.serial("buildThemes (cssVariables = true)", async (t) => {
-	t.plan(10);
+	t.plan(4);
 
-	const lessResource = {};
+	const lessResource = {
+		getPath: sinon.stub().returns("/resources/test/library.source.less"),
+		getBuffer: sinon.stub().returns(new Buffer("/** test comment */"))
+	};
 
 	const workspace = {
 		byGlob: async (globPattern) => {
@@ -154,13 +153,13 @@ test.serial("buildThemes (cssVariables = true)", async (t) => {
 		write: sinon.stub()
 	};
 
-	const cssResource = {};
-	const cssRtlResource = {};
-	const jsonParametersResource = {};
-	const cssVariablesSourceResource = {};
-	const cssVariablesResource = {};
-	const cssSkeletonResource = {};
-	const cssSkeletonRtlResource = {};
+	const cssResource = {path: "/cssResource", transferable: new Uint8Array(2)};
+	const cssRtlResource = {path: "/cssRtlResource", transferable: new Uint8Array(2)};
+	const jsonParametersResource = {path: "/jsonParametersResource", transferable: new Uint8Array(2)};
+	const cssVariablesSourceResource = {path: "/cssVariablesSourceResource", transferable: new Uint8Array(2)};
+	const cssVariablesResource = {path: "/cssVariablesResource", transferable: new Uint8Array(2)};
+	const cssSkeletonResource = {path: "/cssSkeletonResource", transferable: new Uint8Array(2)};
+	const cssSkeletonRtlResource = {path: "/cssSkeletonRtlResource", transferable: new Uint8Array(2)};
 
 	t.context.themeBuilderStub.returns([
 		cssResource,
@@ -184,38 +183,31 @@ test.serial("buildThemes (cssVariables = true)", async (t) => {
 	t.is(t.context.themeBuilderStub.callCount, 1,
 		"Processor should be called once");
 
-	t.deepEqual(t.context.themeBuilderStub.getCall(0).args[0], {
-		resources: [lessResource],
-		fs: {},
-		options: {
-			compress: true,
-			cssVariables: true
-		}
-	}, "Processor should be called with expected arguments");
+	t.deepEqual(t.context.themeBuilderStub.getCall(0).args[0].options,
+		{compress: true, cssVariables: true}, "Processor should be called with expected arguments");
+
+	t.is(t.context.themeBuilderStub.getCall(0).args[0].themeResources.length,
+		1, "Processor should be called with expected arguments");
 
 	t.is(workspace.write.callCount, 7,
 		"workspace.write should be called 7 times");
-	t.true(workspace.write.calledWithExactly(cssResource));
-	t.true(workspace.write.calledWithExactly(cssRtlResource));
-	t.true(workspace.write.calledWithExactly(jsonParametersResource));
-	t.true(workspace.write.calledWithExactly(cssVariablesSourceResource));
-	t.true(workspace.write.calledWithExactly(cssVariablesResource));
-	t.true(workspace.write.calledWithExactly(cssSkeletonResource));
-	t.true(workspace.write.calledWithExactly(cssSkeletonRtlResource));
 });
 
 test.serial("buildThemes (filtering libraries)", async (t) => {
-	t.plan(3);
+	t.plan(4);
 
 	const lessResources = {
 		"sap/ui/lib1/themes/theme1/library.source.less": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib1/themes/theme1/library.source.less")
+			getPath: sinon.stub().returns("/resources/sap/ui/lib1/themes/theme1/library.source.less"),
+			getBuffer: sinon.stub().returns(new Buffer("/** test comment */"))
 		},
 		"sap/ui/lib2/themes/theme1/library.source.less": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib2/themes/theme1/library.source.less")
+			getPath: sinon.stub().returns("/resources/sap/ui/lib2/themes/theme1/library.source.less"),
+			getBuffer: sinon.stub().returns(new Buffer("/** test comment */"))
 		},
 		"sap/ui/lib3/themes/theme1/library.source.less": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib3/themes/theme1/library.source.less")
+			getPath: sinon.stub().returns("/resources/sap/ui/lib3/themes/theme1/library.source.less"),
+			getBuffer: sinon.stub().returns(new Buffer("/** test comment */"))
 		}
 	};
 
@@ -251,7 +243,9 @@ test.serial("buildThemes (filtering libraries)", async (t) => {
 			dotLibraryResources["sap/ui/lib3/library.js"]
 		]);
 
-	t.context.themeBuilderStub.returns([{}]);
+	t.context.themeBuilderStub.returns([
+		{path: "/resource", transferable: new Uint8Array(2)}
+	]);
 
 	await buildThemes({
 		workspace,
@@ -262,37 +256,34 @@ test.serial("buildThemes (filtering libraries)", async (t) => {
 		}
 	});
 
-	t.is(t.context.themeBuilderStub.callCount, 1,
+	t.is(t.context.themeBuilderStub.callCount, 2,
 		"Processor should be called once");
 
-	t.deepEqual(t.context.themeBuilderStub.getCall(0).args[0], {
-		resources: [
-			lessResources["sap/ui/lib1/themes/theme1/library.source.less"],
-			lessResources["sap/ui/lib3/themes/theme1/library.source.less"]
-		],
-		fs: {},
-		options: {
-			compress: true,
-			cssVariables: false
-		}
-	}, "Processor should be called with expected arguments");
+	t.deepEqual(t.context.themeBuilderStub.getCall(0).args[0].options,
+		{compress: true, cssVariables: false}, "Processor should be called with expected arguments");
 
-	t.is(workspace.write.callCount, 1,
+	t.is(t.context.themeBuilderStub.getCall(0).args[0].themeResources.length,
+		1, "Processor should be called with expected arguments");
+
+	t.is(workspace.write.callCount, 2,
 		"workspace.write should be called once");
 });
 
 test.serial("buildThemes (filtering themes)", async (t) => {
-	t.plan(3);
+	t.plan(4);
 
 	const lessResources = {
 		"sap/ui/lib1/themes/theme1/library.source.less": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib1/themes/theme1/library.source.less")
+			getPath: sinon.stub().returns("/resources/sap/ui/lib1/themes/theme1/library.source.less"),
+			getBuffer: sinon.stub().returns(new Buffer("/** test comment */"))
 		},
 		"sap/ui/lib1/themes/theme2/library.source.less": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib1/themes/theme2/library.source.less")
+			getPath: sinon.stub().returns("/resources/sap/ui/lib1/themes/theme2/library.source.less"),
+			getBuffer: sinon.stub().returns(new Buffer("/** test comment */"))
 		},
 		"sap/ui/lib1/themes/theme3/library.source.less": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib1/themes/theme3/library.source.less")
+			getPath: sinon.stub().returns("/resources/sap/ui/lib1/themes/theme3/library.source.less"),
+			getBuffer: sinon.stub().returns(new Buffer("/** test comment */"))
 		}
 	};
 
@@ -330,7 +321,9 @@ test.serial("buildThemes (filtering themes)", async (t) => {
 			baseThemes["sap/ui/core/themes/theme3/"]
 		]);
 
-	t.context.themeBuilderStub.returns([{}]);
+	t.context.themeBuilderStub.returns([
+		{path: "/resource", transferable: new Uint8Array(2)}
+	]);
 
 	await buildThemes({
 		workspace,
@@ -341,55 +334,58 @@ test.serial("buildThemes (filtering themes)", async (t) => {
 		}
 	});
 
-	t.is(t.context.themeBuilderStub.callCount, 1,
+	t.is(t.context.themeBuilderStub.callCount, 2,
 		"Processor should be called once");
 
-	t.deepEqual(t.context.themeBuilderStub.getCall(0).args[0], {
-		resources: [
-			lessResources["sap/ui/lib1/themes/theme1/library.source.less"],
-			lessResources["sap/ui/lib1/themes/theme3/library.source.less"]
-		],
-		fs: {},
-		options: {
-			compress: true,
-			cssVariables: false
-		}
-	}, "Processor should be called with expected arguments");
+	t.deepEqual(t.context.themeBuilderStub.getCall(0).args[0].options,
+		{compress: true, cssVariables: false}, "Processor should be called with expected arguments");
 
-	t.is(workspace.write.callCount, 1,
+	t.is(t.context.themeBuilderStub.getCall(0).args[0].themeResources.length,
+		1, "Processor should be called with expected arguments");
+
+	t.is(workspace.write.callCount, 2,
 		"workspace.write should be called once");
 });
 
 test.serial("buildThemes (filtering libraries + themes)", async (t) => {
-	t.plan(3);
+	t.plan(4);
 
 	const lessResources = {
 		"sap/ui/lib1/themes/theme1/library.source.less": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib1/themes/theme1/library.source.less")
+			getPath: sinon.stub().returns("/resources/sap/ui/lib1/themes/theme1/library.source.less"),
+			getBuffer: sinon.stub().returns(new Buffer("/** test comment */")),
 		},
 		"sap/ui/lib1/themes/theme2/library.source.less": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib1/themes/theme2/library.source.less")
+			getPath: sinon.stub().returns("/resources/sap/ui/lib1/themes/theme2/library.source.less"),
+			getBuffer: sinon.stub().returns(new Buffer("/** test comment */")),
 		},
 		"sap/ui/lib1/themes/theme3/library.source.less": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib1/themes/theme3/library.source.less")
+			getPath: sinon.stub().returns("/resources/sap/ui/lib1/themes/theme3/library.source.less"),
+			getBuffer: sinon.stub().returns(new Buffer("/** test comment */")),
 		},
 		"sap/ui/lib2/themes/theme1/library.source.less": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib2/themes/theme1/library.source.less")
+			getPath: sinon.stub().returns("/resources/sap/ui/lib2/themes/theme1/library.source.less"),
+			getBuffer: sinon.stub().returns(new Buffer("/** test comment */")),
 		},
 		"sap/ui/lib2/themes/theme2/library.source.less": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib2/themes/theme2/library.source.less")
+			getPath: sinon.stub().returns("/resources/sap/ui/lib2/themes/theme2/library.source.less"),
+			getBuffer: sinon.stub().returns(new Buffer("/** test comment */")),
 		},
 		"sap/ui/lib2/themes/theme3/library.source.less": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib2/themes/theme3/library.source.less")
+			getPath: sinon.stub().returns("/resources/sap/ui/lib2/themes/theme3/library.source.less"),
+			getBuffer: sinon.stub().returns(new Buffer("/** test comment */")),
 		},
 		"sap/ui/lib3/themes/theme1/library.source.less": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib3/themes/theme1/library.source.less")
+			getPath: sinon.stub().returns("/resources/sap/ui/lib3/themes/theme1/library.source.less"),
+			getBuffer: sinon.stub().returns(new Buffer("/** test comment */")),
 		},
 		"sap/ui/lib3/themes/theme2/library.source.less": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib3/themes/theme2/library.source.less")
+			getPath: sinon.stub().returns("/resources/sap/ui/lib3/themes/theme2/library.source.less"),
+			getBuffer: sinon.stub().returns(new Buffer("/** test comment */")),
 		},
 		"sap/ui/lib3/themes/theme3/library.source.less": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib3/themes/theme3/library.source.less")
+			getPath: sinon.stub().returns("/resources/sap/ui/lib3/themes/theme3/library.source.less"),
+			getBuffer: sinon.stub().returns(new Buffer("/** test comment */")),
 		}
 	};
 
@@ -450,7 +446,10 @@ test.serial("buildThemes (filtering libraries + themes)", async (t) => {
 			baseThemes["sap/ui/core/themes/theme3/"]
 		]);
 
-	t.context.themeBuilderStub.returns([{}]);
+	t.context.themeBuilderStub.returns([{
+		path: "/resources/sap/ui/lib1/themes/theme1/library.source.less",
+		transferable: new Uint8Array(2),
+	}]);
 
 	await buildThemes({
 		workspace,
@@ -462,23 +461,14 @@ test.serial("buildThemes (filtering libraries + themes)", async (t) => {
 		}
 	});
 
-	t.is(t.context.themeBuilderStub.callCount, 1,
+	t.is(t.context.themeBuilderStub.callCount, 4,
 		"Processor should be called once");
 
-	t.deepEqual(t.context.themeBuilderStub.getCall(0).args[0], {
-		resources: [
-			lessResources["sap/ui/lib1/themes/theme1/library.source.less"],
-			lessResources["sap/ui/lib1/themes/theme3/library.source.less"],
-			lessResources["sap/ui/lib3/themes/theme1/library.source.less"],
-			lessResources["sap/ui/lib3/themes/theme3/library.source.less"]
-		],
-		fs: {},
-		options: {
-			compress: true,
-			cssVariables: false
-		}
-	}, "Processor should be called with expected arguments");
+	t.deepEqual(t.context.themeBuilderStub.getCall(0).args[0].options, {
+		compress: true, cssVariables: false}, "Processor should be called with expected arguments");
+	t.is(t.context.themeBuilderStub.getCall(0).args[0].themeResources.length,
+		1, "Processor should be called with expected arguments");
 
-	t.is(workspace.write.callCount, 1,
+	t.is(workspace.write.callCount, 4,
 		"workspace.write should be called once");
 });
