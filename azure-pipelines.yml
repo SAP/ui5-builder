@@ -69,3 +69,7 @@ steps:
 - script: npm run coverage
   displayName: Run Test Natively in Case of Failures
   condition: failed()
+
+- task: PostBuildCleanup@3
+  displayName: Post Build Cleanup
+  condition: always()
