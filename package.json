@@ -34,7 +34,7 @@
 	"scripts": {
 		"test": "npm run lint && npm run jsdoc-generate && npm run coverage && npm run depcheck",
 		"lint": "eslint ./",
-		"unit": "rimraf test/tmp && cross-env UI5_LOG_LVL=error ava --error --serial",
+		"unit": "rimraf test/tmp && cross-env UI5_LOG_LVL=error ava",
 		"unit-verbose": "rimraf test/tmp && cross-env UI5_LOG_LVL=verbose ava --verbose --serial",
 		"unit-watch": "rimraf test/tmp && ava --watch",
 		"unit-inspect": "cross-env UI5_LOG_LVL=verbose ava debug --break",
