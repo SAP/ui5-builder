@@ -8,7 +8,7 @@ import {createResource} from "@ui5/fs/resourceFactory";
 // Therefore use this constant to never write the actual string.
 const SOURCE_MAPPING_URL = "//" + "# sourceMappingURL";
 
-test("Basic minifier", async (t) => {
+test.serial("Basic minifier", async (t) => {
 	const content = `/*!
  * \${copyright}
  */
@@ -40,7 +40,7 @@ ${SOURCE_MAPPING_URL}=test.controller.js.map`;
 	t.deepEqual(await sourceMapResource.getString(), expectedSourceMap, "Correct source map content");
 });
 
-test.skip("Basic minifier with taskUtil and useWorkers: true", async (t) => {
+test.serial("Basic minifier with taskUtil and useWorkers: true", async (t) => {
 	const taskUtilMock = {
 		registerCleanupTask: sinon.stub()
 	};
@@ -82,7 +82,7 @@ ${SOURCE_MAPPING_URL}=test.controller.js.map`;
 	t.is(taskUtilMock.registerCleanupTask.callCount, 1, "taskUtil#registerCleanupTask got called once");
 });
 
-test.skip("minifier with useWorkers: true and missing taskUtil", async (t) => {
+test.serial("minifier with useWorkers: true and missing taskUtil", async (t) => {
 	const content = `/*!
  * \${copyright}
  */
@@ -106,7 +106,7 @@ myFunc();
 	}, "Threw with expected error message");
 });
 
-test("Multiple resources", async (t) => {
+test.serial("Multiple resources", async (t) => {
 	const content1 = `
 function test1(paramA) {
 	var variableA = paramA;
@@ -199,7 +199,7 @@ ${SOURCE_MAPPING_URL}=test3.designtime.js.map`;
 		"Correct source map content for resource 3");
 });
 
-test("Different copyright", async (t) => {
+test.serial("Different copyright", async (t) => {
 	const content = `
 /*
  * Copyright SAPUI5 Developers and other contributors
@@ -232,7 +232,7 @@ ${SOURCE_MAPPING_URL}=test.view.js.map`;
 	t.deepEqual(await sourceMapResource.getString(), expectedSourceMap, "Correct source map content");
 });
 
-test("Should not detect '^ (c) ^' as copyright comment", async (t) => {
+test.serial("Should not detect '^ (c) ^' as copyright comment", async (t) => {
 	const content = `// ^ (c) ^`;
 	const testResource = createResource({
 		path: "/test.view.js",
@@ -248,7 +248,7 @@ test("Should not detect '^ (c) ^' as copyright comment", async (t) => {
 	t.is(await resource.getString(), "", "Comment should be removed");
 });
 
-test("minify raw module (@ui5-bundle-raw-include)", async (t) => {
+test.serial("minify raw module (@ui5-bundle-raw-include)", async (t) => {
 	const content = `
 //@ui5-bundle-raw-include sap/ui/my/module.js
 function test(paramA) {
@@ -271,7 +271,7 @@ ${SOURCE_MAPPING_URL}=test.js.map`;
 	t.deepEqual(await resource.getString(), expected, "Correct minified content");
 });
 
-test("minify raw module (@ui5-bundle)", async (t) => {
+test.serial("minify raw module (@ui5-bundle)", async (t) => {
 	const content = `
 //@ui5-bundle sap/ui/my/module.js
 function test(paramA) {
@@ -294,7 +294,7 @@ ${SOURCE_MAPPING_URL}=test.js.map`;
 	t.deepEqual(await resource.getString(), expected, "Correct minified content");
 });
 
-test("addSourceMappingUrl=false", async (t) => {
+test.serial("addSourceMappingUrl=false", async (t) => {
 	const content = `
 //@ui5-bundle sap/ui/my/module.js
 function test(paramA) {
@@ -319,7 +319,7 @@ function test(t){var o=t;console.log(o)}test();`;
 	t.deepEqual(await resource.getString(), expected, "Correct minified content");
 });
 
-test("addSourceMappingUrl=true", async (t) => {
+test.serial("addSourceMappingUrl=true", async (t) => {
 	const content = `
 //@ui5-bundle sap/ui/my/module.js
 function test(paramA) {
@@ -345,7 +345,7 @@ ${SOURCE_MAPPING_URL}=test.js.map`;
 	t.deepEqual(await resource.getString(), expected, "Correct minified content");
 });
 
-test("empty options object (addSourceMappingUrl defaults to true)", async (t) => {
+test.serial("empty options object (addSourceMappingUrl defaults to true)", async (t) => {
 	const content = `
 //@ui5-bundle sap/ui/my/module.js
 function test(paramA) {
@@ -369,7 +369,7 @@ ${SOURCE_MAPPING_URL}=test.js.map`;
 	t.deepEqual(await resource.getString(), expected, "Correct minified content");
 });
 
-test("minification error", async (t) => {
+test.serial("minification error", async (t) => {
 	const content = `
 this code can't be parsed!`;
 
