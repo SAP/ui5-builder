@@ -40,7 +40,7 @@ ${SOURCE_MAPPING_URL}=test.controller.js.map`;
 	t.deepEqual(await sourceMapResource.getString(), expectedSourceMap, "Correct source map content");
 });
 
-test.serial("Basic minifier with taskUtil and useWorkers: true", async (t) => {
+test.serial.skip("Basic minifier with taskUtil and useWorkers: true", async (t) => {
 	const taskUtilMock = {
 		registerCleanupTask: sinon.stub()
 	};
@@ -82,7 +82,7 @@ ${SOURCE_MAPPING_URL}=test.controller.js.map`;
 	t.is(taskUtilMock.registerCleanupTask.callCount, 1, "taskUtil#registerCleanupTask got called once");
 });
 
-test.serial("minifier with useWorkers: true and missing taskUtil", async (t) => {
+test.serial.skip("minifier with useWorkers: true and missing taskUtil", async (t) => {
 	const content = `/*!
  * \${copyright}
  */

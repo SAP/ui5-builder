@@ -24,7 +24,7 @@ test.afterEach.always((t) => {
 	sinon.restore();
 });
 
-test("integration: minify omitSourceMapResources=true", async (t) => {
+test.serial("integration: minify omitSourceMapResources=true", async (t) => {
 	const taskUtil = {
 		setTag: sinon.stub(),
 		STANDARD_TAGS: {
@@ -98,7 +98,7 @@ test();`;
 		"Fourth taskUtil.setTag call with expected second arguments");
 });
 
-test("integration: minify omitSourceMapResources=false", async (t) => {
+test.serial("integration: minify omitSourceMapResources=false", async (t) => {
 	const taskUtil = {
 		setTag: sinon.stub(),
 		STANDARD_TAGS: {
@@ -167,7 +167,7 @@ ${SOURCE_MAPPING_URL}=test.js.map`;
 		"Third taskUtil.setTag call with expected second arguments");
 });
 
-test("integration: minify omitSourceMapResources=true (without taskUtil)", async (t) => {
+test.serial("integration: minify omitSourceMapResources=true (without taskUtil)", async (t) => {
 	const {reader, writer, workspace} = createWorkspace();
 	const content = `
 function test(paramA) {
@@ -214,7 +214,7 @@ test();`;
 	t.deepEqual(await resSourceMap.getString(), expectedSourceMap, "Correct source map content");
 });
 
-test("integration: minify omitSourceMapResources=false (without taskUtil)", async (t) => {
+test.serial("integration: minify omitSourceMapResources=false (without taskUtil)", async (t) => {
 	const {reader, writer, workspace} = createWorkspace();
 	const content = `
 function test(paramA) {
