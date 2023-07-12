@@ -3,10 +3,17 @@ import sinon from "sinon";
 import esmock from "esmock";
 let buildThemes;
 
-test.before(async () => {
+test.before(async (t) => {
 	// Enable verbose logging to also cover verbose logging code
-	const {setLogLevel} = await import("@ui5/logger");
+	const {setLogLevel, getLogLevel} = await import("@ui5/logger");
+	t.context.initialLogLevel = getLogLevel();
 	setLogLevel("verbose");
+});
+
+test.after(async (t) => {
+	// Reset log level
+	const {getLogLevel} = await import("@ui5/logger");
+	getLogLevel(t.context.initialLogLevel);
 });
 
 test.beforeEach(async (t) => {
