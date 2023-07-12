@@ -13,7 +13,7 @@ jobs:
     name: Unit Tests
     strategy:
       matrix:
-        version: [16, 18, 19]
+        version: [16, 18, 20]
         os: [ubuntu-22.04, windows-2022, macos-13]
     runs-on: ${{ matrix.os }}
     steps:
