@@ -16,7 +16,7 @@ test.beforeEach(async (t) => {
 	t.context.fsInterfaceStub.returns({});
 
 	t.context.ReaderCollectionPrioritizedStub = sinon.stub();
-	t.context.comboByGlob = sinon.stub();
+	t.context.comboByGlob = sinon.stub().resolves([]);
 	t.context.ReaderCollectionPrioritizedStub.returns({byGlob: t.context.comboByGlob});
 
 	buildThemes = await esmock.p("../../../lib/tasks/buildThemes.js", {
@@ -223,7 +223,7 @@ test.serial("buildThemes (filtering libraries)", async (t) => {
 		}
 	};
 
-	const workspaceByGlob = sinon.stub();
+	const workspaceByGlob = sinon.stub().resolves([]);
 	const workspace = {
 		byGlob: workspaceByGlob,
 		write: sinon.stub()
@@ -302,7 +302,7 @@ test.serial("buildThemes (filtering themes)", async (t) => {
 		}
 	};
 
-	const workspaceByGlob = sinon.stub();
+	const workspaceByGlob = sinon.stub().resolves([]);
 	const workspace = {
 		byGlob: workspaceByGlob,
 		write: sinon.stub()
@@ -416,7 +416,7 @@ test.serial("buildThemes (filtering libraries + themes)", async (t) => {
 		}
 	};
 
-	const workspaceByGlob = sinon.stub();
+	const workspaceByGlob = sinon.stub().resolves([]);
 	const workspace = {
 		byGlob: workspaceByGlob,
 		write: sinon.stub()
