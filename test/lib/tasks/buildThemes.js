@@ -1,6 +1,7 @@
 import test from "ava";
 import sinon from "sinon";
 import esmock from "esmock";
+import {uint8ToResources} from "../../../lib/processors/themeBuilderWorker.js";
 let buildThemes;
 
 test.before(async () => {
@@ -16,7 +17,7 @@ test.beforeEach(async (t) => {
 	t.context.fsInterfaceStub.returns({});
 
 	t.context.ReaderCollectionPrioritizedStub = sinon.stub();
-	t.context.comboByGlob = sinon.stub();
+	t.context.comboByGlob = sinon.stub().resolves([]);
 	t.context.ReaderCollectionPrioritizedStub.returns({byGlob: t.context.comboByGlob});
 
 	buildThemes = await esmock.p("../../../lib/tasks/buildThemes.js", {
@@ -482,4 +483,60 @@ test.serial("buildThemes (filtering libraries + themes)", async (t) => {
 
 	t.is(workspace.write.callCount, 1,
 		"workspace.write should be called once");
+});
+
+test.serial("buildThemes (useWorkers = true)", async (t) => {
+	t.plan(4);
+
+	const taskUtilMock = {
+		registerCleanupTask: sinon.stub()
+	};
+	const lessResource = {
+		getPath: sinon.stub().returns("/resources/test/library.source.less"),
+		getBuffer: sinon.stub().returns(new Buffer("/** test comment */"))
+	};
+
+	const workspace = {
+		byGlob: async (globPattern) => {
+			if (globPattern === "/resources/test/library.source.less") {
+				return [lessResource];
+			} else {
+				return [];
+			}
+		},
+		write: sinon.stub()
+	};
+
+	const cssResource = {path: "/cssResource", transferable: new Uint8Array(2)};
+	const cssRtlResource = {path: "/cssRtlResource", transferable: new Uint8Array(2)};
+	const jsonParametersResource = {path: "/jsonParametersResource", transferable: new Uint8Array(2)};
+
+	t.context.comboByGlob
+		.withArgs("/resources/**/{*.less,.theming,img/**,img-RTL/**}").resolves([
+			lessResource
+		]);
+
+	t.context.themeBuilderStub.returns([
+		cssResource,
+		cssRtlResource,
+		jsonParametersResource
+	]);
+
+	await buildThemes({
+		workspace,
+		taskUtil: taskUtilMock,
+		options: {
+			projectName: "sap.ui.demo.app",
+			inputPattern: "/resources/test/library.source.less",
+			useWorkers: true
+		}
+	});
+
+	const transferredResources = uint8ToResources([cssResource, cssRtlResource, jsonParametersResource]);
+
+	t.is(workspace.write.callCount, 3,
+		"workspace.write should be called 3 times");
+	t.true(workspace.write.calledWithExactly(transferredResources[0]));
+	t.true(workspace.write.calledWithExactly(transferredResources[1]));
+	t.true(workspace.write.calledWithExactly(transferredResources[2]));
 });
