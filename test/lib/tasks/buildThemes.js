@@ -492,8 +492,8 @@ test.serial("buildThemes (useWorkers = true)", async (t) => {
 		registerCleanupTask: sinon.stub()
 	};
 	const lessResource = {
-		getPath: sinon.stub().returns("/resources/test/library.source.less"),
-		getBuffer: sinon.stub().returns(new Buffer("/** test comment */"))
+		getPath: () => "/resources/test/library.source.less",
+		getBuffer: () => new Buffer("/** test comment */")
 	};
 
 	const workspace = {
@@ -511,10 +511,20 @@ test.serial("buildThemes (useWorkers = true)", async (t) => {
 	const cssRtlResource = {path: "/cssRtlResource", transferable: new Uint8Array(2)};
 	const jsonParametersResource = {path: "/jsonParametersResource", transferable: new Uint8Array(2)};
 
-	t.context.comboByGlob
-		.withArgs("/resources/**/{*.less,.theming,img/**,img-RTL/**}").resolves([
-			lessResource
-		]);
+	t.context.comboByGlob.resolves([lessResource]);
+
+	t.context.fsInterfaceStub.returns({
+		readFile: (...args) => {
+			if (args[0] === "/resources/test/library.source.less") {
+				args[args.length - 1](null, "/** */");
+			} else {
+				args[args.length - 1](null, "{}");
+			}
+		},
+		stat: (...args) => args[args.length - 1](null, {}),
+		readdir: (...args) => args[args.length - 1](null, {}),
+		mkdir: (...args) => args[args.length - 1](null, {}),
+	});
 
 	t.context.themeBuilderStub.returns([
 		cssResource,
