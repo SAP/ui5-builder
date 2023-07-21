@@ -537,8 +537,7 @@ test.serial("buildThemes (useWorkers = true)", async (t) => {
 		taskUtil: taskUtilMock,
 		options: {
 			projectName: "sap.ui.demo.app",
-			inputPattern: "/resources/test/library.source.less",
-			useWorkers: true
+			inputPattern: "/resources/test/library.source.less"
 		}
 	});
 
