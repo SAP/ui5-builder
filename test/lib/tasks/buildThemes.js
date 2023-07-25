@@ -1,7 +1,7 @@
 import test from "ava";
 import sinon from "sinon";
 import esmock from "esmock";
-import {uint8ToResources} from "../../../lib/processors/themeBuilderWorker.js";
+import {deserializeResources} from "../../../lib/processors/themeBuilderWorker.js";
 let buildThemes;
 
 test.before(async () => {
@@ -541,7 +541,7 @@ test.serial("buildThemes (useWorkers = true)", async (t) => {
 		}
 	});
 
-	const transferredResources = uint8ToResources([cssResource, cssRtlResource, jsonParametersResource]);
+	const transferredResources = deserializeResources([cssResource, cssRtlResource, jsonParametersResource]);
 
 	t.is(workspace.write.callCount, 3,
 		"workspace.write should be called 3 times");
