@@ -507,9 +507,9 @@ test.serial("buildThemes (useWorkers = true)", async (t) => {
 		write: sinon.stub()
 	};
 
-	const cssResource = {path: "/cssResource", transferable: new Uint8Array(2)};
-	const cssRtlResource = {path: "/cssRtlResource", transferable: new Uint8Array(2)};
-	const jsonParametersResource = {path: "/jsonParametersResource", transferable: new Uint8Array(2)};
+	const cssResource = {path: "/cssResource", buffer: new Uint8Array(2)};
+	const cssRtlResource = {path: "/cssRtlResource", buffer: new Uint8Array(2)};
+	const jsonParametersResource = {path: "/jsonParametersResource", buffer: new Uint8Array(2)};
 
 	t.context.comboByGlob.resolves([lessResource]);
 
