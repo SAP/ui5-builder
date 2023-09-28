@@ -584,7 +584,7 @@ sap.ui.define([], function(){/* comment */ return {};});
 sap.ui.requireSync("sap-ui-core");
 ${SOURCE_MAPPING_URL}=Component-preload.js.map
 `;
-	t.deepEqual(oResult.content, expectedContent, "Ui5BundleFormat should start with registerPreloadedModules " +
+	t.deepEqual(oResult.content, expectedContent, "Ui5BundleFormat should start with sap.ui.require.preload " +
 		"and should contain:" +
 		" preload part from jquery.sap.global-dbg.js" +
 		" raw part from myModule.js" +
