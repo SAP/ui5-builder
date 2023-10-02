@@ -217,7 +217,7 @@ test("Input source map: Incorrect parameters", async (t) => {
 	}, "Threw with expected error message");
 });
 
-test("Input source map: Inline", async (t) => {
+test("Input source map: Provided inline", async (t) => {
 	const content = `/*!
  * \${copyright}
  */
@@ -311,7 +311,7 @@ ${SOURCE_MAPPING_URL}=test.controller.js.map`;
 		"Correct source map content for debug variant ");
 });
 
-test("Input source map: Referenced file", async (t) => {
+test("Input source map: Provided in separate map file", async (t) => {
 	const content = `/*!
  * \${copyright}
  */
@@ -399,7 +399,110 @@ ${SOURCE_MAPPING_URL}=test.controller.js.map`;
 		"Correct source map content for debug variant ");
 });
 
-test("Input source map: Ignored in default configuration", async (t) => {
+test("Input source map: Provided inline with sources content", async (t) => {
+	const content = `/*!
+ * \${copyright}
+ */
+"use strict";
+
+sap.ui.define(["sap/m/MessageBox", "./BaseController"], function (MessageBox, __BaseController) {
+  "use strict";
+
+  function _interopRequireDefault(obj) {
+    return obj && obj.__esModule && typeof obj.default !== "undefined" ? obj.default : obj;
+  }
+  const BaseController = _interopRequireDefault(__BaseController);
+  /**
+   * @namespace test.controller
+   */
+  const Main = BaseController.extend("test.controller.Main", {
+    sayHello: function _sayHello() {
+      MessageBox.show("Hello World!");
+    }
+  });
+  return Main;
+});
+
+${SOURCE_MAPPING_URL}=data:application/json;charset=utf-8;base64,` +
+	`eyJ2ZXJzaW9uIjozLCJmaWxlIjoidGVzdC5jb250cm9sbGVyLmpzIiwibmFtZXMiOlsic2FwIiwidWkiLCJkZWZpbmUiLCJNZXNzYWdlQm94I` +
+	`iwiX19CYXNlQ29udHJvbGxlciIsIl9pbnRlcm9wUmVxdWlyZURlZmF1bHQiLCJvYmoiLCJfX2VzTW9kdWxlIiwiZGVmYXVsdCIsIkJhc2VDb2` +
+	`50cm9sbGVyIiwiTWFpbiIsImV4dGVuZCIsInNheUhlbGxvIiwiX3NheUhlbGxvIiwic2hvdyJdLCJzb3VyY2VzIjpbInRlc3QuY29udHJvbGx` +
+	`lci50cyJdLCJzb3VyY2VzQ29udGVudCI6WyIvKiFcbiAqICR7Y29weXJpZ2h0fVxuICovXG5pbXBvcnQgTWVzc2FnZUJveCBmcm9tIFwic2Fw` +
+	`L20vTWVzc2FnZUJveFwiO1xuaW1wb3J0IEJhc2VDb250cm9sbGVyIGZyb20gXCIuL0Jhc2VDb250cm9sbGVyXCI7XG5cbi8qKlxuICogQG5hb` +
+	`WVzcGFjZSBjb20ubWIudHMudGVzdGFwcC5jb250cm9sbGVyXG4gKi9cbmV4cG9ydCBkZWZhdWx0IGNsYXNzIE1haW4gZXh0ZW5kcyBCYXNlQ2` +
+	`9udHJvbGxlciB7XG5cdHB1YmxpYyBzYXlIZWxsbygpOiB2b2lkIHtcblx0TWVzc2FnZUJveC5zaG93KFwiSGVsbG8gV29ybGQhXCIpO1xuXHR` +
+	`9XG59XG4iXSwibWFwcGluZ3MiOiJBQUFBO0FBQ0E7QUFDQTtBQUZBOztBQUFBQSxHQUFBLENBQUFDLEVBQUEsQ0FBQUMsTUFBQSxxREFBQUMs` +
+	`VUFBQSxFQUFBQyxnQkFBQTtFQUFBOztFQUFBLFNBQUFDLHVCQUFBQyxHQUFBO0lBQUEsT0FBQUEsR0FBQSxJQUFBQSxHQUFBLENBQUFDLFVBQ` +
+	`UEsV0FBQUQsR0FBQSxDQUFBRSxPQUFBLG1CQUFBRixHQUFBLENBQUFFLE9BQUEsR0FBQUYsR0FBQTtFQUFBO0VBQUEsTUFJT0csY0FBYyxHQU` +
+	`FBSixzQkFBQSxDQUFBRCxnQkFBQTtFQUVyQjtBQUNBO0FBQ0E7RUFGQSxNQUdxQk0sSUFBSSxHQUFTRCxjQUFjLENBQUFFLE1BQUE7SUFDeEN` +
+	`DLFFBQVEsV0FBQUMsVUFBQSxFQUFTO01BQ3ZCVixVQUFVLENBQUNXLElBQUksQ0FBQyxjQUFjLENBQUM7SUFDaEM7RUFBQztFQUFBLE9BSG1C` +
+	`SixJQUFJO0FBQUEifQ==`;
+
+	/* The above is a base64 encoded version of the following string
+		(identical to one in the next input source map test below): */
+	// eslint-disable-next-line
+	// {"version":3,"file":"test.controller.js","names":["sap","ui","define","MessageBox","__BaseController","_interopRequireDefault","obj","__esModule","default","BaseController","Main","extend","sayHello","_sayHello","show"],"sources":["test.controller.ts"],"sourcesContent":["/*!\n * ${copyright}\n */\nimport MessageBox from \"sap/m/MessageBox\";\nimport BaseController from \"./BaseController\";\n\n/**\n * @namespace com.mb.ts.testapp.controller\n */\nexport default class Main extends BaseController {\n\tpublic sayHello(): void {\n\tMessageBox.show(\"Hello World!\");\n\t}\n}\n"],"mappings":"AAAA;AACA;AACA;AAFA;;AAAAA,GAAA,CAAAC,EAAA,CAAAC,MAAA,qDAAAC,UAAA,EAAAC,gBAAA;EAAA;;EAAA,SAAAC,uBAAAC,GAAA;IAAA,OAAAA,GAAA,IAAAA,GAAA,CAAAC,UAAA,WAAAD,GAAA,CAAAE,OAAA,mBAAAF,GAAA,CAAAE,OAAA,GAAAF,GAAA;EAAA;EAAA,MAIOG,cAAc,GAAAJ,sBAAA,CAAAD,gBAAA;EAErB;AACA;AACA;EAFA,MAGqBM,IAAI,GAASD,cAAc,CAAAE,MAAA;IACxCC,QAAQ,WAAAC,UAAA,EAAS;MACvBV,UAAU,CAACW,IAAI,CAAC,cAAc,CAAC;IAChC;EAAC;EAAA,OAHmBJ,IAAI;AAAA"}
+
+	const fs = {
+		readFile: sinon.stub().callsFake((filePath, cb) => {
+			// We don't expect this test to read any files, so always throw an error here
+			const err = new Error("ENOENT: no such file or directory, open " + filePath);
+			err.code = "ENOENT";
+			cb(err);
+		})
+	};
+
+	const testResource = createResource({
+		path: "/resources/test.controller.js",
+		string: content
+	});
+	const [{resource, dbgResource, sourceMapResource, dbgSourceMapResource}] = await minifier({
+		resources: [testResource],
+		fs,
+		options: {
+			readSourceMappingUrl: true,
+		}
+	});
+
+	const expected = `/*!
+ * \${copyright}
+ */
+"use strict";sap.ui.define(["sap/m/MessageBox","./BaseController"],function(e,t){"use strict";function n(e){return ` +
+	`e&&e.__esModule&&typeof e.default!=="undefined"?e.default:e}const o=n(t);const s=o.extend(` +
+	`"test.controller.Main",{sayHello:function t(){e.show("Hello World!")}});return s});
+${SOURCE_MAPPING_URL}=test.controller.js.map`;
+	t.deepEqual(await resource.getString(), expected, "Correct minified content");
+	// Existing inline source map is moved into a separate file
+	// Both source maps still contain the "sourcesContent" attribute
+	const expectedDbgContent = content.replace(/data:application\/json;charset=utf-8;base64,.+/, "test-dbg.controller.js.map\n");
+	t.deepEqual(await dbgResource.getString(), expectedDbgContent, "Correct debug content");
+	const expectedSourceMap = `{"version":3,"file":"test.controller.js","names":["sap","ui","define","MessageBox",` +
+		`"__BaseController","_interopRequireDefault","obj","__esModule","default","BaseController","Main","extend",` +
+		`"sayHello","_sayHello","show"],"sources":["test.controller.ts"],"sourcesContent":["/*!\\n * \${copyright}` +
+		`\\n */\\nimport MessageBox from \\"sap/m/MessageBox\\";\\nimport BaseController from \\"./BaseController\\";` +
+		`\\n\\n/**\\n * @namespace com.mb.ts.testapp.controller\\n */\\nexport default class Main extends ` +
+		`BaseController {\\n\\tpublic sayHello(): void {\\n\\tMessageBox.show(\\"Hello World!\\");\\n\\t}\\n}\\n"],` +
+		`"mappings":";;;AAAA,aAAAA,IAAAC,GAAAC,OAAA,` +
+		`iDAAAC,EAAAC,GAAA,sBAAAC,EAAAC,GAAA,OAAAA,KAAAC,mBAAAD,EAAAE,UAAA,YAAAF,EAAAE,QAAAF,CAAA,OAIOG,EAAcJ,EAAAD,` +
+		`GAErB,MAGqBM,EAAaD,EAAcE,OAAA,wBACxCC,SAAQ,SAAAC,IACdV,EAAWW,KAAK,eACjB,IAAC,OAHmBJ,CAAI"}`;
+	t.deepEqual(await sourceMapResource.getString(), expectedSourceMap, "Correct source map content");
+	const expectedDbgSourceMap = `{"version":3,"file":"test-dbg.controller.js","names":["sap","ui","define",` +
+		`"MessageBox","__BaseController","_interopRequireDefault","obj","__esModule","default","BaseController",` +
+		`"Main","extend","sayHello","_sayHello","show"],"sources":["test.controller.ts"],"sourcesContent":["/*!\\n` +
+		` * \${copyright}\\n */\\nimport MessageBox from \\"sap/m/MessageBox\\";\\nimport BaseController from ` +
+		`\\"./BaseController\\";\\n\\n/**\\n * @namespace com.mb.ts.testapp.controller\\n */\\nexport default class ` +
+		`Main extends BaseController {\\n\\tpublic sayHello(): void {\\n\\tMessageBox.show(\\"Hello World!\\");` +
+		`\\n\\t}\\n}\\n"],` +
+		`"mappings":"AAAA;AACA;` +
+		`AACA;AAFA;;AAAAA,GAAA,CAAAC,EAAA,CAAAC,MAAA,qDAAAC,UAAA,EAAAC,gBAAA;EAAA;;EAAA,SAAAC,uBAAAC,GAAA;IAAA,` +
+		`OAAAA,GAAA,IAAAA,GAAA,CAAAC,UAAA,WAAAD,GAAA,CAAAE,OAAA,mBAAAF,GAAA,CAAAE,OAAA,GAAAF,GAAA;EAAA;EAAA,MAIOG,` +
+		`cAAc,GAAAJ,sBAAA,CAAAD,gBAAA;EAErB;AACA;AACA;EAFA,MAGqBM,IAAI,GAASD,cAAc,CAAAE,MAAA;IACxCC,QAAQ,WAAAC,UAAA,` +
+		`EAAS;MACvBV,UAAU,CAACW,IAAI,CAAC,cAAc,CAAC;IAChC;EAAC;EAAA,OAHmBJ,IAAI;AAAA"}`;
+	t.deepEqual(await dbgSourceMapResource.getString(), expectedDbgSourceMap,
+		"Correct source map content for debug variant ");
+});
+
+test("Input source map: Reference is ignored in default configuration", async (t) => {
 	const content = `/*!
  * \${copyright}
  */
@@ -465,7 +568,7 @@ ${SOURCE_MAPPING_URL}=test.controller.js.map`;
 		"No source map resource has been created for the debug variant resource");
 });
 
-test("Input source map: Inline source map ignored in default configuration", async (t) => {
+test("Input source map: Inline source map is ignored in default configuration", async (t) => {
 	const content = `console.log("Hello");
 ${SOURCE_MAPPING_URL}=data:application/json;charset=utf-8;base64,foo
 `;
