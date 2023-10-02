@@ -32,8 +32,8 @@ test.beforeEach((t) => {
 			// The property is not required according to the current schema, so it is a bug in trace-mapping.
 			// See https://github.com/SchemaStore/schemastore/blob/7d0dc50ea4532e1f18febd777919c477bf6e05f2/src/schemas/json/sourcemap-v3.json
 			sourceMap.sections.forEach((section) => {
-				if (!section.names) {
-					section.names = [];
+				if (!section.map.names) {
+					section.map.names = [];
 				}
 			});
 		}
