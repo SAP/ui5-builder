@@ -162,3 +162,42 @@ test("minify: omitSourceMapResources: true, useInputSourceMaps: false", async (t
 		t.is(workspace.write.getCall(idx).firstArg, resName, "workspace#write got called for expected resource");
 	});
 });
+
+test("minify: No taskUtil", async (t) => {
+	const {minify, workspace, minifierStub} = t.context;
+	minifierStub.resolves([{
+		resource: "resource A",
+		dbgResource: "dbgResource A",
+		sourceMapResource: "sourceMapResource A",
+		dbgSourceMapResource: "dbgSourceMapResource A" // optional
+	}, {
+		resource: "resource B",
+		dbgResource: "dbgResource B",
+		sourceMapResource: "sourceMapResource B",
+	}]);
+	await minify({
+		workspace,
+		options: {
+			pattern: "**"
+		}
+	});
+
+	t.is(minifierStub.callCount, 1, "minifier got called once");
+	const minifierCallArgs = minifierStub.firstCall.firstArg;
+	t.deepEqual(minifierCallArgs.resources, ["resource A", "resource B"], "Correct resources provided to processor");
+	t.is(minifierCallArgs.fs, "fs interface", "Correct fs interface provided to processor");
+	t.is(minifierCallArgs.taskUtil, undefined, "No taskUtil provided to processor");
+	t.deepEqual(minifierCallArgs.options, {
+		addSourceMappingUrl: true,
+		readSourceMappingUrl: true,
+		useWorkers: false
+	}, "minifier got called with expected options");
+
+	t.is(workspace.write.callCount, 7, "workspace#write got called seven times");
+	[
+		"resource A", "dbgResource A", "sourceMapResource A", "dbgSourceMapResource A",
+		"resource B", "dbgResource B", "sourceMapResource B"
+	].forEach((resName, idx) => {
+		t.is(workspace.write.getCall(idx).firstArg, resName, "workspace#write got called for expected resource");
+	});
+});
