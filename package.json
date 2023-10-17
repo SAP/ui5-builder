@@ -25,7 +25,8 @@
 		"./tasks/bundlers/utils/*": null,
 		"./package.json": "./package.json",
 		"./internal/taskRepository": "./lib/tasks/taskRepository.js",
-		"./internal/jsdoc/template/publish": "./lib/processors/jsdoc/lib/ui5/template/publish.cjs"
+		"./internal/jsdoc/template/publish": "./lib/processors/jsdoc/lib/ui5/template/publish.cjs",
+		"./types": "./types/index.d.ts"
 	},
 	"engines": {
 		"node": "^16.18.0 || >=18.12.0",
