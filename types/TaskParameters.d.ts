@@ -1,3 +1,4 @@
+import "@ui5/project/types";
 declare module "@ui5/builder/task/TaskParameters" {
 	import { TaskUtil } from "@ui5/project/build/helpers/TaskUtil";
 	
