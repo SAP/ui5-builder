@@ -20,7 +20,10 @@
 	"exports": {
 		"./processors/*": "./lib/processors/*.js",
 		"./processors/jsdoc/lib/*": null,
-		"./tasks/*": "./lib/tasks/*.js",
+		"./tasks/*": {
+			"default": "./lib/tasks/*.js",
+			"types": "./types/*.d.ts"
+		},
 		"./tasks/taskRepository": null,
 		"./tasks/bundlers/utils/*": null,
 		"./package.json": "./package.json",
