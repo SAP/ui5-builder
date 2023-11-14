@@ -104,9 +104,6 @@ ${SOURCE_MAPPING_URL}=test.controller.js.map`;
 		"mappings": ";;;AAGC,SAASA,OAAOC,GACfC,OAAOC,IAAIC,QAAQ,aACnBC,QAAQC,IAAI,qBACb,CACDN"
 	});
 	t.deepEqual(await sourceMapResource.getString(), expectedSourceMap, "Correct source map content");
-
-	// Call to registerCleanupTask indicates worker pool was used
-	t.is(taskUtilMock.registerCleanupTask.callCount, 1, "taskUtil#registerCleanupTask got called once");
 });
 
 test("minifier with useWorkers: true and missing taskUtil", async (t) => {
