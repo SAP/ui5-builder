@@ -901,8 +901,102 @@ sap.ui.define(["./b", "./c2"],function(b, c){return {};});
 },"preload-section");
 sap.ui.loader.config({depCacheUI5:{
 "a.js": ["b.js","c2.js"],
-"c2.js": ["c1.js","c3.js"]
+"c2.js": ["c1.js","c3.js"],
 }});
+${SOURCE_MAPPING_URL}=library-depCache-preload.js.map
+`;
+	t.deepEqual(oResult.content, expectedContent, "EVOBundleFormat " +
+		"should contain:" +
+		" preload part from a.js" +
+		" depCache part from a.js && c2.js");
+	t.is(oResult.bundleInfo.name, "library-depCache-preload.js", "bundle info name is correct");
+	t.deepEqual(oResult.bundleInfo.size, expectedContent.length, "bundle info size is correct");
+	t.deepEqual(oResult.bundleInfo.subModules, ["a.js", "b.js", "c2.js", "c1.js", "c3.js"],
+		"bundle info subModules are correct");
+});
+
+test.serial("integration: createBundle with depCache with NO dependencies", async (t) => {
+	const pool = new ResourcePool();
+	pool.addResource({
+		name: "a.js",
+		getPath: () => "a.js",
+		string: function() {
+			return this.buffer();
+		},
+		buffer: async () => "sap.ui.define([],function(){return {};});"
+	});
+	pool.addResource({
+		name: "b.js",
+		getPath: () => "b.js",
+		string: function() {
+			return this.buffer();
+		},
+		buffer: async () => "function Two(){return 2;}"
+	});
+	pool.addResource({
+		name: "c2.js",
+		getPath: () => "c2.js",
+		string: function() {
+			return this.buffer();
+		},
+		buffer: async () => "sap.ui.define([],function(){return {};});"
+	});
+	pool.addResource({
+		name: "c1.js",
+		getPath: () => "c1.js",
+		string: function() {
+			return this.buffer();
+		},
+		buffer: async () => "function Three(){return 3.1;}"
+	});
+	pool.addResource({
+		name: "c3.js",
+		getPath: () => "c3.js",
+		string: function() {
+			return this.buffer();
+		},
+		buffer: async () => "function Three(){return 3.3;}"
+	});
+	pool.addResource({
+		name: "a.library",
+		getPath: () => "a.library",
+		string: function() {
+			return this.buffer();
+		},
+		buffer: async () => `<?xml version="1.0" encoding="UTF-8" ?>
+<library xmlns="http://www.sap.com/sap.ui.library.xsd" >
+	<appData>
+		<packaging xmlns="http://www.sap.com/ui5/buildext/packaging" version="2.0" >
+			  <module-infos>
+				<raw-module name="a.js"
+					requiresTopLevelScope="false" />
+			</module-infos>
+		</packaging>
+	</appData>
+</library>`
+	});
+
+	const bundleDefinition = {
+		name: `library-depCache-preload.js`,
+		sections: [{
+			mode: "preload",
+			name: "preload-section",
+			filters: ["a.js"]
+		}, {
+			mode: "depCache",
+			filters: ["*.js"]
+		}]
+	};
+
+	const builder = new Builder(pool);
+	const oResult = await builder.createBundle(bundleDefinition, {});
+	t.is(oResult.name, "library-depCache-preload.js");
+	const expectedContent = `//@ui5-bundle library-depCache-preload.js
+sap.ui.require.preload({
+	"a.js":function(){
+sap.ui.define([],function(){return {};});
+}
+},"preload-section");
 ${SOURCE_MAPPING_URL}=library-depCache-preload.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "EVOBundleFormat " +
