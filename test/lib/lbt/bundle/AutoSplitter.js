@@ -141,8 +141,7 @@ test("integration: AutoSplitter with numberOfParts 2", async (t) => {
 		},
 		{
 			filters: ["a.js", "c.js"],
-			mode: "depCache",
-			name: undefined,
+			mode: "depCache"
 		}]
 	}, "second part should contain the other resources");
 });
