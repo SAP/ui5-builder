@@ -102,6 +102,10 @@ test("integration: AutoSplitter with numberOfParts 2", async (t) => {
 			mode: "require",
 			filters: ["a.js", "c.js"],
 			modules: ["a.js", "c.js"]
+		}, {
+			mode: "depCache",
+			filters: ["*.js"],
+			modules: ["a.js", "c.js", "b.json", "c.properties", "x.view.xml"]
 		}],
 		configuration: {}
 	};
@@ -134,10 +138,14 @@ test("integration: AutoSplitter with numberOfParts 2", async (t) => {
 		}, {
 			mode: "require",
 			filters: ["a.js", "c.js"]
+		},
+		{
+			filters: ["a.js", "c.js"],
+			mode: "depCache",
+			name: undefined,
 		}]
 	}, "second part should contain the other resources");
 });
-
 
 test("_calcMinSize: compressedSize", async (t) => {
 	const pool = {
