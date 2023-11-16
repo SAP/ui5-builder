@@ -1,7 +1,7 @@
 import test from "ava";
 import sinon from "sinon";
 import esmock from "esmock";
-import {deserializeResources} from "../../../lib/processors/themeBuilderWorker.js";
+import {deserializeResources} from "../../../lib/lbt/utils/PoolDispatcher.js";
 let buildThemes;
 
 test.before(async () => {
