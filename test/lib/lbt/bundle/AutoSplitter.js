@@ -75,6 +75,10 @@ test("integration: AutoSplitter with numberOfParts 2", async (t) => {
 		name: `Component-preload.js`,
 		defaultFileTypes: [".js", ".fragment.xml", ".view.xml", ".properties", ".json"],
 		sections: [{
+			mode: "depCache",
+			filters: ["*.js"],
+			modules: ["a.js", "c.js", "b.json", "c.properties", "x.view.xml"]
+		}, {
 			mode: "preload",
 			filters: ["a.js", "b.json", "x.view.xml"],
 			resolve: false,
@@ -102,10 +106,6 @@ test("integration: AutoSplitter with numberOfParts 2", async (t) => {
 			mode: "require",
 			filters: ["a.js", "c.js"],
 			modules: ["a.js", "c.js"]
-		}, {
-			mode: "depCache",
-			filters: ["*.js"],
-			modules: ["a.js", "c.js", "b.json", "c.properties", "x.view.xml"]
 		}],
 		configuration: {}
 	};
@@ -114,6 +114,9 @@ test("integration: AutoSplitter with numberOfParts 2", async (t) => {
 	t.deepEqual(oResult[0], {
 		name: `Component-preload-0.js`,
 		sections: [{
+			filters: ["a.js", "c.js"],
+			mode: "depCache"
+		}, {
 			mode: "preload",
 			filters: ["a.js"],
 			name: undefined
@@ -138,10 +141,6 @@ test("integration: AutoSplitter with numberOfParts 2", async (t) => {
 		}, {
 			mode: "require",
 			filters: ["a.js", "c.js"]
-		},
-		{
-			filters: ["a.js", "c.js"],
-			mode: "depCache"
 		}]
 	}, "second part should contain the other resources");
 });
