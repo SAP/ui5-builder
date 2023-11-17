@@ -114,7 +114,7 @@ test("integration: AutoSplitter with numberOfParts 2", async (t) => {
 	t.deepEqual(oResult[0], {
 		name: `Component-preload-0.js`,
 		sections: [{
-			filters: ["a.js", "c.js"],
+			filters: ["a.js", "b.json", "c.js"],
 			mode: "depCache"
 		}, {
 			mode: "preload",
@@ -143,6 +143,45 @@ test("integration: AutoSplitter with numberOfParts 2", async (t) => {
 			filters: ["a.js", "c.js"]
 		}]
 	}, "second part should contain the other resources");
+});
+
+test("integration: Extreme AutoSplitter with numberOfParts 50", async (t) => {
+	const modules = new Array(50).fill(null).map((val, index) => `a${index}.js`);
+	const pool = {
+		findResourceWithInfo: async (name) => {
+			const info = new ModuleInfo(name);
+			modules
+				.filter((moduleName) => moduleName !== name)
+				.forEach((dependency) => {
+					info.addDependency(dependency);
+				});
+			return {info};
+		},
+		resources: modules.map((res) => ({name: res}))
+	};
+	const autoSplitter = new AutoSplitter(pool, new BundleResolver(pool));
+	const bundleDefinition = {
+		name: `test-depCache-preload.js`,
+		sections: [{
+			mode: "depCache",
+			filters: ["*.js"],
+			modules
+		}]
+	};
+	const oResult = await autoSplitter.run(bundleDefinition, {numberOfParts: 50, optimize: false});
+	t.is(oResult.length, 50, "50 parts expected");
+
+	// Sections are the same as all modules depend on each other,
+	// therefore, the filters is the same (just the order of the names is slightly different).
+	for (let i= 0; i < 50; i++) {
+		t.deepEqual(oResult[i], {
+			name: `test-depCache-preload-${i}.js`,
+			sections: [{
+				filters: [`a${i}.js`, ...modules.filter((name) => `a${i}.js` !== name)],
+				mode: "depCache"
+			}]
+		});
+	}
 });
 
 test("_calcMinSize: compressedSize", async (t) => {
