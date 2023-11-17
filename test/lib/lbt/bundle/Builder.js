@@ -915,6 +915,47 @@ ${SOURCE_MAPPING_URL}=library-depCache-preload.js.map
 		"bundle info subModules are correct");
 });
 
+test.serial("integration: createBundle with depCache with splitted modules", async (t) => {
+	const pool = new ResourcePool();
+	new Array(20).fill(null).forEach((val, index, arr) => {
+		const strDeps = [];
+		const deps = [];
+		for (let i = index + 1; i < arr.length; i++ ) {
+			strDeps.push(`"./a${i}.js"`);
+			deps.push(`a${i}`);
+		}
+		pool.addResource({
+			name: `a${index}.js`,
+			getPath: () => `a${index}.js`,
+			string: function() {
+				return this.buffer();
+			},
+			buffer: async () => `sap.ui.define([${strDeps.join(", ")}],function(${deps.join(", ")}){return {};});`
+		});
+	});
+
+	const bundleDefinition = {
+		name: `library-depCache-preload.js`,
+		sections: [{
+			mode: "depCache",
+			filters: ["*.js"]
+		}]
+	};
+
+	const builder = new Builder(pool);
+	const oResult = await builder.createBundle(bundleDefinition, {numberOfParts: 2});
+	t.is(oResult.length, 2, "The bundle got split into 2 parts");
+
+	t.falsy(
+		oResult[0].bundleInfo.subModules.find((module) =>
+			oResult[1].bundleInfo.subModules.includes(module)
+		), "Submodules do not overlap"
+	);
+
+	const allSubmodules = [...oResult[0].bundleInfo.subModules, ...oResult[1].bundleInfo.subModules];
+	t.is(allSubmodules.length, 19, "All modules have dependencies, except for the last one");
+});
+
 test.serial("integration: createBundle with depCache with NO dependencies", async (t) => {
 	const pool = new ResourcePool();
 	pool.addResource({
