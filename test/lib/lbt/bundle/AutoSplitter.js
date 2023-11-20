@@ -172,7 +172,7 @@ test("integration: Extreme AutoSplitter with numberOfParts 50", async (t) => {
 	t.is(oResult.length, 50, "50 parts expected");
 
 	// Sections are the same as all modules depend on each other,
-	// therefore, the filters is the same (just the order of the names is slightly different).
+	// therefore, the filters are the same (just the order of the names is slightly different).
 	for (let i= 0; i < 50; i++) {
 		t.deepEqual(oResult[i], {
 			name: `test-depCache-preload-${i}.js`,
