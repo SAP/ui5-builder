@@ -84,7 +84,7 @@ test.serial("Replaces supportedLocales with available messageproperty files", as
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
-test("Do not replace supportedLocales when supportedLocales are already defined", async (t) => {
+test.serial("Do not replace supportedLocales when supportedLocales are already defined", async (t) => {
 	t.plan(4);
 	const {manifestTransformer} = t.context;
 	const input = JSON.stringify({
