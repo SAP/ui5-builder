@@ -48,7 +48,7 @@ test.serial("Application: No replacement at all", async (t) => {
 		resources: [resource],
 		fs: {
 			readdir() {
-				return ["i18n_de.properties", "i18n_en.properties"];
+				return Promise.resolve(["i18n_de.properties", "i18n_en.properties"]);
 			}
 		}
 	});
@@ -95,7 +95,7 @@ test.serial("Application: sap.app/i18n (with templates, default bundle): Replace
 		resources: [resource],
 		fs: {
 			readdir() {
-				return ["i18n_de.properties", "i18n_en.properties"];
+				return Promise.resolve(["i18n_de.properties", "i18n_en.properties"]);
 			}
 		}
 	});
@@ -143,7 +143,7 @@ test.serial("Application: sap.app/i18n (with templates, custom bundle): Replaces
 		resources: [resource],
 		fs: {
 			readdir() {
-				return ["mybundle_de.properties", "mybundle_en.properties"];
+				return Promise.resolve(["mybundle_de.properties", "mybundle_en.properties"]);
 			}
 		}
 	});
@@ -207,7 +207,7 @@ test.serial("Application: sap.ui5/models: Replaces supportedLocales with availab
 		resources: [resource],
 		fs: {
 			readdir() {
-				return ["i18n_de.properties", "i18n_en.properties"];
+				return Promise.resolve(["i18n_de.properties", "i18n_en.properties"]);
 			}
 		}
 	});
@@ -252,7 +252,7 @@ test.serial("Application: sap.ui5/models: Do not replace supportedLocales when s
 		resources: [resource],
 		fs: {
 			readdir() {
-				return ["i18n_de.properties", "i18n_en.properties"];
+				return Promise.resolve(["i18n_de.properties", "i18n_en.properties"]);
 			}
 		}
 	});
@@ -296,7 +296,7 @@ test.serial("Application: sap.ui5/models: Do not replace supportedLocales when s
 		resources: [resource],
 		fs: {
 			readdir() {
-				return ["i18n_de.properties", "i18n_en.properties"];
+				return Promise.resolve(["i18n_de.properties", "i18n_en.properties"]);
 			}
 		}
 	});
@@ -358,7 +358,7 @@ test.serial("Application: sap.ui5/models: Log error, no supportedLocales generat
 		resources: [resource],
 		fs: {
 			readdir() {
-				return ["i18n_de.properties", "i18n_en.properties"];
+				return Promise.resolve(["i18n_de.properties", "i18n_en.properties"]);
 			}
 		}
 	});
@@ -423,7 +423,7 @@ test.serial("Application: sap.ui5/models: Log warning, but generate locales if d
 		resources: [resource],
 		fs: {
 			readdir() {
-				return ["i18n_de.properties", "i18n_fr.properties"];
+				return Promise.resolve(["i18n_de.properties", "i18n_fr.properties"]);
 			}
 		}
 	});
@@ -469,7 +469,7 @@ test.serial("Application: sap.ui5/models: Log verbose if manifest version is not
 		resources: [resource],
 		fs: {
 			readdir() {
-				return ["i18n_de.properties", "i18n_en.properties"];
+				return Promise.resolve(["i18n_de.properties", "i18n_en.properties"]);
 			}
 		}
 	});
@@ -514,7 +514,7 @@ test.serial("Application: sap.ui5/models: Log verbose if manifest version is bel
 		resources: [resource],
 		fs: {
 			readdir() {
-				return ["i18n_de.properties", "i18n_en.properties"];
+				return Promise.resolve(["i18n_de.properties", "i18n_en.properties"]);
 			}
 		}
 	});
@@ -566,7 +566,7 @@ test.serial("Library: No replacement at all", async (t) => {
 		resources: [resource],
 		fs: {
 			readdir() {
-				return ["i18n_de.properties", "i18n_en.properties"];
+				return Promise.resolve(["i18n_de.properties", "i18n_en.properties"]);
 			}
 		}
 	});
@@ -600,7 +600,7 @@ test.serial("Library: sap.app/i18n (with templates, no bundle defined): No gener
 		resources: [resource],
 		fs: {
 			readdir() {
-				return ["i18n_de.properties", "i18n_en.properties"];
+				return Promise.resolve(["i18n_de.properties", "i18n_en.properties"]);
 			}
 		}
 	});
@@ -646,7 +646,7 @@ test.serial("Library: sap.app/i18n (with custom bundle): Replaces supportedLocal
 		resources: [resource],
 		fs: {
 			readdir() {
-				return ["mybundle_de.properties", "mybundle_en.properties"];
+				return Promise.resolve(["mybundle_de.properties", "mybundle_en.properties"]);
 			}
 		}
 	});
@@ -704,7 +704,7 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with available 
 		resources: [resource],
 		fs: {
 			readdir() {
-				return ["messagebundlec_de.properties", "messagebundlec_en.properties"];
+				return Promise.resolve(["messagebundlec_de.properties", "messagebundlec_en.properties"]);
 			}
 		}
 	});
@@ -758,7 +758,7 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with available 
 		resources: [resource],
 		fs: {
 			readdir() {
-				return ["messagebundle_de.properties", "messagebundle_en.properties"];
+				return Promise.resolve(["messagebundle_de.properties", "messagebundle_en.properties"]);
 			}
 		}
 	});
@@ -796,7 +796,7 @@ test.serial("Library: sap.ui5/library: Do not replace supportedLocales with disa
 		resources: [resource],
 		fs: {
 			readdir() {
-				return ["messagebundle_de.properties", "messagebundle_en.properties"];
+				return Promise.resolve(["messagebundle_de.properties", "messagebundle_en.properties"]);
 			}
 		}
 	});
