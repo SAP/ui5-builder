@@ -431,9 +431,9 @@ test.serial("Log warning, but generate locales if default fallbackLocale is not 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
 	t.is(t.context.logWarnSpy.callCount, 1, "1 warning should be logged");
 	t.is(t.context.logWarnSpy.getCall(0).args[0],
-		"manifest.json: No fallbackLocale is specified for bundle 'sap.ui.demo.app.i18n.i18n' " +
-		"but no .properties file can be found for default fallbackLocale 'en'. " +
-		"Either provide a properties file or configure another available fallbackLocale",
+		"manifest.json: Generated supported locales ('de', 'fr') " +
+		"do not contain default fallback locale 'en'. " +
+		"Either provide a properties file for 'en' or configure another available fallbackLocale",
 		"1 warning should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -568,11 +568,7 @@ test.serial("sap.ui5/library: Replaces supportedLocales with available messagepr
 		"_version": "1.58.0",
 		"sap.app": {
 			"id": "sap.ui.demo.lib",
-			"type": "library",
-			"i18n": {
-				"bundleUrl": "messagebundle.properties",
-				"supportedLocales": ["de", "en"]
-			}
+			"type": "library"
 		},
 		"sap.ui5": {
 			"library": {
@@ -627,11 +623,7 @@ test.serial("sap.ui5/library: Replaces supportedLocales with available messagepr
 		"_version": "1.58.0",
 		"sap.app": {
 			"id": "sap.ui.demo.lib",
-			"type": "library",
-			"i18n": {
-				"bundleUrl": "i18n/i18n.properties",
-				"supportedLocales": ["de", "en"]
-			}
+			"type": "library"
 		},
 		"sap.ui5": {
 			"library": {
@@ -666,7 +658,7 @@ test.serial("sap.ui5/library: Replaces supportedLocales with available messagepr
 });
 
 test.serial("sap.ui5/library: Do not replace supportedLocales with disabled i18n feature", async (t) => {
-	t.plan(4);
+	t.plan(3);
 	const {manifestTransformer} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
@@ -681,27 +673,10 @@ test.serial("sap.ui5/library: Do not replace supportedLocales with disabled i18n
 		}
 	}, null, 2);
 
-	const expected = JSON.stringify({
-		"_version": "1.58.0",
-		"sap.app": {
-			"id": "sap.ui.demo.lib",
-			"type": "library",
-			"i18n": {
-				"bundleUrl": "i18n/i18n.properties",
-				"supportedLocales": ["de", "en"]
-			}
-		},
-		"sap.ui5": {
-			"library": {
-				"i18n": false
-			}
-		}
-	}, null, 2);
-
 	const resource = {
 		getString: () => Promise.resolve(input),
-		setString: (actual) => {
-			t.deepEqual(actual, expected, "Correct file content should be set");
+		setString: () => {
+			t.fail("setString should never be called because resource should not be changed");
 		}
 	};
 
@@ -714,7 +689,7 @@ test.serial("sap.ui5/library: Do not replace supportedLocales with disabled i18n
 		}
 	});
 
-	t.deepEqual(processedResources, [resource], "No resource is returned, because it is not changed");
+	t.deepEqual(processedResources, [undefined], "No resource is returned, because it is not changed");
 
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
