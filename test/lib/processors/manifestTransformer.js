@@ -26,7 +26,7 @@ test.afterEach.always((t) => {
 // Type: Application
 // #######################################################
 
-test.serial("No replacement at all", async (t) => {
+test.serial("Application: No replacement at all", async (t) => {
 	t.plan(3);
 	const {manifestTransformer} = t.context;
 	const input = JSON.stringify({
@@ -59,7 +59,102 @@ test.serial("No replacement at all", async (t) => {
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
-test.serial("sap.ui5/models: Replaces supportedLocales with available messageproperty files", async (t) => {
+test.serial("Application: sap.app/i18n (with templates, default bundle): Replaces supportedLocales with available messageproperty files", async (t) => {
+	t.plan(4);
+	const {manifestTransformer} = t.context;
+	const input = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.app",
+			"type": "application",
+			"title": "{{title}}"
+		}
+	}, null, 2);
+
+	const expected = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.app",
+			"type": "application",
+			"title": "{{title}}",
+			"i18n": {
+				"bundleUrl": "i18n/i18n.properties",
+				"supportedLocales": ["de", "en"]
+			}
+		}
+	}, null, 2);
+
+	const resource = {
+		getString: () => Promise.resolve(input),
+		setString: (actual) => {
+			t.deepEqual(actual, expected, "Correct file content should be set");
+		}
+	};
+
+	const processedResources = await manifestTransformer({
+		resources: [resource],
+		fs: {
+			readdir() {
+				return ["i18n_de.properties", "i18n_en.properties"];
+			}
+		}
+	});
+
+	t.deepEqual(processedResources, [resource], "Input resource is returned");
+
+	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
+	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
+});
+
+test.serial("Application: sap.app/i18n (with templates, custom bundle): Replaces supportedLocales with available messageproperty files", async (t) => {
+	t.plan(4);
+	const {manifestTransformer} = t.context;
+	const input = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.app",
+			"type": "application",
+			"title": "{{title}}",
+			"i18n": "mybundle.properties"
+		}
+	}, null, 2);
+
+	const expected = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.app",
+			"type": "application",
+			"title": "{{title}}",
+			"i18n": {
+				"bundleUrl": "mybundle.properties",
+				"supportedLocales": ["de", "en"]
+			}
+		}
+	}, null, 2);
+
+	const resource = {
+		getString: () => Promise.resolve(input),
+		setString: (actual) => {
+			t.deepEqual(actual, expected, "Correct file content should be set");
+		}
+	};
+
+	const processedResources = await manifestTransformer({
+		resources: [resource],
+		fs: {
+			readdir() {
+				return ["mybundle_de.properties", "mybundle_en.properties"];
+			}
+		}
+	});
+
+	t.deepEqual(processedResources, [resource], "Input resource is returned");
+
+	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
+	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
+});
+
+test.serial("Application: sap.ui5/models: Replaces supportedLocales with available messageproperty files", async (t) => {
 	t.plan(4);
 	const {manifestTransformer} = t.context;
 	const input = JSON.stringify({
@@ -123,102 +218,7 @@ test.serial("sap.ui5/models: Replaces supportedLocales with available messagepro
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
-test.serial("sap.app/i18n (with templates, default bundle): Replaces supportedLocales with available messageproperty files", async (t) => {
-	t.plan(4);
-	const {manifestTransformer} = t.context;
-	const input = JSON.stringify({
-		"_version": "1.58.0",
-		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application",
-			"title": "{{title}}"
-		}
-	}, null, 2);
-
-	const expected = JSON.stringify({
-		"_version": "1.58.0",
-		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application",
-			"title": "{{title}}",
-			"i18n": {
-				"bundleUrl": "i18n/i18n.properties",
-				"supportedLocales": ["de", "en"]
-			}
-		}
-	}, null, 2);
-
-	const resource = {
-		getString: () => Promise.resolve(input),
-		setString: (actual) => {
-			t.deepEqual(actual, expected, "Correct file content should be set");
-		}
-	};
-
-	const processedResources = await manifestTransformer({
-		resources: [resource],
-		fs: {
-			readdir() {
-				return ["i18n_de.properties", "i18n_en.properties"];
-			}
-		}
-	});
-
-	t.deepEqual(processedResources, [resource], "Input resource is returned");
-
-	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
-	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
-});
-
-test.serial("sap.app/i18n (with templates, custom bundle): Replaces supportedLocales with available messageproperty files", async (t) => {
-	t.plan(4);
-	const {manifestTransformer} = t.context;
-	const input = JSON.stringify({
-		"_version": "1.58.0",
-		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application",
-			"title": "{{title}}",
-			"i18n": "mybundle.properties"
-		}
-	}, null, 2);
-
-	const expected = JSON.stringify({
-		"_version": "1.58.0",
-		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application",
-			"title": "{{title}}",
-			"i18n": {
-				"bundleUrl": "mybundle.properties",
-				"supportedLocales": ["de", "en"]
-			}
-		}
-	}, null, 2);
-
-	const resource = {
-		getString: () => Promise.resolve(input),
-		setString: (actual) => {
-			t.deepEqual(actual, expected, "Correct file content should be set");
-		}
-	};
-
-	const processedResources = await manifestTransformer({
-		resources: [resource],
-		fs: {
-			readdir() {
-				return ["mybundle_de.properties", "mybundle_en.properties"];
-			}
-		}
-	});
-
-	t.deepEqual(processedResources, [resource], "Input resource is returned");
-
-	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
-	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
-});
-
-test.serial("Do not replace supportedLocales when supportedLocales are already defined", async (t) => {
+test.serial("Application: sap.ui5/models: Do not replace supportedLocales when supportedLocales are already defined", async (t) => {
 	t.plan(3);
 	const {manifestTransformer} = t.context;
 	const input = JSON.stringify({
@@ -262,7 +262,7 @@ test.serial("Do not replace supportedLocales when supportedLocales are already d
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
-test.serial("Do not replace supportedLocales when supportedLocales are set to array with empty string", async (t) => {
+test.serial("Application: sap.ui5/models: Do not replace supportedLocales when supportedLocales are set to array with empty string", async (t) => {
 	t.plan(3);
 	const {manifestTransformer} = t.context;
 	const input = JSON.stringify({
@@ -301,12 +301,12 @@ test.serial("Do not replace supportedLocales when supportedLocales are set to ar
 		}
 	});
 
-	t.deepEqual(processedResources, [undefined], "Input resource is returned");
+	t.deepEqual(processedResources, [undefined], "No resource is returned, because it is not changed");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
-test.serial("Log error, no supportedLocales generation if fallbackLocale is not part of generation", async (t) => {
+test.serial("Application: sap.ui5/models: Log error, no supportedLocales generation if fallbackLocale is not part of generation", async (t) => {
 	t.plan(5);
 	const {manifestTransformer} = t.context;
 	const input = JSON.stringify({
@@ -372,7 +372,7 @@ test.serial("Log error, no supportedLocales generation if fallbackLocale is not 
 		"Error message should be correct");
 });
 
-test.serial("Log warning, but generate locales if default fallbackLocale is not part of generation", async (t) => {
+test.serial("Application: sap.ui5/models: Log warning, but generate locales if default fallbackLocale is not part of generation", async (t) => {
 	t.plan(5);
 	const {manifestTransformer} = t.context;
 	const input = JSON.stringify({
@@ -438,7 +438,7 @@ test.serial("Log warning, but generate locales if default fallbackLocale is not 
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
-test.serial("Log verbose if manifest version is not defined at all", async (t) => {
+test.serial("Application: sap.ui5/models: Log verbose if manifest version is not defined at all", async (t) => {
 	t.plan(5);
 	const {manifestTransformer} = t.context;
 	const input = JSON.stringify({
@@ -482,7 +482,7 @@ test.serial("Log verbose if manifest version is not defined at all", async (t) =
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
-test.serial("Log verbose if manifest version is below 1.21.0", async (t) => {
+test.serial("Application: sap.ui5/models: Log verbose if manifest version is below 1.21.0", async (t) => {
 	t.plan(5);
 	const {manifestTransformer} = t.context;
 	const input = JSON.stringify({
@@ -544,8 +544,120 @@ test.serial("Log verbose if manifest version is below 1.21.0", async (t) => {
 // Type: Library
 // #######################################################
 
+test.serial("Library: No replacement at all", async (t) => {
+	t.plan(3);
+	const {manifestTransformer} = t.context;
+	const input = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.lib",
+			"type": "library"
+		}
+	}, null, 2);
 
-test.serial("sap.ui5/library: Replaces supportedLocales with available messageproperty files", async (t) => {
+	const resource = {
+		getString: () => Promise.resolve(input),
+		setString: (actual) => {
+			t.fail("setString should never be called because resource should not be changed");
+		}
+	};
+
+	const processedResources = await manifestTransformer({
+		resources: [resource],
+		fs: {
+			readdir() {
+				return ["i18n_de.properties", "i18n_en.properties"];
+			}
+		}
+	});
+
+	t.deepEqual(processedResources, [undefined], "No resource is returned, because it is not changed");
+
+	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
+	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
+});
+
+test.serial("Library: sap.app/i18n (with templates, no bundle defined): No generation of supportedLocales when no bundleUrl is given", async (t) => {
+	t.plan(3);
+	const {manifestTransformer} = t.context;
+	const input = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.lib",
+			"type": "library",
+			"title": "{{title}}"
+		}
+	}, null, 2);
+
+	const resource = {
+		getString: () => Promise.resolve(input),
+		setString: (actual) => {
+			t.fail("setString should never be called because resource should not be changed");
+		}
+	};
+
+	const processedResources = await manifestTransformer({
+		resources: [resource],
+		fs: {
+			readdir() {
+				return ["i18n_de.properties", "i18n_en.properties"];
+			}
+		}
+	});
+
+	t.deepEqual(processedResources, [undefined], "Input resource is returned");
+
+	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
+	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
+});
+
+test.serial("Library: sap.app/i18n (with custom bundle): Replaces supportedLocales with available messageproperty files", async (t) => {
+	t.plan(4);
+	const {manifestTransformer} = t.context;
+	const input = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.lib",
+			"type": "library",
+			"i18n": "mybundle.properties"
+		}
+	}, null, 2);
+
+	const expected = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.lib",
+			"type": "library",
+			"i18n": {
+				"bundleUrl": "mybundle.properties",
+				"supportedLocales": ["de", "en"]
+			}
+		}
+	}, null, 2);
+
+	const resource = {
+		getString: () => Promise.resolve(input),
+		setString: (actual) => {
+			t.deepEqual(actual, expected, "Correct file content should be set");
+		}
+	};
+
+	const processedResources = await manifestTransformer({
+		resources: [resource],
+		fs: {
+			readdir() {
+				return ["mybundle_de.properties", "mybundle_en.properties"];
+			}
+		}
+	});
+
+	t.deepEqual(processedResources, [resource], "Input resource is returned");
+
+	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
+	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
+});
+
+test.serial("Library: sap.ui5/library: Replaces supportedLocales with available messageproperty files", async (t) => {
 	t.plan(4);
 	const {manifestTransformer} = t.context;
 	const input = JSON.stringify({
@@ -603,7 +715,7 @@ test.serial("sap.ui5/library: Replaces supportedLocales with available messagepr
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
-test.serial("sap.ui5/library: Replaces supportedLocales with available messageproperty files (i18n=true)", async (t) => {
+test.serial("Library: sap.ui5/library: Replaces supportedLocales with available messageproperty files (i18n=true)", async (t) => {
 	t.plan(4);
 	const {manifestTransformer} = t.context;
 	const input = JSON.stringify({
@@ -657,7 +769,7 @@ test.serial("sap.ui5/library: Replaces supportedLocales with available messagepr
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
-test.serial("sap.ui5/library: Do not replace supportedLocales with disabled i18n feature", async (t) => {
+test.serial("Library: sap.ui5/library: Do not replace supportedLocales with disabled i18n feature", async (t) => {
 	t.plan(3);
 	const {manifestTransformer} = t.context;
 	const input = JSON.stringify({
