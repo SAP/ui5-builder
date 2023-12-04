@@ -920,13 +920,19 @@ test.serial("integration: createBundle with depCache with splitted modules", asy
 	new Array(20).fill(null).forEach((val, index, arr) => {
 		const strDeps = [];
 		const deps = [];
+		// Defines dependencies with different namespace
 		for (let i = index + 1; i < arr.length; i++ ) {
-			strDeps.push(`"./a${i}.js"`);
-			deps.push(`a${i}`);
+			strDeps.push(`"another/path/dep/b${i}.js"`);
+			deps.push(`b${i}`);
 		}
+
+		// Test filtering by registering different namespaces in the pool,
+		// but using only the foo/bar namespace.
+		const curResourceName = (index % 2) ?
+			`foo/bar/a${index}.js` : `bizz/buzz/a${index}.js`;
 		pool.addResource({
-			name: `a${index}.js`,
-			getPath: () => `a${index}.js`,
+			name: curResourceName,
+			getPath: () => curResourceName,
 			string: function() {
 				return this.buffer();
 			},
@@ -938,7 +944,7 @@ test.serial("integration: createBundle with depCache with splitted modules", asy
 		name: `library-depCache-preload.js`,
 		sections: [{
 			mode: "depCache",
-			filters: ["*.js"]
+			filters: ["foo/bar/**"]
 		}]
 	};
 
@@ -953,7 +959,8 @@ test.serial("integration: createBundle with depCache with splitted modules", asy
 	);
 
 	const allSubmodules = [...oResult[0].bundleInfo.subModules, ...oResult[1].bundleInfo.subModules];
-	t.is(allSubmodules.length, 19, "All modules have dependencies, except for the last one");
+	t.is(allSubmodules.length, 9, "'Half' of the defined modules are actually cached. Due to the filters. The last one is always ignored as it doesn't have dependencies");
+	t.true(allSubmodules.every((module) => module.startsWith("foo/bar")), "Every (included) submodule starts with foo/bar namespace. The rest are filtered.");
 });
 
 test.serial("integration: createBundle with depCache with NO dependencies", async (t) => {
