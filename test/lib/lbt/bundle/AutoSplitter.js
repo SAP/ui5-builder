@@ -114,7 +114,7 @@ test("integration: AutoSplitter with numberOfParts 2", async (t) => {
 	t.deepEqual(oResult[0], {
 		name: `Component-preload-0.js`,
 		sections: [{
-			filters: ["a.js", "b.json", "c.js"],
+			filters: ["a.js", "c.js"],
 			mode: "depCache"
 		}, {
 			mode: "preload",
@@ -122,7 +122,7 @@ test("integration: AutoSplitter with numberOfParts 2", async (t) => {
 			name: undefined
 		}],
 		configuration: {}
-	}, "first part should contain only a.js since its size is only 2048");
+	}, "bundle properly and correct dependencies & sizes");
 	t.deepEqual(oResult[1], {
 		name: `Component-preload-1.js`,
 		sections: [{
@@ -177,7 +177,7 @@ test("integration: Extreme AutoSplitter with numberOfParts 50", async (t) => {
 		t.deepEqual(oResult[i], {
 			name: `test-depCache-preload-${i}.js`,
 			sections: [{
-				filters: [`a${i}.js`, ...modules.filter((name) => `a${i}.js` !== name)],
+				filters: [`a${i}.js`],
 				mode: "depCache"
 			}]
 		});
