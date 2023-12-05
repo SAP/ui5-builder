@@ -145,8 +145,16 @@ test("integration: AutoSplitter with numberOfParts 2", async (t) => {
 	}, "second part should contain the other resources");
 });
 
-test("integration: Extreme AutoSplitter with numberOfParts 50", async (t) => {
-	const modules = new Array(50).fill(null).map((val, index) => `a${index}.js`);
+test.only("integration: Extreme AutoSplitter with numberOfParts 50", async (t) => {
+	const includedNamespace = "foo/bar/a";
+	const excludedNamespace = "fizz/buzz/b";
+	const modules = new Array(150)
+		.fill(null)
+		.map((val, index) =>
+			index % 2 ?
+				`${includedNamespace}${index}.js` :
+				`${excludedNamespace}${index}.js`
+		);
 	const pool = {
 		findResourceWithInfo: async (name) => {
 			const info = new ModuleInfo(name);
@@ -164,24 +172,27 @@ test("integration: Extreme AutoSplitter with numberOfParts 50", async (t) => {
 		name: `test-depCache-preload.js`,
 		sections: [{
 			mode: "depCache",
-			filters: ["*.js"],
+			filters: ["foo/bar/**"],
 			modules
 		}]
 	};
 	const oResult = await autoSplitter.run(bundleDefinition, {numberOfParts: 50, optimize: false});
 	t.is(oResult.length, 50, "50 parts expected");
 
-	// Sections are the same as all modules depend on each other,
-	// therefore, the filters are the same (just the order of the names is slightly different).
 	for (let i= 0; i < 50; i++) {
-		t.deepEqual(oResult[i], {
-			name: `test-depCache-preload-${i}.js`,
-			sections: [{
-				filters: [`a${i}.js`],
-				mode: "depCache"
-			}]
-		});
+		t.is(oResult[i].name, `test-depCache-preload-${i}.js`, "Correct preload bundles got created");
 	}
+
+	// Merge filters from all bundles
+	const allFilters = oResult.flatMap((res) =>
+		res.sections.flatMap((section) => section.filters)
+	).sort();
+
+	t.deepEqual(Array.from(new Set(allFilters)).sort(), allFilters, "There are no duplicate filters");
+	t.true(
+		allFilters.every((filter) => filter.startsWith("foo/bar")),
+		"Every (included) filter starts with foo/bar namespace. The rest are filtered."
+	);
 });
 
 test("_calcMinSize: compressedSize", async (t) => {
