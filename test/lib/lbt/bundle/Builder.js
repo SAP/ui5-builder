@@ -916,29 +916,36 @@ ${SOURCE_MAPPING_URL}=library-depCache-preload.js.map
 });
 
 test.serial("integration: createBundle with depCache with splitted modules", async (t) => {
+	const resolvedModulesCount = 10;
 	const pool = new ResourcePool();
-	new Array(20).fill(null).forEach((val, index, arr) => {
-		const strDeps = [];
-		const deps = [];
-		// Defines dependencies with different namespace
-		for (let i = index + 1; i < arr.length; i++ ) {
-			strDeps.push(`"another/path/dep/b${i}.js"`);
-			deps.push(`b${i}`);
-		}
 
-		// Test filtering by registering different namespaces in the pool,
-		// but using only the foo/bar namespace.
-		const curResourceName = (index % 2) ?
-			`foo/bar/a${index}.js` : `bizz/buzz/a${index}.js`;
-		pool.addResource({
-			name: curResourceName,
-			getPath: () => curResourceName,
-			string: function() {
-				return this.buffer();
-			},
-			buffer: async () => `sap.ui.define([${strDeps.join(", ")}],function(${deps.join(", ")}){return {};});`
+	// Builds N resources by adding provided "dependencies" as resource dependencies.
+	// Also adds the remaining I resources into dependency list
+	const buildDependencies = function(count, namespace, dependencies = []) {
+		return new Array(count).fill(null).map((val, index, arr) => {
+			const strDeps = dependencies.map((dep) => "\"" + dep + "\"");
+			const deps = dependencies.map((val, i) => `b${i}`);
+			for (let i = index + 1; i < arr.length; i++ ) {
+				strDeps.push(`"${namespace}${i}"`);
+				deps.push(`a${i}`);
+			}
+
+			const curResourceName = `${namespace}${index}`;
+			pool.addResource({
+				name: `${curResourceName}.js`,
+				getPath: () => `${curResourceName}.js`,
+				string: function() {
+					return this.buffer();
+				},
+				buffer: async () => `sap.ui.define([${strDeps.join(", ")}],function(${deps.join(", ")}){return {};});`
+			});
+
+			return curResourceName;
 		});
-	});
+	};
+
+	const nonCachedDependencies = buildDependencies(5, "fizz/buzz/b");
+	const cachedDependencies = buildDependencies(resolvedModulesCount, "foo/bar/a", nonCachedDependencies);
 
 	const bundleDefinition = {
 		name: `library-depCache-preload.js`,
@@ -959,7 +966,12 @@ test.serial("integration: createBundle with depCache with splitted modules", asy
 	);
 
 	const allSubmodules = [...oResult[0].bundleInfo.subModules, ...oResult[1].bundleInfo.subModules];
-	t.is(allSubmodules.length, 9, "'Half' of the defined modules are actually cached. Due to the filters. The last one is always ignored as it doesn't have dependencies");
+	t.is(allSubmodules.length, resolvedModulesCount, `${resolvedModulesCount} of all defined modules in the pool are actually cached as the filter is only for foo/bar namespace`);
+	t.deepEqual(
+		allSubmodules.sort(),
+		cachedDependencies.sort().map((dep) => `${dep}.js`),
+		"Cached dependencies are the correct ones"
+	);
 	t.true(allSubmodules.every((module) => module.startsWith("foo/bar")), "Every (included) submodule starts with foo/bar namespace. The rest are filtered.");
 });
 
