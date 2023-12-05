@@ -145,7 +145,7 @@ test("integration: AutoSplitter with numberOfParts 2", async (t) => {
 	}, "second part should contain the other resources");
 });
 
-test.only("integration: Extreme AutoSplitter with numberOfParts 50", async (t) => {
+test("integration: Extreme AutoSplitter with numberOfParts 50", async (t) => {
 	const includedNamespace = "foo/bar/a";
 	const excludedNamespace = "fizz/buzz/b";
 	const modules = new Array(150)
