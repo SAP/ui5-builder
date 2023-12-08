@@ -223,7 +223,7 @@ test("integration: Library with i18n=true declared in .library", async (t) => {
 	});
 });
 
-test("integration: Library with i18n=true declared in .libraryb and multiple locales", async (t) => {
+test("integration: Library with i18n=true declared in .library and multiple locales", async (t) => {
 	t.context.workspace = createWorkspace();
 
 	t.context.resources = [];
@@ -298,7 +298,7 @@ test("integration: Library with i18n=true declared in .libraryb and multiple loc
 	});
 });
 
-test("integration: Library with i18n=true declared in .libraryb and single locale", async (t) => {
+test("integration: Library with i18n=true declared in .library and single locale", async (t) => {
 	t.context.workspace = createWorkspace();
 
 	t.context.resources = [];
