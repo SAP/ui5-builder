@@ -59,7 +59,9 @@ test.serial("Application: No replacement at all", async (t) => {
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
-test.serial("Application: sap.app/i18n (with templates, default bundle): Replaces supportedLocales with available messageproperty files", async (t) => {
+test.serial("Application: sap.app/i18n (with templates, default bundle): " +
+	"Replaces supportedLocales with available messageproperty files",
+async (t) => {
 	t.plan(4);
 	const {manifestTransformer} = t.context;
 	const input = JSON.stringify({
@@ -106,7 +108,9 @@ test.serial("Application: sap.app/i18n (with templates, default bundle): Replace
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
-test.serial("Application: sap.app/i18n (with templates, custom bundle): Replaces supportedLocales with available messageproperty files", async (t) => {
+test.serial("Application: sap.app/i18n (with templates, custom bundle): " +
+	"Replaces supportedLocales with available messageproperty files",
+async (t) => {
 	t.plan(4);
 	const {manifestTransformer} = t.context;
 	const input = JSON.stringify({
@@ -154,7 +158,9 @@ test.serial("Application: sap.app/i18n (with templates, custom bundle): Replaces
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
-test.serial("Application: sap.ui5/models: Replaces supportedLocales with available messageproperty files", async (t) => {
+test.serial("Application: sap.ui5/models: " +
+	"Replaces supportedLocales with available messageproperty files",
+async (t) => {
 	t.plan(4);
 	const {manifestTransformer} = t.context;
 	const input = JSON.stringify({
@@ -218,7 +224,9 @@ test.serial("Application: sap.ui5/models: Replaces supportedLocales with availab
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
-test.serial("Application: sap.ui5/models: Do not replace supportedLocales when supportedLocales are already defined", async (t) => {
+test.serial("Application: sap.ui5/models: " +
+	"Do not replace supportedLocales when supportedLocales are already defined",
+async (t) => {
 	t.plan(3);
 	const {manifestTransformer} = t.context;
 	const input = JSON.stringify({
@@ -262,7 +270,9 @@ test.serial("Application: sap.ui5/models: Do not replace supportedLocales when s
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
-test.serial("Application: sap.ui5/models: Do not replace supportedLocales when supportedLocales are set to array with empty string", async (t) => {
+test.serial("Application: sap.ui5/models: " +
+	"Do not replace supportedLocales when supportedLocales are set to array with empty string",
+async (t) => {
 	t.plan(3);
 	const {manifestTransformer} = t.context;
 	const input = JSON.stringify({
@@ -306,7 +316,9 @@ test.serial("Application: sap.ui5/models: Do not replace supportedLocales when s
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
-test.serial("Application: sap.ui5/models: Log error, no supportedLocales generation if fallbackLocale is not part of generation", async (t) => {
+test.serial("Application: sap.ui5/models: " +
+	"Log error, no supportedLocales generation if fallbackLocale is not part of generation",
+async (t) => {
 	t.plan(5);
 	const {manifestTransformer} = t.context;
 	const input = JSON.stringify({
@@ -372,7 +384,9 @@ test.serial("Application: sap.ui5/models: Log error, no supportedLocales generat
 		"Error message should be correct");
 });
 
-test.serial("Application: sap.ui5/models: Log warning, but generate locales if default fallbackLocale is not part of generation", async (t) => {
+test.serial("Application: sap.ui5/models: " +
+	"Log warning, but generate locales if default fallbackLocale is not part of generation",
+async (t) => {
 	t.plan(5);
 	const {manifestTransformer} = t.context;
 	const input = JSON.stringify({
@@ -577,7 +591,9 @@ test.serial("Library: No replacement at all", async (t) => {
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
-test.serial("Library: sap.app/i18n (with templates, no bundle defined): No generation of supportedLocales when no bundleUrl is given", async (t) => {
+test.serial("Library: sap.app/i18n (with templates, no bundle defined): " +
+	"No generation of supportedLocales when no bundleUrl is given",
+async (t) => {
 	t.plan(3);
 	const {manifestTransformer} = t.context;
 	const input = JSON.stringify({
@@ -611,7 +627,9 @@ test.serial("Library: sap.app/i18n (with templates, no bundle defined): No gener
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
-test.serial("Library: sap.app/i18n (with custom bundle): Replaces supportedLocales with available messageproperty files", async (t) => {
+test.serial("Library: sap.app/i18n (with custom bundle): " +
+	"Replaces supportedLocales with available messageproperty files",
+async (t) => {
 	t.plan(4);
 	const {manifestTransformer} = t.context;
 	const input = JSON.stringify({
@@ -715,7 +733,9 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with available 
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
-test.serial("Library: sap.ui5/library: Replaces supportedLocales with available messageproperty files (i18n=true)", async (t) => {
+test.serial("Library: sap.ui5/library: " +
+	"Replaces supportedLocales with available messageproperty files (i18n=true)",
+async (t) => {
 	t.plan(4);
 	const {manifestTransformer} = t.context;
 	const input = JSON.stringify({
