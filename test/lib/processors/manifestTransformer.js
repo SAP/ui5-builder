@@ -47,8 +47,8 @@ test.serial("Application: No replacement at all", async (t) => {
 	const processedResources = await manifestTransformer({
 		resources: [resource],
 		fs: {
-			readdir() {
-				return Promise.resolve(["i18n_de.properties", "i18n_en.properties"]);
+			readdir(fsPath, callback) {
+				return callback(null, ["i18n_de.properties", "i18n_en.properties"]);
 			}
 		}
 	});
@@ -94,8 +94,8 @@ test.serial("Application: sap.app/i18n (with templates, default bundle): Replace
 	const processedResources = await manifestTransformer({
 		resources: [resource],
 		fs: {
-			readdir() {
-				return Promise.resolve(["i18n_de.properties", "i18n_en.properties"]);
+			readdir(fsPath, callback) {
+				return callback(null, ["i18n_de.properties", "i18n_en.properties"]);
 			}
 		}
 	});
@@ -142,8 +142,8 @@ test.serial("Application: sap.app/i18n (with templates, custom bundle): Replaces
 	const processedResources = await manifestTransformer({
 		resources: [resource],
 		fs: {
-			readdir() {
-				return Promise.resolve(["mybundle_de.properties", "mybundle_en.properties"]);
+			readdir(fsPath, callback) {
+				return callback(null, ["mybundle_de.properties", "mybundle_en.properties"]);
 			}
 		}
 	});
@@ -206,8 +206,8 @@ test.serial("Application: sap.ui5/models: Replaces supportedLocales with availab
 	const processedResources = await manifestTransformer({
 		resources: [resource],
 		fs: {
-			readdir() {
-				return Promise.resolve(["i18n_de.properties", "i18n_en.properties"]);
+			readdir(fsPath, callback) {
+				return callback(null, ["i18n_de.properties", "i18n_en.properties"]);
 			}
 		}
 	});
@@ -251,8 +251,8 @@ test.serial("Application: sap.ui5/models: Do not replace supportedLocales when s
 	const processedResources = await manifestTransformer({
 		resources: [resource],
 		fs: {
-			readdir() {
-				return Promise.resolve(["i18n_de.properties", "i18n_en.properties"]);
+			readdir(fsPath, callback) {
+				return callback(null, ["i18n_de.properties", "i18n_en.properties"]);
 			}
 		}
 	});
@@ -295,8 +295,8 @@ test.serial("Application: sap.ui5/models: Do not replace supportedLocales when s
 	const processedResources = await manifestTransformer({
 		resources: [resource],
 		fs: {
-			readdir() {
-				return Promise.resolve(["i18n_de.properties", "i18n_en.properties"]);
+			readdir(fsPath, callback) {
+				return callback(null, ["i18n_de.properties", "i18n_en.properties"]);
 			}
 		}
 	});
@@ -357,8 +357,8 @@ test.serial("Application: sap.ui5/models: Log error, no supportedLocales generat
 	const processedResources = await manifestTransformer({
 		resources: [resource],
 		fs: {
-			readdir() {
-				return Promise.resolve(["i18n_de.properties", "i18n_en.properties"]);
+			readdir(fsPath, callback) {
+				return callback(null, ["i18n_de.properties", "i18n_en.properties"]);
 			}
 		}
 	});
@@ -422,8 +422,8 @@ test.serial("Application: sap.ui5/models: Log warning, but generate locales if d
 	const processedResources = await manifestTransformer({
 		resources: [resource],
 		fs: {
-			readdir() {
-				return Promise.resolve(["i18n_de.properties", "i18n_fr.properties"]);
+			readdir(fsPath, callback) {
+				return callback(null, ["i18n_de.properties", "i18n_fr.properties"]);
 			}
 		}
 	});
@@ -468,8 +468,8 @@ test.serial("Application: sap.ui5/models: Log verbose if manifest version is not
 	const processedResources = await manifestTransformer({
 		resources: [resource],
 		fs: {
-			readdir() {
-				return Promise.resolve(["i18n_de.properties", "i18n_en.properties"]);
+			readdir(fsPath, callback) {
+				return callback(null, ["i18n_de.properties", "i18n_en.properties"]);
 			}
 		}
 	});
@@ -513,8 +513,8 @@ test.serial("Application: sap.ui5/models: Log verbose if manifest version is bel
 	const processedResources = await manifestTransformer({
 		resources: [resource],
 		fs: {
-			readdir() {
-				return Promise.resolve(["i18n_de.properties", "i18n_en.properties"]);
+			readdir(fsPath, callback) {
+				return callback(null, ["i18n_de.properties", "i18n_en.properties"]);
 			}
 		}
 	});
@@ -565,8 +565,8 @@ test.serial("Library: No replacement at all", async (t) => {
 	const processedResources = await manifestTransformer({
 		resources: [resource],
 		fs: {
-			readdir() {
-				return Promise.resolve(["i18n_de.properties", "i18n_en.properties"]);
+			readdir(fsPath, callback) {
+				return callback(null, ["i18n_de.properties", "i18n_en.properties"]);
 			}
 		}
 	});
@@ -599,8 +599,8 @@ test.serial("Library: sap.app/i18n (with templates, no bundle defined): No gener
 	const processedResources = await manifestTransformer({
 		resources: [resource],
 		fs: {
-			readdir() {
-				return Promise.resolve(["i18n_de.properties", "i18n_en.properties"]);
+			readdir(fsPath, callback) {
+				return callback(null, ["i18n_de.properties", "i18n_en.properties"]);
 			}
 		}
 	});
@@ -645,8 +645,8 @@ test.serial("Library: sap.app/i18n (with custom bundle): Replaces supportedLocal
 	const processedResources = await manifestTransformer({
 		resources: [resource],
 		fs: {
-			readdir() {
-				return Promise.resolve(["mybundle_de.properties", "mybundle_en.properties"]);
+			readdir(fsPath, callback) {
+				return callback(null, ["mybundle_de.properties", "mybundle_en.properties"]);
 			}
 		}
 	});
@@ -703,8 +703,8 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with available 
 	const processedResources = await manifestTransformer({
 		resources: [resource],
 		fs: {
-			readdir() {
-				return Promise.resolve(["messagebundlec_de.properties", "messagebundlec_en.properties"]);
+			readdir(fsPath, callback) {
+				return callback(null, ["messagebundlec_de.properties", "messagebundlec_en.properties"]);
 			}
 		}
 	});
@@ -757,8 +757,8 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with available 
 	const processedResources = await manifestTransformer({
 		resources: [resource],
 		fs: {
-			readdir() {
-				return Promise.resolve(["messagebundle_de.properties", "messagebundle_en.properties"]);
+			readdir(fsPath, callback) {
+				return callback(null, ["messagebundle_de.properties", "messagebundle_en.properties"]);
 			}
 		}
 	});
@@ -795,8 +795,8 @@ test.serial("Library: sap.ui5/library: Do not replace supportedLocales with disa
 	const processedResources = await manifestTransformer({
 		resources: [resource],
 		fs: {
-			readdir() {
-				return Promise.resolve(["messagebundle_de.properties", "messagebundle_en.properties"]);
+			readdir(fsPath, callback) {
+				return callback(null, ["messagebundle_de.properties", "messagebundle_en.properties"]);
 			}
 		}
 	});

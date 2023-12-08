@@ -68,6 +68,6 @@ test.serial("Transforms manifest.json resource", async (t) => {
 	t.true(log.error.notCalled, "No errors should be logged");
 });
 
-// test.serial("Should rewrite the manifest.json if no changes werde made", (t) => {
+// test.serial("Should not rewrite the manifest.json if no changes were made", (t) => {
 
 // });
