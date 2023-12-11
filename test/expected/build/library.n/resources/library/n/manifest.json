@@ -1,0 +1,105 @@
+{
+    "_version": "1.21.0",
+    "sap.app": {
+        "id": "library.n",
+        "type": "library",
+        "embeds": [],
+        "applicationVersion": {
+            "version": "1.0.0"
+        },
+        "title": "{{title}}",
+        "description": "{{description}}",
+        "resources": "resources.json",
+        "offline": true
+    },
+    "sap.ui": {
+        "technology": "UI5",
+        "supportedThemes": []
+    },
+    "sap.ui5": {
+        "dependencies": {
+            "libs": {}
+        },
+        "library": {
+            "i18n": {
+                "bundleUrl": "messagebundle.properties",
+                "supportedLocales": [
+                    "",
+                    "de",
+                    "en"
+                ],
+                "terminologies": {
+                    "sports": {
+                        "bundleUrl": "sports.properties",
+                        "bundleUrlRelativeTo": "manifest",
+                        "supportedLocales": [
+                            "",
+                            "en",
+                            "de"
+                        ]
+                    },
+                    "travel": {
+                        "bundleUrl": "travel.properties",
+                        "bundleUrlRelativeTo": "manifest",
+                        "supportedLocales": [
+                            "",
+                            "en",
+                            "de"
+                        ]
+                    }
+                }
+            },
+            "enhanceWith": [
+                {
+                    "bundleUrl": "myfolder1/i18n.properties",
+                    "bundleUrlRelativeTo": "manifest",
+                    "supportedLocales": [
+                        "",
+                        "en",
+                        "de"
+                    ],
+                    "terminologies": {
+                        "sports": {
+                            "bundleUrl": "myfolder1/soccer.properties",
+                            "bundleUrlRelativeTo": "manifest",
+                            "supportedLocales": [
+                                "",
+                                "en",
+                                "de"
+                            ]
+                        },
+                        "travel": {
+                            "bundleUrl": "myfolder1/vehicles.properties",
+                            "bundleUrlRelativeTo": "manifest",
+                            "supportedLocales": [
+                                "",
+                                "en",
+                                "de"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "bundleUrl": "myfolder2/i18n.properties",
+                    "bundleUrlRelativeTo": "manifest",
+                    "supportedLocales": [
+                        "",
+                        "en",
+                        "de"
+                    ],
+                    "terminologies": {
+                        "travel": {
+                            "bundleUrl": "myfolder2/bicycles.properties",
+                            "bundleUrlRelativeTo": "manifest",
+                            "supportedLocales": [
+                                "",
+                                "en",
+                                "de"
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}

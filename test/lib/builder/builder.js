@@ -31,6 +31,7 @@ const libraryIPath = path.join(__dirname, "..", "..", "fixtures", "library.i");
 const libraryJPath = path.join(__dirname, "..", "..", "fixtures", "library.j");
 const libraryLPath = path.join(__dirname, "..", "..", "fixtures", "library.l");
 const libraryØPath = path.join(__dirname, "..", "..", "fixtures", "library.ø");
+const libraryNPath = path.join(__dirname, "..", "..", "fixtures", "library.n");
 const libraryCore = path.join(__dirname, "..", "..", "fixtures", "sap.ui.core-evo");
 const libraryCoreBuildtime = path.join(__dirname, "..", "..", "fixtures", "sap.ui.core-buildtime");
 const themeJPath = path.join(__dirname, "..", "..", "fixtures", "theme.j");
@@ -1230,6 +1231,26 @@ test.serial("Build theme-library with CSS variables and theme designer resources
 	const expectedFiles = await findFiles(expectedPath);
 	// Check for all directories and files
 	await directoryDeepEqual(t, destPath, expectedPath);
+	// Check for all file contents
+	await checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath);
+	t.pass();
+});
+
+test.serial("Build library.n with terminologies and supportedLocales", async (t) => {
+	const destPath = path.join("test", "tmp", "build", "library.n", "dest");
+	const expectedPath = path.join("test", "expected", "build", "library.n");
+
+	const graph = await graphFromPackageDependencies({
+		cwd: libraryNPath
+	});
+	graph.setTaskRepository(taskRepository);
+	await graph.build({
+		destPath
+	});
+
+	const expectedFiles = await findFiles(expectedPath);
+	// Check for all directories and files
+	directoryDeepEqual(t, destPath, expectedPath);
 	// Check for all file contents
 	await checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath);
 	t.pass();
