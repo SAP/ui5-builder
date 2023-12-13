@@ -1173,7 +1173,7 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with enhanceWit
 							"bundleUrl": "myfolder1/messagebundlenc1.properties",
 							"terminologies": {
 								"sports": {
-									"bundleUrl": "i18nc_sports/messagebundle.soccer.properties"
+									"bundleUrl": "i18nc_sports_soccer/messagebundle.soccer.properties"
 								}
 							}
 						},
@@ -1181,7 +1181,7 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with enhanceWit
 							"bundleUrl": "myfolder2/messagebundlenc2.properties",
 							"terminologies": {
 								"sports": {
-									"bundleUrl": "i18nc_sports/messagebundle.euroleaguesoccer.properties"
+									"bundleUrl": "i18nc_sports_soccer_el/messagebundle.elsoccer.properties"
 								}
 							}
 						}
@@ -1222,7 +1222,7 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with enhanceWit
 							"bundleUrl": "myfolder2/messagebundlenc2.properties",
 							"terminologies": {
 								"sports": {
-									"bundleUrl": "i18nc_sports_soccer_euroleague/messagebundle.elsoccer.properties",
+									"bundleUrl": "i18nc_sports_soccer_el/messagebundle.elsoccer.properties",
 									"supportedLocales": ["", "de", "en"]
 								}
 							},
@@ -1270,7 +1270,7 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with enhanceWit
 						"messagebundle.soccer_en.properties",
 						"messagebundle.soccer.properties"
 					]);
-				} else if (fsPath && fsPath.endsWith("i18nc_sports_soccer_euroleague/")) {
+				} else if (fsPath && fsPath.endsWith("i18nc_sports_soccer_el/")) {
 					return callback(null, [
 						"messagebundle.elsoccer_de.properties",
 						"messagebundle.elsoccer_en.properties",

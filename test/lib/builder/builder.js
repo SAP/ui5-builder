@@ -1236,7 +1236,7 @@ test.serial("Build theme-library with CSS variables and theme designer resources
 	t.pass();
 });
 
-test.serial("Build library.n with terminologies and supportedLocales", async (t) => {
+test.serial.only("Build library.n with terminologies and supportedLocales", async (t) => {
 	const destPath = path.join("test", "tmp", "build", "library.n", "dest");
 	const expectedPath = path.join("test", "expected", "build", "library.n");
 

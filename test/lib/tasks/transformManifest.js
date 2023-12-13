@@ -1,11 +1,23 @@
 import test from "ava";
 import sinonGlobal from "sinon";
 import esmock from "esmock";
+import {createAdapter, createResource} from "@ui5/fs/resourceFactory";
+
+function createWorkspace() {
+	return createAdapter({
+		virBasePath: "/",
+		project: {
+			getName: () => "test.lib",
+			getVersion: () => "2.0.0",
+		}
+	});
+}
 
 test.beforeEach(async (t) => {
 	const sinon = t.context.sinon = sinonGlobal.createSandbox();
 
 	t.context.log = {
+		verbose: sinon.stub(),
 		warn: sinon.stub(),
 		error: sinon.stub()
 	};
@@ -19,6 +31,7 @@ test.beforeEach(async (t) => {
 		"@ui5/fs/fsInterface": t.context.fsInterfaceStub,
 		"../../../lib/processors/manifestTransformer": t.context.manifestTransformerStub,
 	});
+	t.context.workspace = createWorkspace();
 });
 
 test.afterEach.always((t) => {
@@ -30,7 +43,18 @@ test.serial("Transforms manifest.json resource", async (t) => {
 
 	t.plan(6);
 
-	const resource = {};
+	const resource = createResource({
+		path: "/resources/sap/ui/demo/app/manifest.json",
+		string: `{
+"_version": "1.58.0",
+"sap.app": {
+	"id": "sap.ui.demo.app",
+	"type": "application",
+	"title": "{{title}}"
+}
+`,
+		project: t.context.workspace._project
+	});
 
 	const workspace = {
 		byGlob: (actualPath) => {
