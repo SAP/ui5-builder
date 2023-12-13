@@ -982,6 +982,82 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with terminolog
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
+test.serial("Library: sap.ui5/library: Replaces supportedLocales with deactivated terminologies", async (t) => {
+	t.plan(4);
+	const {manifestTransformer} = t.context;
+	const input = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.lib",
+			"type": "library"
+		},
+		"sap.ui5": {
+			"library": {
+				"i18n": {
+					"bundleUrl": "i18nc/messagebundlec.properties",
+					"terminologies": {
+						"sports": {
+							"bundleUrl": "i18nc_sports/messagebundle.sports.properties",
+							"supportedLocales": ["pt"]
+						}
+					}
+				}
+			}
+		}
+	}, null, 2);
+
+	const expected = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.lib",
+			"type": "library"
+		},
+		"sap.ui5": {
+			"library": {
+				"i18n": {
+					"bundleUrl": "i18nc/messagebundlec.properties",
+					"terminologies": {
+						"sports": {
+							"bundleUrl": "i18nc_sports/messagebundle.sports.properties",
+							"supportedLocales": ["pt"]
+						}
+					},
+					"supportedLocales": ["", "de", "en"],
+				}
+			}
+		}
+	}, null, 2);
+
+	const resource = {
+		getString: () => Promise.resolve(input),
+		setString: (actual) => {
+			t.deepEqual(actual, expected, "Correct file content should be set");
+		}
+	};
+
+	const processedResources = await manifestTransformer({
+		resources: [resource],
+		fs: {
+			readdir: sinon.stub().callsFake((fsPath, callback) => {
+				if (fsPath && fsPath.endsWith("i18nc_sports/")) {
+					t.fail("Should never be called");
+				} else {
+					return callback(null, [
+						"messagebundlec_de.properties",
+						"messagebundlec_en.properties",
+						"messagebundlec.properties"
+					]);
+				}
+			})
+		}
+	});
+
+	t.deepEqual(processedResources, [resource], "Input resource is returned");
+
+	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
+	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
+});
+
 test.serial("Library: sap.ui5/library: Replaces supportedLocales with enhanceWith", async (t) => {
 	t.plan(4);
 	const {manifestTransformer} = t.context;
@@ -1024,7 +1100,7 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with enhanceWit
 							"supportedLocales": ["", "de", "en"]
 						},
 						{
-							"bundleUrl": "myfolder1/messagebundlenc1.properties",
+							"bundleUrl": "myfolder2/messagebundlenc2.properties",
 							"supportedLocales": ["", "de", "en"]
 						}
 					],
@@ -1045,13 +1121,13 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with enhanceWit
 		resources: [resource],
 		fs: {
 			readdir: sinon.stub().callsFake((fsPath, callback) => {
-				if (fsPath && fsPath.startsWith("myfolder1")) {
+				if (fsPath && fsPath.endsWith("myfolder1/")) {
 					return callback(null, [
 						"messagebundlenc1_de.properties",
 						"messagebundlenc1_en.properties",
 						"messagebundlenc1.properties"
 					]);
-				} else if (fsPath && fsPath.startsWith("myfolder2")) {
+				} else if (fsPath && fsPath.endsWith("myfolder2/")) {
 					return callback(null, [
 						"messagebundlenc2_de.properties",
 						"messagebundlenc2_en.properties",
@@ -1170,31 +1246,31 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with enhanceWit
 		resources: [resource],
 		fs: {
 			readdir: sinon.stub().callsFake((fsPath, callback) => {
-				if (fsPath && fsPath.startsWith("myfolder1")) {
+				if (fsPath && fsPath.endsWith("myfolder1/")) {
 					return callback(null, [
 						"messagebundlenc1_de.properties",
 						"messagebundlenc1_en.properties",
 						"messagebundlenc1.properties"
 					]);
-				} else if (fsPath && fsPath.startsWith("myfolder2")) {
+				} else if (fsPath && fsPath.endsWith("myfolder2/")) {
 					return callback(null, [
 						"messagebundlenc2_de.properties",
 						"messagebundlenc2_en.properties",
 						"messagebundlenc2.properties"
 					]);
-				} else if (fsPath && fsPath.startsWith("i18nc_sports")) {
+				} else if (fsPath && fsPath.endsWith("i18nc_sports/")) {
 					return callback(null, [
 						"messagebundle.sports_de.properties",
 						"messagebundle.sports_en.properties",
 						"messagebundle.sports.properties"
 					]);
-				} else if (fsPath && fsPath.startsWith("i18nc_sports_soccer")) {
+				} else if (fsPath && fsPath.endsWith("i18nc_sports_soccer/")) {
 					return callback(null, [
 						"messagebundle.soccer_de.properties",
 						"messagebundle.soccer_en.properties",
 						"messagebundle.soccer.properties"
 					]);
-				} else if (fsPath && fsPath.startsWith("i18nc_sports_soccer_euroleague")) {
+				} else if (fsPath && fsPath.endsWith("i18nc_sports_soccer_euroleague/")) {
 					return callback(null, [
 						"messagebundle.elsoccer_de.properties",
 						"messagebundle.elsoccer_en.properties",
