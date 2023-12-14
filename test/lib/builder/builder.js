@@ -23,6 +23,7 @@ const applicationJPath = path.join(__dirname, "..", "..", "fixtures", "applicati
 const applicationKPath = path.join(__dirname, "..", "..", "fixtures", "application.k");
 const applicationLPath = path.join(__dirname, "..", "..", "fixtures", "application.l");
 const applicationØPath = path.join(__dirname, "..", "..", "fixtures", "application.ø");
+const applicationMPath = path.join(__dirname, "..", "..", "fixtures", "application.m");
 const collectionPath = path.join(__dirname, "..", "..", "fixtures", "collection");
 const libraryDPath = path.join(__dirname, "..", "..", "fixtures", "library.d");
 const libraryEPath = path.join(__dirname, "..", "..", "fixtures", "library.e");
@@ -1236,12 +1237,32 @@ test.serial("Build theme-library with CSS variables and theme designer resources
 	t.pass();
 });
 
-test.serial.only("Build library.n with terminologies and supportedLocales", async (t) => {
+test.serial("Build library.n with terminologies and supportedLocales", async (t) => {
 	const destPath = path.join("test", "tmp", "build", "library.n", "dest");
 	const expectedPath = path.join("test", "expected", "build", "library.n");
 
 	const graph = await graphFromPackageDependencies({
 		cwd: libraryNPath
+	});
+	graph.setTaskRepository(taskRepository);
+	await graph.build({
+		destPath
+	});
+
+	const expectedFiles = await findFiles(expectedPath);
+	// Check for all directories and files
+	directoryDeepEqual(t, destPath, expectedPath);
+	// Check for all file contents
+	await checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath);
+	t.pass();
+});
+
+test.serial("Build application.m with terminologies and supportedLocales", async (t) => {
+	const destPath = path.join("test", "tmp", "build", "application.m", "dest");
+	const expectedPath = path.join("test", "expected", "build", "application.m", "dest");
+
+	const graph = await graphFromPackageDependencies({
+		cwd: applicationMPath
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({

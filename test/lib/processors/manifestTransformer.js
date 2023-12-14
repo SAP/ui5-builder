@@ -22,6 +22,25 @@ test.afterEach.always((t) => {
 	sinon.restore();
 });
 
+
+function createResource(path, bNamespaced, input, fnOnSetString) {
+	return {
+		getString: () => Promise.resolve(input),
+		setString: fnOnSetString,
+		getProject() {
+			return {
+				getNamespace() {
+					const namespace = path.substring(0, path.lastIndexOf("/") + 1).replace("/resources/", "");
+					return bNamespaced ? namespace : "";
+				}
+			};
+		},
+		getPath() {
+			return path;
+		}
+	};
+}
+
 // #######################################################
 // Type: Application
 // #######################################################
@@ -37,12 +56,8 @@ test.serial("Application: No replacement at all", async (t) => {
 		}
 	}, null, 2);
 
-	const resource = {
-		getString: () => Promise.resolve(input),
-		setString: (actual) => {
-			t.fail("setString should never be called because resource should not be changed");
-		}
-	};
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
+		(actual) => t.fail("setString should never be called because resource should not be changed"));
 
 	const processedResources = await manifestTransformer({
 		resources: [resource],
@@ -86,12 +101,8 @@ async (t) => {
 		}
 	}, null, 2);
 
-	const resource = {
-		getString: () => Promise.resolve(input),
-		setString: (actual) => {
-			t.deepEqual(actual, expected, "Correct file content should be set");
-		}
-	};
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
+		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
 	const processedResources = await manifestTransformer({
 		resources: [resource],
@@ -136,12 +147,8 @@ async (t) => {
 		}
 	}, null, 2);
 
-	const resource = {
-		getString: () => Promise.resolve(input),
-		setString: (actual) => {
-			t.deepEqual(actual, expected, "Correct file content should be set");
-		}
-	};
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
+		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
 	const processedResources = await manifestTransformer({
 		resources: [resource],
@@ -202,12 +209,8 @@ async (t) => {
 		}
 	}, null, 2);
 
-	const resource = {
-		getString: () => Promise.resolve(input),
-		setString: (actual) => {
-			t.deepEqual(actual, expected, "Correct file content should be set");
-		}
-	};
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
+		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
 	const processedResources = await manifestTransformer({
 		resources: [resource],
@@ -249,12 +252,8 @@ async (t) => {
 		}
 	}, null, 2);
 
-	const resource = {
-		getString: () => Promise.resolve(input),
-		setString: (actual) => {
-			t.fail("setString should never be called because resource should not be changed");
-		}
-	};
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
+		(actual) => t.fail("setString should never be called because resource should not be changed"));
 
 	const processedResources = await manifestTransformer({
 		resources: [resource],
@@ -295,12 +294,8 @@ async (t) => {
 		}
 	}, null, 2);
 
-	const resource = {
-		getString: () => Promise.resolve(input),
-		setString: (actual) => {
-			t.fail("setString should never be called because resource should not be changed");
-		}
-	};
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
+		(actual) => t.fail("setString should never be called because resource should not be changed"));
 
 	const processedResources = await manifestTransformer({
 		resources: [resource],
@@ -359,12 +354,8 @@ async (t) => {
 		}
 	}, null, 2);
 
-	const resource = {
-		getString: () => Promise.resolve(input),
-		setString: (actual) => {
-			t.deepEqual(actual, expected, "Correct file content should be set");
-		}
-	};
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
+		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
 	const processedResources = await manifestTransformer({
 		resources: [resource],
@@ -426,12 +417,8 @@ async (t) => {
 		}
 	}, null, 2);
 
-	const resource = {
-		getString: () => Promise.resolve(input),
-		setString: (actual) => {
-			t.deepEqual(actual, expected, "Correct file content should be set");
-		}
-	};
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
+		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
 	const processedResources = await manifestTransformer({
 		resources: [resource],
@@ -472,12 +459,8 @@ test.serial("Application: sap.ui5/models: Log verbose if manifest version is not
 		}
 	}, null, 2);
 
-	const resource = {
-		getString: () => Promise.resolve(input),
-		setString: (actual) => {
-			t.fail("setString should never be called because resource should not be changed");
-		}
-	};
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
+		(actual) => t.fail("setString should never be called because resource should not be changed"));
 
 	const processedResources = await manifestTransformer({
 		resources: [resource],
@@ -517,12 +500,8 @@ test.serial("Application: sap.ui5/models: Log verbose if manifest version is bel
 		}
 	}, null, 2);
 
-	const resource = {
-		getString: () => Promise.resolve(input),
-		setString: (actual) => {
-			t.fail("setString should never be called because resource should not be changed");
-		}
-	};
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
+		(actual) => t.fail("setString should never be called because resource should not be changed"));
 
 	const processedResources = await manifestTransformer({
 		resources: [resource],
@@ -569,12 +548,8 @@ test.serial("Library: No replacement at all", async (t) => {
 		}
 	}, null, 2);
 
-	const resource = {
-		getString: () => Promise.resolve(input),
-		setString: (actual) => {
-			t.fail("setString should never be called because resource should not be changed");
-		}
-	};
+	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
+		(actual) => t.fail("setString should never be called because resource should not be changed"));
 
 	const processedResources = await manifestTransformer({
 		resources: [resource],
@@ -605,12 +580,8 @@ async (t) => {
 		}
 	}, null, 2);
 
-	const resource = {
-		getString: () => Promise.resolve(input),
-		setString: (actual) => {
-			t.fail("setString should never be called because resource should not be changed");
-		}
-	};
+	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
+		(actual) => t.fail("setString should never be called because resource should not be changed"));
 
 	const processedResources = await manifestTransformer({
 		resources: [resource],
@@ -653,12 +624,8 @@ async (t) => {
 		}
 	}, null, 2);
 
-	const resource = {
-		getString: () => Promise.resolve(input),
-		setString: (actual) => {
-			t.deepEqual(actual, expected, "Correct file content should be set");
-		}
-	};
+	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
+		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
 	const processedResources = await manifestTransformer({
 		resources: [resource],
@@ -711,12 +678,8 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with available 
 		}
 	}, null, 2);
 
-	const resource = {
-		getString: () => Promise.resolve(input),
-		setString: (actual) => {
-			t.deepEqual(actual, expected, "Correct file content should be set");
-		}
-	};
+	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
+		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
 	const processedResources = await manifestTransformer({
 		resources: [resource],
@@ -767,12 +730,8 @@ async (t) => {
 		}
 	}, null, 2);
 
-	const resource = {
-		getString: () => Promise.resolve(input),
-		setString: (actual) => {
-			t.deepEqual(actual, expected, "Correct file content should be set");
-		}
-	};
+	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
+		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
 	const processedResources = await manifestTransformer({
 		resources: [resource],
@@ -805,12 +764,8 @@ test.serial("Library: sap.ui5/library: Do not replace supportedLocales with disa
 		}
 	}, null, 2);
 
-	const resource = {
-		getString: () => Promise.resolve(input),
-		setString: () => {
-			t.fail("setString should never be called because resource should not be changed");
-		}
-	};
+	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
+		(actual) => t.fail("setString should never be called because resource should not be changed"));
 
 	const processedResources = await manifestTransformer({
 		resources: [resource],
@@ -872,18 +827,14 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with terminolog
 		}
 	}, null, 2);
 
-	const resource = {
-		getString: () => Promise.resolve(input),
-		setString: (actual) => {
-			t.deepEqual(actual, expected, "Correct file content should be set");
-		}
-	};
+	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
+		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
 	const processedResources = await manifestTransformer({
 		resources: [resource],
 		fs: {
 			readdir: sinon.stub().callsFake((fsPath, callback) => {
-				if (fsPath && fsPath.endsWith("i18nc_sports/")) {
+				if (fsPath && fsPath.endsWith("i18nc_sports")) {
 					return callback(null, [
 						"messagebundle.sports_de.properties",
 						"messagebundle.sports_en.properties",
@@ -952,18 +903,14 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with terminolog
 		}
 	}, null, 2);
 
-	const resource = {
-		getString: () => Promise.resolve(input),
-		setString: (actual) => {
-			t.deepEqual(actual, expected, "Correct file content should be set");
-		}
-	};
+	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
+		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
 	const processedResources = await manifestTransformer({
 		resources: [resource],
 		fs: {
 			readdir: sinon.stub().callsFake((fsPath, callback) => {
-				if (fsPath && fsPath.endsWith("i18nc_sports/")) {
+				if (fsPath && fsPath.endsWith("i18nc_sports")) {
 					return callback(null, [
 						"messagebundle.sports_de.properties",
 						"messagebundle.sports_en.properties",
@@ -1028,18 +975,14 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with deactivate
 		}
 	}, null, 2);
 
-	const resource = {
-		getString: () => Promise.resolve(input),
-		setString: (actual) => {
-			t.deepEqual(actual, expected, "Correct file content should be set");
-		}
-	};
+	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
+		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
 	const processedResources = await manifestTransformer({
 		resources: [resource],
 		fs: {
 			readdir: sinon.stub().callsFake((fsPath, callback) => {
-				if (fsPath && fsPath.endsWith("i18nc_sports/")) {
+				if (fsPath && fsPath.endsWith("i18nc_sports")) {
 					t.fail("Should never be called");
 				} else {
 					return callback(null, [
@@ -1110,24 +1053,20 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with enhanceWit
 		}
 	}, null, 2);
 
-	const resource = {
-		getString: () => Promise.resolve(input),
-		setString: (actual) => {
-			t.deepEqual(actual, expected, "Correct file content should be set");
-		}
-	};
+	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
+		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
 	const processedResources = await manifestTransformer({
 		resources: [resource],
 		fs: {
 			readdir: sinon.stub().callsFake((fsPath, callback) => {
-				if (fsPath && fsPath.endsWith("myfolder1/")) {
+				if (fsPath && fsPath.endsWith("myfolder1")) {
 					return callback(null, [
 						"messagebundlenc1_de.properties",
 						"messagebundlenc1_en.properties",
 						"messagebundlenc1.properties"
 					]);
-				} else if (fsPath && fsPath.endsWith("myfolder2/")) {
+				} else if (fsPath && fsPath.endsWith("myfolder2")) {
 					return callback(null, [
 						"messagebundlenc2_de.properties",
 						"messagebundlenc2_en.properties",
@@ -1235,42 +1174,38 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with enhanceWit
 		}
 	}, null, 2);
 
-	const resource = {
-		getString: () => Promise.resolve(input),
-		setString: (actual) => {
-			t.deepEqual(actual, expected, "Correct file content should be set");
-		}
-	};
+	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
+		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
 	const processedResources = await manifestTransformer({
 		resources: [resource],
 		fs: {
 			readdir: sinon.stub().callsFake((fsPath, callback) => {
-				if (fsPath && fsPath.endsWith("myfolder1/")) {
+				if (fsPath && fsPath.endsWith("myfolder1")) {
 					return callback(null, [
 						"messagebundlenc1_de.properties",
 						"messagebundlenc1_en.properties",
 						"messagebundlenc1.properties"
 					]);
-				} else if (fsPath && fsPath.endsWith("myfolder2/")) {
+				} else if (fsPath && fsPath.endsWith("myfolder2")) {
 					return callback(null, [
 						"messagebundlenc2_de.properties",
 						"messagebundlenc2_en.properties",
 						"messagebundlenc2.properties"
 					]);
-				} else if (fsPath && fsPath.endsWith("i18nc_sports/")) {
+				} else if (fsPath && fsPath.endsWith("i18nc_sports")) {
 					return callback(null, [
 						"messagebundle.sports_de.properties",
 						"messagebundle.sports_en.properties",
 						"messagebundle.sports.properties"
 					]);
-				} else if (fsPath && fsPath.endsWith("i18nc_sports_soccer/")) {
+				} else if (fsPath && fsPath.endsWith("i18nc_sports_soccer")) {
 					return callback(null, [
 						"messagebundle.soccer_de.properties",
 						"messagebundle.soccer_en.properties",
 						"messagebundle.soccer.properties"
 					]);
-				} else if (fsPath && fsPath.endsWith("i18nc_sports_soccer_el/")) {
+				} else if (fsPath && fsPath.endsWith("i18nc_sports_soccer_el")) {
 					return callback(null, [
 						"messagebundle.elsoccer_de.properties",
 						"messagebundle.elsoccer_en.properties",

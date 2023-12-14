@@ -1,0 +1,36 @@
+{
+  "_version": "1.22.0",
+  "sap.app": {
+    "id": "application.m",
+    "type": "application",
+    "applicationVersion": {
+      "version": "1.0.0"
+    },
+    "title": "{{title}}",
+    "i18n": {
+      "bundleUrl": "i18n/i18n.properties",
+      "supportedLocales": [
+        "",
+        "en",
+        "en_US",
+        "en_US_sapprc"
+      ]
+    }
+  },
+  "sap.ui5": {
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "application.m.i18n.i18n",
+          "supportedLocales": [
+            "",
+            "en",
+            "en_US",
+            "en_US_sapprc"
+          ]
+        }
+      }
+    }
+  }
+}
