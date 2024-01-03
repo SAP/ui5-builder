@@ -520,6 +520,82 @@ test.serial("Application: sap.ui5/models: Log verbose if manifest version is bel
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
+test.serial("Application: sap.ui5/models: " +
+	"Do not replace supportedLocales when bundle is not part of the namespace",
+async (t) => {
+	t.plan(4);
+	const {manifestTransformer} = t.context;
+	const input = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.app",
+			"type": "application"
+		},
+		"sap.ui5": {
+			"models": {
+				"i18n": {
+					"type": "sap.ui.model.resource.ResourceModel",
+					"settings": {
+						"bundleName": "sap.ui.demo.app.i18n.i18n",
+						"fallbackLocale": "de"
+					}
+				},
+				"i18n_reuse_lib": {
+					"type": "sap.ui.model.resource.ResourceModel",
+					"settings": {
+						"bundleName": "sap.ui.demo.lib.i18n.i18n",
+						"async": true
+					}
+				}
+			}
+		}
+	}, null, 2);
+
+	const expected = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.app",
+			"type": "application"
+		},
+		"sap.ui5": {
+			"models": {
+				"i18n": {
+					"type": "sap.ui.model.resource.ResourceModel",
+					"settings": {
+						"bundleName": "sap.ui.demo.app.i18n.i18n",
+						"fallbackLocale": "de",
+						"supportedLocales": ["de", "en"]
+					}
+				},
+				"i18n_reuse_lib": {
+					"type": "sap.ui.model.resource.ResourceModel",
+					"settings": {
+						"bundleName": "sap.ui.demo.lib.i18n.i18n",
+						"async": true
+					}
+				}
+			}
+		}
+	}, null, 2);
+
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
+		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
+
+	const processedResources = await manifestTransformer({
+		resources: [resource],
+		fs: {
+			readdir(fsPath, callback) {
+				return callback(null, ["i18n_de.properties", "i18n_en.properties"]);
+			}
+		}
+	});
+
+	t.deepEqual(processedResources, [resource], "Input resource is returned");
+
+	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
+	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
+});
+
 
 // #######################################################
 // Type: Component
