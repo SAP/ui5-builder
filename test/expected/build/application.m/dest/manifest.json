@@ -30,6 +30,18 @@
             "en_US_sapprc"
           ]
         }
+      },
+      "i18n-ui5": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleUrl": "ui5://application/m/i18n/i18n.properties",
+          "supportedLocales": [
+            "",
+            "en",
+            "en_US",
+            "en_US_sapprc"
+          ]
+        }
       }
     }
   }

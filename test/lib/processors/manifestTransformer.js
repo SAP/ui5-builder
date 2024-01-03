@@ -227,6 +227,130 @@ async (t) => {
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
+test.serial("Application: sap.ui5/models (bundleUrl): " +
+	"Replaces supportedLocales with available messageproperty files",
+async (t) => {
+	t.plan(4);
+	const {manifestTransformer} = t.context;
+	const input = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.app",
+			"type": "application"
+		},
+		"sap.ui5": {
+			"models": {
+				"i18n": {
+					"type": "sap.ui.model.resource.ResourceModel",
+					"settings": {
+						"bundleUrl": "i18n/i18n.properties",
+						"fallbackLocale": "de"
+					}
+				}
+			}
+		}
+	}, null, 2);
+
+	const expected = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.app",
+			"type": "application"
+		},
+		"sap.ui5": {
+			"models": {
+				"i18n": {
+					"type": "sap.ui.model.resource.ResourceModel",
+					"settings": {
+						"bundleUrl": "i18n/i18n.properties",
+						"fallbackLocale": "de",
+						"supportedLocales": ["de", "en"]
+					}
+				}
+			}
+		}
+	}, null, 2);
+
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
+		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
+
+	const processedResources = await manifestTransformer({
+		resources: [resource],
+		fs: {
+			readdir(fsPath, callback) {
+				return callback(null, ["i18n_de.properties", "i18n_en.properties"]);
+			}
+		}
+	});
+
+	t.deepEqual(processedResources, [resource], "Input resource is returned");
+
+	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
+	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
+});
+
+test.serial("Application: sap.ui5/models (bundleUrl with ui5 protocol): " +
+	"Replaces supportedLocales with available messageproperty files",
+async (t) => {
+	t.plan(4);
+	const {manifestTransformer} = t.context;
+	const input = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.app",
+			"type": "application"
+		},
+		"sap.ui5": {
+			"models": {
+				"i18n": {
+					"type": "sap.ui.model.resource.ResourceModel",
+					"settings": {
+						"bundleUrl": "ui5://sap/ui/demo/app/i18n/i18n.properties",
+						"fallbackLocale": "de"
+					}
+				}
+			}
+		}
+	}, null, 2);
+
+	const expected = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.app",
+			"type": "application"
+		},
+		"sap.ui5": {
+			"models": {
+				"i18n": {
+					"type": "sap.ui.model.resource.ResourceModel",
+					"settings": {
+						"bundleUrl": "ui5://sap/ui/demo/app/i18n/i18n.properties",
+						"fallbackLocale": "de",
+						"supportedLocales": ["de", "en"]
+					}
+				}
+			}
+		}
+	}, null, 2);
+
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
+		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
+
+	const processedResources = await manifestTransformer({
+		resources: [resource],
+		fs: {
+			readdir(fsPath, callback) {
+				return callback(null, ["i18n_de.properties", "i18n_en.properties"]);
+			}
+		}
+	});
+
+	t.deepEqual(processedResources, [resource], "Input resource is returned");
+
+	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
+	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
+});
+
 test.serial("Application: sap.ui5/models: " +
 	"Do not replace supportedLocales when supportedLocales are already defined",
 async (t) => {
@@ -571,6 +695,82 @@ async (t) => {
 					"type": "sap.ui.model.resource.ResourceModel",
 					"settings": {
 						"bundleName": "sap.ui.demo.lib.i18n.i18n",
+						"async": true
+					}
+				}
+			}
+		}
+	}, null, 2);
+
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
+		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
+
+	const processedResources = await manifestTransformer({
+		resources: [resource],
+		fs: {
+			readdir(fsPath, callback) {
+				return callback(null, ["i18n_de.properties", "i18n_en.properties"]);
+			}
+		}
+	});
+
+	t.deepEqual(processedResources, [resource], "Input resource is returned");
+
+	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
+	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
+});
+
+test.serial("Application: sap.ui5/models: " +
+	"Do not replace supportedLocales when bundle is not part of the namespace (bundleUrl with ui5 protocol)",
+async (t) => {
+	t.plan(4);
+	const {manifestTransformer} = t.context;
+	const input = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.app",
+			"type": "application"
+		},
+		"sap.ui5": {
+			"models": {
+				"i18n": {
+					"type": "sap.ui.model.resource.ResourceModel",
+					"settings": {
+						"bundleName": "sap.ui.demo.app.i18n.i18n",
+						"fallbackLocale": "de"
+					}
+				},
+				"i18n_reuse_lib": {
+					"type": "sap.ui.model.resource.ResourceModel",
+					"settings": {
+						"bundleUrl": "ui5://sap/ui/demo/lib/i18n/i18n.properties",
+						"async": true
+					}
+				}
+			}
+		}
+	}, null, 2);
+
+	const expected = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.app",
+			"type": "application"
+		},
+		"sap.ui5": {
+			"models": {
+				"i18n": {
+					"type": "sap.ui.model.resource.ResourceModel",
+					"settings": {
+						"bundleName": "sap.ui.demo.app.i18n.i18n",
+						"fallbackLocale": "de",
+						"supportedLocales": ["de", "en"]
+					}
+				},
+				"i18n_reuse_lib": {
+					"type": "sap.ui.model.resource.ResourceModel",
+					"settings": {
+						"bundleUrl": "ui5://sap/ui/demo/lib/i18n/i18n.properties",
 						"async": true
 					}
 				}
