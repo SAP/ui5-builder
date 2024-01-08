@@ -590,7 +590,7 @@ test.serial("Application: sap.ui5/models: Log verbose if manifest version is not
 		resources: [resource],
 		fs: {
 			readdir(fsPath, callback) {
-				return callback(null, ["i18n_de.properties", "i18n_en.properties"]);
+				t.fail("fs.readDir should not be called because generation of supported locales is disablaed");
 			}
 		}
 	});
@@ -641,6 +641,112 @@ test.serial("Application: sap.ui5/models: Log verbose if manifest version is bel
 	t.is(t.context.logVerboseSpy.getCall(0).args[0],
 		"manifest.json: version is lower than 1.21.0 so no supportedLocales can be generated");
 	t.true(t.context.logWarnSpy.notCalled, "No warning should be logged");
+	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
+});
+
+test.serial("Application: sap.ui5/models: " +
+	"Do not replace supportedLocales when bundleUrl pointing to a location outside the current project",
+async (t) => {
+	t.plan(5);
+	const {manifestTransformer} = t.context;
+	const input = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.app",
+			"type": "application"
+		},
+		"sap.ui5": {
+			"models": {
+				"i18n": {
+					"type": "sap.ui.model.resource.ResourceModel",
+					"settings": {
+						"bundleUrl": "../../myapp2/i18n/i18n.properties"
+					}
+				}
+			}
+		}
+	}, null, 2);
+
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
+		(actual) => t.fail("setString should never be called because resource should not be changed"));
+
+	const processedResources = await manifestTransformer({
+		resources: [resource],
+		fs: {
+			readdir(fsPath, callback) {
+				t.fail("fs.readDir should not be called because generation of supported locales is disablaed");
+			}
+		}
+	});
+
+	t.deepEqual(processedResources, [undefined], "Input resource is returned");
+	t.is(t.context.logVerboseSpy.callCount, 1, "1 verbose should be logged");
+	t.is(t.context.logVerboseSpy.getCall(0).args[0],
+		"manifest.json: bundleUrl '../../myapp2/i18n/i18n.properties' is outside the current project, " +
+		"no supportedLocales are not generated");
+	t.true(t.context.logWarnSpy.notCalled, "No warning should be logged");
+	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
+});
+
+test.serial("Application: sap.ui5/models: " +
+	"Replace supportedLocales when bundleUrl pointing to a location inside the current project",
+async (t) => {
+	t.plan(4);
+	const {manifestTransformer} = t.context;
+	const input = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.app",
+			"type": "application"
+		},
+		"sap.ui5": {
+			"models": {
+				"i18n": {
+					"type": "sap.ui.model.resource.ResourceModel",
+					"settings": {
+						"bundleUrl": "../i18n/i18n.properties",
+						"fallbackLocale": "de"
+					}
+				}
+			}
+		}
+	}, null, 2);
+
+	const expected = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.app",
+			"type": "application"
+		},
+		"sap.ui5": {
+			"models": {
+				"i18n": {
+					"type": "sap.ui.model.resource.ResourceModel",
+					"settings": {
+						"bundleUrl": "../i18n/i18n.properties",
+						"fallbackLocale": "de",
+						"supportedLocales": ["de", "en"]
+					}
+				}
+			}
+		}
+	}, null, 2);
+
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
+		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
+
+	const processedResources = await manifestTransformer({
+		resources: [resource],
+		fs: {
+			readdir(fsPath, callback) {
+				return callback(null, ["i18n_de.properties", "i18n_en.properties"]);
+			}
+		}
+	});
+
+	t.deepEqual(processedResources, [resource], "Input resource is returned");
+
+	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
