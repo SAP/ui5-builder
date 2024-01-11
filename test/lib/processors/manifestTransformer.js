@@ -64,7 +64,8 @@ test.serial("Application: No replacement at all", async (t) => {
 		fs: {
 			readdir(fsPath, callback) {
 				return callback(null, ["i18n_de.properties", "i18n_en.properties"]);
-			}
+			},
+			stat: ((fsPath, callback) => callback(null, sinon.stub()))
 		}
 	});
 
@@ -109,7 +110,8 @@ async (t) => {
 		fs: {
 			readdir(fsPath, callback) {
 				return callback(null, ["i18n_de.properties", "i18n_en.properties"]);
-			}
+			},
+			stat: ((fsPath, callback) => callback(null, sinon.stub()))
 		}
 	});
 
@@ -155,7 +157,8 @@ async (t) => {
 		fs: {
 			readdir(fsPath, callback) {
 				return callback(null, ["mybundle_de.properties", "mybundle_en.properties"]);
-			}
+			},
+			stat: ((fsPath, callback) => callback(null, sinon.stub()))
 		}
 	});
 
@@ -217,7 +220,8 @@ async (t) => {
 		fs: {
 			readdir(fsPath, callback) {
 				return callback(null, ["i18n_de.properties", "i18n_en.properties"]);
-			}
+			},
+			stat: ((fsPath, callback) => callback(null, sinon.stub()))
 		}
 	});
 
@@ -279,7 +283,8 @@ async (t) => {
 		fs: {
 			readdir(fsPath, callback) {
 				return callback(null, ["i18n_de.properties", "i18n_en.properties"]);
-			}
+			},
+			stat: ((fsPath, callback) => callback(null, sinon.stub()))
 		}
 	});
 
@@ -341,7 +346,8 @@ async (t) => {
 		fs: {
 			readdir(fsPath, callback) {
 				return callback(null, ["i18n_de.properties", "i18n_en.properties"]);
-			}
+			},
+			stat: ((fsPath, callback) => callback(null, sinon.stub()))
 		}
 	});
 
@@ -384,7 +390,8 @@ async (t) => {
 		fs: {
 			readdir(fsPath, callback) {
 				return callback(null, ["i18n_de.properties", "i18n_en.properties"]);
-			}
+			},
+			stat: ((fsPath, callback) => callback(null, sinon.stub()))
 		}
 	});
 
@@ -426,7 +433,8 @@ async (t) => {
 		fs: {
 			readdir(fsPath, callback) {
 				return callback(null, ["i18n_de.properties", "i18n_en.properties"]);
-			}
+			},
+			stat: ((fsPath, callback) => callback(null, sinon.stub()))
 		}
 	});
 
@@ -486,7 +494,8 @@ async (t) => {
 		fs: {
 			readdir(fsPath, callback) {
 				return callback(null, ["i18n_de.properties", "i18n_en.properties"]);
-			}
+			},
+			stat: ((fsPath, callback) => callback(null, sinon.stub()))
 		}
 	});
 
@@ -549,7 +558,8 @@ async (t) => {
 		fs: {
 			readdir(fsPath, callback) {
 				return callback(null, ["i18n_de.properties", "i18n_fr.properties"]);
-			}
+			},
+			stat: ((fsPath, callback) => callback(null, sinon.stub()))
 		}
 	});
 
@@ -591,7 +601,8 @@ test.serial("Application: sap.ui5/models: Log verbose if manifest version is not
 		fs: {
 			readdir(fsPath, callback) {
 				t.fail("fs.readDir should not be called because generation of supported locales is disablaed");
-			}
+			},
+			stat: ((fsPath, callback) => callback(null, sinon.stub()))
 		}
 	});
 
@@ -632,7 +643,8 @@ test.serial("Application: sap.ui5/models: Log verbose if manifest version is bel
 		fs: {
 			readdir(fsPath, callback) {
 				return callback(null, ["i18n_de.properties", "i18n_en.properties"]);
-			}
+			},
+			stat: ((fsPath, callback) => callback(null, sinon.stub()))
 		}
 	});
 
@@ -675,7 +687,8 @@ async (t) => {
 		fs: {
 			readdir(fsPath, callback) {
 				t.fail("fs.readDir should not be called because generation of supported locales is disablaed");
-			}
+			},
+			stat: ((fsPath, callback) => callback(null, undefined))
 		}
 	});
 
@@ -740,7 +753,8 @@ async (t) => {
 		fs: {
 			readdir(fsPath, callback) {
 				return callback(null, ["i18n_de.properties", "i18n_en.properties"]);
-			}
+			},
+			stat: ((fsPath, callback) => callback(null, sinon.stub()))
 		}
 	});
 
@@ -816,7 +830,8 @@ async (t) => {
 		fs: {
 			readdir(fsPath, callback) {
 				return callback(null, ["i18n_de.properties", "i18n_en.properties"]);
-			}
+			},
+			stat: ((fsPath, callback) => callback(null, sinon.stub()))
 		}
 	});
 
@@ -892,7 +907,8 @@ async (t) => {
 		fs: {
 			readdir(fsPath, callback) {
 				return callback(null, ["i18n_de.properties", "i18n_en.properties"]);
-			}
+			},
+			stat: ((fsPath, callback) => callback(null, sinon.stub()))
 		}
 	});
 
@@ -938,7 +954,8 @@ test.serial("Library: No replacement at all", async (t) => {
 		fs: {
 			readdir(fsPath, callback) {
 				return callback(null, ["i18n_de.properties", "i18n_en.properties"]);
-			}
+			},
+			stat: ((fsPath, callback) => callback(null, sinon.stub()))
 		}
 	});
 
@@ -970,7 +987,8 @@ async (t) => {
 		fs: {
 			readdir(fsPath, callback) {
 				return callback(null, ["i18n_de.properties", "i18n_en.properties"]);
-			}
+			},
+			stat: ((fsPath, callback) => callback(null, sinon.stub()))
 		}
 	});
 
@@ -1014,7 +1032,8 @@ async (t) => {
 		fs: {
 			readdir(fsPath, callback) {
 				return callback(null, ["mybundle_de.properties", "mybundle_en.properties"]);
-			}
+			},
+			stat: ((fsPath, callback) => callback(null, sinon.stub()))
 		}
 	});
 
@@ -1068,7 +1087,8 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with available 
 		fs: {
 			readdir(fsPath, callback) {
 				return callback(null, ["messagebundlec_de.properties", "messagebundlec_en.properties"]);
-			}
+			},
+			stat: ((fsPath, callback) => callback(null, sinon.stub()))
 		}
 	});
 
@@ -1120,7 +1140,8 @@ async (t) => {
 		fs: {
 			readdir(fsPath, callback) {
 				return callback(null, ["messagebundle_de.properties", "messagebundle_en.properties"]);
-			}
+			},
+			stat: ((fsPath, callback) => callback(null, sinon.stub()))
 		}
 	});
 
@@ -1154,7 +1175,8 @@ test.serial("Library: sap.ui5/library: Do not replace supportedLocales with disa
 		fs: {
 			readdir(fsPath, callback) {
 				return callback(null, ["messagebundle_de.properties", "messagebundle_en.properties"]);
-			}
+			},
+			stat: ((fsPath, callback) => callback(null, sinon.stub()))
 		}
 	});
 
@@ -1229,7 +1251,8 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with terminolog
 						"messagebundlec.properties"
 					]);
 				}
-			})
+			}),
+			stat: ((fsPath, callback) => callback(null, sinon.stub()))
 		}
 	});
 
@@ -1301,7 +1324,8 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with terminolog
 				} else {
 					t.fail("Should never be called");
 				}
-			})
+			}),
+			stat: ((fsPath, callback) => callback(null, sinon.stub()))
 		}
 	});
 
@@ -1373,7 +1397,8 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with deactivate
 						"messagebundlec.properties"
 					]);
 				}
-			})
+			}),
+			stat: ((fsPath, callback) => callback(null, sinon.stub()))
 		}
 	});
 
@@ -1461,7 +1486,8 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with enhanceWit
 						"messagebundlec.properties"
 					]);
 				}
-			})
+			}),
+			stat: ((fsPath, callback) => callback(null, sinon.stub()))
 		}
 	});
 
@@ -1600,7 +1626,8 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with enhanceWit
 						"messagebundlec.properties"
 					]);
 				}
-			})
+			}),
+			stat: ((fsPath, callback) => callback(null, sinon.stub()))
 		}
 	});
 
