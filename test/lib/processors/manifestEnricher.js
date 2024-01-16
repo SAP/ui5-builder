@@ -11,9 +11,9 @@ test.beforeEach(async (t) => {
 		verbose: t.context.logVerboseSpy,
 		error: t.context.logErrorSpy
 	};
-	t.context.manifestTransformer = await esmock("../../../lib/processors/manifestTransformer.js", {
+	t.context.manifestEnricher = await esmock("../../../lib/processors/manifestEnricher.js", {
 		"@ui5/logger": {
-			getLogger: sinon.stub().withArgs("builder:processors:manifestTransformer").returns(loggerStub)
+			getLogger: sinon.stub().withArgs("builder:processors:manifestEnricher").returns(loggerStub)
 		}
 	});
 });
@@ -47,7 +47,7 @@ function createResource(path, bNamespaced, input, fnOnSetString) {
 
 test.serial("Application: No replacement at all", async (t) => {
 	t.plan(3);
-	const {manifestTransformer} = t.context;
+	const {manifestEnricher} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -59,7 +59,7 @@ test.serial("Application: No replacement at all", async (t) => {
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
 		(actual) => t.fail("setString should never be called because resource should not be changed"));
 
-	const processedResources = await manifestTransformer({
+	const processedResources = await manifestEnricher({
 		resources: [resource],
 		fs: {
 			readdir(fsPath, callback) {
@@ -79,7 +79,7 @@ test.serial("Application: sap.app/i18n (with templates, default bundle): " +
 	"Replaces supportedLocales with available messageproperty files",
 async (t) => {
 	t.plan(4);
-	const {manifestTransformer} = t.context;
+	const {manifestEnricher} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -105,7 +105,7 @@ async (t) => {
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
 		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
-	const processedResources = await manifestTransformer({
+	const processedResources = await manifestEnricher({
 		resources: [resource],
 		fs: {
 			readdir(fsPath, callback) {
@@ -125,7 +125,7 @@ test.serial("Application: sap.app/i18n (with templates, custom bundle): " +
 	"Replaces supportedLocales with available messageproperty files",
 async (t) => {
 	t.plan(4);
-	const {manifestTransformer} = t.context;
+	const {manifestEnricher} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -152,7 +152,7 @@ async (t) => {
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
 		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
-	const processedResources = await manifestTransformer({
+	const processedResources = await manifestEnricher({
 		resources: [resource],
 		fs: {
 			readdir(fsPath, callback) {
@@ -172,7 +172,7 @@ test.serial("Application: sap.ui5/models: " +
 	"Replaces supportedLocales with available messageproperty files",
 async (t) => {
 	t.plan(4);
-	const {manifestTransformer} = t.context;
+	const {manifestEnricher} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -215,7 +215,7 @@ async (t) => {
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
 		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
-	const processedResources = await manifestTransformer({
+	const processedResources = await manifestEnricher({
 		resources: [resource],
 		fs: {
 			readdir(fsPath, callback) {
@@ -235,7 +235,7 @@ test.serial("Application: sap.ui5/models (bundleUrl): " +
 	"Replaces supportedLocales with available messageproperty files",
 async (t) => {
 	t.plan(4);
-	const {manifestTransformer} = t.context;
+	const {manifestEnricher} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -278,7 +278,7 @@ async (t) => {
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
 		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
-	const processedResources = await manifestTransformer({
+	const processedResources = await manifestEnricher({
 		resources: [resource],
 		fs: {
 			readdir(fsPath, callback) {
@@ -298,7 +298,7 @@ test.serial("Application: sap.ui5/models (bundleUrl with ui5 protocol): " +
 	"Replaces supportedLocales with available messageproperty files",
 async (t) => {
 	t.plan(4);
-	const {manifestTransformer} = t.context;
+	const {manifestEnricher} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -341,7 +341,7 @@ async (t) => {
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
 		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
-	const processedResources = await manifestTransformer({
+	const processedResources = await manifestEnricher({
 		resources: [resource],
 		fs: {
 			readdir(fsPath, callback) {
@@ -361,7 +361,7 @@ test.serial("Application: sap.ui5/models: " +
 	"Do not replace supportedLocales when supportedLocales are already defined",
 async (t) => {
 	t.plan(3);
-	const {manifestTransformer} = t.context;
+	const {manifestEnricher} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -385,7 +385,7 @@ async (t) => {
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
 		(actual) => t.fail("setString should never be called because resource should not be changed"));
 
-	const processedResources = await manifestTransformer({
+	const processedResources = await manifestEnricher({
 		resources: [resource],
 		fs: {
 			readdir(fsPath, callback) {
@@ -404,7 +404,7 @@ test.serial("Application: sap.ui5/models: " +
 	"Do not replace supportedLocales when supportedLocales are set to array with empty string",
 async (t) => {
 	t.plan(3);
-	const {manifestTransformer} = t.context;
+	const {manifestEnricher} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -428,7 +428,7 @@ async (t) => {
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
 		(actual) => t.fail("setString should never be called because resource should not be changed"));
 
-	const processedResources = await manifestTransformer({
+	const processedResources = await manifestEnricher({
 		resources: [resource],
 		fs: {
 			readdir(fsPath, callback) {
@@ -447,7 +447,7 @@ test.serial("Application: sap.ui5/models: " +
 	"Log error, no supportedLocales generation if fallbackLocale is not part of generation",
 async (t) => {
 	t.plan(5);
-	const {manifestTransformer} = t.context;
+	const {manifestEnricher} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -489,7 +489,7 @@ async (t) => {
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
 		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
-	const processedResources = await manifestTransformer({
+	const processedResources = await manifestEnricher({
 		resources: [resource],
 		fs: {
 			readdir(fsPath, callback) {
@@ -512,7 +512,7 @@ test.serial("Application: sap.ui5/models: " +
 	"Log warning, but generate locales if default fallbackLocale is not part of generation",
 async (t) => {
 	t.plan(5);
-	const {manifestTransformer} = t.context;
+	const {manifestEnricher} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -553,7 +553,7 @@ async (t) => {
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
 		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
-	const processedResources = await manifestTransformer({
+	const processedResources = await manifestEnricher({
 		resources: [resource],
 		fs: {
 			readdir(fsPath, callback) {
@@ -575,7 +575,7 @@ async (t) => {
 
 test.serial("Application: sap.ui5/models: Log verbose if manifest version is not defined at all", async (t) => {
 	t.plan(5);
-	const {manifestTransformer} = t.context;
+	const {manifestEnricher} = t.context;
 	const input = JSON.stringify({
 		"sap.app": {
 			"id": "sap.ui.demo.app",
@@ -596,7 +596,7 @@ test.serial("Application: sap.ui5/models: Log verbose if manifest version is not
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
 		(actual) => t.fail("setString should never be called because resource should not be changed"));
 
-	const processedResources = await manifestTransformer({
+	const processedResources = await manifestEnricher({
 		resources: [resource],
 		fs: {
 			readdir(fsPath, callback) {
@@ -609,14 +609,14 @@ test.serial("Application: sap.ui5/models: Log verbose if manifest version is not
 	t.deepEqual(processedResources, [undefined], "No resource is returned, because it is not changed");
 	t.is(t.context.logVerboseSpy.callCount, 1, "1 verbose should be logged");
 	t.is(t.context.logVerboseSpy.getCall(0).args[0],
-		"manifest.json: version is not defined. No supportedLocales are generated");
+		"manifest.json: _version is not defined. No supportedLocales are generated");
 	t.true(t.context.logWarnSpy.notCalled, "No warning should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
 test.serial("Application: sap.ui5/models: Log verbose if manifest version is below 1.21.0", async (t) => {
 	t.plan(5);
-	const {manifestTransformer} = t.context;
+	const {manifestEnricher} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.20.0",
 		"sap.app": {
@@ -638,7 +638,7 @@ test.serial("Application: sap.ui5/models: Log verbose if manifest version is bel
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
 		(actual) => t.fail("setString should never be called because resource should not be changed"));
 
-	const processedResources = await manifestTransformer({
+	const processedResources = await manifestEnricher({
 		resources: [resource],
 		fs: {
 			readdir(fsPath, callback) {
@@ -648,19 +648,19 @@ test.serial("Application: sap.ui5/models: Log verbose if manifest version is bel
 		}
 	});
 
-	t.deepEqual(processedResources, [undefined], "Input resource is returned");
+	t.deepEqual(processedResources, [undefined], "No resource is returned, because it is not changed");
 	t.is(t.context.logVerboseSpy.callCount, 1, "1 verbose should be logged");
 	t.is(t.context.logVerboseSpy.getCall(0).args[0],
-		"manifest.json: version is lower than 1.21.0 so no supportedLocales can be generated");
+		"manifest.json: _version is lower than 1.21.0 so no supportedLocales can be generated");
 	t.true(t.context.logWarnSpy.notCalled, "No warning should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
 test.serial("Application: sap.ui5/models: " +
-	"Do not replace supportedLocales when bundleUrl pointing to a location outside the current project",
+	"Do not generate supportedLocales when bundleUrl pointing to a location outside the current project",
 async (t) => {
 	t.plan(5);
-	const {manifestTransformer} = t.context;
+	const {manifestEnricher} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -682,30 +682,30 @@ async (t) => {
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
 		(actual) => t.fail("setString should never be called because resource should not be changed"));
 
-	const processedResources = await manifestTransformer({
+	const processedResources = await manifestEnricher({
 		resources: [resource],
 		fs: {
-			readdir(fsPath, callback) {
+			readdir() {
 				t.fail("fs.readDir should not be called because generation of supported locales is disablaed");
 			},
 			stat: ((fsPath, callback) => callback(null, undefined))
 		}
 	});
 
-	t.deepEqual(processedResources, [undefined], "Input resource is returned");
+	t.deepEqual(processedResources, [undefined], "No resource is returned, because it is not changed");
 	t.is(t.context.logVerboseSpy.callCount, 1, "1 verbose should be logged");
 	t.is(t.context.logVerboseSpy.getCall(0).args[0],
-		"manifest.json: bundleUrl '../../myapp2/i18n/i18n.properties' is outside the current project, " +
-		"no supportedLocales are not generated");
+		"manifest.json: bundleUrl '../../myapp2/i18n/i18n.properties' contains a relative path, " +
+		"no supportedLocales are generated");
 	t.true(t.context.logWarnSpy.notCalled, "No warning should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
 test.serial("Application: sap.ui5/models: " +
-	"Replace supportedLocales when bundleUrl pointing to a location inside the current project",
+	"Do not generate supportedLocales when bundleUrl pointing to a location inside the current project",
 async (t) => {
-	t.plan(4);
-	const {manifestTransformer} = t.context;
+	t.plan(5);
+	const {manifestEnricher} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -748,27 +748,30 @@ async (t) => {
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
 		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
-	const processedResources = await manifestTransformer({
+	const processedResources = await manifestEnricher({
 		resources: [resource],
 		fs: {
-			readdir(fsPath, callback) {
-				return callback(null, ["i18n_de.properties", "i18n_en.properties"]);
+			readdir() {
+				t.fail("fs.readDir should not be called because generation of supported locales is disablaed");
 			},
-			stat: ((fsPath, callback) => callback(null, sinon.stub()))
+			stat: ((fsPath, callback) => callback(null, undefined))
 		}
 	});
 
-	t.deepEqual(processedResources, [resource], "Input resource is returned");
-
-	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
+	t.deepEqual(processedResources, [undefined], "No resource is returned, because it is not changed");
+	t.is(t.context.logVerboseSpy.callCount, 1, "1 verbose should be logged");
+	t.is(t.context.logVerboseSpy.getCall(0).args[0],
+		"manifest.json: bundleUrl '../i18n/i18n.properties' contains a relative path, " +
+		"no supportedLocales are generated");
+	t.true(t.context.logWarnSpy.notCalled, "No warning should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
 test.serial("Application: sap.ui5/models: " +
 	"Do not replace supportedLocales when bundle is not part of the namespace",
 async (t) => {
-	t.plan(4);
-	const {manifestTransformer} = t.context;
+	t.plan(5);
+	const {manifestEnricher} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -825,7 +828,7 @@ async (t) => {
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
 		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
-	const processedResources = await manifestTransformer({
+	const processedResources = await manifestEnricher({
 		resources: [resource],
 		fs: {
 			readdir(fsPath, callback) {
@@ -837,15 +840,18 @@ async (t) => {
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
 
+	t.is(t.context.logVerboseSpy.getCall(0).args[0],
+		"manifest.json: bundleName 'sap.ui.demo.lib.i18n.i18n' contains a path which is not part of the project, " +
+		"no supportedLocales are generated");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
 test.serial("Application: sap.ui5/models: " +
-	"Do not replace supportedLocales when bundle is not part of the namespace (bundleUrl with ui5 protocol)",
+	"Do not generate supportedLocales when bundle is not part of the namespace (bundleUrl with ui5 protocol)",
 async (t) => {
-	t.plan(4);
-	const {manifestTransformer} = t.context;
+	t.plan(5);
+	const {manifestEnricher} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -902,7 +908,7 @@ async (t) => {
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
 		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
-	const processedResources = await manifestTransformer({
+	const processedResources = await manifestEnricher({
 		resources: [resource],
 		fs: {
 			readdir(fsPath, callback) {
@@ -914,6 +920,9 @@ async (t) => {
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
 
+	t.is(t.context.logVerboseSpy.getCall(0).args[0],
+		"manifest.json: bundleUrl 'ui5://sap/ui/demo/lib/i18n/i18n.properties' contains a path which is not part of the project, " +
+		"no supportedLocales are generated");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -937,7 +946,7 @@ async (t) => {
 
 test.serial("Library: No replacement at all", async (t) => {
 	t.plan(3);
-	const {manifestTransformer} = t.context;
+	const {manifestEnricher} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -949,7 +958,7 @@ test.serial("Library: No replacement at all", async (t) => {
 	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
 		(actual) => t.fail("setString should never be called because resource should not be changed"));
 
-	const processedResources = await manifestTransformer({
+	const processedResources = await manifestEnricher({
 		resources: [resource],
 		fs: {
 			readdir(fsPath, callback) {
@@ -969,7 +978,7 @@ test.serial("Library: sap.app/i18n (with templates, no bundle defined): " +
 	"No generation of supportedLocales when no bundleUrl is given",
 async (t) => {
 	t.plan(3);
-	const {manifestTransformer} = t.context;
+	const {manifestEnricher} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -982,7 +991,7 @@ async (t) => {
 	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
 		(actual) => t.fail("setString should never be called because resource should not be changed"));
 
-	const processedResources = await manifestTransformer({
+	const processedResources = await manifestEnricher({
 		resources: [resource],
 		fs: {
 			readdir(fsPath, callback) {
@@ -992,7 +1001,7 @@ async (t) => {
 		}
 	});
 
-	t.deepEqual(processedResources, [undefined], "Input resource is returned");
+	t.deepEqual(processedResources, [undefined], "No resource is returned, because it is not changed");
 
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
@@ -1002,7 +1011,7 @@ test.serial("Library: sap.app/i18n (with custom bundle): " +
 	"Replaces supportedLocales with available messageproperty files",
 async (t) => {
 	t.plan(4);
-	const {manifestTransformer} = t.context;
+	const {manifestEnricher} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -1027,7 +1036,7 @@ async (t) => {
 	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
 		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
-	const processedResources = await manifestTransformer({
+	const processedResources = await manifestEnricher({
 		resources: [resource],
 		fs: {
 			readdir(fsPath, callback) {
@@ -1045,7 +1054,7 @@ async (t) => {
 
 test.serial("Library: sap.ui5/library: Replaces supportedLocales with available messageproperty files", async (t) => {
 	t.plan(4);
-	const {manifestTransformer} = t.context;
+	const {manifestEnricher} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -1082,7 +1091,7 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with available 
 	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
 		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
-	const processedResources = await manifestTransformer({
+	const processedResources = await manifestEnricher({
 		resources: [resource],
 		fs: {
 			readdir(fsPath, callback) {
@@ -1102,7 +1111,7 @@ test.serial("Library: sap.ui5/library: " +
 	"Replaces supportedLocales with available messageproperty files (i18n=true)",
 async (t) => {
 	t.plan(4);
-	const {manifestTransformer} = t.context;
+	const {manifestEnricher} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -1135,7 +1144,7 @@ async (t) => {
 	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
 		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
-	const processedResources = await manifestTransformer({
+	const processedResources = await manifestEnricher({
 		resources: [resource],
 		fs: {
 			readdir(fsPath, callback) {
@@ -1151,9 +1160,9 @@ async (t) => {
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
-test.serial("Library: sap.ui5/library: Do not replace supportedLocales with disabled i18n feature", async (t) => {
+test.serial("Library: sap.ui5/library: Do not generate supportedLocales with disabled i18n feature", async (t) => {
 	t.plan(3);
-	const {manifestTransformer} = t.context;
+	const {manifestEnricher} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -1170,7 +1179,7 @@ test.serial("Library: sap.ui5/library: Do not replace supportedLocales with disa
 	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
 		(actual) => t.fail("setString should never be called because resource should not be changed"));
 
-	const processedResources = await manifestTransformer({
+	const processedResources = await manifestEnricher({
 		resources: [resource],
 		fs: {
 			readdir(fsPath, callback) {
@@ -1188,7 +1197,7 @@ test.serial("Library: sap.ui5/library: Do not replace supportedLocales with disa
 
 test.serial("Library: sap.ui5/library: Replaces supportedLocales with terminologies", async (t) => {
 	t.plan(4);
-	const {manifestTransformer} = t.context;
+	const {manifestEnricher} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -1234,7 +1243,7 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with terminolog
 	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
 		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
-	const processedResources = await manifestTransformer({
+	const processedResources = await manifestEnricher({
 		resources: [resource],
 		fs: {
 			readdir: sinon.stub().callsFake((fsPath, callback) => {
@@ -1264,7 +1273,7 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with terminolog
 
 test.serial("Library: sap.ui5/library: Replaces supportedLocales with terminologies not bundle level", async (t) => {
 	t.plan(4);
-	const {manifestTransformer} = t.context;
+	const {manifestEnricher} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -1311,7 +1320,7 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with terminolog
 	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
 		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
-	const processedResources = await manifestTransformer({
+	const processedResources = await manifestEnricher({
 		resources: [resource],
 		fs: {
 			readdir: sinon.stub().callsFake((fsPath, callback) => {
@@ -1337,7 +1346,7 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with terminolog
 
 test.serial("Library: sap.ui5/library: Replaces supportedLocales with deactivated terminologies", async (t) => {
 	t.plan(4);
-	const {manifestTransformer} = t.context;
+	const {manifestEnricher} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -1384,7 +1393,7 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with deactivate
 	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
 		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
-	const processedResources = await manifestTransformer({
+	const processedResources = await manifestEnricher({
 		resources: [resource],
 		fs: {
 			readdir: sinon.stub().callsFake((fsPath, callback) => {
@@ -1410,7 +1419,7 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with deactivate
 
 test.serial("Library: sap.ui5/library: Replaces supportedLocales with enhanceWith", async (t) => {
 	t.plan(4);
-	const {manifestTransformer} = t.context;
+	const {manifestEnricher} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -1463,7 +1472,7 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with enhanceWit
 	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
 		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
-	const processedResources = await manifestTransformer({
+	const processedResources = await manifestEnricher({
 		resources: [resource],
 		fs: {
 			readdir: sinon.stub().callsFake((fsPath, callback) => {
@@ -1499,7 +1508,7 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with enhanceWit
 
 test.serial("Library: sap.ui5/library: Replaces supportedLocales with enhanceWith and terminologies", async (t) => {
 	t.plan(4);
-	const {manifestTransformer} = t.context;
+	const {manifestEnricher} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -1585,7 +1594,7 @@ test.serial("Library: sap.ui5/library: Replaces supportedLocales with enhanceWit
 	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
 		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
-	const processedResources = await manifestTransformer({
+	const processedResources = await manifestEnricher({
 		resources: [resource],
 		fs: {
 			readdir: sinon.stub().callsFake((fsPath, callback) => {

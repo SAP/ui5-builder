@@ -22,14 +22,14 @@ test.beforeEach(async (t) => {
 		error: sinon.stub()
 	};
 
-	t.context.manifestTransformerStub = sinon.stub();
+	t.context.manifestEnricherStub = sinon.stub();
 	t.context.fsInterfaceStub = sinon.stub().returns("fs interface");
-	t.context.transformManifest = await esmock("../../../lib/tasks/transformManifest.js", {
+	t.context.enrichManifest = await esmock("../../../lib/tasks/enrichManifest.js", {
 		"@ui5/logger": {
-			getLogger: sinon.stub().withArgs("builder:tasks:transformManifest").returns(t.context.log)
+			getLogger: sinon.stub().withArgs("builder:tasks:enrichManifest").returns(t.context.log)
 		},
 		"@ui5/fs/fsInterface": t.context.fsInterfaceStub,
-		"../../../lib/processors/manifestTransformer": t.context.manifestTransformerStub,
+		"../../../lib/processors/manifestEnricher": t.context.manifestEnricherStub,
 	});
 	t.context.workspace = createWorkspace();
 });
@@ -39,7 +39,7 @@ test.afterEach.always((t) => {
 });
 
 test.serial("Transforms manifest.json resource", async (t) => {
-	const {transformManifest, log} = t.context;
+	const {enrichManifest, log} = t.context;
 
 	t.plan(6);
 
@@ -68,19 +68,19 @@ test.serial("Transforms manifest.json resource", async (t) => {
 		}
 	};
 
-	t.context.manifestTransformerStub.returns([resource]);
+	t.context.manifestEnricherStub.returns([resource]);
 
-	await transformManifest({
+	await enrichManifest({
 		workspace,
 		options: {
 			projectNamespace: "sap/ui/demo/app"
 		}
 	});
 
-	t.is(t.context.manifestTransformerStub.callCount, 1,
+	t.is(t.context.manifestEnricherStub.callCount, 1,
 		"Processor should be called once");
 
-	t.true(t.context.manifestTransformerStub.calledWithExactly({
+	t.true(t.context.manifestEnricherStub.calledWithExactly({
 		resources: [resource],
 		fs: "fs interface",
 		options: {

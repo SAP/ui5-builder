@@ -26,7 +26,7 @@ test("check number of exports", (t) => {
 	"processors/minifier",
 	"processors/libraryLessGenerator",
 	"processors/manifestCreator",
-	"processors/manifestTransformer",
+	"processors/manifestEnricher",
 	"processors/nonAsciiEscaper",
 	"processors/stringReplacer",
 	"processors/themeBuilder",
@@ -49,7 +49,7 @@ test("check number of exports", (t) => {
 	"tasks/replaceVersion",
 	"tasks/replaceBuildtime",
 	"tasks/transformBootstrapHtml",
-	"tasks/transformManifest",
+	"tasks/enrichManifest",
 
 	// Internal modules (only to be used by @ui5/* packages)
 	{exportedSpecifier: "internal/taskRepository", mappedModule: "../../lib/tasks/taskRepository.js"},
