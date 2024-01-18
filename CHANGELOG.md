@@ -2,7 +2,13 @@
 All notable changes to this project will be documented in this file.  
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-A list of unreleased changes can be found [here](https://github.com/SAP/ui5-builder/compare/v2.11.10...HEAD).
+A list of unreleased changes can be found [here](https://github.com/SAP/ui5-builder/compare/v2.11.11...HEAD).
+
+<a name="v2.11.11"></a>
+## [v2.11.11] - 2024-01-18
+### Bug Fixes
+- **flexChangesBundler:** Merge existing with new flexibility-bundle.json [`b9e372d`](https://github.com/SAP/ui5-builder/commit/b9e372dfec2abb83f7779112c93480f86a4a4fbb)
+
 
 <a name="v2.11.10"></a>
 ## [v2.11.10] - 2023-04-12
@@ -685,6 +691,7 @@ to load the custom bundle file instead.
 - Add ability to configure component preloads and custom bundles [`2241e5f`](https://github.com/SAP/ui5-builder/commit/2241e5ff98fd95f1f80cc74959655ae7a9c660e7)
 
 
+[v2.11.11]: https://github.com/SAP/ui5-builder/compare/v2.11.10...v2.11.11
 [v2.11.10]: https://github.com/SAP/ui5-builder/compare/v2.11.9...v2.11.10
 [v2.11.9]: https://github.com/SAP/ui5-builder/compare/v2.11.8...v2.11.9
 [v2.11.8]: https://github.com/SAP/ui5-builder/compare/v2.11.7...v2.11.8
