@@ -863,11 +863,12 @@ test.serial("Build library.coreBuildtime: replaceBuildtime", (t) => {
 	const expectedPath = path.join("test", "expected", "build", "sap.ui.core-buildtime", "dest");
 
 	const dateStubs = [
-		sinon.stub(Date.prototype, "getFullYear").returns(2022),
-		sinon.stub(Date.prototype, "getMonth").returns(5),
-		sinon.stub(Date.prototype, "getDate").returns(20),
-		sinon.stub(Date.prototype, "getHours").returns(16),
-		sinon.stub(Date.prototype, "getMinutes").returns(30),
+		sinon.stub(Date.prototype, "getUTCFullYear").returns(2022),
+		sinon.stub(Date.prototype, "getUTCMonth").returns(5),
+		sinon.stub(Date.prototype, "getUTCDate").returns(20),
+		sinon.stub(Date.prototype, "getUTCHours").returns(14),
+		sinon.stub(Date.prototype, "getUTCMinutes").returns(30),
+		sinon.stub(Date.prototype, "getUTCSeconds").returns(29)
 	];
 
 	return builder.build({

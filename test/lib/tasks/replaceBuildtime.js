@@ -15,7 +15,7 @@ test("integration: replace version", (t) => {
 
 	const content = "// timestamp: ${buildtime}";
 	const expectedPrefix = "// timestamp";
-	const expectedDatePattern = /^\d{8}-\d{4}$/;
+	const expectedDatePattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
 
 	const resource = resourceFactory.createResource({
 		path: "/test.js",
