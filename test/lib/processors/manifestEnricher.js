@@ -33,7 +33,7 @@ test.afterEach.always((t) => {
 function createResource(path, bNamespaced, input, fnOnSetString) {
 	return {
 		getString: () => Promise.resolve(input),
-		setString: fnOnSetString,
+		setString: fnOnSetString, // TODO: replace with sinon stub, move function to t.context
 		getProject() {
 			return {
 				getNamespace() {
@@ -179,7 +179,7 @@ async (t) => {
 				"i18n": {
 					"type": "sap.ui.model.resource.ResourceModel",
 					"settings": {
-						"bundleName": "sap.ui.demo.app.i18n.i18n",
+						"bundleName": "sap.ui.demo.app.i18nModel.i18n",
 						"fallbackLocale": "de"
 					}
 				}
@@ -198,7 +198,7 @@ async (t) => {
 				"i18n": {
 					"type": "sap.ui.model.resource.ResourceModel",
 					"settings": {
-						"bundleName": "sap.ui.demo.app.i18n.i18n",
+						"bundleName": "sap.ui.demo.app.i18nModel.i18n",
 						"fallbackLocale": "de",
 						"supportedLocales": ["de", "en"]
 					}
@@ -210,7 +210,7 @@ async (t) => {
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
 		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
-	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18n")
+	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
 
 	const processedResources = await manifestEnricher({
@@ -239,7 +239,7 @@ async (t) => {
 				"i18n": {
 					"type": "sap.ui.model.resource.ResourceModel",
 					"settings": {
-						"bundleUrl": "i18n/i18n.properties",
+						"bundleUrl": "i18nModel/i18n.properties",
 						"fallbackLocale": "de"
 					}
 				}
@@ -258,7 +258,7 @@ async (t) => {
 				"i18n": {
 					"type": "sap.ui.model.resource.ResourceModel",
 					"settings": {
-						"bundleUrl": "i18n/i18n.properties",
+						"bundleUrl": "i18nModel/i18n.properties",
 						"fallbackLocale": "de",
 						"supportedLocales": ["de", "en"]
 					}
@@ -270,7 +270,7 @@ async (t) => {
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
 		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
-	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18n")
+	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
 
 	const processedResources = await manifestEnricher({
@@ -359,7 +359,7 @@ async (t) => {
 				"i18n": {
 					"type": "sap.ui.model.resource.ResourceModel",
 					"settings": {
-						"bundleName": "sap.ui.demo.app.i18n.i18n",
+						"bundleName": "sap.ui.demo.app.i18nModel.i18n",
 						"supportedLocales": ["en", "fr"],
 						"fallbackLocale": "fr"
 					}
@@ -371,7 +371,7 @@ async (t) => {
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
 		(actual) => t.fail("setString should never be called because resource should not be changed"));
 
-	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18n")
+	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
 
 	const processedResources = await manifestEnricher({
@@ -399,7 +399,7 @@ async (t) => {
 				"i18n": {
 					"type": "sap.ui.model.resource.ResourceModel",
 					"settings": {
-						"bundleName": "sap.ui.demo.app.i18n.i18n",
+						"bundleName": "sap.ui.demo.app.i18nModel.i18n",
 						"supportedLocales": [""],
 						"fallbackLocale": ""
 					}
@@ -411,7 +411,7 @@ async (t) => {
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
 		(actual) => t.fail("setString should never be called because resource should not be changed"));
 
-	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18n")
+	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
 
 	const processedResources = await manifestEnricher({
@@ -439,7 +439,7 @@ async (t) => {
 				"i18n": {
 					"type": "sap.ui.model.resource.ResourceModel",
 					"settings": {
-						"bundleName": "sap.ui.demo.app.i18n.i18n",
+						"bundleName": "sap.ui.demo.app.i18nModel.i18n",
 						"fallbackLocale": "fr"
 					}
 				}
@@ -458,7 +458,7 @@ async (t) => {
 				"i18n": {
 					"type": "sap.ui.model.resource.ResourceModel",
 					"settings": {
-						"bundleName": "sap.ui.demo.app.i18n.i18n",
+						"bundleName": "sap.ui.demo.app.i18nModel.i18n",
 						"fallbackLocale": "fr"
 					}
 				}
@@ -468,8 +468,9 @@ async (t) => {
 
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
 		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
+		// TODO: add sinon stub for setString
 
-	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18n")
+	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
 
 	const processedResources = await manifestEnricher({
@@ -477,7 +478,7 @@ async (t) => {
 		fs
 	});
 
-	t.deepEqual(processedResources, [resource], "Input resource is returned");
+	t.deepEqual(processedResources, [undefined], "Input resource is returned");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.is(t.context.logErrorSpy.callCount, 1, "1 error should be logged");
 	t.is(t.context.logErrorSpy.getCall(0).args[0],
@@ -501,7 +502,7 @@ async (t) => {
 				"i18n": {
 					"type": "sap.ui.model.resource.ResourceModel",
 					"settings": {
-						"bundleName": "sap.ui.demo.app.i18n.i18n"
+						"bundleName": "sap.ui.demo.app.i18nModel.i18n"
 					}
 				}
 			}
@@ -519,7 +520,7 @@ async (t) => {
 				"i18n": {
 					"type": "sap.ui.model.resource.ResourceModel",
 					"settings": {
-						"bundleName": "sap.ui.demo.app.i18n.i18n",
+						"bundleName": "sap.ui.demo.app.i18nModel.i18n",
 						"supportedLocales": ["de", "fr"]
 					}
 				}
@@ -530,7 +531,7 @@ async (t) => {
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
 		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
-	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18n")
+	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_fr.properties"]);
 
 	const processedResources = await manifestEnricher({
@@ -740,7 +741,7 @@ async (t) => {
 				"i18n": {
 					"type": "sap.ui.model.resource.ResourceModel",
 					"settings": {
-						"bundleName": "sap.ui.demo.app.i18n.i18n",
+						"bundleName": "sap.ui.demo.app.i18nModel.i18n",
 						"fallbackLocale": "de"
 					}
 				},
@@ -766,7 +767,7 @@ async (t) => {
 				"i18n": {
 					"type": "sap.ui.model.resource.ResourceModel",
 					"settings": {
-						"bundleName": "sap.ui.demo.app.i18n.i18n",
+						"bundleName": "sap.ui.demo.app.i18nModel.i18n",
 						"fallbackLocale": "de",
 						"supportedLocales": ["de", "en"]
 					}
@@ -785,7 +786,7 @@ async (t) => {
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
 		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
-	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18n")
+	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
 
 	const processedResources = await manifestEnricher({
@@ -795,6 +796,7 @@ async (t) => {
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
 
+	t.is(t.context.logVerboseSpy.callCount, 1);
 	t.is(t.context.logVerboseSpy.getCall(0).args[0],
 		"manifest.json: bundleName 'sap.ui.demo.lib.i18n.i18n' contains a path which is not part of the project, " +
 		"no supportedLocales are generated");
@@ -818,7 +820,7 @@ async (t) => {
 				"i18n": {
 					"type": "sap.ui.model.resource.ResourceModel",
 					"settings": {
-						"bundleName": "sap.ui.demo.app.i18n.i18n",
+						"bundleName": "sap.ui.demo.app.i18nModel.i18n",
 						"fallbackLocale": "de"
 					}
 				},
@@ -844,7 +846,7 @@ async (t) => {
 				"i18n": {
 					"type": "sap.ui.model.resource.ResourceModel",
 					"settings": {
-						"bundleName": "sap.ui.demo.app.i18n.i18n",
+						"bundleName": "sap.ui.demo.app.i18nModel.i18n",
 						"fallbackLocale": "de",
 						"supportedLocales": ["de", "en"]
 					}
@@ -863,7 +865,7 @@ async (t) => {
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
 		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
-	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18n")
+	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
 
 	const processedResources = await manifestEnricher({
@@ -873,6 +875,7 @@ async (t) => {
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
 
+	t.is(t.context.logVerboseSpy.callCount, 1);
 	t.is(t.context.logVerboseSpy.getCall(0).args[0],
 		"manifest.json: bundleUrl 'ui5://sap/ui/demo/lib/i18n/i18n.properties' contains a path which is not part of the project, " +
 		"no supportedLocales are generated");
@@ -925,7 +928,7 @@ test("Library: No replacement at all", async (t) => {
 });
 
 test("Library: sap.app/i18n (with templates, no bundle defined): " +
-	"No generation of supportedLocales when no bundleUrl is given",
+	"Does not add supportedLocales, as sap.app/i18n is not valid for libraries",
 async (t) => {
 	const {manifestEnricher, fs} = t.context;
 	const input = JSON.stringify({
@@ -955,7 +958,7 @@ async (t) => {
 });
 
 test("Library: sap.app/i18n (with custom bundle): " +
-	"Replaces supportedLocales with available properties files",
+	"Does not add supportedLocales, as sap.app/i18n is not valid for libraries",
 async (t) => {
 	const {manifestEnricher, fs} = t.context;
 	const input = JSON.stringify({
@@ -967,20 +970,8 @@ async (t) => {
 		}
 	}, null, 2);
 
-	const expected = JSON.stringify({
-		"_version": "1.58.0",
-		"sap.app": {
-			"id": "sap.ui.demo.lib",
-			"type": "library",
-			"i18n": {
-				"bundleUrl": "mybundle.properties",
-				"supportedLocales": ["de", "en"]
-			}
-		}
-	}, null, 2);
-
 	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
-		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
+		(actual) => t.is(actual, "", "Correct file content should be set"));
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18n")
 		.callsArgWith(1, null, ["mybundle_de.properties", "mybundle_en.properties"]);
@@ -990,7 +981,7 @@ async (t) => {
 		fs
 	});
 
-	t.deepEqual(processedResources, [resource], "Input resource is returned");
+	t.deepEqual(processedResources, [undefined], "Input resource is returned");
 
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
@@ -1034,7 +1025,7 @@ test("Library: sap.ui5/library: Replaces supportedLocales with available propert
 	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
 		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
 
-	fs.readdir.withArgs("/resources/sap/ui/demo/lib")
+	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc")
 		.callsArgWith(1, null, ["messagebundlec_de.properties", "messagebundlec_en.properties"]);
 
 	const processedResources = await manifestEnricher({
@@ -1574,11 +1565,11 @@ test("Library: sap.ui5/library: Replaces supportedLocales with enhanceWith and t
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
-test("getBundleUrlFromName", (t) => {
-	const {getBundleUrlFromName} = t.context.__internals__;
+test("getRelativeBundleUrlFromName", (t) => {
+	const {getRelativeBundleUrlFromName} = t.context.__internals__;
 
-	const bundleUrl = getBundleUrlFromName("sap.ui.demo.app.i18n.i18n");
-	t.is(bundleUrl, "sap/ui/demo/app/i18n/i18n.properties");
+	const bundleUrl = getRelativeBundleUrlFromName("sap.ui.demo.app.i18n.i18n", "sap.ui.demo.app");
+	t.is(bundleUrl, "i18n/i18n.properties");
 });
 
 test("normalizeBundleUrl", (t) => {
