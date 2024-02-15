@@ -23,6 +23,24 @@ test.beforeEach(async (t) => {
 	t.context.fs = {
 		readdir: sinon.stub().callsArgWith(1, null, [])
 	};
+
+	t.context.createResource = (path, bNamespaced, input) => {
+		return {
+			getString: () => Promise.resolve(input),
+			setString: sinon.stub(),
+			getProject() {
+				return {
+					getNamespace() {
+						const namespace = path.substring(0, path.lastIndexOf("/")).replace("/resources/", "");
+						return bNamespaced ? namespace : "";
+					}
+				};
+			},
+			getPath() {
+				return path;
+			}
+		};
+	};
 });
 
 test.afterEach.always((t) => {
@@ -30,30 +48,12 @@ test.afterEach.always((t) => {
 });
 
 
-function createResource(path, bNamespaced, input, fnOnSetString) {
-	return {
-		getString: () => Promise.resolve(input),
-		setString: fnOnSetString, // TODO: replace with sinon stub, move function to t.context
-		getProject() {
-			return {
-				getNamespace() {
-					const namespace = path.substring(0, path.lastIndexOf("/")).replace("/resources/", "");
-					return bNamespaced ? namespace : "";
-				}
-			};
-		},
-		getPath() {
-			return path;
-		}
-	};
-}
-
 // #######################################################
 // Type: Application
 // #######################################################
 
 test("Application: No replacement (No properties files)", async (t) => {
-	const {manifestEnricher, fs} = t.context;
+	const {manifestEnricher, fs, createResource} = t.context;
 
 	const input = JSON.stringify({
 		"_version": "1.58.0",
@@ -63,8 +63,7 @@ test("Application: No replacement (No properties files)", async (t) => {
 		}
 	}, null, 2);
 
-	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
-		(actual) => t.fail("setString should never be called because resource should not be changed"));
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
 
 	const processedResources = await manifestEnricher({
 		resources: [resource],
@@ -73,6 +72,8 @@ test("Application: No replacement (No properties files)", async (t) => {
 
 	t.deepEqual(processedResources, [undefined], "No resource is returned, because it is not changed");
 
+	t.is(resource.setString.callCount, 0, "setString should not be called");
+
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -80,7 +81,7 @@ test("Application: No replacement (No properties files)", async (t) => {
 test("Application: sap.app/i18n (with templates, default bundle): " +
 	"Replaces supportedLocales with available properties files",
 async (t) => {
-	const {manifestEnricher, fs} = t.context;
+	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -103,8 +104,7 @@ async (t) => {
 		}
 	}, null, 2);
 
-	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
-		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18n")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
@@ -116,6 +116,9 @@ async (t) => {
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
 
+	t.is(resource.setString.callCount, 1, "setString should be called once");
+	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
+
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -123,7 +126,7 @@ async (t) => {
 test("Application: sap.app/i18n (with templates, custom bundle): " +
 	"Replaces supportedLocales with available properties files",
 async (t) => {
-	const {manifestEnricher, fs} = t.context;
+	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -147,8 +150,7 @@ async (t) => {
 		}
 	}, null, 2);
 
-	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
-		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/app")
 		.callsArgWith(1, null, ["mybundle_de.properties", "mybundle_en.properties"]);
@@ -160,6 +162,9 @@ async (t) => {
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
 
+	t.is(resource.setString.callCount, 1, "setString should be called once");
+	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
+
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -167,7 +172,7 @@ async (t) => {
 test("Application: sap.ui5/models: " +
 	"Replaces supportedLocales with available properties files",
 async (t) => {
-	const {manifestEnricher, fs} = t.context;
+	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -207,8 +212,7 @@ async (t) => {
 		}
 	}, null, 2);
 
-	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
-		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
@@ -219,6 +223,9 @@ async (t) => {
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
+
+	t.is(resource.setString.callCount, 1, "setString should be called once");
+	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
 
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
@@ -227,7 +234,7 @@ async (t) => {
 test("Application: sap.ui5/models (bundleUrl): " +
 	"Replaces supportedLocales with available properties files",
 async (t) => {
-	const {manifestEnricher, fs} = t.context;
+	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -267,8 +274,7 @@ async (t) => {
 		}
 	}, null, 2);
 
-	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
-		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
@@ -279,6 +285,9 @@ async (t) => {
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
+
+	t.is(resource.setString.callCount, 1, "setString should be called once");
+	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
 
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
@@ -287,7 +296,7 @@ async (t) => {
 test("Application: sap.ui5/models (bundleUrl with ui5 protocol): " +
 	"Replaces supportedLocales with available properties files",
 async (t) => {
-	const {manifestEnricher, fs} = t.context;
+	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -327,8 +336,7 @@ async (t) => {
 		}
 	}, null, 2);
 
-	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
-		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
@@ -340,6 +348,9 @@ async (t) => {
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
 
+	t.is(resource.setString.callCount, 1, "setString should be called once");
+	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
+
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -347,7 +358,7 @@ async (t) => {
 test("Application: sap.ui5/models: " +
 	"Do not replace supportedLocales when supportedLocales are already defined",
 async (t) => {
-	const {manifestEnricher, fs} = t.context;
+	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -368,8 +379,7 @@ async (t) => {
 		}
 	}, null, 2);
 
-	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
-		(actual) => t.fail("setString should never be called because resource should not be changed"));
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
@@ -380,6 +390,9 @@ async (t) => {
 	});
 
 	t.deepEqual(processedResources, [undefined], "No resource is returned, because it is not changed");
+
+	t.is(resource.setString.callCount, 0, "setString should not be called");
+
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -387,7 +400,7 @@ async (t) => {
 test("Application: sap.ui5/models: " +
 	"Do not replace supportedLocales when supportedLocales are set to array with empty string",
 async (t) => {
-	const {manifestEnricher, fs} = t.context;
+	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -408,8 +421,7 @@ async (t) => {
 		}
 	}, null, 2);
 
-	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
-		(actual) => t.fail("setString should never be called because resource should not be changed"));
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
@@ -420,6 +432,9 @@ async (t) => {
 	});
 
 	t.deepEqual(processedResources, [undefined], "No resource is returned, because it is not changed");
+
+	t.is(resource.setString.callCount, 0, "setString should not be called");
+
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -427,7 +442,7 @@ async (t) => {
 test("Application: sap.ui5/models: " +
 	"Log error, no supportedLocales generation if fallbackLocale is not part of generation",
 async (t) => {
-	const {manifestEnricher, fs} = t.context;
+	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -466,9 +481,7 @@ async (t) => {
 		}
 	}, null, 2);
 
-	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
-		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
-		// TODO: add sinon stub for setString
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
@@ -479,6 +492,10 @@ async (t) => {
 	});
 
 	t.deepEqual(processedResources, [undefined], "Input resource is returned");
+
+	t.is(resource.setString.callCount, 1, "setString should be called once");
+	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
+
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.is(t.context.logErrorSpy.callCount, 1, "1 error should be logged");
 	t.is(t.context.logErrorSpy.getCall(0).args[0],
@@ -490,7 +507,7 @@ async (t) => {
 test("Application: sap.ui5/models: " +
 	"Log warning, but generate locales if default fallbackLocale is not part of generation",
 async (t) => {
-	const {manifestEnricher, fs} = t.context;
+	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -528,8 +545,7 @@ async (t) => {
 		}
 	}, null, 2);
 
-	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
-		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_fr.properties"]);
@@ -540,6 +556,10 @@ async (t) => {
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
+
+	t.is(resource.setString.callCount, 1, "setString should be called once");
+	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
+
 	t.is(t.context.logWarnSpy.callCount, 1, "1 warning should be logged");
 	t.is(t.context.logWarnSpy.getCall(0).args[0],
 		"manifest.json: Generated supported locales ('de', 'fr') " +
@@ -550,7 +570,7 @@ async (t) => {
 });
 
 test("Application: sap.ui5/models: Log verbose if manifest version is not defined at all", async (t) => {
-	const {manifestEnricher, fs} = t.context;
+	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"sap.app": {
 			"id": "sap.ui.demo.app",
@@ -568,8 +588,7 @@ test("Application: sap.ui5/models: Log verbose if manifest version is not define
 		}
 	}, null, 2);
 
-	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
-		(actual) => t.fail("setString should never be called because resource should not be changed"));
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
 
 	const processedResources = await manifestEnricher({
 		resources: [resource],
@@ -577,6 +596,9 @@ test("Application: sap.ui5/models: Log verbose if manifest version is not define
 	});
 
 	t.deepEqual(processedResources, [undefined], "No resource is returned, because it is not changed");
+
+	t.is(resource.setString.callCount, 0, "setString should not be called");
+
 	t.is(t.context.logVerboseSpy.callCount, 1, "1 verbose should be logged");
 	t.is(t.context.logVerboseSpy.getCall(0).args[0],
 		"manifest.json: _version is not defined. No supportedLocales are generated");
@@ -586,7 +608,7 @@ test("Application: sap.ui5/models: Log verbose if manifest version is not define
 });
 
 test("Application: sap.ui5/models: Log verbose if manifest version is below 1.21.0", async (t) => {
-	const {manifestEnricher, fs} = t.context;
+	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.20.0",
 		"sap.app": {
@@ -605,8 +627,7 @@ test("Application: sap.ui5/models: Log verbose if manifest version is below 1.21
 		}
 	}, null, 2);
 
-	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
-		(actual) => t.fail("setString should never be called because resource should not be changed"));
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18n")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
@@ -617,6 +638,9 @@ test("Application: sap.ui5/models: Log verbose if manifest version is below 1.21
 	});
 
 	t.deepEqual(processedResources, [undefined], "No resource is returned, because it is not changed");
+
+	t.is(resource.setString.callCount, 0, "setString should not be called");
+
 	t.is(t.context.logVerboseSpy.callCount, 1, "1 verbose should be logged");
 	t.is(t.context.logVerboseSpy.getCall(0).args[0],
 		"manifest.json: _version is lower than 1.21.0 so no supportedLocales can be generated");
@@ -628,7 +652,7 @@ test("Application: sap.ui5/models: Log verbose if manifest version is below 1.21
 test("Application: sap.ui5/models: " +
 	"Do not generate supportedLocales when bundleUrl pointing to a location outside the current project",
 async (t) => {
-	const {manifestEnricher, fs} = t.context;
+	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -647,8 +671,7 @@ async (t) => {
 		}
 	}, null, 2);
 
-	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
-		(actual) => t.fail("setString should never be called because resource should not be changed"));
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
 
 	const processedResources = await manifestEnricher({
 		resources: [resource],
@@ -656,6 +679,9 @@ async (t) => {
 	});
 
 	t.deepEqual(processedResources, [undefined], "No resource is returned, because it is not changed");
+
+	t.is(resource.setString.callCount, 0, "setString should not be called");
+
 	t.is(t.context.logVerboseSpy.callCount, 1, "1 verbose should be logged");
 	t.is(t.context.logVerboseSpy.getCall(0).args[0],
 		"manifest.json: bundleUrl '../../myapp2/i18n/i18n.properties' contains a relative path, " +
@@ -668,7 +694,7 @@ async (t) => {
 test("Application: sap.ui5/models: " +
 	"Do not generate supportedLocales when bundleUrl pointing to a location inside the current project",
 async (t) => {
-	const {manifestEnricher, fs} = t.context;
+	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -708,8 +734,7 @@ async (t) => {
 		}
 	}, null, 2);
 
-	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
-		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
 
 	const processedResources = await manifestEnricher({
 		resources: [resource],
@@ -717,6 +742,10 @@ async (t) => {
 	});
 
 	t.deepEqual(processedResources, [undefined], "No resource is returned, because it is not changed");
+
+	t.is(resource.setString.callCount, 1, "setString should be called once");
+	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
+
 	t.is(t.context.logVerboseSpy.callCount, 1, "1 verbose should be logged");
 	t.is(t.context.logVerboseSpy.getCall(0).args[0],
 		"manifest.json: bundleUrl '../i18n/i18n.properties' contains a relative path, " +
@@ -729,7 +758,7 @@ async (t) => {
 test("Application: sap.ui5/models: " +
 	"Do not replace supportedLocales when bundle is not part of the namespace",
 async (t) => {
-	const {manifestEnricher, fs} = t.context;
+	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -783,8 +812,7 @@ async (t) => {
 		}
 	}, null, 2);
 
-	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
-		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
@@ -795,6 +823,9 @@ async (t) => {
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
+
+	t.is(resource.setString.callCount, 1, "setString should be called once");
+	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
 
 	t.is(t.context.logVerboseSpy.callCount, 1);
 	t.is(t.context.logVerboseSpy.getCall(0).args[0],
@@ -808,7 +839,7 @@ async (t) => {
 test("Application: sap.ui5/models: " +
 	"Do not generate supportedLocales when bundle is not part of the namespace (bundleUrl with ui5 protocol)",
 async (t) => {
-	const {manifestEnricher, fs} = t.context;
+	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -862,8 +893,7 @@ async (t) => {
 		}
 	}, null, 2);
 
-	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input,
-		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
@@ -874,6 +904,9 @@ async (t) => {
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
+
+	t.is(resource.setString.callCount, 1, "setString should be called once");
+	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
 
 	t.is(t.context.logVerboseSpy.callCount, 1);
 	t.is(t.context.logVerboseSpy.getCall(0).args[0],
@@ -901,7 +934,7 @@ async (t) => {
 // #######################################################
 
 test("Library: No replacement at all", async (t) => {
-	const {manifestEnricher, fs} = t.context;
+	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -910,8 +943,7 @@ test("Library: No replacement at all", async (t) => {
 		}
 	}, null, 2);
 
-	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
-		(actual) => t.fail("setString should never be called because resource should not be changed"));
+	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18n")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
@@ -923,6 +955,8 @@ test("Library: No replacement at all", async (t) => {
 
 	t.deepEqual(processedResources, [undefined], "No resource is returned, because it is not changed");
 
+	t.is(resource.setString.callCount, 0, "setString should not be called");
+
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -930,7 +964,7 @@ test("Library: No replacement at all", async (t) => {
 test("Library: sap.app/i18n (with templates, no bundle defined): " +
 	"Does not add supportedLocales, as sap.app/i18n is not valid for libraries",
 async (t) => {
-	const {manifestEnricher, fs} = t.context;
+	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -940,8 +974,7 @@ async (t) => {
 		}
 	}, null, 2);
 
-	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
-		(actual) => t.fail("setString should never be called because resource should not be changed"));
+	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18n")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
@@ -953,6 +986,8 @@ async (t) => {
 
 	t.deepEqual(processedResources, [undefined], "No resource is returned, because it is not changed");
 
+	t.is(resource.setString.callCount, 0, "setString should not be called");
+
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -960,7 +995,7 @@ async (t) => {
 test("Library: sap.app/i18n (with custom bundle): " +
 	"Does not add supportedLocales, as sap.app/i18n is not valid for libraries",
 async (t) => {
-	const {manifestEnricher, fs} = t.context;
+	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -983,12 +1018,14 @@ async (t) => {
 
 	t.deepEqual(processedResources, [undefined], "Input resource is returned");
 
+	t.is(resource.setString.callCount, 0, "setString should not be called");
+
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
 test("Library: sap.ui5/library: Replaces supportedLocales with available properties files", async (t) => {
-	const {manifestEnricher, fs} = t.context;
+	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -1022,8 +1059,7 @@ test("Library: sap.ui5/library: Replaces supportedLocales with available propert
 		}
 	}, null, 2);
 
-	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
-		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
+	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc")
 		.callsArgWith(1, null, ["messagebundlec_de.properties", "messagebundlec_en.properties"]);
@@ -1035,6 +1071,9 @@ test("Library: sap.ui5/library: Replaces supportedLocales with available propert
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
 
+	t.is(resource.setString.callCount, 1, "setString should be called once");
+	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
+
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -1042,7 +1081,7 @@ test("Library: sap.ui5/library: Replaces supportedLocales with available propert
 test("Library: sap.ui5/library: " +
 	"Replaces supportedLocales with available properties files (i18n=true)",
 async (t) => {
-	const {manifestEnricher, fs} = t.context;
+	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -1072,8 +1111,7 @@ async (t) => {
 		}
 	}, null, 2);
 
-	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
-		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
+	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib")
 		.callsArgWith(1, null, ["messagebundle_de.properties", "messagebundle_en.properties"]);
@@ -1085,12 +1123,15 @@ async (t) => {
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
 
+	t.is(resource.setString.callCount, 1, "setString should be called once");
+	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
+
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
 test("Library: sap.ui5/library: Do not generate supportedLocales with disabled i18n feature", async (t) => {
-	const {manifestEnricher, fs} = t.context;
+	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -1104,8 +1145,7 @@ test("Library: sap.ui5/library: Do not generate supportedLocales with disabled i
 		}
 	}, null, 2);
 
-	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
-		(actual) => t.fail("setString should never be called because resource should not be changed"));
+	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib")
 		.callsArgWith(1, null, ["messagebundle_de.properties", "messagebundle_en.properties"]);
@@ -1117,12 +1157,14 @@ test("Library: sap.ui5/library: Do not generate supportedLocales with disabled i
 
 	t.deepEqual(processedResources, [undefined], "No resource is returned, because it is not changed");
 
+	t.is(resource.setString.callCount, 0, "setString should not be called");
+
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
 test("Library: sap.ui5/library: Replaces supportedLocales with terminologies", async (t) => {
-	const {manifestEnricher, fs} = t.context;
+	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -1165,8 +1207,7 @@ test("Library: sap.ui5/library: Replaces supportedLocales with terminologies", a
 		}
 	}, null, 2);
 
-	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
-		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
+	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc")
 		.callsArgWith(1, null, [
@@ -1188,13 +1229,16 @@ test("Library: sap.ui5/library: Replaces supportedLocales with terminologies", a
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
+
+	t.is(resource.setString.callCount, 1, "setString should be called once");
+	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
 
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
 test("Library: sap.ui5/library: Replaces supportedLocales with terminologies not bundle level", async (t) => {
-	const {manifestEnricher, fs} = t.context;
+	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -1238,8 +1282,7 @@ test("Library: sap.ui5/library: Replaces supportedLocales with terminologies not
 		}
 	}, null, 2);
 
-	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
-		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
+	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc")
 		.callsArgWith(1, null, [
@@ -1262,12 +1305,15 @@ test("Library: sap.ui5/library: Replaces supportedLocales with terminologies not
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
 
+	t.is(resource.setString.callCount, 1, "setString should be called once");
+	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
+
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
 test("Library: sap.ui5/library: Replaces supportedLocales with deactivated terminologies", async (t) => {
-	const {manifestEnricher, fs} = t.context;
+	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -1311,8 +1357,7 @@ test("Library: sap.ui5/library: Replaces supportedLocales with deactivated termi
 		}
 	}, null, 2);
 
-	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
-		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
+	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc")
 		.callsArgWith(1, null, [
@@ -1335,12 +1380,15 @@ test("Library: sap.ui5/library: Replaces supportedLocales with deactivated termi
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
 
+	t.is(resource.setString.callCount, 1, "setString should be called once");
+	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
+
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
 test("Library: sap.ui5/library: Replaces supportedLocales with enhanceWith", async (t) => {
-	const {manifestEnricher, fs} = t.context;
+	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -1390,8 +1438,7 @@ test("Library: sap.ui5/library: Replaces supportedLocales with enhanceWith", asy
 		}
 	}, null, 2);
 
-	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
-		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
+	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc")
 		.callsArgWith(1, null, [
@@ -1421,12 +1468,15 @@ test("Library: sap.ui5/library: Replaces supportedLocales with enhanceWith", asy
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
 
+	t.is(resource.setString.callCount, 1, "setString should be called once");
+	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
+
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
 test("Library: sap.ui5/library: Replaces supportedLocales with enhanceWith and terminologies", async (t) => {
-	const {manifestEnricher, fs} = t.context;
+	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -1509,8 +1559,7 @@ test("Library: sap.ui5/library: Replaces supportedLocales with enhanceWith and t
 		}
 	}, null, 2);
 
-	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
-		(actual) => t.deepEqual(actual, expected, "Correct file content should be set"));
+	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib/myfolder1")
 		.callsArgWith(1, null, [
@@ -1560,6 +1609,9 @@ test("Library: sap.ui5/library: Replaces supportedLocales with enhanceWith and t
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
+
+	t.is(resource.setString.callCount, 1, "setString should be called once");
+	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
 
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
