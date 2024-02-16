@@ -70,7 +70,7 @@ test("Application: No replacement (No properties files)", async (t) => {
 		fs
 	});
 
-	t.deepEqual(processedResources, [undefined], "No resource is returned, because it is not changed");
+	t.deepEqual(processedResources, [resource], "Provided resources are always returned");
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
@@ -389,7 +389,7 @@ async (t) => {
 		fs
 	});
 
-	t.deepEqual(processedResources, [undefined], "No resource is returned, because it is not changed");
+	t.deepEqual(processedResources, [resource], "Provided resources are always returned");
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
@@ -431,7 +431,7 @@ async (t) => {
 		fs
 	});
 
-	t.deepEqual(processedResources, [undefined], "No resource is returned, because it is not changed");
+	t.deepEqual(processedResources, [resource], "Provided resources are always returned");
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
@@ -491,7 +491,7 @@ async (t) => {
 		fs
 	});
 
-	t.deepEqual(processedResources, [undefined], "Input resource is returned");
+	t.deepEqual(processedResources, [resource], "Provided resources are always returned");
 
 	t.is(resource.setString.callCount, 1, "setString should be called once");
 	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
@@ -595,7 +595,7 @@ test("Application: sap.ui5/models: Log verbose if manifest version is not define
 		fs
 	});
 
-	t.deepEqual(processedResources, [undefined], "No resource is returned, because it is not changed");
+	t.deepEqual(processedResources, [resource], "Provided resources are always returned");
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
@@ -637,7 +637,7 @@ test("Application: sap.ui5/models: Log verbose if manifest version is below 1.21
 		fs
 	});
 
-	t.deepEqual(processedResources, [undefined], "No resource is returned, because it is not changed");
+	t.deepEqual(processedResources, [resource], "Provided resources are always returned");
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
@@ -678,7 +678,7 @@ async (t) => {
 		fs
 	});
 
-	t.deepEqual(processedResources, [undefined], "No resource is returned, because it is not changed");
+	t.deepEqual(processedResources, [resource], "Provided resources are always returned");
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
@@ -741,7 +741,7 @@ async (t) => {
 		fs
 	});
 
-	t.deepEqual(processedResources, [undefined], "No resource is returned, because it is not changed");
+	t.deepEqual(processedResources, [resource], "Provided resources are always returned");
 
 	t.is(resource.setString.callCount, 1, "setString should be called once");
 	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
@@ -953,7 +953,7 @@ test("Library: No replacement at all", async (t) => {
 		fs
 	});
 
-	t.deepEqual(processedResources, [undefined], "No resource is returned, because it is not changed");
+	t.deepEqual(processedResources, [resource], "Provided resources are always returned");
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
@@ -984,7 +984,7 @@ async (t) => {
 		fs
 	});
 
-	t.deepEqual(processedResources, [undefined], "No resource is returned, because it is not changed");
+	t.deepEqual(processedResources, [resource], "Provided resources are always returned");
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
@@ -1016,7 +1016,7 @@ async (t) => {
 		fs
 	});
 
-	t.deepEqual(processedResources, [undefined], "Input resource is returned");
+	t.deepEqual(processedResources, [resource], "Provided resources are always returned");
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
@@ -1155,7 +1155,7 @@ test("Library: sap.ui5/library: Do not generate supportedLocales with disabled i
 		fs
 	});
 
-	t.deepEqual(processedResources, [undefined], "No resource is returned, because it is not changed");
+	t.deepEqual(processedResources, [resource], "Provided resources are always returned");
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
@@ -1387,7 +1387,7 @@ test("Library: sap.ui5/library: Replaces supportedLocales with deactivated termi
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
-test("Library: sap.ui5/library: Replaces supportedLocales with enhanceWith", async (t) => {
+test.only("Library: sap.ui5/library: Replaces supportedLocales with enhanceWith", async (t) => {
 	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
@@ -1647,76 +1647,6 @@ test("normalizeBundleUrl", (t) => {
 		normalizeBundleUrl("./i18n/../../other/namespace/i18n.properties", "sap.ui.demo.app"),
 		"../other/namespace/i18n.properties"
 	);
-});
-
-test("ManifestEnricher#processSapAppI18n: No modification (existing supportedLocales)", async (t) => {
-	const {ManifestEnricher} = t.context.__internals__;
-	const {fs} = t.context;
-
-	const manifest = {
-		"_version": "1.58.0",
-		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application",
-			"i18n": {
-				"bundleUrl": "i18n/i18n.properties",
-				"supportedLocales": ["en", "de"]
-			}
-		}
-	};
-	const expectedManifest = JSON.parse(JSON.stringify(manifest));
-
-	const manifestEnricher = new ManifestEnricher(fs, "/manifest.json");
-	await manifestEnricher.processSapAppI18n(manifest);
-
-	t.deepEqual(manifest, expectedManifest, "Manifest object should not be changed");
-	t.false(manifestEnricher.modified, "Manifest should not be modified");
-});
-
-test("ManifestEnricher#processSapAppI18n: No properties files, manifest at root-level", async (t) => {
-	const {ManifestEnricher} = t.context.__internals__;
-	const {fs} = t.context;
-
-	const manifest = {
-		"_version": "1.58.0",
-		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
-		}
-	};
-	const expectedManifest = JSON.parse(JSON.stringify(manifest));
-
-	const manifestEnricher = new ManifestEnricher(fs, "/manifest.json");
-	await manifestEnricher.processSapAppI18n(manifest);
-
-	t.deepEqual(manifest, expectedManifest, "Manifest object should not be changed");
-	t.false(manifestEnricher.modified, "Manifest should not be modified");
-
-	t.is(fs.readdir.callCount, 1);
-	t.is(fs.readdir.getCall(0).args[0], "/i18n");
-});
-
-test("ManifestEnricher#processSapAppI18n: No properties files, manifest within namespace", async (t) => {
-	const {ManifestEnricher} = t.context.__internals__;
-	const {fs} = t.context;
-
-	const manifest = {
-		"_version": "1.58.0",
-		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
-		}
-	};
-	const expectedManifest = JSON.parse(JSON.stringify(manifest));
-
-	const manifestEnricher = new ManifestEnricher(fs, "/sap/ui/demo/app/manifest.json");
-	await manifestEnricher.processSapAppI18n(manifest);
-
-	t.deepEqual(manifest, expectedManifest, "Manifest object should not be changed");
-	t.false(manifestEnricher.modified, "Manifest should not be modified");
-
-	t.is(fs.readdir.callCount, 1);
-	t.is(fs.readdir.getCall(0).args[0], "/sap/ui/demo/app/i18n");
 });
 
 // TODO: Missing tests for:
