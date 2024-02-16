@@ -462,25 +462,6 @@ async (t) => {
 		}
 	}, null, 2);
 
-	const expected = JSON.stringify({
-		"_version": "1.58.0",
-		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
-		},
-		"sap.ui5": {
-			"models": {
-				"i18n": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"settings": {
-						"bundleName": "sap.ui.demo.app.i18nModel.i18n",
-						"fallbackLocale": "fr"
-					}
-				}
-			}
-		}
-	}, null, 2);
-
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
@@ -493,8 +474,7 @@ async (t) => {
 
 	t.deepEqual(processedResources, [resource], "Provided resources are always returned");
 
-	t.is(resource.setString.callCount, 1, "setString should be called once");
-	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
+	t.is(resource.setString.callCount, 0, "setString should not be called");
 
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.is(t.context.logErrorSpy.callCount, 1, "1 error should be logged");
@@ -684,11 +664,10 @@ async (t) => {
 
 	t.is(t.context.logVerboseSpy.callCount, 1, "1 verbose should be logged");
 	t.is(t.context.logVerboseSpy.getCall(0).args[0],
-		"manifest.json: bundleUrl '../../myapp2/i18n/i18n.properties' contains a relative path, " +
-		"no supportedLocales are generated");
+		"Resolved bundleUrl '../../myapp2/i18n/i18n.properties' points to a bundle outside of the current namespace " +
+		"'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
 	t.true(t.context.logWarnSpy.notCalled, "No warning should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
-	t.is(fs.readdir.callCount, 0, "readdir should not be called");
 });
 
 test("Application: sap.ui5/models: " +
@@ -714,26 +693,6 @@ async (t) => {
 		}
 	}, null, 2);
 
-	const expected = JSON.stringify({
-		"_version": "1.58.0",
-		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
-		},
-		"sap.ui5": {
-			"models": {
-				"i18n": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"settings": {
-						"bundleUrl": "../i18n/i18n.properties",
-						"fallbackLocale": "de",
-						"supportedLocales": ["de", "en"]
-					}
-				}
-			}
-		}
-	}, null, 2);
-
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
 
 	const processedResources = await manifestEnricher({
@@ -743,16 +702,14 @@ async (t) => {
 
 	t.deepEqual(processedResources, [resource], "Provided resources are always returned");
 
-	t.is(resource.setString.callCount, 1, "setString should be called once");
-	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
+	t.is(resource.setString.callCount, 0, "setString should not be called");
 
 	t.is(t.context.logVerboseSpy.callCount, 1, "1 verbose should be logged");
 	t.is(t.context.logVerboseSpy.getCall(0).args[0],
-		"manifest.json: bundleUrl '../i18n/i18n.properties' contains a relative path, " +
-		"no supportedLocales are generated");
+		`Resolved bundleUrl '../i18n/i18n.properties' points to a bundle outside of the current namespace ` +
+		`'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped`);
 	t.true(t.context.logWarnSpy.notCalled, "No warning should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
-	t.is(fs.readdir.callCount, 0, "readdir should not be called");
 });
 
 test("Application: sap.ui5/models: " +
@@ -829,11 +786,11 @@ async (t) => {
 
 	t.is(t.context.logVerboseSpy.callCount, 1);
 	t.is(t.context.logVerboseSpy.getCall(0).args[0],
-		"manifest.json: bundleName 'sap.ui.demo.lib.i18n.i18n' contains a path which is not part of the project, " +
-		"no supportedLocales are generated");
+		// TODO: This message should use the original bundleName instead of the resolved one
+		"Resolved bundleUrl '../lib/i18n/i18n.properties' points to a bundle outside of the current namespace " +
+		"'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
-	t.is(fs.readdir.callCount, 0, "readdir should not be called");
 });
 
 test("Application: sap.ui5/models: " +
@@ -910,8 +867,8 @@ async (t) => {
 
 	t.is(t.context.logVerboseSpy.callCount, 1);
 	t.is(t.context.logVerboseSpy.getCall(0).args[0],
-		"manifest.json: bundleUrl 'ui5://sap/ui/demo/lib/i18n/i18n.properties' contains a path which is not part of the project, " +
-		"no supportedLocales are generated");
+		"Resolved bundleUrl 'ui5://sap/ui/demo/lib/i18n/i18n.properties' points to a bundle outside of the current namespace " +
+		"'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -1387,7 +1344,7 @@ test("Library: sap.ui5/library: Replaces supportedLocales with deactivated termi
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
-test.only("Library: sap.ui5/library: Replaces supportedLocales with enhanceWith", async (t) => {
+test("Library: sap.ui5/library: Replaces supportedLocales with enhanceWith", async (t) => {
 	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
@@ -1454,7 +1411,7 @@ test.only("Library: sap.ui5/library: Replaces supportedLocales with enhanceWith"
 			"messagebundlenc1.properties"
 		]);
 
-	fs.readdir.withArgs("/resources/sap/ui/demo/lib/myfolder1")
+	fs.readdir.withArgs("/resources/sap/ui/demo/lib/myfolder2")
 		.callsArgWith(1, null, [
 			"messagebundlenc2_de.properties",
 			"messagebundlenc2_en.properties",
