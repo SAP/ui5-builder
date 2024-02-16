@@ -1651,6 +1651,7 @@ test("normalizeBundleUrl", (t) => {
 
 test("ManifestEnricher#processSapAppI18n: No modification (existing supportedLocales)", async (t) => {
 	const {ManifestEnricher} = t.context.__internals__;
+	const {fs} = t.context;
 
 	const manifest = {
 		"_version": "1.58.0",
@@ -1665,10 +1666,11 @@ test("ManifestEnricher#processSapAppI18n: No modification (existing supportedLoc
 	};
 	const expectedManifest = JSON.parse(JSON.stringify(manifest));
 
-	const modified = await new ManifestEnricher(t.context.fs, "/manifest.json").processSapAppI18n(manifest);
+	const manifestEnricher = new ManifestEnricher(fs, "/manifest.json");
+	await manifestEnricher.processSapAppI18n(manifest);
 
 	t.deepEqual(manifest, expectedManifest, "Manifest object should not be changed");
-	t.false(modified, "Manifest should not be modified");
+	t.false(manifestEnricher.modified, "Manifest should not be modified");
 });
 
 test("ManifestEnricher#processSapAppI18n: No properties files, manifest at root-level", async (t) => {
@@ -1684,10 +1686,11 @@ test("ManifestEnricher#processSapAppI18n: No properties files, manifest at root-
 	};
 	const expectedManifest = JSON.parse(JSON.stringify(manifest));
 
-	const modified = await new ManifestEnricher(fs, "/manifest.json").processSapAppI18n(manifest);
+	const manifestEnricher = new ManifestEnricher(fs, "/manifest.json");
+	await manifestEnricher.processSapAppI18n(manifest);
 
 	t.deepEqual(manifest, expectedManifest, "Manifest object should not be changed");
-	t.false(modified, "Manifest should not be modified");
+	t.false(manifestEnricher.modified, "Manifest should not be modified");
 
 	t.is(fs.readdir.callCount, 1);
 	t.is(fs.readdir.getCall(0).args[0], "/i18n");
@@ -1706,10 +1709,11 @@ test("ManifestEnricher#processSapAppI18n: No properties files, manifest within n
 	};
 	const expectedManifest = JSON.parse(JSON.stringify(manifest));
 
-	const modified = await new ManifestEnricher(fs, "/sap/ui/demo/app/manifest.json").processSapAppI18n(manifest);
+	const manifestEnricher = new ManifestEnricher(fs, "/sap/ui/demo/app/manifest.json");
+	await manifestEnricher.processSapAppI18n(manifest);
 
 	t.deepEqual(manifest, expectedManifest, "Manifest object should not be changed");
-	t.false(modified, "Manifest should not be modified");
+	t.false(manifestEnricher.modified, "Manifest should not be modified");
 
 	t.is(fs.readdir.callCount, 1);
 	t.is(fs.readdir.getCall(0).args[0], "/sap/ui/demo/app/i18n");
@@ -1717,3 +1721,5 @@ test("ManifestEnricher#processSapAppI18n: No properties files, manifest within n
 
 // TODO: Missing tests for:
 // - sap.app/i18n with terminologies / enhanceWith
+// - sap.ui5/models with terminologies / enhanceWith
+// - sap.ui5/models with "url" property (instead of bundleUrl / bundleName in settings)
