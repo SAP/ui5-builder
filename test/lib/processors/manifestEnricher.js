@@ -1965,3 +1965,4 @@ test("normalizeBundleUrl", (t) => {
 // - different cases of warn/verbose/error logging
 // - fs.readdir error handling (ENOENT: no such file or directory)
 // - Can "fallbackLocale" be provided anywhere (also within terminologies)?
+// - Error handling for absolute paths in bundleUrl
