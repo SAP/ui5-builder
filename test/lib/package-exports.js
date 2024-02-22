@@ -1,6 +1,14 @@
 import test from "ava";
 import {createRequire} from "node:module";
 
+async function fileIsNotExported (t, path) {
+	try {
+		await import(path);
+	} catch (e) {
+		t.is(e.code, "ERR_PACKAGE_PATH_NOT_EXPORTED");
+	}
+}
+
 // Using CommonsJS require since JSON module imports are still experimental
 const require = createRequire(import.meta.url);
 
@@ -71,26 +79,17 @@ test("check number of exports", (t) => {
 });
 
 test("no export of processors/jsdoc/lib/ui5/plugin", async (t) => {
-	await t.throwsAsync(import("@ui5/builder/processors/jsdoc/lib/ui5/plugin"), {
-		code: "ERR_PACKAGE_PATH_NOT_EXPORTED"
-	});
-	await t.throwsAsync(import("@ui5/builder/processors/jsdoc/lib/ui5/plugin.cjs"), {
-		code: "ERR_PACKAGE_PATH_NOT_EXPORTED"
-	});
+	t.plan(2);
+	await fileIsNotExported(t, "@ui5/builder/processors/jsdoc/lib/ui5/plugin");
+	await fileIsNotExported(t, "@ui5/builder/processors/jsdoc/lib/ui5/plugin.cjs");
 });
 
 test("no export of tasks/bundlers/utils/createModuleNameMapping", async (t) => {
-	await t.throwsAsync(import("@ui5/builder/tasks/bundlers/utils/createModuleNameMapping"), {
-		code: "ERR_PACKAGE_PATH_NOT_EXPORTED"
-	});
-	await t.throwsAsync(import("@ui5/builder/tasks/bundlers/utils/createModuleNameMapping.js"), {
-		code: "ERR_PACKAGE_PATH_NOT_EXPORTED"
-	});
+	t.plan(2);
+	await fileIsNotExported(t, "@ui5/builder/tasks/bundlers/utils/createModuleNameMapping");
+	await fileIsNotExported(t, "@ui5/builder/tasks/bundlers/utils/createModuleNameMapping.js");
 });
 
-test("no export of tasks/taskRepository", async (t) => {
-	// Should only be exported as @ui5/builder/internal/taskRepository
-	await t.throwsAsync(import("@ui5/builder/tasks/taskRepository"), {
-		code: "ERR_PACKAGE_PATH_NOT_EXPORTED"
-	});
+test("no export of tasks/taskRepository", (t) => {
+	return fileIsNotExported(t, "@ui5/builder/tasks/taskRepository");
 });
