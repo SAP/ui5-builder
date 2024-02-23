@@ -1961,8 +1961,11 @@ test("normalizeBundleUrl", (t) => {
 });
 
 // TODO: Missing tests for:
-// - sap.ui5/models with "url" property (instead of bundleUrl / bundleName in settings)
+// - sap.ui5/models with "uri" property and without "settings" object (instead of bundleUrl / bundleName in settings)
 // - different cases of warn/verbose/error logging
 // - fs.readdir error handling (ENOENT: no such file or directory)
 // - Can "fallbackLocale" be provided anywhere (also within terminologies)?
+//   - No, for terminologies, the fallbackLocale is not considered
+//   - enhanceWith bundles inherit the "fallbackLocale", if not defined
 // - Error handling for absolute paths in bundleUrl
+// - enhanceWith bundle should not be considered if parent bundle config has "supportedLocales" defined by user
