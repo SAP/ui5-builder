@@ -554,7 +554,6 @@ test.serial("buildThemes (useWorkers = true)", async (t) => {
 	await cleanupTask();
 });
 
-
 test.serial("buildThemes with taskUtil and unexpected termination of the workerpool", async (t) => {
 	const taskUtilMock = {
 		registerCleanupTask: sinon.stub().callsFake((cb) => {
