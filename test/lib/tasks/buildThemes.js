@@ -612,7 +612,7 @@ test.serial("buildThemes with taskUtil and unexpected termination of the workerp
 			inputPattern: "/resources/test*/themes/**/library.source.less"
 		}
 	});
-	
+
 	t.pass("No exception from an earlier workerpool termination attempt.");
 
 	// Ensure to call cleanup task so that workerpool is terminated - otherwise the test will time out!

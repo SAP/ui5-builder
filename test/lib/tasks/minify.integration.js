@@ -96,6 +96,10 @@ test();`;
 		"Fourth taskUtil.setTag call with expected first arguments");
 	t.is(taskUtil.setTag.getCall(3).args[1], "3️⃣",
 		"Fourth taskUtil.setTag call with expected second arguments");
+
+	// Ensure to call cleanup task so that workerpool is terminated - otherwise the test will time out!
+	const cleanupTask = taskUtil.registerCleanupTask.getCall(0).args[0];
+	await cleanupTask();
 });
 
 test("integration: minify omitSourceMapResources=false", async (t) => {
