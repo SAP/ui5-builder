@@ -548,6 +548,10 @@ test.serial("buildThemes (useWorkers = true)", async (t) => {
 	t.true(workspace.write.calledWithExactly(transferredResources[0]));
 	t.true(workspace.write.calledWithExactly(transferredResources[1]));
 	t.true(workspace.write.calledWithExactly(transferredResources[2]));
+
+	// Ensure to call cleanup task so that workerpool is terminated - otherwise the test will time out!
+	const cleanupTask = taskUtilMock.registerCleanupTask.getCall(0).args[0];
+	await cleanupTask();
 });
 
 
@@ -608,6 +612,10 @@ test.serial("buildThemes with taskUtil and unexpected termination of the workerp
 			inputPattern: "/resources/test*/themes/**/library.source.less"
 		}
 	});
-
+	
 	t.pass("No exception from an earlier workerpool termination attempt.");
+
+	// Ensure to call cleanup task so that workerpool is terminated - otherwise the test will time out!
+	const cleanupTask = taskUtilMock.registerCleanupTask.getCall(0).args[0];
+	await cleanupTask();
 });
