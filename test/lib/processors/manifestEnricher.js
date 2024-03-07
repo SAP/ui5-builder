@@ -1228,6 +1228,80 @@ async (t) => {
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
+test("Application: supportedLocales are not added for bundles with absolute url", async (t) => {
+	const {manifestEnricher, fs, createResource} = t.context;
+	const input = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.app",
+			"type": "application",
+			"i18n": "/resources/sap/ui/demo/app/i18n/i18n.properties"
+		},
+		"sap.ui5": {
+			"models": {
+				"i18n": {
+					"type": "sap.ui.model.resource.ResourceModel",
+					"settings": {
+						"bundleUrl": "https://example.com/i18nModel/i18n.properties",
+						"terminologies": {
+							"oil": {
+								"bundleUrl": "/i18n/terminologies.oil.i18n.properties",
+							},
+							"retail": {
+								"bundleUrl": "/i18n/terminologies.retail.i18n.properties",
+							}
+						},
+						"enhanceWith": [
+							{
+								"bundleUrl": "/enhancements/i18n/i18n.properties",
+								"bundleUrlRelativeTo": "manifest",
+								"terminologies": {
+									"oil": {
+										"bundleUrl": "/enhancements/i18n/terminologies.oil.i18n.properties",
+									},
+									"retail": {
+										"bundleUrl": "/enhancements/i18n/terminologies.retail.i18n.properties",
+										"bundleUrlRelativeTo": "manifest"
+									}
+								}
+							},
+							{
+								"bundleUrl": "/some/path/to/i18n/i18n.properties",
+								"bundleUrlRelativeTo": "manifest",
+								"terminologies": {
+									"oil": {
+										"bundleUrl": "/some/path/to/terminologies.oil.i18n.properties",
+									},
+									"retail": {
+										"bundleUrl": "/some/path/to/terminologies.retail.i18n.properties",
+										"bundleUrlRelativeTo": "manifest"
+									}
+								}
+							}
+						]
+					}
+				}
+			}
+		}
+	}, null, 2);
+
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
+
+	const processedResources = await manifestEnricher({
+		resources: [resource],
+		fs
+	});
+
+	t.deepEqual(processedResources, [resource], "Input resource is returned");
+
+	t.is(resource.setString.callCount, 0, "setString should not be called");
+
+	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
+	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
+
+	t.is(fs.readdir.callCount, 0, "readdir should not be called for absolute bundle urls");
+});
+
 // #######################################################
 // Type: Component
 // #######################################################
@@ -1928,6 +2002,76 @@ test("Library: sap.ui5/library: Replaces supportedLocales with enhanceWith and t
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
+test("ManifestEnricher#getSupportedLocales", async (t) => {
+	const {fs} = t.context;
+	const {ManifestEnricher} = t.context.__internals__;
+
+	const manifest = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.app"
+		}
+	});
+	const filePath = "/manifest.json";
+
+	const manifestEnricher = new ManifestEnricher(manifest, filePath, fs);
+
+	fs.readdir.withArgs("/i18n")
+		.callsArgWith(1, null, [
+			"i18n.properties",
+			"i18n_en.properties"
+		]);
+
+	t.deepEqual(await manifestEnricher.getSupportedLocales("./i18n/i18n.properties"), ["", "en"]);
+	t.deepEqual(await manifestEnricher.getSupportedLocales("i18n/../i18n/i18n.properties"), ["", "en"]);
+	t.deepEqual(await manifestEnricher.getSupportedLocales("ui5://sap/ui/demo/app/i18n/i18n.properties"), ["", "en"]);
+
+	// Path traversal to root and then into application namespace
+	// This works, but is not recommended at all! It also likely fails at runtime
+	t.deepEqual(await manifestEnricher.getSupportedLocales(
+		"../../../../../../../../../../../../resources/sap/ui/demo/app/i18n/i18n.properties"
+	), ["", "en"]);
+
+	t.is(fs.readdir.callCount, 4);
+});
+
+test("ManifestEnricher#getSupportedLocales (absolute / invalid URLs)", async (t) => {
+	const {fs} = t.context;
+	const {ManifestEnricher} = t.context.__internals__;
+
+	const manifest = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.app"
+		}
+	});
+	const filePath = "/manifest.json";
+
+	const manifestEnricher = new ManifestEnricher(manifest, filePath, fs);
+
+	// Server-absolute URLs
+	t.deepEqual(await manifestEnricher.getSupportedLocales("/i18n/i18n.properties"), []);
+	t.deepEqual(await manifestEnricher.getSupportedLocales("/../i18n/i18n.properties"), []);
+
+	// Server-absolute URL within application namespace
+	t.deepEqual(await manifestEnricher.getSupportedLocales("/resources/sap/ui/demo/app/i18n/i18n.properties"), []);
+
+	// Absolute URLs
+	t.deepEqual(await manifestEnricher.getSupportedLocales("http://example.com/i18n.properties"), []);
+	t.deepEqual(await manifestEnricher.getSupportedLocales("https://example.com/i18n.properties"), []);
+	t.deepEqual(await manifestEnricher.getSupportedLocales("ftp://example.com/i18n.properties"), []);
+	t.deepEqual(await manifestEnricher.getSupportedLocales("sftp:i18n.properties"), []);
+	t.deepEqual(await manifestEnricher.getSupportedLocales("file://i18n.properties"), []);
+
+	// Path traversal to root
+	t.deepEqual(await manifestEnricher.getSupportedLocales("../../../../../../../../../../../../i18n.properties"), []);
+
+	// Relative ui5-protocol URL
+	t.deepEqual(await manifestEnricher.getSupportedLocales("ui5:i18n.properties"), []);
+
+	t.is(fs.readdir.callCount, 0, "readdir should not be called for any absolute / invalid URL");
+});
+
 test("getRelativeBundleUrlFromName", (t) => {
 	const {getRelativeBundleUrlFromName} = t.context.__internals__;
 
@@ -1969,3 +2113,6 @@ test("normalizeBundleUrl", (t) => {
 //   - enhanceWith bundles inherit the "fallbackLocale", if not defined
 // - Error handling for absolute paths in bundleUrl
 // - enhanceWith bundle should not be considered if parent bundle config has "supportedLocales" defined by user
+
+// TODO: Fix verbose logging failures
+// TOOD: Move ui5-protocol test cases from normalizeBundleUrl to a new resolveUI5Url test
