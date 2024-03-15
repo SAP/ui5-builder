@@ -79,7 +79,7 @@ test("Application: No replacement (No properties files)", async (t) => {
 });
 
 test("Application: sap.app/i18n (with templates, default bundle): " +
-	"Replaces supportedLocales with available properties files",
+	"Adds supportedLocales based on available properties files",
 async (t) => {
 	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
@@ -124,7 +124,7 @@ async (t) => {
 });
 
 test("Application: sap.app/i18n (with templates, custom bundle): " +
-	"Replaces supportedLocales with available properties files",
+	"Adds supportedLocales based on available properties files",
 async (t) => {
 	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
@@ -170,7 +170,7 @@ async (t) => {
 });
 
 test("Application: sap.ui5/models: " +
-	"Replaces supportedLocales with available properties files",
+	"Adds supportedLocales based on available properties files",
 async (t) => {
 	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
@@ -232,7 +232,7 @@ async (t) => {
 });
 
 test("Application: sap.ui5/models (bundleUrl): " +
-	"Replaces supportedLocales with available properties files",
+	"Adds supportedLocales based on available properties files",
 async (t) => {
 	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
@@ -329,6 +329,64 @@ async (t) => {
 					"settings": {
 						"bundleUrl": "ui5://sap/ui/demo/app/i18nModel/i18n.properties",
 						"fallbackLocale": "de",
+						"supportedLocales": ["de", "en"]
+					}
+				}
+			}
+		}
+	}, null, 2);
+
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
+
+	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
+		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
+
+	const processedResources = await manifestEnricher({
+		resources: [resource],
+		fs
+	});
+
+	t.deepEqual(processedResources, [resource], "Input resource is returned");
+
+	t.is(resource.setString.callCount, 1, "setString should be called once");
+	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
+
+	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
+	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
+});
+
+test("Application: sap.ui5/models (uri): " +
+	"Adds supportedLocales with available properties files",
+async (t) => {
+	const {manifestEnricher, fs, createResource} = t.context;
+	const input = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.app",
+			"type": "application"
+		},
+		"sap.ui5": {
+			"models": {
+				"i18n": {
+					"type": "sap.ui.model.resource.ResourceModel",
+					"uri": "i18nModel/i18n.properties"
+				}
+			}
+		}
+	}, null, 2);
+
+	const expected = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.app",
+			"type": "application"
+		},
+		"sap.ui5": {
+			"models": {
+				"i18n": {
+					"type": "sap.ui.model.resource.ResourceModel",
+					"uri": "i18nModel/i18n.properties",
+					"settings": {
 						"supportedLocales": ["de", "en"]
 					}
 				}
@@ -850,7 +908,7 @@ async (t) => {
 
 	t.is(t.context.logVerboseSpy.callCount, 1, "1 verbose should be logged");
 	t.is(t.context.logVerboseSpy.getCall(0).args[0],
-		"Resolved bundleUrl '../../myapp2/i18n/i18n.properties' points to a bundle outside of the current namespace " +
+		"bundleUrl '../../myapp2/i18n/i18n.properties' points to a bundle outside of the current namespace " +
 		"'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
 	t.true(t.context.logWarnSpy.notCalled, "No warning should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
@@ -892,7 +950,7 @@ async (t) => {
 
 	t.is(t.context.logVerboseSpy.callCount, 1, "1 verbose should be logged");
 	t.is(t.context.logVerboseSpy.getCall(0).args[0],
-		`Resolved bundleUrl '../i18n/i18n.properties' points to a bundle outside of the current namespace ` +
+		`bundleUrl '../i18n/i18n.properties' points to a bundle outside of the current namespace ` +
 		`'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped`);
 	t.true(t.context.logWarnSpy.notCalled, "No warning should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
@@ -973,7 +1031,7 @@ async (t) => {
 	t.is(t.context.logVerboseSpy.callCount, 1);
 	t.is(t.context.logVerboseSpy.getCall(0).args[0],
 		// TODO: This message should use the original bundleName instead of the resolved one
-		"Resolved bundleUrl '../lib/i18n/i18n.properties' points to a bundle outside of the current namespace " +
+		"bundleUrl '../lib/i18n/i18n.properties' points to a bundle outside of the current namespace " +
 		"'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
@@ -1053,7 +1111,7 @@ async (t) => {
 
 	t.is(t.context.logVerboseSpy.callCount, 1);
 	t.is(t.context.logVerboseSpy.getCall(0).args[0],
-		"Resolved bundleUrl 'ui5://sap/ui/demo/lib/i18n/i18n.properties' points to a bundle outside of the current namespace " +
+		"bundleUrl 'ui5://sap/ui/demo/lib/i18n/i18n.properties' points to a bundle outside of the current namespace " +
 		"'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
@@ -2095,17 +2153,21 @@ test("normalizeBundleUrl", (t) => {
 		"i18n/i18n.properties"
 	);
 	t.is(
-		normalizeBundleUrl("ui5://sap/ui/demo/app/i18n/i18n.properties", "sap.ui.demo.app"),
-		"i18n/i18n.properties"
-	);
-	t.is(
 		normalizeBundleUrl("./i18n/../../other/namespace/i18n.properties", "sap.ui.demo.app"),
 		"../other/namespace/i18n.properties"
 	);
 });
 
+test("resolveUI5Url", (t) => {
+	const {resolveUI5Url} = t.context.__internals__;
+
+	t.is(
+		resolveUI5Url("ui5://sap/ui/demo/app/i18n/i18n.properties", "sap.ui.demo.app"),
+		"/resources/sap/ui/demo/app/i18n/i18n.properties"
+	);
+});
+
 // TODO: Missing tests for:
-// - sap.ui5/models with "uri" property and without "settings" object (instead of bundleUrl / bundleName in settings)
 // - different cases of warn/verbose/error logging
 // - fs.readdir error handling (ENOENT: no such file or directory)
 // - Can "fallbackLocale" be provided anywhere (also within terminologies)?
