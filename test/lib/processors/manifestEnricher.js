@@ -1755,7 +1755,7 @@ test("Library: sap.ui5/library: Adds supportedLocales for terminologies not bund
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
-test("Library: sap.ui5/library: Replaces supportedLocales with deactivated terminologies", async (t) => {
+test("Library: sap.ui5/library: Adds supportedLocales (with deactivated terminologies)", async (t) => {
 	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
@@ -1830,7 +1830,7 @@ test("Library: sap.ui5/library: Replaces supportedLocales with deactivated termi
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
-test("Library: sap.ui5/library: Replaces supportedLocales with enhanceWith", async (t) => {
+test("Library: sap.ui5/library: Adds supportedLocales (with enhanceWith)", async (t) => {
 	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
@@ -1918,7 +1918,7 @@ test("Library: sap.ui5/library: Replaces supportedLocales with enhanceWith", asy
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
-test("Library: sap.ui5/library: Replaces supportedLocales with enhanceWith and terminologies", async (t) => {
+test("Library: sap.ui5/library: Adds supportedLocales (with enhanceWith and terminologies)", async (t) => {
 	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
@@ -2060,6 +2060,154 @@ test("Library: sap.ui5/library: Replaces supportedLocales with enhanceWith and t
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
+test("Library: sap.ui5/library: Does not not add supportedLocales for enhanceWith when bundle has supportedLocales defined", async (t) => {
+	const {manifestEnricher, fs, createResource} = t.context;
+	const input = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.lib",
+			"type": "library"
+		},
+		"sap.ui5": {
+			"library": {
+				"i18n": {
+					"bundleUrl": "i18nc/messagebundlec.properties",
+					"terminologies": {
+						"sports": {
+							"bundleUrl": "i18nc_sports/messagebundle.sports.properties"
+						}
+					},
+					"enhanceWith": [
+						{
+							"bundleUrl": "myfolder1/messagebundlenc1.properties",
+							"terminologies": {
+								"sports": {
+									"bundleUrl": "i18nc_sports_soccer/messagebundle.soccer.properties"
+								}
+							}
+						},
+						{
+							"bundleUrl": "myfolder2/messagebundlenc2.properties",
+							"terminologies": {
+								"sports": {
+									"bundleUrl": "i18nc_sports_soccer_el/messagebundle.elsoccer.properties"
+								}
+							}
+						}
+					],
+					"supportedLocales": ["en"]
+				}
+			}
+		}
+	}, null, 2);
+
+	const expected = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.lib",
+			"type": "library"
+		},
+		"sap.ui5": {
+			"library": {
+				"i18n": {
+					"bundleUrl": "i18nc/messagebundlec.properties",
+					"terminologies": {
+						"sports": {
+							"bundleUrl": "i18nc_sports/messagebundle.sports.properties",
+							"supportedLocales": ["", "de", "en"]
+						}
+					},
+					"enhanceWith": [
+						{
+							"bundleUrl": "myfolder1/messagebundlenc1.properties",
+							"terminologies": {
+								"sports": {
+									"bundleUrl": "i18nc_sports_soccer/messagebundle.soccer.properties",
+									"supportedLocales": ["", "de", "en"]
+								}
+							}
+						},
+						{
+							"bundleUrl": "myfolder2/messagebundlenc2.properties",
+							"terminologies": {
+								"sports": {
+									"bundleUrl": "i18nc_sports_soccer_el/messagebundle.elsoccer.properties",
+									"supportedLocales": ["", "de", "en"]
+								}
+							}
+						}
+					],
+					"supportedLocales": ["en"]
+				}
+			}
+		}
+	}, null, 2);
+
+	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input);
+
+	fs.readdir.withArgs("/resources/sap/ui/demo/lib/myfolder1")
+		.callsArgWith(1, null, [
+			"messagebundlenc1_de.properties",
+			"messagebundlenc1_en.properties",
+			"messagebundlenc1.properties"
+		]);
+
+	fs.readdir.withArgs("/resources/sap/ui/demo/lib/myfolder2")
+		.callsArgWith(1, null, [
+			"messagebundlenc2_de.properties",
+			"messagebundlenc2_en.properties",
+			"messagebundlenc2.properties"
+		]);
+
+	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc_sports")
+		.callsArgWith(1, null, [
+			"messagebundle.sports_de.properties",
+			"messagebundle.sports_en.properties",
+			"messagebundle.sports.properties"
+		]);
+
+	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc_sports_soccer")
+		.callsArgWith(1, null, [
+			"messagebundle.soccer_de.properties",
+			"messagebundle.soccer_en.properties",
+			"messagebundle.soccer.properties"
+		]);
+
+	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc_sports_soccer_el")
+		.callsArgWith(1, null, [
+			"messagebundle.elsoccer_de.properties",
+			"messagebundle.elsoccer_en.properties",
+			"messagebundle.elsoccer.properties"
+		]);
+
+	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc")
+		.callsArgWith(1, null, [
+			"messagebundlec_de.properties",
+			"messagebundlec_en.properties",
+			"messagebundlec.properties"
+		]);
+
+	const processedResources = await manifestEnricher({
+		resources: [resource],
+		fs
+	});
+
+	t.deepEqual(processedResources, [resource], "Input resource is returned");
+
+	t.is(resource.setString.callCount, 1, "setString should be called once");
+	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
+
+	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
+	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
+
+	t.is(fs.readdir.withArgs("/resources/sap/ui/demo/lib/myfolder1").callCount, 0,
+		"folder should not be read as parent bundle defines supportedLocales");
+	t.is(fs.readdir.withArgs("/resources/sap/ui/demo/lib/myfolder2").callCount, 0,
+		"folder should not be read as parent bundle defines supportedLocales");
+	t.is(fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc").callCount, 0,
+		"folder should not be read as bundle defines supportedLocales");
+});
+
 test("fs.readdir error handling", async (t) => {
 	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
@@ -2071,26 +2219,13 @@ test("fs.readdir error handling", async (t) => {
 		}
 	}, null, 2);
 
-	const expected = JSON.stringify({
-		"_version": "1.58.0",
-		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application",
-			"title": "{{title}}",
-			"i18n": {
-				"bundleUrl": "i18n/i18n.properties",
-				"supportedLocales": ["de", "en"]
-			}
-		}
-	}, null, 2);
-
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
-
-	const error = new Error("ENOENT: no such file or directory, scandir '/resources/sap/ui/demo/app/i18n'");
 
 	// NOTE: @ui5/fs fsInterface currently does not throw ENOENT errors but instead returns an empty array
 	// However, this is not guaranteed and might change in the future.
 	// In addition, the might be low-level use cases with a real "fs" that would throw ENOENT
+	const error = new Error("ENOENT: no such file or directory, scandir '/resources/sap/ui/demo/app/i18n'");
+	error.code = "ENOENT";
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18n")
 		.callsArgWith(1, error);
 
@@ -2105,6 +2240,9 @@ test("fs.readdir error handling", async (t) => {
 
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
+
+	t.is(fs.readdir.withArgs("/resources/sap/ui/demo/app/i18n").callCount, 1,
+		"readdir has been called with expected path that causes a ENOENT error");
 });
 
 test("ManifestEnricher#getSupportedLocales", async (t) => {
@@ -2177,6 +2315,43 @@ test("ManifestEnricher#getSupportedLocales (absolute / invalid URLs)", async (t)
 	t.is(fs.readdir.callCount, 0, "readdir should not be called for any absolute / invalid URL");
 });
 
+test("ManifestEnricher#getSupportedLocales (error handling)", async (t) => {
+	const {fs} = t.context;
+	const {ManifestEnricher} = t.context.__internals__;
+
+	const manifest = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.app"
+		}
+	});
+	const filePath = "/manifest.json";
+
+	const manifestEnricher = new ManifestEnricher(manifest, filePath, fs);
+
+	// NOTE: @ui5/fs fsInterface currently does not throw ENOENT errors but instead returns an empty array
+	// However, this is not guaranteed and might change in the future.
+	// In addition, the might be low-level use cases with a real "fs" that would throw ENOENT
+	const error = new Error("ENOENT: no such file or directory, scandir '/i18n'");
+	error.code = "ENOENT";
+	fs.readdir.withArgs("/i18n")
+		.callsArgWith(1, error);
+
+	const unexpectedError = new Error("Unexpected error");
+	fs.readdir.withArgs("/i18n-unexpected-error")
+		.callsArgWith(1, unexpectedError);
+
+	// Error handling ENOENT
+	t.deepEqual(await manifestEnricher.getSupportedLocales("i18n/i18n.properties"), []);
+
+	// Unexpected errors should be thrown
+	await t.throwsAsync(manifestEnricher.getSupportedLocales("i18n-unexpected-error/i18n.properties"), {
+		is: unexpectedError
+	});
+
+	t.is(fs.readdir.callCount, 2, "readdir should be called once");
+});
+
 test("getRelativeBundleUrlFromName", (t) => {
 	const {getRelativeBundleUrlFromName} = t.context.__internals__;
 
@@ -2220,4 +2395,3 @@ test("resolveUI5Url", (t) => {
 //   - No, for terminologies, the fallbackLocale is not considered
 //   - enhanceWith bundles inherit the "fallbackLocale", if not defined
 // - Error handling for absolute paths in bundleUrl
-// - enhanceWith bundle should not be considered if parent bundle config has "supportedLocales" defined by user
