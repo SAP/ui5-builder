@@ -2060,6 +2060,53 @@ test("Library: sap.ui5/library: Replaces supportedLocales with enhanceWith and t
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
+test("fs.readdir error handling", async (t) => {
+	const {manifestEnricher, fs, createResource} = t.context;
+	const input = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.app",
+			"type": "application",
+			"title": "{{title}}"
+		}
+	}, null, 2);
+
+	const expected = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.app",
+			"type": "application",
+			"title": "{{title}}",
+			"i18n": {
+				"bundleUrl": "i18n/i18n.properties",
+				"supportedLocales": ["de", "en"]
+			}
+		}
+	}, null, 2);
+
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
+
+	const error = new Error("ENOENT: no such file or directory, scandir '/resources/sap/ui/demo/app/i18n'");
+
+	// NOTE: @ui5/fs fsInterface currently does not throw ENOENT errors but instead returns an empty array
+	// However, this is not guaranteed and might change in the future.
+	// In addition, the might be low-level use cases with a real "fs" that would throw ENOENT
+	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18n")
+		.callsArgWith(1, error);
+
+	const processedResources = await manifestEnricher({
+		resources: [resource],
+		fs
+	});
+
+	t.deepEqual(processedResources, [resource], "Provided resources are always returned");
+
+	t.is(resource.setString.callCount, 0, "setString should not be called");
+
+	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
+	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
+});
+
 test("ManifestEnricher#getSupportedLocales", async (t) => {
 	const {fs} = t.context;
 	const {ManifestEnricher} = t.context.__internals__;
@@ -2169,12 +2216,8 @@ test("resolveUI5Url", (t) => {
 
 // TODO: Missing tests for:
 // - different cases of warn/verbose/error logging
-// - fs.readdir error handling (ENOENT: no such file or directory)
 // - Can "fallbackLocale" be provided anywhere (also within terminologies)?
 //   - No, for terminologies, the fallbackLocale is not considered
 //   - enhanceWith bundles inherit the "fallbackLocale", if not defined
 // - Error handling for absolute paths in bundleUrl
 // - enhanceWith bundle should not be considered if parent bundle config has "supportedLocales" defined by user
-
-// TODO: Fix verbose logging failures
-// TOOD: Move ui5-protocol test cases from normalizeBundleUrl to a new resolveUI5Url test
