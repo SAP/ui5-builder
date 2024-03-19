@@ -49,7 +49,8 @@ ${SOURCE_MAPPING_URL}=test.controller.js.map`;
 		"sources": [
 			"test-dbg.controller.js"
 		],
-		"mappings": ";;;AAGC,SAASA,OAAOC,GACfC,OAAOC,IAAIC,QAAQ,aACnBC,QAAQC,IAAI,qBACb,CACDN"
+		"mappings": ";;;AAGC,SAASA,OAAOC,GACfC,OAAOC,IAAIC,QAAQ,aACnBC,QAAQC,IAAI,qBACb,CACDN",
+		"ignoreList": []
 	});
 	t.deepEqual(await sourceMapResource.getString(), expectedSourceMap, "Correct source map content");
 });
@@ -101,7 +102,8 @@ ${SOURCE_MAPPING_URL}=test.controller.js.map`;
 		"sources": [
 			"test-dbg.controller.js"
 		],
-		"mappings": ";;;AAGC,SAASA,OAAOC,GACfC,OAAOC,IAAIC,QAAQ,aACnBC,QAAQC,IAAI,qBACb,CACDN"
+		"mappings": ";;;AAGC,SAASA,OAAOC,GACfC,OAAOC,IAAIC,QAAQ,aACnBC,QAAQC,IAAI,qBACb,CACDN",
+		"ignoreList": []
 	});
 	t.deepEqual(await sourceMapResource.getString(), expectedSourceMap, "Correct source map content");
 
@@ -229,7 +231,8 @@ ${SOURCE_MAPPING_URL}=test3.designtime.js.map`;
 		"sources": [
 			"test1-dbg.controller.js"
 		],
-		"mappings": "AACA,SAASA,MAAMC,GACd,IAAIC,EAAYD,EAChBE,QAAQC,IAAIF,EACb,CACAF"
+		"mappings": "AACA,SAASA,MAAMC,GACd,IAAIC,EAAYD,EAChBE,QAAQC,IAAIF,EACb,CACAF",
+		"ignoreList": []
 	});
 	const expectedSourceMap2 = JSON.stringify({
 		"version": 3,
@@ -244,7 +247,8 @@ ${SOURCE_MAPPING_URL}=test3.designtime.js.map`;
 		"sources": [
 			"test2-dbg.fragment.js"
 		],
-		"mappings": "AACA,SAASA,MAAMC,GACd,IAAIC,EAAYD,EAChBE,QAAQC,IAAIF,EACb,CACAF"
+		"mappings": "AACA,SAASA,MAAMC,GACd,IAAIC,EAAYD,EAChBE,QAAQC,IAAIF,EACb,CACAF",
+		"ignoreList": []
 	});
 	const expectedSourceMap3 = JSON.stringify({
 		"version": 3,
@@ -259,7 +263,8 @@ ${SOURCE_MAPPING_URL}=test3.designtime.js.map`;
 		"sources": [
 			"test3-dbg.designtime.js"
 		],
-		"mappings": "AACA,SAASA,MAAMC,GACd,IAAIC,EAAYD,EAChBE,QAAQC,IAAIF,EACb,CACAF"
+		"mappings": "AACA,SAASA,MAAMC,GACd,IAAIC,EAAYD,EAChBE,QAAQC,IAAIF,EACb,CACAF",
+		"ignoreList": []
 	});
 
 	t.is(resources[0].resource.getPath(), "/test1.controller.js",
@@ -401,7 +406,8 @@ ${SOURCE_MAPPING_URL}=test.controller.js.map`;
 			"test.controller.ts"
 		],
 		// eslint-disable-next-line
-		"mappings": ";;;AAAA,aAAAA,IAAAC,GAAAC,OAAA,iDAAAC,EAAAC,GAAA,sBAAAC,EAAAC,GAAA,OAAAA,KAAAC,mBAAAD,EAAAE,UAAA,YAAAF,EAAAE,QAAAF,CAAA,OAIOG,EAAcJ,EAAAD,GAErB,MAGqBM,EAAaD,EAAcE,OAAA,wBACxCC,SAAQ,SAAAC,IACdV,EAAWW,KAAK,eACjB,IAAC,OAHmBJ,CAAI"
+		"mappings": ";;;AAAA,aAAAA,IAAAC,GAAAC,OAAA,iDAAAC,EAAAC,GAAA,sBAAAC,EAAAC,GAAA,OAAAA,KAAAC,mBAAAD,EAAAE,UAAA,YAAAF,EAAAE,QAAAF,CAAA,OAIOG,EAAcJ,EAAAD,GAErB,MAGqBM,EAAaD,EAAcE,OAAA,wBACxCC,SAAQ,SAAAC,IACdV,EAAWW,KAAK,eACjB,IAAC,OAHmBJ,CAAI",
+		"ignoreList": []
 	});
 	t.deepEqual(await sourceMapResource.getString(), expectedSourceMap, "Correct source map content");
 	const expectedDbgSourceMap = JSON.stringify({
@@ -547,7 +553,8 @@ ${SOURCE_MAPPING_URL}=test.controller.js.map`;
 			"test.controller.ts"
 		],
 		// eslint-disable-next-line
-		"mappings": ";;;AAAA,aAAAA,IAAAC,GAAAC,OAAA,iDAAAC,EAAAC,GAAA,sBAAAC,EAAAC,GAAA,OAAAA,KAAAC,mBAAAD,EAAAE,UAAA,YAAAF,EAAAE,QAAAF,CAAA,OAIOG,EAAcJ,EAAAD,GAErB,MAGqBM,EAAaD,EAAcE,OAAA,wBACxCC,SAAQ,SAAAC,IACdV,EAAWW,KAAK,eACjB,IAAC,OAHmBJ,CAAI"
+		"mappings": ";;;AAAA,aAAAA,IAAAC,GAAAC,OAAA,iDAAAC,EAAAC,GAAA,sBAAAC,EAAAC,GAAA,OAAAA,KAAAC,mBAAAD,EAAAE,UAAA,YAAAF,EAAAE,QAAAF,CAAA,OAIOG,EAAcJ,EAAAD,GAErB,MAGqBM,EAAaD,EAAcE,OAAA,wBACxCC,SAAQ,SAAAC,IACdV,EAAWW,KAAK,eACjB,IAAC,OAHmBJ,CAAI",
+		"ignoreList": []
 	});
 	t.deepEqual(await sourceMapResource.getString(), expectedSourceMap, "Correct source map content");
 	const expectedDbgSourceMap = JSON.stringify({
@@ -675,7 +682,8 @@ ${SOURCE_MAPPING_URL}=test.controller.js.map`;
 			"/*!\n * ${copyright}\n */\nimport MessageBox from \"sap/m/MessageBox\";\nimport BaseController from \"./BaseController\";\n\n/**\n * @namespace com.mb.ts.testapp.controller\n */\nexport default class Main extends BaseController {\n\tpublic sayHello(): void {\n\tMessageBox.show(\"Hello World!\");\n\t}\n}\n"
 		],
 		// eslint-disable-next-line
-		"mappings": ";;;AAAA,aAAAA,IAAAC,GAAAC,OAAA,iDAAAC,EAAAC,GAAA,sBAAAC,EAAAC,GAAA,OAAAA,KAAAC,mBAAAD,EAAAE,UAAA,YAAAF,EAAAE,QAAAF,CAAA,OAIOG,EAAcJ,EAAAD,GAErB,MAGqBM,EAAaD,EAAcE,OAAA,wBACxCC,SAAQ,SAAAC,IACdV,EAAWW,KAAK,eACjB,IAAC,OAHmBJ,CAAI"
+		"mappings": ";;;AAAA,aAAAA,IAAAC,GAAAC,OAAA,iDAAAC,EAAAC,GAAA,sBAAAC,EAAAC,GAAA,OAAAA,KAAAC,mBAAAD,EAAAE,UAAA,YAAAF,EAAAE,QAAAF,CAAA,OAIOG,EAAcJ,EAAAD,GAErB,MAGqBM,EAAaD,EAAcE,OAAA,wBACxCC,SAAQ,SAAAC,IACdV,EAAWW,KAAK,eACjB,IAAC,OAHmBJ,CAAI",
+		"ignoreList": []
 	});
 	t.deepEqual(await sourceMapResource.getString(), expectedSourceMap, "Correct source map content");
 	const expectedDbgSourceMap = JSON.stringify({
@@ -865,7 +873,8 @@ ${SOURCE_MAPPING_URL}=Component-preload.js.map`;
 			null
 		],
 		// eslint-disable-next-line
-		"mappings": ";AAAAA,IAAAC,GAAAC,QAAAC,QAAA,CACA;;;;ACEA,aAEAH,IAAIC,GAAGG,OAAO,CAAC,mBAAoB,oBAAqB,SAAUC,EAAYC,GAC5E,aAEA,SAASC,EAAuBC,GAC9B,OAAOA,GAAOA,EAAIC,mBAAqBD,EAAIE,UAAY,YAAcF,EAAIE,QAAUF,CACrF,CACA,MAAMG,EAAiBJ,EAAuBD,GAI9C,MAAMM,EAAOD,EAAeE,OAAO,uBAAwB,CACzDC,SAAU,SAASC,IACjBV,EAAWW,KAAK,eAClB,IAEF,OAAOJ,CACT,E"
+		"mappings": ";AAAAA,IAAAC,GAAAC,QAAAC,QAAA,CACA;;;;ACEA,aAEAH,IAAIC,GAAGG,OAAO,CAAC,mBAAoB,oBAAqB,SAAUC,EAAYC,GAC5E,aAEA,SAASC,EAAuBC,GAC9B,OAAOA,GAAOA,EAAIC,mBAAqBD,EAAIE,UAAY,YAAcF,EAAIE,QAAUF,CACrF,CACA,MAAMG,EAAiBJ,EAAuBD,GAI9C,MAAMM,EAAOD,EAAeE,OAAO,uBAAwB,CACzDC,SAAU,SAASC,IACjBV,EAAWW,KAAK,eAClB,IAEF,OAAOJ,CACT,E",
+		"ignoreList": []
 	});
 	t.deepEqual(await sourceMapResource.getString(), expectedSourceMap, "Correct source map content");
 	const expectedDbgSourceMap = JSON.stringify({
@@ -1016,7 +1025,8 @@ ${SOURCE_MAPPING_URL}=test.controller.js.map`;
 			"test-dbg.controller.js"
 		],
 		// eslint-disable-next-line
-		"mappings": ";;;AAGA,aAEAA,IAAIC,GAAGC,OAAO,CAAC,mBAAoB,oBAAqB,SAAUC,EAAYC,GAC5E,aAEA,SAASC,EAAuBC,GAC9B,OAAOA,GAAOA,EAAIC,mBAAqBD,EAAIE,UAAY,YAAcF,EAAIE,QAAUF,CACrF,CACA,MAAMG,EAAiBJ,EAAuBD,GAI9C,MAAMM,EAAOD,EAAeE,OAAO,uBAAwB,CACzDC,SAAU,SAASC,IACjBV,EAAWW,KAAK,eAClB,IAEF,OAAOJ,CACT"
+		"mappings": ";;;AAGA,aAEAA,IAAIC,GAAGC,OAAO,CAAC,mBAAoB,oBAAqB,SAAUC,EAAYC,GAC5E,aAEA,SAASC,EAAuBC,GAC9B,OAAOA,GAAOA,EAAIC,mBAAqBD,EAAIE,UAAY,YAAcF,EAAIE,QAAUF,CACrF,CACA,MAAMG,EAAiBJ,EAAuBD,GAI9C,MAAMM,EAAOD,EAAeE,OAAO,uBAAwB,CACzDC,SAAU,SAASC,IACjBV,EAAWW,KAAK,eAClB,IAEF,OAAOJ,CACT",
+		"ignoreList": []
 	});
 	t.deepEqual(await sourceMapResource.getString(), expectedSourceMap, "Correct source map content");
 	t.is(dbgSourceMapResource, undefined,
@@ -1109,7 +1119,8 @@ ${SOURCE_MAPPING_URL}=Demo.view.js.map`;
 		"sources": [
 			"Demo-dbg.view.js"
 		],
-		"mappings": "AAAA;;;;GAMAA,QAAQC,IAAI"
+		"mappings": "AAAA;;;;GAMAA,QAAQC,IAAI",
+		"ignoreList": []
 	});
 	t.deepEqual(await sourceMapResource.getString(), expectedSourceMap, "Correct source map content");
 	t.is(dbgSourceMapResource, undefined,
@@ -1183,7 +1194,8 @@ ${SOURCE_MAPPING_URL}=Demo.view.js.map`;
 		"sources": [
 			"Demo.view.ts"
 		],
-		"mappings": ";;;;GAICA,QAAQC,IAAI"
+		"mappings": ";;;;GAICA,QAAQC,IAAI",
+		"ignoreList": []
 	});
 	t.deepEqual(await sourceMapResource.getString(), expectedSourceMap, "Correct source map content");
 	t.is(await dbgSourceMapResource.getString(), inputSourceMapContent.replace("Demo.view.js", "Demo-dbg.view.js"),
@@ -1273,7 +1285,8 @@ ${SOURCE_MAPPING_URL}=test.view.js.map`;
 		"sources": [
 			"test-dbg.view.js"
 		],
-		"mappings": ";;;AAIA,SAASA,KAAKC,GACb,IAAIC,EAAYD,EAChBE,QAAQC,IAAIF,EACb,CACAF"
+		"mappings": ";;;AAIA,SAASA,KAAKC,GACb,IAAIC,EAAYD,EAChBE,QAAQC,IAAIF,EACb,CACAF",
+		"ignoreList": []
 	});
 	t.deepEqual(await sourceMapResource.getString(), expectedSourceMap, "Correct source map content");
 });
