@@ -74,6 +74,7 @@ test("Application: No replacement (No properties files)", async (t) => {
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
+	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -119,6 +120,7 @@ async (t) => {
 	t.is(resource.setString.callCount, 1, "setString should be called once");
 	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
 
+	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -165,6 +167,7 @@ async (t) => {
 	t.is(resource.setString.callCount, 1, "setString should be called once");
 	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
 
+	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -227,6 +230,7 @@ async (t) => {
 	t.is(resource.setString.callCount, 1, "setString should be called once");
 	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
 
+	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -289,6 +293,7 @@ async (t) => {
 	t.is(resource.setString.callCount, 1, "setString should be called once");
 	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
 
+	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -351,6 +356,7 @@ async (t) => {
 	t.is(resource.setString.callCount, 1, "setString should be called once");
 	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
 
+	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -409,6 +415,7 @@ async (t) => {
 	t.is(resource.setString.callCount, 1, "setString should be called once");
 	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
 
+	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -595,6 +602,25 @@ async (t) => {
 	t.is(resource.setString.callCount, 1, "setString should be called once");
 	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
 
+	t.is(t.context.logVerboseSpy.callCount, 6, "One verbose messages should be logged");
+	t.is(t.context.logVerboseSpy.getCall(0).args[0],
+		"bundleUrl '../some/path/to/i18n/i18n.properties' points to a bundle outside of the " +
+		"current namespace 'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
+	t.is(t.context.logVerboseSpy.getCall(1).args[0],
+		"bundleUrl '../../../../appvar2/i18n/i18n/properties.properties' points to a bundle outside of " +
+		"the current namespace 'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
+	t.is(t.context.logVerboseSpy.getCall(2).args[0],
+		"bundleUrl '../some/path/to/terminologies.oil.i18n.properties' points to a bundle outside of the " +
+		"current namespace 'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
+	t.is(t.context.logVerboseSpy.getCall(3).args[0],
+		"bundleUrl '../some/path/to/terminologies.retail.i18n.properties' points to a bundle outside of " +
+		"the current namespace 'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
+	t.is(t.context.logVerboseSpy.getCall(4).args[0],
+		"bundleUrl '../../../../appvar2/i18n/terminologies/oil/i18n.properties' points to a bundle outside " +
+		"of the current namespace 'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
+	t.is(t.context.logVerboseSpy.getCall(5).args[0],
+		"bundleUrl '../../../../appvar2/i18n/terminologies/retail/i18n.properties' points to a bundle " +
+		"outside of the current namespace 'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -637,6 +663,7 @@ async (t) => {
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
+	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -679,6 +706,7 @@ async (t) => {
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
+	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -720,10 +748,12 @@ async (t) => {
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
+	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.is(t.context.logErrorSpy.callCount, 1, "1 error should be logged");
 	t.is(t.context.logErrorSpy.getCall(0).args[0],
-		"manifest.json: Generated supported locales ('de', 'en') not containing the defined fallback locale 'fr'. "+
+		"manifest.json: Generated supported locales ('de', 'en') for bundle 'i18nModel/i18n.properties' " +
+		"not containing the defined fallback locale 'fr'. "+
 		"Either provide a properties file for defined fallbackLocale or configure another available fallbackLocale",
 		"Error message should be correct");
 });
@@ -784,9 +814,10 @@ async (t) => {
 	t.is(resource.setString.callCount, 1, "setString should be called once");
 	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
 
+	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
 	t.is(t.context.logWarnSpy.callCount, 1, "1 warning should be logged");
 	t.is(t.context.logWarnSpy.getCall(0).args[0],
-		"manifest.json: Generated supported locales ('de', 'fr') " +
+		"manifest.json: Generated supported locales ('de', 'fr') for bundle 'i18nModel/i18n.properties' " +
 		"do not contain default fallback locale 'en'. " +
 		"Either provide a properties file for 'en' or configure another available fallbackLocale",
 		"1 warning should be logged");
@@ -1282,6 +1313,25 @@ async (t) => {
 	t.is(resource.setString.callCount, 1, "setString should be called once");
 	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
 
+	t.is(t.context.logVerboseSpy.callCount, 6, "One verbose messages should be logged");
+	t.is(t.context.logVerboseSpy.getCall(0).args[0],
+		"bundleUrl '../some/path/to/i18n/i18n.properties' points to a bundle outside of the " +
+		"current namespace 'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
+	t.is(t.context.logVerboseSpy.getCall(1).args[0],
+		"bundleUrl '../../../../appvar2/i18n/i18n/properties.properties' points to a bundle outside of " +
+		"the current namespace 'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
+	t.is(t.context.logVerboseSpy.getCall(2).args[0],
+		"bundleUrl '../some/path/to/terminologies.oil.i18n.properties' points to a bundle outside of the " +
+		"current namespace 'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
+	t.is(t.context.logVerboseSpy.getCall(3).args[0],
+		"bundleUrl '../some/path/to/terminologies.retail.i18n.properties' points to a bundle outside of " +
+		"the current namespace 'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
+	t.is(t.context.logVerboseSpy.getCall(4).args[0],
+		"bundleUrl '../../../../appvar2/i18n/terminologies/oil/i18n.properties' points to a bundle outside " +
+		"of the current namespace 'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
+	t.is(t.context.logVerboseSpy.getCall(5).args[0],
+		"bundleUrl '../../../../appvar2/i18n/terminologies/retail/i18n.properties' points to a bundle " +
+		"outside of the current namespace 'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -1354,6 +1404,7 @@ test("Application: supportedLocales are not added for bundles with absolute url"
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
+	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 
@@ -1400,6 +1451,7 @@ test("Library: No replacement at all", async (t) => {
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
+	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -1431,6 +1483,7 @@ async (t) => {
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
+	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -1463,6 +1516,7 @@ async (t) => {
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
+	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -1517,6 +1571,7 @@ test("Library: sap.ui5/library: Adds supportedLocales based on available propert
 	t.is(resource.setString.callCount, 1, "setString should be called once");
 	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
 
+	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -1569,6 +1624,7 @@ async (t) => {
 	t.is(resource.setString.callCount, 1, "setString should be called once");
 	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
 
+	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -1602,6 +1658,7 @@ test("Library: sap.ui5/library: Do not generate supportedLocales with disabled i
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
+	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -1676,6 +1733,7 @@ test("Library: sap.ui5/library: Adds supportedLocales to terminologies", async (
 	t.is(resource.setString.callCount, 1, "setString should be called once");
 	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
 
+	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -1751,6 +1809,7 @@ test("Library: sap.ui5/library: Adds supportedLocales for terminologies not bund
 	t.is(resource.setString.callCount, 1, "setString should be called once");
 	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
 
+	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -1826,6 +1885,7 @@ test("Library: sap.ui5/library: Adds supportedLocales (with deactivated terminol
 	t.is(resource.setString.callCount, 1, "setString should be called once");
 	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
 
+	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -1914,6 +1974,7 @@ test("Library: sap.ui5/library: Adds supportedLocales (with enhanceWith)", async
 	t.is(resource.setString.callCount, 1, "setString should be called once");
 	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
 
+	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -2056,6 +2117,7 @@ test("Library: sap.ui5/library: Adds supportedLocales (with enhanceWith and term
 	t.is(resource.setString.callCount, 1, "setString should be called once");
 	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
 
+	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -2321,6 +2383,7 @@ test("Library: sap.ui5/library: " +
 	t.is(resource.setString.callCount, 1, "setString should be called once");
 	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
 
+	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 
@@ -2330,6 +2393,158 @@ test("Library: sap.ui5/library: " +
 		"folder should not be read as parent bundle defines supportedLocales");
 	t.is(fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc").callCount, 0,
 		"folder should not be read as bundle defines supportedLocales");
+});
+
+test("Library: sap.ui5/library: " +
+"Does not not add supportedLocales for enhanceWith when bundle has invalid fallbackLocale defined", async (t) => {
+	const {manifestEnricher, fs, createResource} = t.context;
+	const input = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.lib",
+			"type": "library"
+		},
+		"sap.ui5": {
+			"library": {
+				"i18n": {
+					"bundleUrl": "i18nc/messagebundlec.properties",
+					"terminologies": {
+						"sports": {
+							"bundleUrl": "i18nc_sports/messagebundle.sports.properties"
+						}
+					},
+					"enhanceWith": [
+						{
+							"bundleUrl": "myfolder1/messagebundlenc1.properties",
+							"terminologies": {
+								"sports": {
+									"bundleUrl": "i18nc_sports_soccer/messagebundle.soccer.properties"
+								}
+							}
+						},
+						{
+							"bundleUrl": "myfolder2/messagebundlenc2.properties",
+							"terminologies": {
+								"sports": {
+									"bundleUrl": "i18nc_sports_soccer_el/messagebundle.elsoccer.properties"
+								}
+							}
+						}
+					],
+					"fallbackLocale": "es"
+				}
+			}
+		}
+	}, null, 2);
+
+	const expected = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.lib",
+			"type": "library"
+		},
+		"sap.ui5": {
+			"library": {
+				"i18n": {
+					"bundleUrl": "i18nc/messagebundlec.properties",
+					"terminologies": {
+						"sports": {
+							"bundleUrl": "i18nc_sports/messagebundle.sports.properties",
+							"supportedLocales": ["", "de", "en"]
+						}
+					},
+					"enhanceWith": [
+						{
+							"bundleUrl": "myfolder1/messagebundlenc1.properties",
+							"terminologies": {
+								"sports": {
+									"bundleUrl": "i18nc_sports_soccer/messagebundle.soccer.properties",
+									"supportedLocales": ["", "de", "en"]
+								}
+							},
+							"supportedLocales": ["", "de", "en", "es"]
+						},
+						{
+							"bundleUrl": "myfolder2/messagebundlenc2.properties",
+							"terminologies": {
+								"sports": {
+									"bundleUrl": "i18nc_sports_soccer_el/messagebundle.elsoccer.properties",
+									"supportedLocales": ["", "de", "en"]
+								}
+							}
+						}
+					],
+					"fallbackLocale": "es",
+					"supportedLocales": ["", "de", "en", "es"]
+				}
+			}
+		}
+	}, null, 2);
+
+	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input);
+
+	fs.readdir.withArgs("/resources/sap/ui/demo/lib/myfolder1")
+		.callsArgWith(1, null, [
+			"messagebundlenc1_de.properties",
+			"messagebundlenc1_en.properties",
+			"messagebundlenc1_es.properties",
+			"messagebundlenc1.properties"
+		]);
+
+	fs.readdir.withArgs("/resources/sap/ui/demo/lib/myfolder2")
+		.callsArgWith(1, null, [
+			"messagebundlenc2_de.properties",
+			"messagebundlenc2_en.properties",
+			"messagebundlenc2.properties"
+		]);
+
+	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc_sports")
+		.callsArgWith(1, null, [
+			"messagebundle.sports_de.properties",
+			"messagebundle.sports_en.properties",
+			"messagebundle.sports.properties"
+		]);
+
+	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc_sports_soccer")
+		.callsArgWith(1, null, [
+			"messagebundle.soccer_de.properties",
+			"messagebundle.soccer_en.properties",
+			"messagebundle.soccer.properties"
+		]);
+
+	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc_sports_soccer_el")
+		.callsArgWith(1, null, [
+			"messagebundle.elsoccer_de.properties",
+			"messagebundle.elsoccer_en.properties",
+			"messagebundle.elsoccer.properties"
+		]);
+
+	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc")
+		.callsArgWith(1, null, [
+			"messagebundlec_de.properties",
+			"messagebundlec_en.properties",
+			"messagebundlec_es.properties",
+			"messagebundlec.properties"
+		]);
+
+	const processedResources = await manifestEnricher({
+		resources: [resource],
+		fs
+	});
+
+	t.deepEqual(processedResources, [resource], "Input resource is returned");
+
+	t.is(resource.setString.callCount, 1, "setString should be called once");
+	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
+
+	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
+	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
+	t.is(t.context.logErrorSpy.callCount, 1, "One error should be logged");
+	t.deepEqual(t.context.logErrorSpy.getCall(0).args, [
+		"manifest.json: Generated supported locales ('', 'de', 'en') for bundle " +
+		"'myfolder2/messagebundlenc2.properties' not containing the " +
+		"defined fallback locale 'es'. Either provide a properties file for defined fallbackLocale " +
+		"or configure another available fallbackLocale"]);
 });
 
 test("fs.readdir error handling", async (t) => {
@@ -2362,6 +2577,7 @@ test("fs.readdir error handling", async (t) => {
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
+	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 
@@ -2514,7 +2730,4 @@ test("resolveUI5Url", (t) => {
 });
 
 // TODO: Missing tests for:
-// - different cases of warn/verbose/error logging
-// - Can "fallbackLocale" be provided anywhere (also within terminologies)?
-//   - enhanceWith bundles inherit the "fallbackLocale", if not defined
-// - Error handling for absolute paths in bundleUrl
+// - missing branches in coverage
