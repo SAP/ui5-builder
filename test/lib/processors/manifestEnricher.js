@@ -2060,7 +2060,131 @@ test("Library: sap.ui5/library: Adds supportedLocales (with enhanceWith and term
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
-test("Library: sap.ui5/library: Does not not add supportedLocales for enhanceWith when bundle has supportedLocales defined", async (t) => {
+test("Library: sap.ui5/library: Ignores fallbackLocale for terminologies", async (t) => {
+	const {manifestEnricher, fs, createResource} = t.context;
+	const input = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.lib",
+			"type": "library"
+		},
+		"sap.ui5": {
+			"library": {
+				"i18n": {
+					"bundleUrl": "i18nc/messagebundlec.properties",
+					"terminologies": {
+						"sports": {
+							"bundleUrl": "i18nc_sports/messagebundle.sports.properties",
+							// Note: manifest.json schema does not allow "fallbackLocale" for terminologies
+							// UI5 runtime and tooling should ignore this property
+							"fallbackLocale": "es"
+						}
+					},
+					"enhanceWith": [
+						{
+							"bundleUrl": "myfolder1/messagebundlenc1.properties",
+							"terminologies": {
+								"sports": {
+									"bundleUrl": "i18nc_sports_soccer/messagebundle.soccer.properties",
+									// Note: manifest.json schema does not allow "fallbackLocale" for terminologies
+									// UI5 runtime and tooling should ignore this property
+									"fallbackLocale": "es"
+								}
+							}
+						}
+					]
+				}
+			}
+		}
+	}, null, 2);
+
+	const expected = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.lib",
+			"type": "library"
+		},
+		"sap.ui5": {
+			"library": {
+				"i18n": {
+					"bundleUrl": "i18nc/messagebundlec.properties",
+					"terminologies": {
+						"sports": {
+							"bundleUrl": "i18nc_sports/messagebundle.sports.properties",
+							// Note: manifest.json schema does not allow "fallbackLocale" for terminologies
+							// UI5 runtime and tooling should ignore this property
+							"fallbackLocale": "es",
+							"supportedLocales": ["", "de", "en"]
+						}
+					},
+					"enhanceWith": [
+						{
+							"bundleUrl": "myfolder1/messagebundlenc1.properties",
+							"terminologies": {
+								"sports": {
+									"bundleUrl": "i18nc_sports_soccer/messagebundle.soccer.properties",
+									// Note: manifest.json schema does not allow "fallbackLocale" for terminologies
+									// UI5 runtime and tooling should ignore this property
+									"fallbackLocale": "es",
+									"supportedLocales": ["", "de", "en"]
+								}
+							},
+							"supportedLocales": ["", "de", "en"]
+						}
+					],
+					"supportedLocales": ["", "de", "en"],
+				}
+			}
+		}
+	}, null, 2);
+
+	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input);
+
+	fs.readdir.withArgs("/resources/sap/ui/demo/lib/myfolder1")
+		.callsArgWith(1, null, [
+			"messagebundlenc1_de.properties",
+			"messagebundlenc1_en.properties",
+			"messagebundlenc1.properties"
+		]);
+
+	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc_sports")
+		.callsArgWith(1, null, [
+			"messagebundle.sports_de.properties",
+			"messagebundle.sports_en.properties",
+			"messagebundle.sports.properties"
+		]);
+
+	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc_sports_soccer")
+		.callsArgWith(1, null, [
+			"messagebundle.soccer_de.properties",
+			"messagebundle.soccer_en.properties",
+			"messagebundle.soccer.properties"
+		]);
+
+	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc")
+		.callsArgWith(1, null, [
+			"messagebundlec_de.properties",
+			"messagebundlec_en.properties",
+			"messagebundlec.properties"
+		]);
+
+	const processedResources = await manifestEnricher({
+		resources: [resource],
+		fs
+	});
+
+	t.deepEqual(processedResources, [resource], "Input resource is returned");
+
+	t.is(resource.setString.callCount, 1, "setString should be called once");
+	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
+
+	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
+	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
+	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
+});
+
+test("Library: sap.ui5/library: " +
+"Does not not add supportedLocales for enhanceWith when bundle has supportedLocales defined", async (t) => {
 	const {manifestEnricher, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
@@ -2392,6 +2516,5 @@ test("resolveUI5Url", (t) => {
 // TODO: Missing tests for:
 // - different cases of warn/verbose/error logging
 // - Can "fallbackLocale" be provided anywhere (also within terminologies)?
-//   - No, for terminologies, the fallbackLocale is not considered
 //   - enhanceWith bundles inherit the "fallbackLocale", if not defined
 // - Error handling for absolute paths in bundleUrl
