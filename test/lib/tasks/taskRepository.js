@@ -18,7 +18,7 @@ test("getAllTaskNames", (t) => {
 		"replaceCopyright",
 		"replaceVersion",
 		"replaceBuildtime",
-		"enrichManifest",
+		"enhanceManifest",
 		"escapeNonAsciiCharacters",
 		"executeJsdocSdkTransformation",
 		"generateApiIndex",

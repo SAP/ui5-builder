@@ -12,13 +12,13 @@ test.beforeEach(async (t) => {
 		verbose: t.context.logVerboseSpy,
 		error: t.context.logErrorSpy
 	};
-	const manifestEnricherImport = await esmock("../../../lib/processors/manifestEnricher.js", {
+	const manifestEnhancerImport = await esmock("../../../lib/processors/manifestEnhancer.js", {
 		"@ui5/logger": {
-			getLogger: sinon.stub().withArgs("builder:processors:manifestEnricher").returns(loggerStub)
+			getLogger: sinon.stub().withArgs("builder:processors:manifestEnhancer").returns(loggerStub)
 		}
 	});
-	t.context.manifestEnricher = manifestEnricherImport.default;
-	t.context.__internals__ = manifestEnricherImport.__internals__;
+	t.context.manifestEnhancer = manifestEnhancerImport.default;
+	t.context.__internals__ = manifestEnhancerImport.__internals__;
 
 	t.context.fs = {
 		readdir: sinon.stub().callsArgWith(1, null, [])
@@ -53,7 +53,7 @@ test.afterEach.always((t) => {
 // #######################################################
 
 test("Application: No replacement (No properties files)", async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 
 	const input = JSON.stringify({
 		"_version": "1.58.0",
@@ -65,7 +65,7 @@ test("Application: No replacement (No properties files)", async (t) => {
 
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -83,7 +83,7 @@ test("Application: No replacement (No properties files)", async (t) => {
 test("Application: sap.app/i18n (without templates, default bundle): " +
 	"Adds supportedLocales based on available properties files",
 async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -109,7 +109,7 @@ async (t) => {
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18n")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -127,7 +127,7 @@ async (t) => {
 test("Application: sap.app/i18n (with templates, default bundle): " +
 	"Adds supportedLocales based on available properties files",
 async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -155,7 +155,7 @@ async (t) => {
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18n")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -173,7 +173,7 @@ async (t) => {
 test("Application: sap.app/i18n (with templates, custom bundle): " +
 	"Adds supportedLocales based on available properties files",
 async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -202,7 +202,7 @@ async (t) => {
 	fs.readdir.withArgs("/resources/sap/ui/demo/app")
 		.callsArgWith(1, null, ["mybundle_de.properties", "mybundle_en.properties"]);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -220,7 +220,7 @@ async (t) => {
 test("Application: sap.ui5/models: " +
 	"Adds supportedLocales based on available properties files",
 async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -266,7 +266,7 @@ async (t) => {
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties", "i18n_fr.txt"]);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -284,7 +284,7 @@ async (t) => {
 test("Application: sap.ui5/models: " +
 	"Adds supportedLocales based on available properties files (properties files on root level)",
 async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -327,7 +327,7 @@ async (t) => {
 	fs.readdir.withArgs("/resources/sap/ui/demo/app")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -345,7 +345,7 @@ async (t) => {
 test("Application: sap.ui5/models (bundleUrl): " +
 	"Adds supportedLocales based on available properties files",
 async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -390,7 +390,7 @@ async (t) => {
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -408,7 +408,7 @@ async (t) => {
 test("Application: sap.ui5/models (bundleUrl with ui5 protocol): " +
 	"Adds supportedLocales based on available properties files",
 async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -453,7 +453,7 @@ async (t) => {
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -471,7 +471,7 @@ async (t) => {
 test("Application: sap.ui5/models (uri): " +
 	"Adds supportedLocales with available properties files",
 async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -512,7 +512,7 @@ async (t) => {
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -530,7 +530,7 @@ async (t) => {
 test("Application: sap.ui5/models (with terminologies and enhanceWith): " +
 	"Adds supportedLocales based on available properties files",
 async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -699,7 +699,7 @@ async (t) => {
 			"terminologies.retail.i18n_en.properties"
 		]);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -735,7 +735,7 @@ async (t) => {
 test("Application: sap.ui5/models: " +
 	"Do not replace supportedLocales when supportedLocales are already defined",
 async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -761,7 +761,7 @@ async (t) => {
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -778,7 +778,7 @@ async (t) => {
 test("Application: sap.ui5/models: " +
 	"Do not replace supportedLocales when supportedLocales are set to array with empty string",
 async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -804,7 +804,7 @@ async (t) => {
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -821,7 +821,7 @@ async (t) => {
 test("Application: sap.ui5/models: " +
 	"Do not replace supportedLocales when an invalid bundle config is defined (missing bundleUrl or bundleName)",
 async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -842,7 +842,7 @@ async (t) => {
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -859,7 +859,7 @@ async (t) => {
 test("Application: sap.ui5/models: " +
 	"Log error, no supportedLocales generation if fallbackLocale is not part of generation",
 async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -884,7 +884,7 @@ async (t) => {
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -906,7 +906,7 @@ async (t) => {
 test("Application: sap.ui5/models: " +
 	"Log warning, but generate locales if default fallbackLocale is not part of generation",
 async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -949,7 +949,7 @@ async (t) => {
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_fr.properties"]);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -970,7 +970,7 @@ async (t) => {
 });
 
 test("Application: sap.ui5/models: Log verbose if manifest version is not defined at all", async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"sap.app": {
 			"id": "sap.ui.demo.app",
@@ -990,7 +990,7 @@ test("Application: sap.ui5/models: Log verbose if manifest version is not define
 
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -1008,7 +1008,7 @@ test("Application: sap.ui5/models: Log verbose if manifest version is not define
 });
 
 test("Application: sap.ui5/models: Log verbose if manifest version is below 1.21.0", async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.20.0",
 		"sap.app": {
@@ -1032,7 +1032,7 @@ test("Application: sap.ui5/models: Log verbose if manifest version is below 1.21
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18n")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -1052,7 +1052,7 @@ test("Application: sap.ui5/models: Log verbose if manifest version is below 1.21
 test("Application: sap.ui5/models: " +
 	"Do not generate supportedLocales when bundleUrl pointing to a location outside the current project",
 async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -1073,7 +1073,7 @@ async (t) => {
 
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -1093,7 +1093,7 @@ async (t) => {
 test("Application: sap.ui5/models: " +
 	"Do not generate supportedLocales when bundleUrl pointing to a location inside the current project",
 async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -1115,7 +1115,7 @@ async (t) => {
 
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -1135,7 +1135,7 @@ async (t) => {
 test("Application: sap.ui5/models: " +
 	"Do not replace supportedLocales when bundle is not part of the namespace",
 async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -1194,7 +1194,7 @@ async (t) => {
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -1216,7 +1216,7 @@ async (t) => {
 test("Application: sap.ui5/models: " +
 	"Do not generate supportedLocales when bundle is not part of the namespace (bundleUrl with ui5 protocol)",
 async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -1275,7 +1275,7 @@ async (t) => {
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -1296,7 +1296,7 @@ async (t) => {
 test("Application: sap.app/i18n: " +
 	"Adds supportedLocales for terminologies and enhanceWith bundles",
 async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -1448,7 +1448,7 @@ async (t) => {
 			"terminologies.retail.i18n_en.properties"
 		]);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -1482,7 +1482,7 @@ async (t) => {
 });
 
 test("Application: supportedLocales are not added for bundles with absolute url", async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -1540,7 +1540,7 @@ test("Application: supportedLocales are not added for bundles with absolute url"
 
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -1573,7 +1573,7 @@ test("Application: supportedLocales are not added for bundles with absolute url"
 // #######################################################
 
 test("Library: No replacement at all", async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -1587,7 +1587,7 @@ test("Library: No replacement at all", async (t) => {
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18n")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -1604,7 +1604,7 @@ test("Library: No replacement at all", async (t) => {
 test("Library: sap.app/i18n (with templates, no bundle defined): " +
 	"Does not add supportedLocales, as sap.app/i18n is not valid for libraries",
 async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -1619,7 +1619,7 @@ async (t) => {
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18n")
 		.callsArgWith(1, null, ["i18n_de.properties", "i18n_en.properties"]);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -1636,7 +1636,7 @@ async (t) => {
 test("Library: sap.app/i18n (with custom bundle): " +
 	"Does not add supportedLocales, as sap.app/i18n is not valid for libraries",
 async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -1652,7 +1652,7 @@ async (t) => {
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18n")
 		.callsArgWith(1, null, ["mybundle_de.properties", "mybundle_en.properties"]);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -1667,7 +1667,7 @@ async (t) => {
 });
 
 test("Library: sap.ui5/library: Adds supportedLocales based on available properties files", async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -1706,7 +1706,7 @@ test("Library: sap.ui5/library: Adds supportedLocales based on available propert
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc")
 		.callsArgWith(1, null, ["messagebundlec_de.properties", "messagebundlec_en.properties"]);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -1722,7 +1722,7 @@ test("Library: sap.ui5/library: Adds supportedLocales based on available propert
 });
 
 test("Library: sap.ui5/library: Adds supportedLocales based on available properties files (i18n=string)", async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -1757,7 +1757,7 @@ test("Library: sap.ui5/library: Adds supportedLocales based on available propert
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc")
 		.callsArgWith(1, null, ["messagebundlec_de.properties", "messagebundlec_en.properties"]);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -1775,7 +1775,7 @@ test("Library: sap.ui5/library: Adds supportedLocales based on available propert
 test("Library: sap.ui5/library: " +
 	"Adds supportedLocales based on available properties files (i18n=true)",
 async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -1810,7 +1810,7 @@ async (t) => {
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib")
 		.callsArgWith(1, null, ["messagebundle_de.properties", "messagebundle_en.properties"]);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -1826,7 +1826,7 @@ async (t) => {
 });
 
 test("Library: sap.ui5/library: Do not generate supportedLocales with disabled i18n feature", async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -1845,7 +1845,7 @@ test("Library: sap.ui5/library: Do not generate supportedLocales with disabled i
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib")
 		.callsArgWith(1, null, ["messagebundle_de.properties", "messagebundle_en.properties"]);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -1860,7 +1860,7 @@ test("Library: sap.ui5/library: Do not generate supportedLocales with disabled i
 });
 
 test("Library: sap.ui5/library: Adds supportedLocales to terminologies", async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -1919,7 +1919,7 @@ test("Library: sap.ui5/library: Adds supportedLocales to terminologies", async (
 			"messagebundle.sports.properties"
 		]);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -1935,7 +1935,7 @@ test("Library: sap.ui5/library: Adds supportedLocales to terminologies", async (
 });
 
 test("Library: sap.ui5/library: Adds supportedLocales for terminologies not bundle level", async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -1995,7 +1995,7 @@ test("Library: sap.ui5/library: Adds supportedLocales for terminologies not bund
 			"messagebundle.sports.properties"
 		]);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -2011,7 +2011,7 @@ test("Library: sap.ui5/library: Adds supportedLocales for terminologies not bund
 });
 
 test("Library: sap.ui5/library: Adds supportedLocales (with deactivated terminologies)", async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -2071,7 +2071,7 @@ test("Library: sap.ui5/library: Adds supportedLocales (with deactivated terminol
 			"messagebundle.sports.properties"
 		]);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -2087,7 +2087,7 @@ test("Library: sap.ui5/library: Adds supportedLocales (with deactivated terminol
 });
 
 test("Library: sap.ui5/library: Adds supportedLocales (with enhanceWith)", async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -2160,7 +2160,7 @@ test("Library: sap.ui5/library: Adds supportedLocales (with enhanceWith)", async
 			"messagebundlenc2.properties"
 		]);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -2176,7 +2176,7 @@ test("Library: sap.ui5/library: Adds supportedLocales (with enhanceWith)", async
 });
 
 test("Library: sap.ui5/library: Adds supportedLocales (with enhanceWith and terminologies)", async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -2303,7 +2303,7 @@ test("Library: sap.ui5/library: Adds supportedLocales (with enhanceWith and term
 			"messagebundlec.properties"
 		]);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -2319,7 +2319,7 @@ test("Library: sap.ui5/library: Adds supportedLocales (with enhanceWith and term
 });
 
 test("Library: sap.ui5/library: Ignores fallbackLocale for terminologies", async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -2426,7 +2426,7 @@ test("Library: sap.ui5/library: Ignores fallbackLocale for terminologies", async
 			"messagebundlec.properties"
 		]);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -2443,7 +2443,7 @@ test("Library: sap.ui5/library: Ignores fallbackLocale for terminologies", async
 
 test("Library: sap.ui5/library: " +
 "Does not not add supportedLocales for enhanceWith when bundle has supportedLocales defined", async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -2569,7 +2569,7 @@ test("Library: sap.ui5/library: " +
 			"messagebundlec.properties"
 		]);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -2593,7 +2593,7 @@ test("Library: sap.ui5/library: " +
 
 test("Library: sap.ui5/library: " +
 "Does not not add supportedLocales for enhanceWith when bundle has invalid fallbackLocale defined", async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -2723,7 +2723,7 @@ test("Library: sap.ui5/library: " +
 			"messagebundlec.properties"
 		]);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -2744,7 +2744,7 @@ test("Library: sap.ui5/library: " +
 });
 
 test("fs.readdir error handling", async (t) => {
-	const {manifestEnricher, fs, createResource} = t.context;
+	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
@@ -2764,7 +2764,7 @@ test("fs.readdir error handling", async (t) => {
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18n")
 		.callsArgWith(1, error);
 
-	const processedResources = await manifestEnricher({
+	const processedResources = await manifestEnhancer({
 		resources: [resource],
 		fs
 	});
@@ -2781,9 +2781,9 @@ test("fs.readdir error handling", async (t) => {
 		"readdir has been called with expected path that causes a ENOENT error");
 });
 
-test("ManifestEnricher#run: multiple parallel executions are not supported", async (t) => {
+test("ManifestEnhancer#run: multiple parallel executions are not supported", async (t) => {
 	const {fs} = t.context;
-	const {ManifestEnricher} = t.context.__internals__;
+	const {ManifestEnhancer} = t.context.__internals__;
 
 	const manifest = JSON.stringify({
 		"_version": "1.58.0",
@@ -2793,17 +2793,17 @@ test("ManifestEnricher#run: multiple parallel executions are not supported", asy
 	});
 	const filePath = "/manifest.json";
 
-	const manifestEnricher = new ManifestEnricher(manifest, filePath, fs);
+	const manifestEnhancer = new ManifestEnhancer(manifest, filePath, fs);
 
-	manifestEnricher.run();
-	await t.throwsAsync(manifestEnricher.run(), {
-		message: "ManifestEnricher#run can only be invoked once per instance"
+	manifestEnhancer.run();
+	await t.throwsAsync(manifestEnhancer.run(), {
+		message: "ManifestEnhancer#run can only be invoked once per instance"
 	});
 });
 
-test("ManifestEnricher#getSupportedLocales", async (t) => {
+test("manifestEnhancer#getSupportedLocales", async (t) => {
 	const {fs} = t.context;
-	const {ManifestEnricher} = t.context.__internals__;
+	const {ManifestEnhancer} = t.context.__internals__;
 
 	const manifest = JSON.stringify({
 		"_version": "1.58.0",
@@ -2813,7 +2813,7 @@ test("ManifestEnricher#getSupportedLocales", async (t) => {
 	});
 	const filePath = "/manifest.json";
 
-	const manifestEnricher = new ManifestEnricher(manifest, filePath, fs);
+	const manifestEnhancer = new ManifestEnhancer(manifest, filePath, fs);
 
 	fs.readdir.withArgs("/i18n")
 		.callsArgWith(1, null, [
@@ -2821,22 +2821,22 @@ test("ManifestEnricher#getSupportedLocales", async (t) => {
 			"i18n_en.properties"
 		]);
 
-	t.deepEqual(await manifestEnricher.getSupportedLocales("./i18n/i18n.properties"), ["", "en"]);
-	t.deepEqual(await manifestEnricher.getSupportedLocales("i18n/../i18n/i18n.properties"), ["", "en"]);
-	t.deepEqual(await manifestEnricher.getSupportedLocales("ui5://sap/ui/demo/app/i18n/i18n.properties"), ["", "en"]);
+	t.deepEqual(await manifestEnhancer.getSupportedLocales("./i18n/i18n.properties"), ["", "en"]);
+	t.deepEqual(await manifestEnhancer.getSupportedLocales("i18n/../i18n/i18n.properties"), ["", "en"]);
+	t.deepEqual(await manifestEnhancer.getSupportedLocales("ui5://sap/ui/demo/app/i18n/i18n.properties"), ["", "en"]);
 
 	// Path traversal to root and then into application namespace
 	// This works, but is not recommended at all! It also likely fails at runtime
-	t.deepEqual(await manifestEnricher.getSupportedLocales(
+	t.deepEqual(await manifestEnhancer.getSupportedLocales(
 		"../../../../../../../../../../../../resources/sap/ui/demo/app/i18n/i18n.properties"
 	), ["", "en"]);
 
 	t.is(fs.readdir.callCount, 4);
 });
 
-test("ManifestEnricher#getSupportedLocales (absolute / invalid URLs)", async (t) => {
+test("manifestEnhancer#getSupportedLocales (absolute / invalid URLs)", async (t) => {
 	const {fs} = t.context;
-	const {ManifestEnricher} = t.context.__internals__;
+	const {ManifestEnhancer} = t.context.__internals__;
 
 	const manifest = JSON.stringify({
 		"_version": "1.58.0",
@@ -2846,34 +2846,34 @@ test("ManifestEnricher#getSupportedLocales (absolute / invalid URLs)", async (t)
 	});
 	const filePath = "/manifest.json";
 
-	const manifestEnricher = new ManifestEnricher(manifest, filePath, fs);
+	const manifestEnhancer = new ManifestEnhancer(manifest, filePath, fs);
 
 	// Server-absolute URLs
-	t.deepEqual(await manifestEnricher.getSupportedLocales("/i18n/i18n.properties"), []);
-	t.deepEqual(await manifestEnricher.getSupportedLocales("/../i18n/i18n.properties"), []);
+	t.deepEqual(await manifestEnhancer.getSupportedLocales("/i18n/i18n.properties"), []);
+	t.deepEqual(await manifestEnhancer.getSupportedLocales("/../i18n/i18n.properties"), []);
 
 	// Server-absolute URL within application namespace
-	t.deepEqual(await manifestEnricher.getSupportedLocales("/resources/sap/ui/demo/app/i18n/i18n.properties"), []);
+	t.deepEqual(await manifestEnhancer.getSupportedLocales("/resources/sap/ui/demo/app/i18n/i18n.properties"), []);
 
 	// Absolute URLs
-	t.deepEqual(await manifestEnricher.getSupportedLocales("http://example.com/i18n.properties"), []);
-	t.deepEqual(await manifestEnricher.getSupportedLocales("https://example.com/i18n.properties"), []);
-	t.deepEqual(await manifestEnricher.getSupportedLocales("ftp://example.com/i18n.properties"), []);
-	t.deepEqual(await manifestEnricher.getSupportedLocales("sftp:i18n.properties"), []);
-	t.deepEqual(await manifestEnricher.getSupportedLocales("file://i18n.properties"), []);
+	t.deepEqual(await manifestEnhancer.getSupportedLocales("http://example.com/i18n.properties"), []);
+	t.deepEqual(await manifestEnhancer.getSupportedLocales("https://example.com/i18n.properties"), []);
+	t.deepEqual(await manifestEnhancer.getSupportedLocales("ftp://example.com/i18n.properties"), []);
+	t.deepEqual(await manifestEnhancer.getSupportedLocales("sftp:i18n.properties"), []);
+	t.deepEqual(await manifestEnhancer.getSupportedLocales("file://i18n.properties"), []);
 
 	// Path traversal to root
-	t.deepEqual(await manifestEnricher.getSupportedLocales("../../../../../../../../../../../../i18n.properties"), []);
+	t.deepEqual(await manifestEnhancer.getSupportedLocales("../../../../../../../../../../../../i18n.properties"), []);
 
 	// Relative ui5-protocol URL
-	t.deepEqual(await manifestEnricher.getSupportedLocales("ui5:i18n.properties"), []);
+	t.deepEqual(await manifestEnhancer.getSupportedLocales("ui5:i18n.properties"), []);
 
 	t.is(fs.readdir.callCount, 0, "readdir should not be called for any absolute / invalid URL");
 });
 
-test("ManifestEnricher#getSupportedLocales (error handling)", async (t) => {
+test("manifestEnhancer#getSupportedLocales (error handling)", async (t) => {
 	const {fs} = t.context;
-	const {ManifestEnricher} = t.context.__internals__;
+	const {ManifestEnhancer} = t.context.__internals__;
 
 	const manifest = JSON.stringify({
 		"_version": "1.58.0",
@@ -2883,7 +2883,7 @@ test("ManifestEnricher#getSupportedLocales (error handling)", async (t) => {
 	});
 	const filePath = "/manifest.json";
 
-	const manifestEnricher = new ManifestEnricher(manifest, filePath, fs);
+	const manifestEnhancer = new ManifestEnhancer(manifest, filePath, fs);
 
 	// NOTE: @ui5/fs fsInterface currently does not throw ENOENT errors but instead returns an empty array
 	// However, this is not guaranteed and might change in the future.
@@ -2898,10 +2898,10 @@ test("ManifestEnricher#getSupportedLocales (error handling)", async (t) => {
 		.callsArgWith(1, unexpectedError);
 
 	// Error handling ENOENT
-	t.deepEqual(await manifestEnricher.getSupportedLocales("i18n/i18n.properties"), []);
+	t.deepEqual(await manifestEnhancer.getSupportedLocales("i18n/i18n.properties"), []);
 
 	// Unexpected errors should be thrown
-	await t.throwsAsync(manifestEnricher.getSupportedLocales("i18n-unexpected-error/i18n.properties"), {
+	await t.throwsAsync(manifestEnhancer.getSupportedLocales("i18n-unexpected-error/i18n.properties"), {
 		is: unexpectedError
 	});
 
