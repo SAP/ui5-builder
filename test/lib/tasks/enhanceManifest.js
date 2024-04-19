@@ -38,7 +38,7 @@ test.afterEach.always((t) => {
 	t.context.sinon.restore();
 });
 
-test.serial("Transforms manifest.json resource", async (t) => {
+test.serial("Transforms single manifest.json resource", async (t) => {
 	const {enhanceManifest, log} = t.context;
 
 	t.plan(6);
@@ -82,6 +82,215 @@ test.serial("Transforms manifest.json resource", async (t) => {
 
 	t.true(t.context.manifestEnhancerStub.calledWithExactly({
 		resources: [resource],
+		fs: "fs interface"
+	}), "Processor should be called with expected arguments");
+
+	t.true(log.warn.notCalled, "No warnings should be logged");
+	t.true(log.error.notCalled, "No errors should be logged");
+});
+
+test.serial("Transforms all manifest.json resources", async (t) => {
+	const {enhanceManifest, log} = t.context;
+
+	t.plan(6);
+
+	const resourceLib = createResource({
+		path: "/resources/sap/ui/demo/lib/manifest.json",
+		string: `{
+	"_version": "1.58.0",
+	"sap.app": {
+		"id": "sap.ui.demo.lib",
+		"type": "library"
+	},
+	"sap.ui5": {
+		"library": {
+			"i18n": {
+				"bundleUrl": "i18n/i18n.properties"
+			}
+		}
+	}
+}`,
+		project: t.context.workspace._project
+	});
+
+	const resourceReuseComp1 = createResource({
+		path: "/resources/sap/ui/demo/lib/comp1/manifest.json",
+		string: `{
+	"_version": "1.58.0",
+	"sap.app": {
+		"id": "sap.ui.demo.lib",
+		"type": "component"
+	},
+	"sap.ui5": {
+		"models": {
+			"i18n": {
+				"bundleUrl": "i18n/i18n.properties"
+			}
+		}
+	}
+}`,
+		project: t.context.workspace._project
+	});
+
+	const resourceReuseComp2 = createResource({
+		path: "/resources/sap/ui/demo/lib/comp2/manifest.json",
+		string: `{
+	"_version": "1.58.0",
+	"sap.app": {
+		"id": "sap.ui.demo.lib",
+		"type": "component"
+	},
+	"sap.ui5": {
+		"models": {
+			"i18n": {
+				"bundleUrl": "i18n/i18n.properties",
+				"supportedLocales": ["fr", "en"]
+			}
+		}
+	}
+}`,
+		project: t.context.workspace._project
+	});
+
+	const workspace = {
+		byGlob: () => {
+			return Promise.resolve([resourceLib, resourceReuseComp1, resourceReuseComp2]);
+		},
+		write: (actualResource) => {
+			const path = actualResource.getPath();
+			let expectedResource;
+			if (path === "/resources/sap/ui/demo/lib/manifest.json") {
+				expectedResource = resourceLib;
+			} else if (path === "/resources/sap/ui/demo/lib/comp1/manifest.json") {
+				expectedResource = resourceReuseComp1;
+			} else if (path === "/resources/sap/ui/demo/lib/comp2/manifest.json") {
+				t.fail("Resoure should be written, because it was not returned by the processor");
+			} else {
+				t.fail("No other resoure should be written");
+			}
+			t.deepEqual(actualResource, expectedResource,
+				"Expected resource is written back to workspace");
+		}
+	};
+
+	t.context.manifestEnhancerStub.returns([resourceLib, resourceReuseComp1]);
+
+	await enhanceManifest({
+		workspace,
+		options: {
+			projectNamespace: "sap/ui/demo/lib"
+		}
+	});
+
+	t.is(t.context.manifestEnhancerStub.callCount, 1,
+		"Processor should be called once");
+
+	t.true(t.context.manifestEnhancerStub.calledWithExactly({
+		resources: [resourceLib, resourceReuseComp1, resourceReuseComp2],
+		fs: "fs interface"
+	}), "Processor should be called with expected arguments");
+
+	t.true(log.warn.notCalled, "No warnings should be logged");
+	t.true(log.error.notCalled, "No errors should be logged");
+});
+
+test.serial("Transforms multiple manifest.json resources", async (t) => {
+	const {enhanceManifest, log} = t.context;
+
+	t.plan(7);
+
+	const resourceLib = createResource({
+		path: "/resources/sap/ui/demo/lib/manifest.json",
+		string: `{
+	"_version": "1.58.0",
+	"sap.app": {
+		"id": "sap.ui.demo.lib",
+		"type": "library"
+	},
+	"sap.ui5": {
+		"library": {
+			"i18n": {
+				"bundleUrl": "i18n/i18n.properties"
+			}
+		}
+	}
+}`,
+		project: t.context.workspace._project
+	});
+
+	const resourceReuseComp1 = createResource({
+		path: "/resources/sap/ui/demo/lib/comp1/manifest.json",
+		string: `{
+	"_version": "1.58.0",
+	"sap.app": {
+		"id": "sap.ui.demo.lib",
+		"type": "component"
+	},
+	"sap.ui5": {
+		"models": {
+			"i18n": {
+				"bundleUrl": "i18n/i18n.properties"
+			}
+		}
+	}
+}`,
+		project: t.context.workspace._project
+	});
+
+	const resourceReuseComp2 = createResource({
+		path: "/resources/sap/ui/demo/lib/comp2/manifest.json",
+		string: `{
+	"_version": "1.58.0",
+	"sap.app": {
+		"id": "sap.ui.demo.lib",
+		"type": "component"
+	},
+	"sap.ui5": {
+		"models": {
+			"i18n": {
+				"bundleUrl": "i18n/i18n.properties"
+			}
+		}
+	}
+}`,
+		project: t.context.workspace._project
+	});
+
+	const workspace = {
+		byGlob: () => {
+			return Promise.resolve([resourceLib, resourceReuseComp1, resourceReuseComp2]);
+		},
+		write: (actualResource) => {
+			const path = actualResource.getPath();
+			let expectedResource;
+			if (path === "/resources/sap/ui/demo/lib/manifest.json") {
+				expectedResource = resourceLib;
+			} else if (path === "/resources/sap/ui/demo/lib/comp1/manifest.json") {
+				expectedResource = resourceReuseComp1;
+			} else if (path === "/resources/sap/ui/demo/lib/comp2/manifest.json") {
+				expectedResource = resourceReuseComp2;
+			} else {
+				t.fail("No other resoure should be written");
+			}
+			t.deepEqual(actualResource, expectedResource,
+				"Expected resource is written back to workspace");
+		}
+	};
+
+	t.context.manifestEnhancerStub.returns([resourceLib, resourceReuseComp1, resourceReuseComp2]);
+
+	await enhanceManifest({
+		workspace,
+		options: {
+			projectNamespace: "sap/ui/demo/lib"
+		}
+	});
+
+	t.is(t.context.manifestEnhancerStub.callCount, 1,
+		"Processor should be called once");
+
+	t.true(t.context.manifestEnhancerStub.calledWithExactly({
+		resources: [resourceLib, resourceReuseComp1, resourceReuseComp2],
 		fs: "fs interface"
 	}), "Processor should be called with expected arguments");
 
