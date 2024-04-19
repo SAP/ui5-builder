@@ -70,7 +70,7 @@ test("Application: No replacement (No properties files)", async (t) => {
 		fs
 	});
 
-	t.deepEqual(processedResources, [resource], "Provided resources are always returned");
+	t.deepEqual(processedResources, [], "Only enhanced resources are returned");
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
@@ -711,22 +711,27 @@ async (t) => {
 
 	t.is(t.context.logVerboseSpy.callCount, 6, "One verbose messages should be logged");
 	t.is(t.context.logVerboseSpy.getCall(0).args[0],
-		"bundleUrl '../some/path/to/i18n/i18n.properties' points to a bundle outside of the " +
-		"current namespace 'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
+		"/resources/sap/ui/demo/app/manifest.json: bundleUrl '../some/path/to/i18n/i18n.properties' points to a " +
+		"bundle outside of the current namespace 'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
 	t.is(t.context.logVerboseSpy.getCall(1).args[0],
-		"bundleUrl '../../../../appvar2/i18n/i18n/properties.properties' points to a bundle outside of " +
+		"/resources/sap/ui/demo/app/manifest.json: bundleUrl " +
+		"'../../../../appvar2/i18n/i18n/properties.properties' points to a bundle outside of " +
 		"the current namespace 'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
 	t.is(t.context.logVerboseSpy.getCall(2).args[0],
-		"bundleUrl '../some/path/to/terminologies.oil.i18n.properties' points to a bundle outside of the " +
+		"/resources/sap/ui/demo/app/manifest.json: bundleUrl " +
+		"'../some/path/to/terminologies.oil.i18n.properties' points to a bundle outside of the " +
 		"current namespace 'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
 	t.is(t.context.logVerboseSpy.getCall(3).args[0],
-		"bundleUrl '../some/path/to/terminologies.retail.i18n.properties' points to a bundle outside of " +
+		"/resources/sap/ui/demo/app/manifest.json: bundleUrl " +
+		"'../some/path/to/terminologies.retail.i18n.properties' points to a bundle outside of " +
 		"the current namespace 'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
 	t.is(t.context.logVerboseSpy.getCall(4).args[0],
-		"bundleUrl '../../../../appvar2/i18n/terminologies/oil/i18n.properties' points to a bundle outside " +
+		"/resources/sap/ui/demo/app/manifest.json: bundleUrl " +
+		"'../../../../appvar2/i18n/terminologies/oil/i18n.properties' points to a bundle outside " +
 		"of the current namespace 'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
 	t.is(t.context.logVerboseSpy.getCall(5).args[0],
-		"bundleUrl '../../../../appvar2/i18n/terminologies/retail/i18n.properties' points to a bundle " +
+		"/resources/sap/ui/demo/app/manifest.json: bundleUrl " +
+		"'../../../../appvar2/i18n/terminologies/retail/i18n.properties' points to a bundle " +
 		"outside of the current namespace 'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
@@ -766,7 +771,7 @@ async (t) => {
 		fs
 	});
 
-	t.deepEqual(processedResources, [resource], "Provided resources are always returned");
+	t.deepEqual(processedResources, [], "Only enhanced resources are returned");
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
@@ -809,7 +814,7 @@ async (t) => {
 		fs
 	});
 
-	t.deepEqual(processedResources, [resource], "Provided resources are always returned");
+	t.deepEqual(processedResources, [], "Only enhanced resources are returned");
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
@@ -847,7 +852,7 @@ async (t) => {
 		fs
 	});
 
-	t.deepEqual(processedResources, [resource], "Provided resources are always returned");
+	t.deepEqual(processedResources, [], "Only enhanced resources are returned");
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
@@ -889,7 +894,7 @@ async (t) => {
 		fs
 	});
 
-	t.deepEqual(processedResources, [resource], "Provided resources are always returned");
+	t.deepEqual(processedResources, [], "Only enhanced resources are returned");
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
@@ -897,8 +902,8 @@ async (t) => {
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.is(t.context.logErrorSpy.callCount, 1, "1 error should be logged");
 	t.is(t.context.logErrorSpy.getCall(0).args[0],
-		"manifest.json: Generated supported locales ('de', 'en') for bundle 'i18nModel/i18n.properties' " +
-		"not containing the defined fallback locale 'fr'. "+
+		"/resources/sap/ui/demo/app/manifest.json: Generated supported locales ('de', 'en') for " +
+		"bundle 'i18nModel/i18n.properties' not containing the defined fallback locale 'fr'. "+
 		"Either provide a properties file for defined fallbackLocale or configure another available fallbackLocale",
 		"Error message should be correct");
 });
@@ -962,8 +967,8 @@ async (t) => {
 	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
 	t.is(t.context.logWarnSpy.callCount, 1, "1 warning should be logged");
 	t.is(t.context.logWarnSpy.getCall(0).args[0],
-		"manifest.json: Generated supported locales ('de', 'fr') for bundle 'i18nModel/i18n.properties' " +
-		"do not contain default fallback locale 'en'. " +
+		"/resources/sap/ui/demo/app/manifest.json: Generated supported locales ('de', 'fr') " +
+		"for bundle 'i18nModel/i18n.properties' do not contain default fallback locale 'en'. " +
 		"Either provide a properties file for 'en' or configure another available fallbackLocale",
 		"1 warning should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
@@ -995,13 +1000,13 @@ test("Application: sap.ui5/models: Log verbose if manifest version is not define
 		fs
 	});
 
-	t.deepEqual(processedResources, [resource], "Provided resources are always returned");
+	t.deepEqual(processedResources, [], "Only enhanced resources are returned");
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
 	t.is(t.context.logVerboseSpy.callCount, 1, "1 verbose should be logged");
 	t.is(t.context.logVerboseSpy.getCall(0).args[0],
-		"manifest.json: _version is not defined. No supportedLocales are generated");
+		"/resources/sap/ui/demo/app/manifest.json: _version is not defined. No supportedLocales are generated");
 	t.true(t.context.logWarnSpy.notCalled, "No warning should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 	t.is(fs.readdir.callCount, 0, "readdir should not be called because _version is not defined");
@@ -1037,13 +1042,14 @@ test("Application: sap.ui5/models: Log verbose if manifest version is below 1.21
 		fs
 	});
 
-	t.deepEqual(processedResources, [resource], "Provided resources are always returned");
+	t.deepEqual(processedResources, [], "Only enhanced resources are returned");
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
 	t.is(t.context.logVerboseSpy.callCount, 1, "1 verbose should be logged");
 	t.is(t.context.logVerboseSpy.getCall(0).args[0],
-		"manifest.json: _version is lower than 1.21.0 so no supportedLocales can be generated");
+		"/resources/sap/ui/demo/app/manifest.json: _version is lower than 1.21.0 " +
+		"so no supportedLocales can be generated");
 	t.true(t.context.logWarnSpy.notCalled, "No warning should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 	t.is(fs.readdir.callCount, 0, "readdir should not be called because _version is lower than 1.21.0");
@@ -1078,14 +1084,14 @@ async (t) => {
 		fs
 	});
 
-	t.deepEqual(processedResources, [resource], "Provided resources are always returned");
+	t.deepEqual(processedResources, [], "Only enhanced resources are returned");
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
 	t.is(t.context.logVerboseSpy.callCount, 1, "1 verbose should be logged");
 	t.is(t.context.logVerboseSpy.getCall(0).args[0],
-		"bundleUrl '../../myapp2/i18n/i18n.properties' points to a bundle outside of the current namespace " +
-		"'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
+		"/resources/sap/ui/demo/app/manifest.json: bundleUrl '../../myapp2/i18n/i18n.properties' points to a bundle " +
+		"outside of the current namespace " + "'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
 	t.true(t.context.logWarnSpy.notCalled, "No warning should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -1120,14 +1126,14 @@ async (t) => {
 		fs
 	});
 
-	t.deepEqual(processedResources, [resource], "Provided resources are always returned");
+	t.deepEqual(processedResources, [], "Only enhanced resources are returned");
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
 	t.is(t.context.logVerboseSpy.callCount, 1, "1 verbose should be logged");
 	t.is(t.context.logVerboseSpy.getCall(0).args[0],
-		`bundleUrl '../i18n/i18n.properties' points to a bundle outside of the current namespace ` +
-		`'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped`);
+		"/resources/sap/ui/demo/app/manifest.json: bundleUrl '../i18n/i18n.properties' points to a bundle " +
+		"outside of the current namespace 'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
 	t.true(t.context.logWarnSpy.notCalled, "No warning should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -1206,9 +1212,8 @@ async (t) => {
 
 	t.is(t.context.logVerboseSpy.callCount, 1);
 	t.is(t.context.logVerboseSpy.getCall(0).args[0],
-		// TODO: This message should use the original bundleName instead of the resolved one
-		"bundleUrl '../lib/i18n/i18n.properties' points to a bundle outside of the current namespace " +
-		"'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
+		"/resources/sap/ui/demo/app/manifest.json: bundleUrl '../lib/i18n/i18n.properties' points to a bundle " +
+		"outside of the current namespace 'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -1287,8 +1292,8 @@ async (t) => {
 
 	t.is(t.context.logVerboseSpy.callCount, 1);
 	t.is(t.context.logVerboseSpy.getCall(0).args[0],
-		"bundleUrl 'ui5://sap/ui/demo/lib/i18n/i18n.properties' points to a bundle outside of the current namespace " +
-		"'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
+		"/resources/sap/ui/demo/app/manifest.json: bundleUrl 'ui5://sap/ui/demo/lib/i18n/i18n.properties' points to a bundle " +
+		"outside of the current namespace 'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -1460,23 +1465,30 @@ async (t) => {
 
 	t.is(t.context.logVerboseSpy.callCount, 6, "One verbose messages should be logged");
 	t.is(t.context.logVerboseSpy.getCall(0).args[0],
-		"bundleUrl '../some/path/to/i18n/i18n.properties' points to a bundle outside of the " +
-		"current namespace 'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
+		"/resources/sap/ui/demo/app/manifest.json: bundleUrl '../some/path/to/i18n/i18n.properties' points to a " +
+		"bundle outside of the current namespace 'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
 	t.is(t.context.logVerboseSpy.getCall(1).args[0],
-		"bundleUrl '../../../../appvar2/i18n/i18n/properties.properties' points to a bundle outside of " +
-		"the current namespace 'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
+		"/resources/sap/ui/demo/app/manifest.json: bundleUrl '../../../../appvar2/i18n/i18n/properties.properties' " +
+		"points to a bundle outside of the current namespace 'sap.ui.demo.app', " +
+		"enhancement of 'supportedLocales' is skipped");
 	t.is(t.context.logVerboseSpy.getCall(2).args[0],
-		"bundleUrl '../some/path/to/terminologies.oil.i18n.properties' points to a bundle outside of the " +
-		"current namespace 'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
+		"/resources/sap/ui/demo/app/manifest.json: bundleUrl '../some/path/to/terminologies.oil.i18n.properties' " +
+		"points to a bundle outside of the current namespace 'sap.ui.demo.app', " +
+		"enhancement of 'supportedLocales' is skipped");
 	t.is(t.context.logVerboseSpy.getCall(3).args[0],
-		"bundleUrl '../some/path/to/terminologies.retail.i18n.properties' points to a bundle outside of " +
-		"the current namespace 'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
+		"/resources/sap/ui/demo/app/manifest.json: bundleUrl '../some/path/to/terminologies.retail.i18n.properties' " +
+		"points to a bundle outside of the current namespace 'sap.ui.demo.app', " +
+		"enhancement of 'supportedLocales' is skipped");
 	t.is(t.context.logVerboseSpy.getCall(4).args[0],
-		"bundleUrl '../../../../appvar2/i18n/terminologies/oil/i18n.properties' points to a bundle outside " +
-		"of the current namespace 'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
+		"/resources/sap/ui/demo/app/manifest.json: bundleUrl " +
+		"'../../../../appvar2/i18n/terminologies/oil/i18n.properties' " +
+		"points to a bundle outside of the current namespace 'sap.ui.demo.app', " +
+		"enhancement of 'supportedLocales' is skipped");
 	t.is(t.context.logVerboseSpy.getCall(5).args[0],
-		"bundleUrl '../../../../appvar2/i18n/terminologies/retail/i18n.properties' points to a bundle " +
-		"outside of the current namespace 'sap.ui.demo.app', enhancement of 'supportedLocales' is skipped");
+		"/resources/sap/ui/demo/app/manifest.json: bundleUrl " +
+		"'../../../../appvar2/i18n/terminologies/retail/i18n.properties' " +
+		"points to a bundle outside of the current namespace 'sap.ui.demo.app', " +
+		"enhancement of 'supportedLocales' is skipped");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
@@ -1545,7 +1557,7 @@ test("Application: supportedLocales are not added for bundles with absolute url"
 		fs
 	});
 
-	t.deepEqual(processedResources, [resource], "Input resource is returned");
+	t.deepEqual(processedResources, [], "Resource is not changed, therefore not returned");
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
@@ -1592,7 +1604,7 @@ test("Library: No replacement at all", async (t) => {
 		fs
 	});
 
-	t.deepEqual(processedResources, [resource], "Provided resources are always returned");
+	t.deepEqual(processedResources, [], "Only enhanced resources are returned");
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
@@ -1624,7 +1636,7 @@ async (t) => {
 		fs
 	});
 
-	t.deepEqual(processedResources, [resource], "Provided resources are always returned");
+	t.deepEqual(processedResources, [], "Only enhanced resources are returned");
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
@@ -1657,7 +1669,7 @@ async (t) => {
 		fs
 	});
 
-	t.deepEqual(processedResources, [resource], "Provided resources are always returned");
+	t.deepEqual(processedResources, [], "Only enhanced resources are returned");
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
@@ -1850,7 +1862,7 @@ test("Library: sap.ui5/library: Do not generate supportedLocales with disabled i
 		fs
 	});
 
-	t.deepEqual(processedResources, [resource], "Provided resources are always returned");
+	t.deepEqual(processedResources, [], "Only enhanced resources are returned");
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 
@@ -2737,7 +2749,7 @@ test("Library: sap.ui5/library: " +
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.is(t.context.logErrorSpy.callCount, 1, "One error should be logged");
 	t.deepEqual(t.context.logErrorSpy.getCall(0).args, [
-		"manifest.json: Generated supported locales ('', 'de', 'en') for bundle " +
+		"/resources/sap/ui/demo/lib/manifest.json: Generated supported locales ('', 'de', 'en') for bundle " +
 		"'myfolder2/messagebundlenc2.properties' not containing the " +
 		"defined fallback locale 'es'. Either provide a properties file for defined fallbackLocale " +
 		"or configure another available fallbackLocale"]);
@@ -2769,7 +2781,7 @@ test("fs.readdir error handling", async (t) => {
 		fs
 	});
 
-	t.deepEqual(processedResources, [resource], "Provided resources are always returned");
+	t.deepEqual(processedResources, [], "Only enhanced resources are returned");
 
 	t.is(resource.setString.callCount, 0, "setString should not be called");
 

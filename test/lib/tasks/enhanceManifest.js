@@ -82,16 +82,58 @@ test.serial("Transforms manifest.json resource", async (t) => {
 
 	t.true(t.context.manifestEnhancerStub.calledWithExactly({
 		resources: [resource],
-		fs: "fs interface",
-		options: {
-			projectNamespace: "sap/ui/demo/app"
-		}
+		fs: "fs interface"
 	}), "Processor should be called with expected arguments");
 
 	t.true(log.warn.notCalled, "No warnings should be logged");
 	t.true(log.error.notCalled, "No errors should be logged");
 });
 
-// test.serial("Should not rewrite the manifest.json if no changes were made", (t) => {
+test.serial("Should not rewrite the manifest.json if no changes were made", async (t) => {
+	const {enhanceManifest, log} = t.context;
 
-// });
+	t.plan(5);
+
+	const resource = createResource({
+		path: "/resources/sap/ui/demo/app/manifest.json",
+		string: `{
+"_version": "1.58.0",
+"sap.app": {
+	"id": "sap.ui.demo.app",
+	"type": "application"
+}
+`,
+		project: t.context.workspace._project
+	});
+
+	const workspace = {
+		byGlob: (actualPath) => {
+			t.is(actualPath, "/resources/sap/ui/demo/app/**/manifest.json",
+				"Reads all manifest.json files");
+			return Promise.resolve([resource]);
+		},
+		write: (actualResource) => {
+			t.fail("No resource should be rewritten");
+		}
+	};
+
+	t.context.manifestEnhancerStub.returns([]);
+
+	await enhanceManifest({
+		workspace,
+		options: {
+			projectNamespace: "sap/ui/demo/app"
+		}
+	});
+
+	t.is(t.context.manifestEnhancerStub.callCount, 1,
+		"Processor should be called once");
+
+	t.true(t.context.manifestEnhancerStub.calledWithExactly({
+		resources: [resource],
+		fs: "fs interface"
+	}), "Processor should be called with expected arguments");
+
+	t.true(log.warn.notCalled, "No warnings should be logged");
+	t.true(log.error.notCalled, "No errors should be logged");
+});
