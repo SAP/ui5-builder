@@ -52,7 +52,7 @@ test.serial("integration: build library.d with library preload", async (t) => {
 	assert.directoryDeepEqual(destPath, expectedPath);
 
 	// Check for all file contents
-	t.is(expectedFiles.length, 7, "7 files are expected");
+	t.is(expectedFiles.length, 8, "8 files are expected");
 	expectedFiles.forEach((expectedFile) => {
 		const relativeFile = path.relative(expectedPath, expectedFile);
 		const destFile = path.join(destPath, relativeFile);
@@ -105,7 +105,7 @@ test.serial("integration: build library.d-minified with library preload", async 
 	assert.directoryDeepEqual(destPath, expectedPath);
 
 	// Check for all file contents
-	t.is(expectedFiles.length, 9, "9 files are expected");
+	t.is(expectedFiles.length, 11, "11 files are expected");
 	expectedFiles.forEach((expectedFile) => {
 		const relativeFile = path.relative(expectedPath, expectedFile);
 		const destFile = path.join(destPath, relativeFile);
