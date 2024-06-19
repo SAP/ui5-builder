@@ -45,6 +45,16 @@ test.serial("Builder returns single bundle", async (t) => {
 	const bundleOptions = {
 		"some": "option"
 	};
+	const effectiveBundleDefinition = {
+		// Defaults
+		"resolve": false,
+		"resolveConditional": false,
+		"renderer": false,
+		"sort": true,
+		"declareRawModules": false,
+
+		"some": "definition"
+	};
 
 	const createdBundle = {
 		name: "BundleName.js",
@@ -92,7 +102,7 @@ test.serial("Builder returns single bundle", async (t) => {
 
 	t.is(builder.createBundle.callCount, 1, "builder.createBundle should be called once");
 	t.is(builder.createBundle.getCall(0).args.length, 2);
-	t.is(builder.createBundle.getCall(0).args[0], bundleDefinition,
+	t.deepEqual(builder.createBundle.getCall(0).args[0], effectiveBundleDefinition,
 		"builder.createBundle should be called with bundleDefinition");
 	t.deepEqual(builder.createBundle.getCall(0).args[1], {
 		// default bundleOptions
@@ -130,6 +140,17 @@ test.serial("Builder returns multiple bundles", async (t) => {
 	};
 	const bundleOptions = {
 		"some": "option"
+	};
+
+	const effectiveBundleDefinition = {
+		// Defaults
+		"resolve": false,
+		"resolveConditional": false,
+		"renderer": false,
+		"sort": true,
+		"declareRawModules": false,
+
+		"some": "definition"
 	};
 
 	const createdBundles = [
@@ -203,7 +224,7 @@ test.serial("Builder returns multiple bundles", async (t) => {
 
 	t.is(builder.createBundle.callCount, 1, "builder.createBundle should be called once");
 	t.is(builder.createBundle.getCall(0).args.length, 2);
-	t.is(builder.createBundle.getCall(0).args[0], bundleDefinition,
+	t.deepEqual(builder.createBundle.getCall(0).args[0], effectiveBundleDefinition,
 		"builder.createBundle should be called with bundleDefinition");
 	t.deepEqual(builder.createBundle.getCall(0).args[1], {
 		// default bundleOptions
@@ -243,6 +264,16 @@ test.serial("bundleOptions default (no options passed)", async (t) => {
 
 	const resources = [];
 	const bundleDefinition = {
+		"some": "definition"
+	};
+	const effectiveBundleDefinition = {
+		// Defaults
+		"resolve": false,
+		"resolveConditional": false,
+		"renderer": false,
+		"sort": true,
+		"declareRawModules": false,
+
 		"some": "definition"
 	};
 
@@ -291,7 +322,7 @@ test.serial("bundleOptions default (no options passed)", async (t) => {
 
 	t.is(builder.createBundle.callCount, 1, "builder.createBundle should be called once");
 	t.is(builder.createBundle.getCall(0).args.length, 2);
-	t.is(builder.createBundle.getCall(0).args[0], bundleDefinition,
+	t.deepEqual(builder.createBundle.getCall(0).args[0], effectiveBundleDefinition,
 		"builder.createBundle should be called with bundleDefinition");
 	t.deepEqual(builder.createBundle.getCall(0).args[1], {
 		// default bundleOptions
@@ -327,6 +358,17 @@ test.serial("bundleOptions default (empty options passed)", async (t) => {
 	};
 	const bundleOptions = {};
 
+	const effectiveBundleDefinition = {
+		// Defaults
+		"resolve": false,
+		"resolveConditional": false,
+		"renderer": false,
+		"sort": true,
+		"declareRawModules": false,
+
+		"some": "definition"
+	};
+
 	const createdBundle = {
 		name: "BundleName.js",
 		content: "Bundle Content",
@@ -355,7 +397,7 @@ test.serial("bundleOptions default (empty options passed)", async (t) => {
 
 	t.is(builder.createBundle.callCount, 1, "builder.createBundle should be called once");
 	t.is(builder.createBundle.getCall(0).args.length, 2);
-	t.is(builder.createBundle.getCall(0).args[0], bundleDefinition,
+	t.deepEqual(builder.createBundle.getCall(0).args[0], effectiveBundleDefinition,
 		"builder.createBundle should be called with bundleDefinition");
 	t.deepEqual(builder.createBundle.getCall(0).args[1], {
 		// default bundleOptions
@@ -389,6 +431,17 @@ test.serial("bundleOptions (all options passed)", async (t) => {
 		ignoreMissingModules: true
 	};
 
+	const effectiveBundleDefinition = {
+		// Defaults
+		"resolve": false,
+		"resolveConditional": false,
+		"renderer": false,
+		"sort": true,
+		"declareRawModules": false,
+
+		"some": "definition"
+	};
+
 	const createdBundle = {
 		name: "BundleName.js",
 		content: "Bundle Content",
@@ -417,7 +470,7 @@ test.serial("bundleOptions (all options passed)", async (t) => {
 
 	t.is(builder.createBundle.callCount, 1, "builder.createBundle should be called once");
 	t.is(builder.createBundle.getCall(0).args.length, 2);
-	t.is(builder.createBundle.getCall(0).args[0], bundleDefinition,
+	t.deepEqual(builder.createBundle.getCall(0).args[0], effectiveBundleDefinition,
 		"builder.createBundle should be called with bundleDefinition");
 	t.deepEqual(builder.createBundle.getCall(0).args[1], bundleOptions,
 		"builder.createBundle should be called with bundleOptions");
@@ -445,6 +498,16 @@ test.serial("Passes ignoreMissingModules bundleOption to LocatorResourcePool", a
 		"numberOfParts": 1,
 
 		"ignoreMissingModules": "foo"
+	};
+	const effectiveBundleDefinition = {
+		// Defaults
+		"resolve": false,
+		"resolveConditional": false,
+		"renderer": false,
+		"sort": true,
+		"declareRawModules": false,
+
+		"some": "definition"
 	};
 
 	const createdBundle = {
@@ -493,7 +556,7 @@ test.serial("Passes ignoreMissingModules bundleOption to LocatorResourcePool", a
 
 	t.is(builder.createBundle.callCount, 1, "builder.createBundle should be called once");
 	t.is(builder.createBundle.getCall(0).args.length, 2);
-	t.is(builder.createBundle.getCall(0).args[0], bundleDefinition,
+	t.deepEqual(builder.createBundle.getCall(0).args[0], effectiveBundleDefinition,
 		"builder.createBundle should be called with bundleDefinition");
 	t.deepEqual(builder.createBundle.getCall(0).args[1], effectiveBundleOptions,
 		"builder.createBundle should be called with bundleOptions");
@@ -535,6 +598,17 @@ test.serial("Verbose Logging", async (t) => {
 		"some": "option",
 	};
 
+	const effectiveBundleDefinition = {
+		// Defaults
+		"resolve": false,
+		"resolveConditional": false,
+		"renderer": false,
+		"sort": true,
+		"declareRawModules": false,
+
+		"some": "definition"
+	};
+
 	const createdBundle = {
 		name: "Bundle Name",
 		content: "Bundle Content",
@@ -566,6 +640,7 @@ test.serial("Verbose Logging", async (t) => {
 	t.is(log.verbose.callCount, 3, "log.verbose is called 3 times when verbose level is enabled");
 
 	t.deepEqual(log.verbose.getCall(0).args, ["Generating bundle:"]);
-	t.deepEqual(log.verbose.getCall(1).args, ["bundleDefinition: " + JSON.stringify(bundleDefinition, null, 2)]);
+	t.deepEqual(log.verbose.getCall(1).args,
+		["bundleDefinition: " + JSON.stringify(effectiveBundleDefinition, null, 2)]);
 	t.deepEqual(log.verbose.getCall(2).args, ["bundleOptions: " + JSON.stringify(effectiveBundleOptions, null, 2)]);
 });
