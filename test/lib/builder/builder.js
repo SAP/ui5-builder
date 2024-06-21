@@ -26,6 +26,7 @@ const applicationIPath = path.join(__dirname, "..", "..", "fixtures", "applicati
 const applicationJPath = path.join(__dirname, "..", "..", "fixtures", "application.j");
 const applicationKPath = path.join(__dirname, "..", "..", "fixtures", "application.k");
 const applicationLPath = path.join(__dirname, "..", "..", "fixtures", "application.l");
+const applicationMPath = path.join(__dirname, "..", "..", "fixtures", "application.m");
 const applicationØPath = path.join(__dirname, "..", "..", "fixtures", "application.ø");
 const collectionPath = path.join(__dirname, "..", "..", "fixtures", "collection");
 const libraryDPath = path.join(__dirname, "..", "..", "fixtures", "library.d");
@@ -517,6 +518,26 @@ test.serial("Build application.l: minification excludes, w/ namespace", async (t
 	const expectedFiles = await findFiles(expectedPath);
 	// Check for all directories and files
 	directoryDeepEqual(t, destPath, expectedPath);
+	// Check for all file contents
+	await checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath);
+	t.pass();
+});
+
+test.serial("Build application.m: bundle should not contain hashbang but an empty line", async (t) => {
+	const destPath = "./test/tmp/build/application.m/dest";
+	const expectedPath = path.join("test", "expected", "build", "application.m", "dest");
+
+	const graph = await graphFromPackageDependencies({
+		cwd: applicationMPath
+	});
+	graph.setTaskRepository(taskRepository);
+	await graph.build({
+		destPath
+	});
+
+	const expectedFiles = await findFiles(expectedPath);
+	// Check for all directories and files
+	await directoryDeepEqual(t, destPath, expectedPath);
 	// Check for all file contents
 	await checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath);
 	t.pass();
