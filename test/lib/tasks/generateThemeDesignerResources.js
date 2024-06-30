@@ -41,7 +41,11 @@ test.serial("generateThemeDesignerResources: Library", async (t) => {
 	};
 
 	const clonedCoreBaseDotThemingResourceStub = {
-		setPath: sinon.stub()
+		setPath: sinon.stub(),
+		getString: sinon.stub().resolves(JSON.stringify({
+			"oExtends": "base"
+		})),
+		setString: sinon.stub()
 	};
 	const coreBaseDotThemingResourceStub = {
 		clone: sinon.stub().resolves(clonedCoreBaseDotThemingResourceStub)
