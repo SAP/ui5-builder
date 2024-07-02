@@ -98,8 +98,7 @@ test.serial("generateBundle: No taskUtil, no bundleOptions", async (t) => {
 			bundleDefinition,
 			bundleOptions: undefined
 		},
-		resources,
-		taskUtil: undefined
+		resources
 	}]);
 
 	t.is(combo.byGlob.callCount, 1,
@@ -172,8 +171,7 @@ test.serial("generateBundle: No bundleOptions, with taskUtil", async (t) => {
 			bundleOptions: undefined,
 			targetUi5CoreVersion: "1.120.0",
 		},
-		resources,
-		taskUtil
+		resources
 	}]);
 
 	t.is(combo.byGlob.callCount, 0,
@@ -294,8 +292,7 @@ test.serial("generateBundle: bundleOptions: optimize=false, with taskUtil", asyn
 			},
 			targetUi5CoreVersion: "1.120.0",
 		},
-		resources,
-		taskUtil
+		resources
 	}]);
 
 	t.is(combo.byGlob.callCount, 0,
@@ -418,8 +415,7 @@ test.serial("generateBundle: bundleOptions: sourceMap=false, with taskUtil", asy
 			bundleOptions,
 			targetUi5CoreVersion: "1.120.0"
 		},
-		resources,
-		taskUtil
+		resources
 	}]);
 
 	t.is(combo.byGlob.callCount, 0,
@@ -517,8 +513,7 @@ test.serial("generateBundle: Empty bundle (skipIfEmpty=true)", async (t) => {
 			bundleOptions,
 			targetUi5CoreVersion: "1.120.0"
 		},
-		resources,
-		taskUtil
+		resources
 	}]);
 
 	t.is(combo.byGlob.callCount, 0,
@@ -645,8 +640,7 @@ test.serial("generateBundle: No bundleOptions, with taskUtil, UI5 Version >= 2",
 			bundleOptions: undefined,
 			targetUi5CoreVersion: "2.0.0",
 		},
-		resources,
-		taskUtil
+		resources
 	}]);
 
 	t.is(combo.byGlob.callCount, 0,

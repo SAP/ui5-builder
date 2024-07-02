@@ -88,6 +88,8 @@ test.serial("generateComponentPreload - one namespace", async (t) => {
 						renderer: false,
 						resolve: false,
 						resolveConditional: false,
+						declareRawModules: false,
+						sort: true
 					}
 				]
 			},
@@ -96,8 +98,7 @@ test.serial("generateComponentPreload - one namespace", async (t) => {
 				ignoreMissingModules: true
 			}
 		},
-		resources,
-		taskUtil: undefined
+		resources
 	}]);
 
 	t.is(byGlob.callCount, 1,
@@ -181,6 +182,8 @@ test.serial("generateComponentPreload - one namespace - excludes", async (t) => 
 						renderer: false,
 						resolve: false,
 						resolveConditional: false,
+						declareRawModules: false,
+						sort: true
 					}
 				]
 			},
@@ -189,8 +192,7 @@ test.serial("generateComponentPreload - one namespace - excludes", async (t) => 
 				ignoreMissingModules: true
 			}
 		},
-		resources,
-		taskUtil: undefined
+		resources
 	}]);
 
 	t.is(byGlob.callCount, 1,
@@ -287,6 +289,8 @@ test.serial("generateComponentPreload - one namespace - excludes w/o namespace",
 						renderer: false,
 						resolve: false,
 						resolveConditional: false,
+						declareRawModules: false,
+						sort: true
 					}
 				]
 			},
@@ -295,8 +299,7 @@ test.serial("generateComponentPreload - one namespace - excludes w/o namespace",
 				ignoreMissingModules: true
 			}
 		},
-		resources,
-		taskUtil
+		resources
 	}]);
 
 	t.is(byGlob.callCount, 1,
@@ -409,6 +412,8 @@ test.serial("generateComponentPreload - multiple namespaces - excludes", async (
 						renderer: false,
 						resolve: false,
 						resolveConditional: false,
+						declareRawModules: false,
+						sort: true
 					}
 				]
 			},
@@ -417,8 +422,7 @@ test.serial("generateComponentPreload - multiple namespaces - excludes", async (
 				ignoreMissingModules: true
 			}
 		},
-		resources,
-		taskUtil: undefined
+		resources
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(1).args, [{
 		options: {
@@ -451,6 +455,8 @@ test.serial("generateComponentPreload - multiple namespaces - excludes", async (
 						renderer: false,
 						resolve: false,
 						resolveConditional: false,
+						declareRawModules: false,
+						sort: true
 					}
 				]
 			},
@@ -459,8 +465,7 @@ test.serial("generateComponentPreload - multiple namespaces - excludes", async (
 				ignoreMissingModules: true
 			}
 		},
-		resources,
-		taskUtil: undefined
+		resources
 	}]);
 
 	t.is(byGlob.callCount, 1,
@@ -596,6 +601,8 @@ test.serial("generateComponentPreload - nested namespaces - excludes", async (t)
 						renderer: false,
 						resolve: false,
 						resolveConditional: false,
+						declareRawModules: false,
+						sort: true,
 					}
 				]
 			},
@@ -604,8 +611,7 @@ test.serial("generateComponentPreload - nested namespaces - excludes", async (t)
 				ignoreMissingModules: true
 			}
 		},
-		resources,
-		taskUtil: undefined
+		resources
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(1).args, [{
 		options: {
@@ -646,6 +652,8 @@ test.serial("generateComponentPreload - nested namespaces - excludes", async (t)
 						renderer: false,
 						resolve: false,
 						resolveConditional: false,
+						declareRawModules: false,
+						sort: true
 					}
 				]
 			},
@@ -654,8 +662,7 @@ test.serial("generateComponentPreload - nested namespaces - excludes", async (t)
 				ignoreMissingModules: true
 			}
 		},
-		resources,
-		taskUtil: undefined
+		resources
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(2).args, [{
 		options: {
@@ -689,6 +696,8 @@ test.serial("generateComponentPreload - nested namespaces - excludes", async (t)
 						renderer: false,
 						resolve: false,
 						resolveConditional: false,
+						declareRawModules: false,
+						sort: true
 					}
 				]
 			},
@@ -697,8 +706,7 @@ test.serial("generateComponentPreload - nested namespaces - excludes", async (t)
 				ignoreMissingModules: true
 			}
 		},
-		resources,
-		taskUtil: undefined
+		resources
 	}]);
 
 	t.is(log.warn.callCount, 1, "log.warn should be called once");
