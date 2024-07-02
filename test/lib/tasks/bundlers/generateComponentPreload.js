@@ -62,6 +62,7 @@ test.serial("generateComponentPreload - one namespace", async (t) => {
 	t.is(moduleBundlerStub.callCount, 1, "moduleBundler should have been called once");
 	t.deepEqual(moduleBundlerStub.getCall(0).args, [{
 		options: {
+			allowStringBundling: undefined,
 			bundleDefinition: {
 				defaultFileTypes: [
 					".js",
@@ -152,6 +153,7 @@ test.serial("generateComponentPreload - one namespace - excludes", async (t) => 
 	t.is(moduleBundlerStub.callCount, 1, "moduleBundler should have been called once");
 	t.deepEqual(moduleBundlerStub.getCall(0).args, [{
 		options: {
+			allowStringBundling: undefined,
 			bundleDefinition: {
 				defaultFileTypes: [
 					".js",
@@ -228,8 +230,17 @@ test.serial("generateComponentPreload - one namespace - excludes w/o namespace",
 		}
 	]);
 
+	const project = {
+		getVersion: () => "1.120.0",
+		getSpecVersion() {
+			return {
+				lt: sinon.stub().withArgs("4.0").returns(false)
+			};
+		}
+	};
+
 	const taskUtil = {
-		getProject: sinon.stub(),
+		getProject: () => project,
 		getTag: sinon.stub().returns(false),
 		setTag: sinon.stub().returns(),
 		clearTag: sinon.stub().returns(),
@@ -258,6 +269,7 @@ test.serial("generateComponentPreload - one namespace - excludes w/o namespace",
 	t.is(moduleBundlerStub.callCount, 1, "moduleBundler should have been called once");
 	t.deepEqual(moduleBundlerStub.getCall(0).args, [{
 		options: {
+			allowStringBundling: false,
 			bundleDefinition: {
 				defaultFileTypes: [
 					".js",
@@ -291,7 +303,8 @@ test.serial("generateComponentPreload - one namespace - excludes w/o namespace",
 			bundleOptions: {
 				optimize: true,
 				ignoreMissingModules: true
-			}
+			},
+			targetUi5CoreVersion: "1.120.0"
 		},
 		resources
 	}]);
@@ -377,6 +390,7 @@ test.serial("generateComponentPreload - multiple namespaces - excludes", async (
 	t.is(moduleBundlerStub.callCount, 2, "moduleBundler should have been called twice");
 	t.deepEqual(moduleBundlerStub.getCall(0).args, [{
 		options: {
+			allowStringBundling: undefined,
 			bundleDefinition: {
 				defaultFileTypes: [
 					".js",
@@ -418,6 +432,7 @@ test.serial("generateComponentPreload - multiple namespaces - excludes", async (
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(1).args, [{
 		options: {
+			allowStringBundling: undefined,
 			bundleDefinition: {
 				defaultFileTypes: [
 					".js",
@@ -562,6 +577,7 @@ test.serial("generateComponentPreload - nested namespaces - excludes", async (t)
 	t.is(moduleBundlerStub.callCount, 3, "moduleBundler should have been called 3 times");
 	t.deepEqual(moduleBundlerStub.getCall(0).args, [{
 		options: {
+			allowStringBundling: undefined,
 			bundleDefinition: {
 				defaultFileTypes: [
 					".js",
@@ -603,6 +619,7 @@ test.serial("generateComponentPreload - nested namespaces - excludes", async (t)
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(1).args, [{
 		options: {
+			allowStringBundling: undefined,
 			bundleDefinition: {
 				defaultFileTypes: [
 					".js",
@@ -652,6 +669,7 @@ test.serial("generateComponentPreload - nested namespaces - excludes", async (t)
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(2).args, [{
 		options: {
+			allowStringBundling: undefined,
 			bundleDefinition: {
 				defaultFileTypes: [
 					".js",

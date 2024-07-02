@@ -10,8 +10,17 @@ test.beforeEach(async (t) => {
 	t.context.createFilterReaderStub = sinon.stub().callsFake((params) => {
 		return params.reader;
 	});
+
+	const project = {
+		getSpecVersion() {
+			return {
+				lt: sinon.stub().withArgs("4.0").returns(false)
+			};
+		},
+		getVersion: sinon.stub().returns(undefined)
+	};
 	t.context.taskUtil = {
-		getProject: sinon.stub(),
+		getProject: sinon.stub().returns(project),
 		getTag: sinon.stub().returns(false),
 		setTag: sinon.stub(),
 		clearTag: sinon.stub(),
@@ -245,6 +254,7 @@ test.serial("execute module bundler with taskUtil", async (t) => {
 
 	t.is(moduleBundlerStub.getCall(0).args.length, 1);
 	t.deepEqual(moduleBundlerStub.getCall(0).args[0].options, {
+		allowStringBundling: false,
 		bundleDefinition: {
 			defaultFileTypes: [
 				".js",
@@ -294,6 +304,7 @@ test.serial("execute module bundler with taskUtil", async (t) => {
 
 	t.is(moduleBundlerStub.getCall(1).args.length, 1);
 	t.deepEqual(moduleBundlerStub.getCall(1).args[0].options, {
+		allowStringBundling: false,
 		bundleDefinition: {
 			defaultFileTypes: [
 				".js",
@@ -344,7 +355,12 @@ test.serial("execute module bundler with taskUtil, UI5 Version >= 2", async (t) 
 
 	taskUtil.getProject = () => {
 		return {
-			getVersion: () => "2.0.0"
+			getVersion: () => "2.0.0",
+			getSpecVersion: () => {
+				return {
+					lt: sinon.stub().withArgs("4.0").returns(false)
+				};
+			}
 		};
 	};
 
@@ -412,6 +428,7 @@ test.serial("execute module bundler with taskUtil, UI5 Version >= 2", async (t) 
 
 	t.is(moduleBundlerStub.getCall(0).args.length, 1);
 	t.deepEqual(moduleBundlerStub.getCall(0).args[0].options, {
+		allowStringBundling: false,
 		bundleDefinition: {
 			defaultFileTypes: [
 				".js",
@@ -462,6 +479,7 @@ test.serial("execute module bundler with taskUtil, UI5 Version >= 2", async (t) 
 
 	t.is(moduleBundlerStub.getCall(1).args.length, 1);
 	t.deepEqual(moduleBundlerStub.getCall(1).args[0].options, {
+		allowStringBundling: false,
 		bundleDefinition: {
 			defaultFileTypes: [
 				".js",

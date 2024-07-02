@@ -21,7 +21,12 @@ test.beforeEach(async (t) => {
 	t.context.createFilterReaderStub = sinon.stub().returns(t.context.combo);
 
 	const project = {
-		getVersion: () => "1.120.0"
+		getVersion: () => "1.120.0",
+		getSpecVersion() {
+			return {
+				lt: sinon.stub().withArgs("4.0").returns(false)
+			};
+		}
 	};
 
 	t.context.taskUtil = {
@@ -95,6 +100,7 @@ test.serial("generateBundle: No taskUtil, no bundleOptions", async (t) => {
 	t.is(moduleBundlerStub.callCount, 1, "moduleBundler should have been called once");
 	t.deepEqual(moduleBundlerStub.getCall(0).args, [{
 		options: {
+			allowStringBundling: undefined,
 			bundleDefinition,
 			bundleOptions: undefined
 		},
@@ -167,6 +173,7 @@ test.serial("generateBundle: No bundleOptions, with taskUtil", async (t) => {
 	t.is(moduleBundlerStub.callCount, 1, "moduleBundler should have been called once");
 	t.deepEqual(moduleBundlerStub.getCall(0).args, [{
 		options: {
+			allowStringBundling: false,
 			bundleDefinition,
 			bundleOptions: undefined,
 			targetUi5CoreVersion: "1.120.0",
@@ -285,6 +292,7 @@ test.serial("generateBundle: bundleOptions: optimize=false, with taskUtil", asyn
 	t.is(moduleBundlerStub.callCount, 1, "moduleBundler should have been called once");
 	t.deepEqual(moduleBundlerStub.getCall(0).args, [{
 		options: {
+			allowStringBundling: false,
 			bundleDefinition,
 			bundleOptions,
 			moduleNameMapping: {
@@ -411,6 +419,7 @@ test.serial("generateBundle: bundleOptions: sourceMap=false, with taskUtil", asy
 	t.is(moduleBundlerStub.callCount, 1, "moduleBundler should have been called once");
 	t.deepEqual(moduleBundlerStub.getCall(0).args, [{
 		options: {
+			allowStringBundling: false,
 			bundleDefinition,
 			bundleOptions,
 			targetUi5CoreVersion: "1.120.0"
@@ -509,6 +518,7 @@ test.serial("generateBundle: Empty bundle (skipIfEmpty=true)", async (t) => {
 	t.is(moduleBundlerStub.callCount, 1, "moduleBundler should have been called once");
 	t.deepEqual(moduleBundlerStub.getCall(0).args, [{
 		options: {
+			allowStringBundling: false,
 			bundleDefinition,
 			bundleOptions,
 			targetUi5CoreVersion: "1.120.0"
@@ -599,7 +609,12 @@ test.serial("generateBundle: No bundleOptions, with taskUtil, UI5 Version >= 2",
 
 	taskUtil.getProject = () => {
 		return {
-			getVersion: () => "2.0.0"
+			getVersion: () => "2.0.0",
+			getSpecVersion() {
+				return {
+					lt: sinon.stub().withArgs("4.0").returns(false)
+				};
+			}
 		};
 	};
 
@@ -636,6 +651,7 @@ test.serial("generateBundle: No bundleOptions, with taskUtil, UI5 Version >= 2",
 	t.is(moduleBundlerStub.callCount, 1, "moduleBundler should have been called once");
 	t.deepEqual(moduleBundlerStub.getCall(0).args, [{
 		options: {
+			allowStringBundling: false,
 			bundleDefinition,
 			bundleOptions: undefined,
 			targetUi5CoreVersion: "2.0.0",
