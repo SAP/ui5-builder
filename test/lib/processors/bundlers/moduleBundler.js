@@ -574,3 +574,107 @@ test.serial("Verbose Logging", async (t) => {
 		["bundleDefinition: " + JSON.stringify(bundleDefinition, null, 2)]);
 	t.deepEqual(log.verbose.getCall(2).args, ["bundleOptions: " + JSON.stringify(effectiveBundleOptions, null, 2)]);
 });
+
+test.serial.only("Bundle with async require", async (t) => {
+	const {processor, Resource, LocatorResourcePool, pool, BundleBuilder, builder, log} = t.context;
+
+	const resources = [];
+	const bundleDefinition = {
+		sections: [{
+			name: "custom-module.js",
+			mode: "require"
+		}]
+	};
+	const bundleOptions = {
+		ignoreMissingModules: "foo"
+	};
+
+	const effectiveBundleOptions = {
+		// Defaults
+		"optimize": true,
+		"sourceMap": true,
+		"decorateBootstrapModule": false,
+		"addTryCatchRestartWrapper": false,
+		"numberOfParts": 1,
+
+		"ignoreMissingModules": "foo"
+	};
+
+	const createdBundle = {
+		name: "BundleName.js",
+		content: "Bundle Content",
+		bundleInfo: {
+			"Bundle": "Info"
+		}
+	};
+
+	builder.createBundle.resolves(createdBundle);
+
+	const expectedOutputResource = {
+		"output": "resource"
+	};
+	Resource.returns(expectedOutputResource);
+
+	const outputResources = await processor({
+		resources,
+		options: {
+			bundleDefinition,
+			bundleOptions
+		}
+	});
+
+	t.deepEqual(outputResources, [{bundle: expectedOutputResource}]);
+	t.is(outputResources[0].bundle, expectedOutputResource);
+
+	t.is(LocatorResourcePool.callCount, 1, "LocatorResourcePool should be created once");
+	t.true(LocatorResourcePool.calledWithNew());
+	t.deepEqual(LocatorResourcePool.getCall(0).args, [
+		{
+			ignoreMissingModules: "foo" // as defined in bundleOptions
+		}
+	], "LocatorResourcePool should be called with expected args");
+
+	t.is(BundleBuilder.callCount, 1, "BundleBuilder should be created once");
+	t.true(BundleBuilder.calledWithNew());
+	t.is(BundleBuilder.getCall(0).args.length, 2);
+	t.is(BundleBuilder.getCall(0).args[0], pool, "LocatorResourcePool should be called with pool");
+	t.is(BundleBuilder.getCall(0).args[1], undefined, "Target UI5 Version is not defined");
+
+	t.is(pool.prepare.callCount, 1, "pool.prepare should be called once");
+	t.is(pool.prepare.getCall(0).args.length, 2);
+	t.is(pool.prepare.getCall(0).args[0], resources, "pool.prepare should be called with resources");
+	t.is(pool.prepare.getCall(0).args[1], undefined, "pool.prepare should be called without moduleNameMapping");
+
+	t.is(builder.createBundle.callCount, 1, "builder.createBundle should be called once");
+	t.is(builder.createBundle.getCall(0).args.length, 2);
+	t.deepEqual(
+		builder.createBundle.getCall(0).args[0], {
+			sections: [{
+				resolve: false,
+				resolveConditional: false,
+				renderer: false,
+				sort: true,
+				declareRawModules: false,
+				async: true,
+				name: "custom-module.js",
+				mode: "require",
+			}],
+		},
+		"bundleDefinition should be called with async require flag"
+	);
+	t.deepEqual(builder.createBundle.getCall(0).args[1], effectiveBundleOptions,
+		"builder.createBundle should be called with bundleOptions");
+	t.true(builder.createBundle.calledAfter(pool.prepare),
+		"builder.createBundle should be called before pool.prepare");
+
+	t.is(Resource.callCount, 1, "One resource should be created");
+	t.true(Resource.calledWithNew());
+	t.deepEqual(Resource.getCall(0).args, [
+		{
+			path: "/resources/BundleName.js",
+			string: "Bundle Content"
+		}
+	], "Resource should be called with expected args");
+
+	t.is(log.verbose.callCount, 0, "log.verbose is not called when verbose level is not enabled");
+});
