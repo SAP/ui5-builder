@@ -96,7 +96,8 @@ test.serial("generateComponentPreload - one namespace", async (t) => {
 				ignoreMissingModules: true
 			}
 		},
-		resources
+		resources,
+		taskUtil: undefined
 	}]);
 
 	t.is(byGlob.callCount, 1,
@@ -188,7 +189,8 @@ test.serial("generateComponentPreload - one namespace - excludes", async (t) => 
 				ignoreMissingModules: true
 			}
 		},
-		resources
+		resources,
+		taskUtil: undefined
 	}]);
 
 	t.is(byGlob.callCount, 1,
@@ -293,7 +295,8 @@ test.serial("generateComponentPreload - one namespace - excludes w/o namespace",
 				ignoreMissingModules: true
 			}
 		},
-		resources
+		resources,
+		taskUtil
 	}]);
 
 	t.is(byGlob.callCount, 1,
@@ -414,7 +417,8 @@ test.serial("generateComponentPreload - multiple namespaces - excludes", async (
 				ignoreMissingModules: true
 			}
 		},
-		resources
+		resources,
+		taskUtil: undefined
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(1).args, [{
 		options: {
@@ -455,7 +459,8 @@ test.serial("generateComponentPreload - multiple namespaces - excludes", async (
 				ignoreMissingModules: true
 			}
 		},
-		resources
+		resources,
+		taskUtil: undefined
 	}]);
 
 	t.is(byGlob.callCount, 1,
@@ -599,7 +604,8 @@ test.serial("generateComponentPreload - nested namespaces - excludes", async (t)
 				ignoreMissingModules: true
 			}
 		},
-		resources
+		resources,
+		taskUtil: undefined
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(1).args, [{
 		options: {
@@ -648,7 +654,8 @@ test.serial("generateComponentPreload - nested namespaces - excludes", async (t)
 				ignoreMissingModules: true
 			}
 		},
-		resources
+		resources,
+		taskUtil: undefined
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(2).args, [{
 		options: {
@@ -690,7 +697,8 @@ test.serial("generateComponentPreload - nested namespaces - excludes", async (t)
 				ignoreMissingModules: true
 			}
 		},
-		resources
+		resources,
+		taskUtil: undefined
 	}]);
 
 	t.is(log.warn.callCount, 1, "log.warn should be called once");
