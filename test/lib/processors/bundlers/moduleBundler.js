@@ -575,7 +575,7 @@ test.serial("Verbose Logging", async (t) => {
 	t.deepEqual(log.verbose.getCall(2).args, ["bundleOptions: " + JSON.stringify(effectiveBundleOptions, null, 2)]);
 });
 
-test.serial.only("Bundle with async require", async (t) => {
+test.serial("Bundle with async require", async (t) => {
 	const {processor, Resource, LocatorResourcePool, pool, BundleBuilder, builder, log} = t.context;
 
 	const resources = [];
