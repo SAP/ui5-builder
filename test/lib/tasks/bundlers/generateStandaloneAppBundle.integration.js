@@ -161,7 +161,7 @@ const applicationBTree = {
 	],
 	"configuration": {
 		"builder": {},
-		"specVersion": "4.0",
+		"specVersion": "2.0",
 		"type": "application",
 		"metadata": {
 			"name": "application.b"
