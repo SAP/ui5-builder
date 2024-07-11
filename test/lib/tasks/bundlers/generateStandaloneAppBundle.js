@@ -309,6 +309,7 @@ test.serial("execute module bundler with taskUtil", async (t) => {
 					resolve: false,
 					resolveConditional: false,
 					sort: true,
+					async: false
 				},
 			],
 		},
@@ -354,6 +355,7 @@ test.serial("execute module bundler with taskUtil", async (t) => {
 					resolveConditional: false,
 					sort: true,
 					declareRawModules: false,
+					async: false
 				},
 			],
 		},
@@ -505,6 +507,7 @@ test.serial("execute module bundler with taskUtil, UI5 Version >= 2", async (t) 
 					resolve: false,
 					resolveConditional: false,
 					sort: true,
+					async: false
 				},
 			],
 		},
@@ -551,6 +554,7 @@ test.serial("execute module bundler with taskUtil, UI5 Version >= 2", async (t) 
 					resolve: false,
 					resolveConditional: false,
 					sort: true,
+					async: false
 				},
 			],
 		},
