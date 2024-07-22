@@ -350,9 +350,10 @@ test.serial("generateThemeDesignerResources: Library sap.ui.core with existing l
 		"workspace.write should be called with libraryLessResource");
 });
 
-test.serial("generateThemeDesignerResources: Library sap.ui.core without themes, with existing library .theming with version", async (t) => {
-	// NOTE: This tests the case when sap.ui.core has no themes, which is not a likely scenario. But as the underlying functionality
-	// might be used in other scenarios in future, it is tested here.
+test.serial("generateThemeDesignerResources: Library sap.ui.core without themes, " +
+"with existing library .theming with version", async (t) => {
+	// NOTE: This tests the case when sap.ui.core has no themes, which is not a likely scenario.
+	// But as the underlying functionality might be used in other scenarios in future, it is tested here.
 
 	const {sinon, generateThemeDesignerResources, libraryLessGeneratorStub, fsInterfaceStub, ResourceStub} = t.context;
 
