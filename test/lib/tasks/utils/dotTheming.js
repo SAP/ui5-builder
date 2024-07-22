@@ -127,7 +127,6 @@ test("updateLibraryDotTheming: Missing sEntity", async (t) => {
 	}), {
 		message: "Missing 'sEntity' property in /resources/sap/ui/core/.theming"
 	});
-
 });
 
 test("updateLibraryDotTheming: Incorrect sEntity", async (t) => {
@@ -147,7 +146,6 @@ test("updateLibraryDotTheming: Incorrect sEntity", async (t) => {
 	}), {
 		message: "Incorrect 'sEntity' value 'Wrong' in /resources/sap/ui/core/.theming: Expected 'Library'"
 	});
-
 });
 
 test("updateLibraryDotTheming: Missing sId", async (t) => {
@@ -166,7 +164,6 @@ test("updateLibraryDotTheming: Missing sId", async (t) => {
 	}), {
 		message: "Missing 'sId' property in /resources/sap/ui/core/.theming"
 	});
-
 });
 
 test("updateLibraryDotTheming: Incorrect sId", async (t) => {
@@ -186,5 +183,4 @@ test("updateLibraryDotTheming: Incorrect sId", async (t) => {
 	}), {
 		message: "Incorrect 'sId' value 'Wrong' in /resources/sap/ui/core/.theming: Expected 'sap/ui/core'"
 	});
-
 });
