@@ -1995,8 +1995,7 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js), UI5 Versi
 						renderer: false,
 						resolve: false,
 						resolveConditional: false,
-						sort: true,
-						async: false
+						sort: true
 					}
 				]
 			},
@@ -2037,7 +2036,6 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js), UI5 Versi
 						resolve: false,
 						resolveConditional: false,
 						sort: true,
-						async: false
 					}
 				]
 			},
@@ -2106,7 +2104,6 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js), UI5 Versi
 						resolveConditional: false,
 						renderer: false,
 						declareRawModules: false,
-						async: false
 					}
 				]
 			},
@@ -2163,7 +2160,6 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js), UI5 Versi
 						resolveConditional: false,
 						renderer: false,
 						declareRawModules: false,
-						async: false
 					}
 				]
 			},
