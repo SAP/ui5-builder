@@ -20,13 +20,17 @@
 	"exports": {
 		"./processors/*": "./lib/processors/*.js",
 		"./processors/jsdoc/lib/*": null,
-		"./tasks/*": "./lib/tasks/*.js",
+		"./tasks/*": {
+			"default": "./lib/tasks/*.js",
+			"types": "./types/*.d.ts"
+		},
 		"./tasks/taskRepository": null,
 		"./tasks/utils/*": null,
 		"./tasks/bundlers/utils/*": null,
 		"./package.json": "./package.json",
 		"./internal/taskRepository": "./lib/tasks/taskRepository.js",
-		"./internal/jsdoc/template/publish": "./lib/processors/jsdoc/lib/ui5/template/publish.cjs"
+		"./internal/jsdoc/template/publish": "./lib/processors/jsdoc/lib/ui5/template/publish.cjs",
+		"./types": "./types/index.d.ts"
 	},
 	"engines": {
 		"node": "^20.11.0 || >=22.0.0",
