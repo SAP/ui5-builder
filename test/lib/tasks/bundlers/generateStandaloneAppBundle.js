@@ -15,7 +15,7 @@ test.beforeEach(async (t) => {
 		getSpecVersion() {
 			return {
 				toString: () => "0.1",
-				lt: sinon.stub().withArgs("4.0").returns(false),
+				lt: sinon.stub().withArgs("4.0").returns(true),
 				gte: sinon.stub().withArgs("4.0").returns(false),
 			};
 		},
@@ -256,7 +256,7 @@ test.serial("execute module bundler with taskUtil", async (t) => {
 
 	t.is(moduleBundlerStub.getCall(0).args.length, 1);
 	t.deepEqual(moduleBundlerStub.getCall(0).args[0].options, {
-		allowStringBundling: false,
+		allowStringBundling: true,
 		bundleDefinition: {
 			defaultFileTypes: [
 				".js",
@@ -309,6 +309,7 @@ test.serial("execute module bundler with taskUtil", async (t) => {
 					resolve: false,
 					resolveConditional: false,
 					sort: true,
+					async: false
 				},
 			],
 		},
@@ -317,7 +318,7 @@ test.serial("execute module bundler with taskUtil", async (t) => {
 
 	t.is(moduleBundlerStub.getCall(1).args.length, 1);
 	t.deepEqual(moduleBundlerStub.getCall(1).args[0].options, {
-		allowStringBundling: false,
+		allowStringBundling: true,
 		bundleDefinition: {
 			defaultFileTypes: [
 				".js",
@@ -354,6 +355,7 @@ test.serial("execute module bundler with taskUtil", async (t) => {
 					resolveConditional: false,
 					sort: true,
 					declareRawModules: false,
+					async: false
 				},
 			],
 		},
