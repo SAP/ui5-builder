@@ -85,7 +85,8 @@ test("no export of processors/jsdoc/lib/ui5/plugin", async (t) => {
 
 test("no export of tasks/utils/dotTheming", async (t) => {
 	await t.throwsAsync(import("@ui5/builder/tasks/utils/dotTheming"), {
-		code: "ERR_PACKAGE_PATH_NOT_EXPORTED"
+		code: "ERR_PACKAGE_PATH_NOT_EXPORTED",
+		any: true
 	});
 });
 

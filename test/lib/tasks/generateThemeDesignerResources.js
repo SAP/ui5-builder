@@ -303,7 +303,7 @@ test.serial("generateThemeDesignerResources: Library sap.ui.core with existing l
 		options: {
 			projectName: "sap.ui.core",
 			version: "1.2.3",
-			namespace: "sap/ui/core"
+			projectNamespace: "sap/ui/core"
 		}
 	});
 
@@ -394,7 +394,7 @@ test.serial("generateThemeDesignerResources: Library sap.ui.core without themes,
 		options: {
 			projectName: "sap.ui.core",
 			version: "1.2.3",
-			namespace: "sap/ui/core"
+			projectNamespace: "sap/ui/core"
 		}
 	});
 
@@ -463,7 +463,7 @@ test.serial("generateThemeDesignerResources: Library sap.ui.core with existing i
 		options: {
 			projectName: "sap.ui.core",
 			version: "1.2.3",
-			namespace: "sap/ui/core"
+			projectNamespace: "sap/ui/core"
 		}
 	}), {
 		message: "Incorrect 'sId' value 'sap/m' in /resources/sap/ui/core/.theming: Expected 'sap/ui/core'"
