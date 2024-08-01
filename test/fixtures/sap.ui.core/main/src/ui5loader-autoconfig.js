@@ -1,4 +1,4 @@
-(function() {
-	const thisIsTheUi5LoaderAutoconfig = true;
+(function () {
+	var thisIsTheUi5LoaderAutoconfig = true;
 	console.log(thisIsTheUi5LoaderAutoconfig);
-})();
+})()

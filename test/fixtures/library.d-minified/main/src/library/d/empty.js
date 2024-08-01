@@ -1,5 +1,5 @@
-/* !
+/*!
  * Some fancy copyright
  */
 
-// # sourceMappingURL=empty.js.map
+//# sourceMappingURL=empty.js.map

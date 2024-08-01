@@ -1,10 +1,10 @@
-/* !
+/*!
  * ${copyright}
  */
 
 /**
  * Covers:
- * - Generators
+ * - Generators 
  * - YeldExpression
  */
 sap.ui.define([], function* someGenerator(genVar) {

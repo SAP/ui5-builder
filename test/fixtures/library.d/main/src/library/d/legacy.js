@@ -1,5 +1,5 @@
-/* !
+/*!
  * ${copyright}
  */
-const topLevelVar = "Old World";
-console.log("Hello " + topLevelVar);
+var topLevelVar = "Old World";
+console.log('Hello ' + topLevelVar);

@@ -1,4 +1,4 @@
-(function() {
-	const thisShouldBeOverwritten = true;
+(function () {
+	var thisShouldBeOverwritten = true;
 	console.log(thisShouldBeOverwritten);
-})();
+})()

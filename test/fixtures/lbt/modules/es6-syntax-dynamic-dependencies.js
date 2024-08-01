@@ -1,5 +1,5 @@
 sap.ui.define([
-	"static/module1"
+	'static/module1'
 ], () => {
 	// spread expression, currently not detected as dependency
 	const dynamicModules = ["not-detected/module1"];

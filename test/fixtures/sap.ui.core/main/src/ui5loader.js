@@ -1,4 +1,4 @@
-(function() {
-	const thisIsTheUi5Loader = true;
+(function () {
+	var thisIsTheUi5Loader = true;
 	console.log(thisIsTheUi5Loader);
-})();
+})()

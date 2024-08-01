@@ -1,7 +1,7 @@
-/* !
+/*!
  * ${copyright}
  */
-console.log("HelloWorld");
+console.log('HelloWorld');
 
 /*
  * function add(c) - this is still not implemented.

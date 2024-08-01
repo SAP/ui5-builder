@@ -10,7 +10,7 @@ sap.ui.define(["sap/ui/core/UIComponent", "sap/ui/core/mvc/View"], (UIComponent,
 		createContent() {
 			return View.create({
 				viewName: "module:application/m/MyView"
-			});
+			})
 		}
 	});
 });
