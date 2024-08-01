@@ -6,6 +6,8 @@ import google from "eslint-config-google";
 
 export default [
 	js.configs.recommended, google, {
+		name: "Common ESLint config used for all tooling repos",
+
 		plugins: {
 			jsdoc,
 			ava,
@@ -56,7 +58,8 @@ export default [
 
 			"comma-dangle": "off",
 			"no-tabs": "off",
-			// This rule must be disabled as of ESLint 9.
+			"no-console": 2, // Disallow console.log()
+			// The following rule must be disabled as of ESLint 9.
 			// It's removed and causes issues when present
 			// https://eslint.org/docs/latest/rules/valid-jsdoc
 			"valid-jsdoc": 0,
