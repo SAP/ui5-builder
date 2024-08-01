@@ -67,6 +67,7 @@ export default [{
 		"comma-dangle": "off",
 		"no-tabs": "off",
 		"no-console": 2, // Disallow console.log()
+		"no-eval": 2,
 		// The following rule must be disabled as of ESLint 9.
 		// It's removed and causes issues when present
 		// https://eslint.org/docs/latest/rules/valid-jsdoc

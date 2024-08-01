@@ -24,7 +24,7 @@ test("valid expressions", function(t) {
 	];
 	for (let i = 0; i < list.length; i++) {
 		let evalResult;
-		eval("evalResult=" + list[i]);
+		eval("evalResult=" + list[i]); // eslint-disable-line no-eval
 		t.deepEqual(JSTokenizer.parseJS(list[i]), evalResult, "Parse " + list[i]);
 	}
 });
