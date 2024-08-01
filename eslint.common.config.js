@@ -4,88 +4,96 @@ import globals from "globals";
 import js from "@eslint/js";
 import google from "eslint-config-google";
 
-export default [
-	js.configs.recommended, google, {
-		name: "Common ESLint config used for all tooling repos",
+export default [{
+	ignores: [ // Common ignore patterns across all tooling repos
+		"**/coverage/",
+		"test/tmp/",
+		"test/expected/",
+		"test/fixtures/",
+		"**/docs/",
+		"**/jsdocs/",
+	],
+}, js.configs.recommended, google, ava.configs["flat/recommended"], {
+	name: "Common ESLint config used for all tooling repos",
 
-		plugins: {
-			jsdoc,
-			ava,
+	plugins: {
+		jsdoc,
+		ava,
+	},
+
+	languageOptions: {
+		globals: {
+			...globals.node,
 		},
 
-		languageOptions: {
-			globals: {
-				...globals.node,
+		ecmaVersion: 2023,
+		sourceType: "module",
+	},
+
+	settings: {
+		jsdoc: {
+			mode: "jsdoc",
+
+			tagNamePreference: {
+				return: "returns",
+				augments: "extends",
 			},
-
-			ecmaVersion: 2023,
-			sourceType: "module",
 		},
+	},
 
-		settings: {
-			jsdoc: {
-				mode: "jsdoc",
+	rules: {
+		"indent": ["error", "tab"],
+		"linebreak-style": ["error", "unix"],
 
-				tagNamePreference: {
-					return: "returns",
-					augments: "extends",
-				},
-			},
-		},
+		"quotes": ["error", "double", {
+			allowTemplateLiterals: true,
+		}],
 
-		rules: {
-			"indent": ["error", "tab"],
-			"linebreak-style": ["error", "unix"],
+		"semi": ["error", "always"],
+		"no-negated-condition": "off",
+		"require-jsdoc": "off",
+		"no-mixed-requires": "off",
 
-			"quotes": ["error", "double", {
-				allowTemplateLiterals: true,
-			}],
+		"max-len": ["error", {
+			code: 120,
+			ignoreUrls: true,
+			ignoreRegExpLiterals: true,
+		}],
 
-			"semi": ["error", "always"],
-			"no-negated-condition": "off",
-			"require-jsdoc": "off",
-			"no-mixed-requires": "off",
+		"no-implicit-coercion": [2, {
+			allow: ["!!"],
+		}],
 
-			"max-len": ["error", {
-				code: 120,
-				ignoreUrls: true,
-				ignoreRegExpLiterals: true,
-			}],
+		"comma-dangle": "off",
+		"no-tabs": "off",
+		"no-console": 2, // Disallow console.log()
+		// The following rule must be disabled as of ESLint 9.
+		// It's removed and causes issues when present
+		// https://eslint.org/docs/latest/rules/valid-jsdoc
+		"valid-jsdoc": 0,
+		"jsdoc/check-examples": 0,
+		"jsdoc/check-param-names": 2,
+		"jsdoc/check-tag-names": 2,
+		"jsdoc/check-types": 2,
+		"jsdoc/no-undefined-types": 0,
+		"jsdoc/require-description": 0,
+		"jsdoc/require-description-complete-sentence": 0,
+		"jsdoc/require-example": 0,
+		"jsdoc/require-hyphen-before-param-description": 0,
+		"jsdoc/require-param": 2,
+		"jsdoc/require-param-description": 0,
+		"jsdoc/require-param-name": 2,
+		"jsdoc/require-param-type": 2,
+		"jsdoc/require-returns": 0,
+		"jsdoc/require-returns-description": 0,
+		"jsdoc/require-returns-type": 2,
 
-			"no-implicit-coercion": [2, {
-				allow: ["!!"],
-			}],
+		"jsdoc/tag-lines": [2, "any", {
+			startLines: 1,
+		}],
 
-			"comma-dangle": "off",
-			"no-tabs": "off",
-			"no-console": 2, // Disallow console.log()
-			// The following rule must be disabled as of ESLint 9.
-			// It's removed and causes issues when present
-			// https://eslint.org/docs/latest/rules/valid-jsdoc
-			"valid-jsdoc": 0,
-			"jsdoc/check-examples": 0,
-			"jsdoc/check-param-names": 2,
-			"jsdoc/check-tag-names": 2,
-			"jsdoc/check-types": 2,
-			"jsdoc/no-undefined-types": 0,
-			"jsdoc/require-description": 0,
-			"jsdoc/require-description-complete-sentence": 0,
-			"jsdoc/require-example": 0,
-			"jsdoc/require-hyphen-before-param-description": 0,
-			"jsdoc/require-param": 2,
-			"jsdoc/require-param-description": 0,
-			"jsdoc/require-param-name": 2,
-			"jsdoc/require-param-type": 2,
-			"jsdoc/require-returns": 0,
-			"jsdoc/require-returns-description": 0,
-			"jsdoc/require-returns-type": 2,
-
-			"jsdoc/tag-lines": [2, "any", {
-				startLines: 1,
-			}],
-
-			"jsdoc/valid-types": 0,
-			"ava/assertion-arguments": 0,
-		},
-	}
+		"jsdoc/valid-types": 0,
+		"ava/assertion-arguments": 0,
+	},
+}
 ];
