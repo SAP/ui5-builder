@@ -1,4 +1,4 @@
-/*!
+/* !
  * ${copyright}
  */
-console.log(' File ');
+console.log(" File ");

@@ -1,14 +1,12 @@
-/*!
+/* !
  * ${copyright}
  */
 
 /**
  * designtime and global export
  */
-var myexport = (function() {
-
+const myexport = (function() {
 	"use strict";
 
 	String("asd");
-
 }());

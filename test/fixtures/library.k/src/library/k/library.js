@@ -1,16 +1,15 @@
-/*!
+/* !
  * Some fancy copyright
  */
 sap.ui.define([
-	'sap/ui/core/Core',
+	"sap/ui/core/Core",
 ], function(Core) {
-
 	"use strict";
 
 	sap.ui.getCore().initLibrary({
-		name : "library.k",
+		name: "library.k",
 		version: "1.0.0",
-		dependencies : [],
+		dependencies: [],
 		types: [
 			"library.k.AnyType"
 		],
@@ -26,5 +25,4 @@ sap.ui.define([
 	});
 
 	return thisLib;
-
 });

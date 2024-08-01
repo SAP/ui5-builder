@@ -1,16 +1,15 @@
-/*!
+/* !
  * ${copyright}
  */
 sap.ui.define([
-	'sap/ui/core/Core',
+	"sap/ui/core/Core",
 ], function(Core) {
-
 	"use strict";
 
 	sap.ui.getCore().initLibrary({
-		name : "library.i",
+		name: "library.i",
 		version: "${version}",
-		dependencies : ["sap.ui.core"],
+		dependencies: ["sap.ui.core"],
 		types: [
 			"library.i.ButtonType",
 			"library.i.DialogType",
@@ -34,5 +33,4 @@ sap.ui.define([
 	});
 
 	return thisLib;
-
 });

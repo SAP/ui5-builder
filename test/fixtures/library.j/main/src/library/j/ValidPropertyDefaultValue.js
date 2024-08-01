@@ -1,4 +1,4 @@
-/*!
+/* !
  * ${copyright}
  */
 sap.ui.define(
@@ -12,19 +12,19 @@ sap.ui.define(
 	],
 	(
 		Control,
-		{ MyValidEnum, ThisIsEnumToo: RenamedEnum },
+		{MyValidEnum, ThisIsEnumToo: RenamedEnum},
 		coreLibrary,
-		[ {arrPattern}, {arrWith: {deep: arrPatternDeepDestruct}}],
-		{ objPattern: {deeply: {destructured: objPatternDeepDestruct}, objPattern1Lvl} },
+		[{arrPattern}, {arrWith: {deep: arrPatternDeepDestruct}}],
+		{objPattern: {deeply: {destructured: objPatternDeepDestruct}, objPattern1Lvl}},
 		libraryExt
 	) => {
-		const { AnotherValidEnum } = coreLibrary;
-		const { Buzz } = AnotherValidEnum;
-		const { AnotherValidEnum: {Buzz: BuzzRenamed} } = coreLibrary;
-		const { AnotherValidEnum: AnotherRenamedEnum } = coreLibrary;
-		const { H1 } = sap.ui.core.TitleLevel;
-		const { Value2: RenamedValue2 } = RenamedEnum;
-		const [ {arrPatternVarDef}, {nested: {arrPatternVarDef: arrPatternVarDefNestedAndRenamed}} ] = libraryExt;
+		const {AnotherValidEnum} = coreLibrary;
+		const {Buzz} = AnotherValidEnum;
+		const {AnotherValidEnum: {Buzz: BuzzRenamed}} = coreLibrary;
+		const {AnotherValidEnum: AnotherRenamedEnum} = coreLibrary;
+		const {H1} = sap.ui.core.TitleLevel;
+		const {Value2: RenamedValue2} = RenamedEnum;
+		const [{arrPatternVarDef}, {nested: {arrPatternVarDef: arrPatternVarDefNestedAndRenamed}}] = libraryExt;
 
 		/**
 		 * @class
@@ -39,7 +39,7 @@ sap.ui.define(
 		 * @alias library.j.ValidPropertyDefaultValue
 		 * @ui5-metamodel text
 		 */
-		var ValidPropertyDefaultValue = Control.extend(
+		const ValidPropertyDefaultValue = Control.extend(
 			"library.j.ValidPropertyDefaultValue",
 			{
 				metadata: {
@@ -174,7 +174,7 @@ sap.ui.define(
 						}
 					},
 				},
-				renderer: function () {},
+				renderer: function() {},
 			}
 		);
 

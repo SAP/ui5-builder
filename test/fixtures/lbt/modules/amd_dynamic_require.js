@@ -7,5 +7,5 @@ sap.ui.define([], function() {
 				// error occurred
 			});
 		}
-	}
+	};
 });

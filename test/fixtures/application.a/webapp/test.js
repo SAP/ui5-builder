@@ -1,8 +1,8 @@
 sap.ui.define([
-    "library/d/some"
+	"library/d/some"
 ], function(someObject) {
 	function test(paramA) {
-		var variableA = paramA;
+		const variableA = paramA;
 		console.log(variableA);
 	}
 	test();

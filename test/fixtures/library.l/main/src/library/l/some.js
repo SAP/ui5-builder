@@ -1,16 +1,15 @@
-/*!
+/* !
  * ${copyright}
  */
 
 sap.ui.define([],
 	function() {
-	"use strict";
+		"use strict";
 
-	/**
+		/**
 	 * @alias library.l
 	 * @namespace
 	 * @public
 	 */
-	var SomeFunction = function() {};
-
-}, /* bExport= */ true);
+		const SomeFunction = function() {};
+	}, /* bExport= */ true);

@@ -3,5 +3,5 @@ sap.ui.define([], function() {
 		load: function(modName) {
 			return sap.ui.requireSync(modName);
 		}
-	}
+	};
 });

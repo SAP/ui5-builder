@@ -1,4 +1,4 @@
-/*!
+/* !
  * ${copyright}
  */
 
@@ -6,7 +6,7 @@
  * Covers:
  * - ArrowFunctionExpression
  */
- window.someRandomModule ||
+window.someRandomModule ||
  sap.ui.define(
 	 ["sap/ui/core/Control"],
 	 /**
@@ -15,12 +15,13 @@
 	  * @param {string} [sId] ID for the new control, generated automatically if no ID is given
 	  * @param {object} [mSettings] Initial settings for the new control
 	  *
+	  * @param Control
 	  * @class
 	  *
 	  * @author SAP SE
 	  * @version ${version}
 	  *
-	  * @constructor
+	  * @class
 	  * @extends sap.ui.core.Control
 	  * @public
 	  * @since 1.22
@@ -32,6 +33,7 @@
 				 properties: {
 					 /**
 					  * MyProp property
+					  *
 					  * @since 1.46
 					  */
 					 MyProp: {

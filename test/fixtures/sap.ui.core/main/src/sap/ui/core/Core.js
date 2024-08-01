@@ -1,4 +1,4 @@
-(function () {
-	var core = true;
+(function() {
+	const core = true;
 	console.log(core);
-})()
+})();

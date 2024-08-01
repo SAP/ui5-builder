@@ -1,7 +1,7 @@
-/*!
+/* !
  * ${copyright}
  */
 (function() {
-	var someNonUglifiedVariable = "World";
-	console.log('Hello ' + someNonUglifiedVariable);
+	const someNonUglifiedVariable = "World";
+	console.log("Hello " + someNonUglifiedVariable);
 })();

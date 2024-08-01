@@ -1,7 +1,7 @@
-/*!
+/* !
  * ${copyright}
  */
-sap.ui.define([], function () {
+sap.ui.define([], function() {
 	sap.ui.getCore().initLibrary({
 		name: "library.j.core",
 		version: "${version}",
@@ -20,11 +20,13 @@ sap.ui.define([], function () {
 	library.j.core.AnotherValidEnum = {
 		/**
 		 * Fizz
+		 *
 		 * @public
 		 */
 		Fizz: "Fizz",
 		/**
 		 * Buzz
+		 *
 		 * @public
 		 */
 		Buzz: "Buzz",

@@ -1,7 +1,7 @@
-/*!
+/* !
  * ${copyright}
  */
-sap.ui.define([], function () {
+sap.ui.define([], function() {
 	sap.ui.getCore().initLibrary({
 		name: "library.j",
 		version: "${version}",
@@ -20,11 +20,13 @@ sap.ui.define([], function () {
 	library.j.MyValidEnum = {
 		/**
 		 * Foo
+		 *
 		 * @public
 		 */
 		Foo: "Foo",
 		/**
 		 * Bar
+		 *
 		 * @public
 		 */
 		Bar: "Bar",
@@ -39,11 +41,13 @@ sap.ui.define([], function () {
 	library.j.ThisIsEnumToo = {
 		/**
 		 * Value1
+		 *
 		 * @public
 		 */
 		Value1: "Value1",
 		/**
 		 * Value2
+		 *
 		 * @public
 		 */
 		Value2: "Value2",
