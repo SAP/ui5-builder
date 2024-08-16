@@ -3032,20 +3032,88 @@ test("manifestEnhancer#getSupportedLocales", async (t) => {
 	fs.readdir.withArgs("/i18n")
 		.callsArgWith(1, null, [
 			"i18n.properties",
-			"i18n_en.properties"
+			"i18n_en.properties",
+			"i18n_en_US.properties",
+			"i18n_en_US_sapprc.properties",
 		]);
 
-	t.deepEqual(await manifestEnhancer.getSupportedLocales("./i18n/i18n.properties"), ["", "en"]);
-	t.deepEqual(await manifestEnhancer.getSupportedLocales("i18n/../i18n/i18n.properties"), ["", "en"]);
-	t.deepEqual(await manifestEnhancer.getSupportedLocales("ui5://sap/ui/demo/app/i18n/i18n.properties"), ["", "en"]);
+	const expectedLocales = [
+		"", "en", "en_US", "en_US_sapprc"
+	];
+
+	t.deepEqual(await manifestEnhancer.getSupportedLocales("./i18n/i18n.properties"), expectedLocales);
+	t.deepEqual(await manifestEnhancer.getSupportedLocales("i18n/../i18n/i18n.properties"), expectedLocales);
+	t.deepEqual(await manifestEnhancer.getSupportedLocales("ui5://sap/ui/demo/app/i18n/i18n.properties"), expectedLocales);
 
 	// Path traversal to root and then into application namespace
 	// This works, but is not recommended at all! It also likely fails at runtime
 	t.deepEqual(await manifestEnhancer.getSupportedLocales(
 		"../../../../../../../../../../../../resources/sap/ui/demo/app/i18n/i18n.properties"
-	), ["", "en"]);
+	), expectedLocales);
 
 	t.is(fs.readdir.callCount, 4);
+
+	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
+	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
+	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
+});
+
+test("manifestEnhancer#getSupportedLocales (invalid locales)", async (t) => {
+	const {fs} = t.context;
+	const {ManifestEnhancer} = t.context.__internals__;
+
+	const manifest = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.app"
+		}
+	});
+	const filePath = "/manifest.json";
+
+	const manifestEnhancer = new ManifestEnhancer(manifest, filePath, fs);
+
+	const fileNames = [
+		"i18n.properties",
+		"i18n_en.properties",
+
+		// Invalid: Should be "en_US"
+		"i18n_en-US.properties",
+
+		// Invalid: Should be "zh_CN"
+		"i18n_zh_CN_.properties",
+
+		// Invalid: Runtime does not include "extension" in file request
+		"i18n_sr_Latn_RS_variant_f_11.properties",
+
+		// Invalid: Runtime does not include "privateuse" in file request
+		"i18n_sr_Latn_RS_variant_x_private.properties",
+
+		// Invalid: Runtime does not include "extension" / "privateuse" in file request
+		"i18n_sr_Latn_RS_variant_f_11_x_private.properties"
+	];
+
+	fs.readdir.withArgs("/i18n")
+		.callsArgWith(1, null, fileNames);
+
+	const expectedLocales = ["", "en"];
+
+	t.deepEqual(await manifestEnhancer.getSupportedLocales("./i18n/i18n.properties"), expectedLocales);
+
+	t.is(fs.readdir.callCount, 1);
+
+	t.is(t.context.logVerboseSpy.callCount, 5);
+	t.is(t.context.logVerboseSpy.getCall(0).args[0],
+		"Skipping invalid locale 'en-US' for bundle 'i18n/i18n.properties'");
+	t.is(t.context.logVerboseSpy.getCall(1).args[0],
+		"Skipping invalid locale 'zh_CN_' for bundle 'i18n/i18n.properties'");
+	t.is(t.context.logVerboseSpy.getCall(2).args[0],
+		"Skipping invalid locale 'sr_Latn_RS_variant_f_11' for bundle 'i18n/i18n.properties'");
+	t.is(t.context.logVerboseSpy.getCall(3).args[0],
+		"Skipping invalid locale 'sr_Latn_RS_variant_x_private' for bundle 'i18n/i18n.properties'");
+	t.is(t.context.logVerboseSpy.getCall(4).args[0],
+		"Skipping invalid locale 'sr_Latn_RS_variant_f_11_x_private' for bundle 'i18n/i18n.properties'");
+	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
+	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
 test("manifestEnhancer#getSupportedLocales (absolute / invalid URLs)", async (t) => {
@@ -3076,13 +3144,24 @@ test("manifestEnhancer#getSupportedLocales (absolute / invalid URLs)", async (t)
 	t.deepEqual(await manifestEnhancer.getSupportedLocales("sftp:i18n.properties"), []);
 	t.deepEqual(await manifestEnhancer.getSupportedLocales("file://i18n.properties"), []);
 
+	t.is(t.context.logVerboseSpy.callCount, 0, "No verbose messages should be logged");
+
 	// Path traversal to root
 	t.deepEqual(await manifestEnhancer.getSupportedLocales("../../../../../../../../../../../../i18n.properties"), []);
+
+	t.is(t.context.logVerboseSpy.callCount, 1, "One verbose message should be logged from previous call");
+	t.is(t.context.logVerboseSpy.getCall(0).args[0],
+		"/manifest.json: bundleUrl '../../../../../../../../../../../../i18n.properties' " +
+		"points to a bundle outside of the current namespace 'sap.ui.demo.app', enhancement of " +
+		"'supportedLocales' is skipped");
 
 	// Relative ui5-protocol URL
 	t.deepEqual(await manifestEnhancer.getSupportedLocales("ui5:i18n.properties"), []);
 
 	t.is(fs.readdir.callCount, 0, "readdir should not be called for any absolute / invalid URL");
+	t.is(t.context.logVerboseSpy.callCount, 1, "No additional verbose messages should be logged");
+	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
+	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
 test("manifestEnhancer#getSupportedLocales (error handling)", async (t) => {
@@ -3120,6 +3199,10 @@ test("manifestEnhancer#getSupportedLocales (error handling)", async (t) => {
 	});
 
 	t.is(fs.readdir.callCount, 2, "readdir should be called once");
+
+	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
+	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
+	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
 test("getRelativeBundleUrlFromName", (t) => {
