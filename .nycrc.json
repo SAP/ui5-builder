@@ -1,0 +1,31 @@
+{
+	"extends": "@istanbuljs/nyc-config-typescript",
+	"reporter": ["lcov", "text", "text-summary"],
+	"include": ["src/**"],
+	"exclude": ["src/processors/jsdoc/lib/**"],
+	"check-coverage": true,
+	"statements": 85,
+	"branches": 70,
+	"functions": 90,
+	"lines": 85,
+	"watermarks": {
+		"statements": [
+			70,
+			90
+		],
+		"branches": [
+			70,
+			90
+		],
+		"functions": [
+			70,
+			90
+		],
+		"lines": [
+			70,
+			90
+		]
+	},
+	"cache": true,
+	"all": true
+}

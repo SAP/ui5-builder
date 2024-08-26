@@ -7,6 +7,6 @@ export default [
 		// in order to override common config
 		ignores: [
 			"lib/processors/jsdoc/lib",
-		]
-	}
+		],
+	},
 ];
