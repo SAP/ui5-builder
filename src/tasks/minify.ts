@@ -25,9 +25,7 @@ import fsInterface from "@ui5/fs/fsInterface";
  * 		source files, such as TypeScript files, in the generated source map.
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
-export default async function({
-	workspace, taskUtil, options: {pattern, omitSourceMapResources = false, useInputSourceMaps = true
-	}}) {
+export default async function({ workspace, taskUtil, options: { pattern, omitSourceMapResources = false, useInputSourceMaps = true } }: object) {
 	const resources = await workspace.byGlob(pattern);
 	const processedResources = await minifier({
 		resources,

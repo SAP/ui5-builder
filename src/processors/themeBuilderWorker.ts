@@ -17,10 +17,9 @@ import {Buffer} from "node:buffer";
  * @param {object} parameters.options Less compiler options
  * @returns {Promise<object[]>} Resulting array of Uint8Array transferable objects
  */
-export default async function execThemeBuild({
-	fsInterfacePort,
-	themeResources = [],
-	options = {}
+export default async function execThemeBuild({ fsInterfacePort, themeResources = [], options = {} }: {
+    fsInterfacePort: MessagePort;
+    themeResources: object[];
 }) {
 	const fsThemeResources = deserializeResources(themeResources);
 	const fsReader = new FsWorkerThreadInterface(fsInterfacePort);
@@ -55,7 +54,7 @@ export async function serializeResources(resourceCollection) {
  * @param {Promise<object[]>} resources
  * @returns {@ui5/fs/Resource[]}
  */
-export function deserializeResources(resources) {
+export function deserializeResources(resources: Promise<object[]>) {
 	return resources.map((res) => {
 		// res.buffer is an Uint8Array object and needs to be cast
 		// to a Buffer in order to be read correctly.
@@ -93,7 +92,7 @@ export class FsMainThreadInterface {
 	 *
 	 * @param {MessagePort} comPort port1 from a {code}MessageChannel{/code}
 	 */
-	startCommunication(comPort) {
+	startCommunication(comPort: MessagePort) {
 		if (!comPort) {
 			throw new Error("Communication channel is mandatory argument");
 		}
@@ -108,7 +107,7 @@ export class FsMainThreadInterface {
 	 *
 	 * @param {MessagePort} comPort port1 to remove from handling.
 	 */
-	endCommunication(comPort) {
+	endCommunication(comPort: MessagePort) {
 		comPort.close();
 		this.#comPorts.delete(comPort);
 	}
@@ -132,7 +131,11 @@ export class FsMainThreadInterface {
 	 * @param {object} e.options Options for "readFile" action
 	 * @param {MessagePort} comPort The communication channel
 	 */
-	#onMessage(e, comPort) {
+	#onMessage(e: {
+    action: string;
+    fsPath: string;
+    options: object;
+}, comPort: MessagePort) {
 		switch (e.action) {
 		case "readFile":
 			this.#doRequest(comPort, {action: "readFile", fsPath: e.fsPath, options: e.options});
@@ -155,7 +158,11 @@ export class FsMainThreadInterface {
 	 * @param {string} parameters.fsPath Path of the Resource
 	 * @param {object} parameters.options Options for "readFile" action
 	 */
-	async #doRequest(comPort, {action, fsPath, options}) {
+	async #doRequest(comPort: MessagePort, { action, fsPath, options }: {
+    action: string;
+    fsPath: string;
+    options: object;
+}) {
 		const cacheKey = `${fsPath}-${action}`;
 		if (!this.#cache[cacheKey]) {
 			this.#cache[cacheKey] = new Promise((res) => {
@@ -196,7 +203,7 @@ export class FsWorkerThreadInterface {
 	 *
 	 * @param {MessagePort} comPort Communication port
 	 */
-	constructor(comPort) {
+	constructor(comPort: MessagePort) {
 		if (!comPort) {
 			throw new Error("Communication port is mandatory argument");
 		}
@@ -216,7 +223,12 @@ export class FsWorkerThreadInterface {
 	 * @param {*} e.result Response from the "action".
 	 * @param {object} e.error Error from the "action".
 	 */
-	#onMessage(e) {
+	#onMessage(e: {
+    action: string;
+    fsPath: string;
+    result: any;
+    error: object;
+}) {
 		const cbObject = this.#callbacks.find((cb) => cb.action === e.action && cb.fsPath === e.fsPath);
 
 		if (cbObject) {
@@ -246,7 +258,11 @@ export class FsWorkerThreadInterface {
 	 * @param {object} parameters.options Options for "readFile" action
 	 * @param {Function} callback Callback to call when the "action" is executed and ready.
 	 */
-	#doRequest({action, fsPath, options}, callback) {
+	#doRequest({ action, fsPath, options }: {
+    action: string;
+    fsPath: string;
+    options: object;
+}, callback: Function) {
 		const cacheKey = `${fsPath}-${action}`;
 
 		if (this.#cache[cacheKey]) {

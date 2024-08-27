@@ -75,7 +75,7 @@ const DEFAULT_SUPPORT_RESOURCES_FILTER = [
  * @param {string} prefix
  * @returns {string} new content with resources.json entry
  */
-function makeResourcesJSON(list, prefix) {
+function makeResourcesJSON(list: ResourceInfoList, prefix: string) {
 	// having the file size entry part of the file is a bit like the chicken egg scenario
 	// you can't change the value of the file size without changing the file size
 	// so this part here tries to cope with that.
@@ -120,7 +120,7 @@ function makeResourcesJSON(list, prefix) {
  * @param {object} [parameters.options] Options
  * @returns {Promise<@ui5/fs/Resource[]>} Promise resolving with the resources.json resources
  */
-export default async function({resources, dependencyResources = [], options}) {
+export default async function({ resources, dependencyResources = [], options }: object) {
 	options = Object.assign({
 		failOnOrphans: false,
 		externalResources: undefined,

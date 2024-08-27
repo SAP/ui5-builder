@@ -19,7 +19,7 @@ import * as cheerio from "cheerio";
  * @param {string} parameters.options.src Bootstrap "src" that should be used
  * @returns {Promise<@ui5/fs/Resource[]>} Promise resolving with the cloned resources
  */
-export default function({resources, options: {src}}) {
+export default function({ resources, options: { src } }: object) {
 	async function processResource(resource) {
 		const content = await resource.getString();
 		const $ = cheerio.load(content);

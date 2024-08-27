@@ -17,7 +17,7 @@
  * @param {string} parameters.options.replacement Replacement for placeholders
  * @returns {Promise<@ui5/fs/Resource[]>} Promise resolving with modified resources
  */
-export default function({resources, options: {pattern, replacement}}) {
+export default function({ resources, options: { pattern, replacement } }: object) {
 	return Promise.all(resources.map(async (resource) => {
 		const content = await resource.getString();
 		const newContent = content.replaceAll(pattern, replacement);

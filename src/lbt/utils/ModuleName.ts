@@ -7,7 +7,7 @@
  * @param {string} [suffix='.js'] Suffix to add to the resulting resource name
  * @returns {string} URN representing the same resource
  */
-export function fromUI5LegacyName(name, suffix) {
+export function fromUI5LegacyName(name: string, suffix?: string) {
 	// UI5 only supports a few names with dots in them, anything else will be converted to slashes
 	if ( name.startsWith("sap.ui.thirdparty.jquery.jquery-") ) {
 		name = "sap/ui/thirdparty/jquery/jquery-" + name.slice("sap.ui.thirdparty.jquery.jquery-".length);

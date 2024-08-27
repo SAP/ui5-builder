@@ -34,7 +34,7 @@ const memoizeEscapeUnicode = function(sChar) {
  * @returns {{string: (string), modified: boolean}} output string with all non ascii
  * characters being escaped by unicode sequence, e.g. L\u2665VE
  */
-const escapeNonAscii = function(string) {
+const escapeNonAscii = function(string: string) {
 	let result = "";
 	let modified = false;
 	for (let i = 0; i < string.length; i++) {
@@ -74,7 +74,7 @@ const escapeNonAscii = function(string) {
  *   Use #getEncodingFromAlias to get the encoding string
  * @returns {Promise<@ui5/fs/Resource[]>} Promise resolving with the processed resources
  */
-async function nonAsciiEscaper({resources, options: {encoding}}) {
+async function nonAsciiEscaper({ resources, options: { encoding } }: object) {
 	encoding = encoding || "utf8";
 
 	async function processResource(resource) {
@@ -108,7 +108,7 @@ const encodingMap = {
  * @param {string} encoding encoding labels: "UTF-8" and "ISO-8859-1"
  * @returns {string} node.js character encoding string, e.g. utf8 and latin1
  */
-nonAsciiEscaper.getEncodingFromAlias = function(encoding) {
+nonAsciiEscaper.getEncodingFromAlias = function(encoding: string) {
 	if (!encodingMap[encoding]) {
 		throw new Error(
 			`Encoding "${encoding}" is not supported. Only ${Object.keys(encodingMap).join(", ")} are allowed values` );

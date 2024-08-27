@@ -157,7 +157,7 @@ class ResourcePool {
 	 * @param {Resource} resource
 	 * @returns {Promise|undefined} for libraries a Promise is returned undefined otherwise
 	 */
-	addResource( resource ) {
+	addResource( resource: Resource ) {
 		if ( this._resourcesByName.has(resource.name) ) {
 			log.warn("Duplicate resource " + resource.name);
 			// TODO return and let the first one always win?
@@ -184,7 +184,7 @@ class ResourcePool {
 	 * @param {string} [moduleName] module name, in case it differs from the resource name (e.g. for -dbg resources)
 	 * @returns {Promise<ModuleInfo>}
 	 */
-	async getModuleInfo(resourceName, moduleName) {
+	async getModuleInfo(resourceName: string, moduleName?: string) {
 		let info = this._dependencyInfos.get(resourceName);
 		if ( info == null ) {
 			info = Promise.resolve().then(async () => {
@@ -222,7 +222,7 @@ class ResourcePool {
 	 * @param {ResourceFilterList|RegExp} pattern
 	 * @returns {Promise}
 	 */
-	async findResources(pattern) {
+	async findResources(pattern: ResourceFilterList | RegExp) {
 		if ( pattern instanceof ResourceFilterList ) {
 			return this._resources.filter( (resource) => pattern.matches(resource.name) );
 		}

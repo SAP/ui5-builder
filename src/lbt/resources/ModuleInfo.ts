@@ -153,7 +153,7 @@ class ModuleInfo {
 	 *
 	 * @param {string | ModuleInfo} other Module to include into this module
 	 */
-	addSubModule( other ) {
+	addSubModule( other: string | ModuleInfo ) {
 		if ( other instanceof ModuleInfo ) {
 			this.addSubModule( other.name );
 			// accumulate dependencies
@@ -206,7 +206,7 @@ class ModuleInfo {
 	 *
 	 * @param {string[]} ignoredGlobals Names to ignore (determined from shims in .library)
 	 */
-	removeIgnoredGlobalNames(ignoredGlobals) {
+	removeIgnoredGlobalNames(ignoredGlobals: string[]) {
 		if ( this.exposedGlobals ) {
 			const remaining = this.exposedGlobals.filter((global) => !ignoredGlobals.includes(global));
 			this.exposedGlobals = remaining.length > 0 ? remaining : null;

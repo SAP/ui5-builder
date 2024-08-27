@@ -451,7 +451,7 @@ class BundleBuilder {
 	 * @param {@ui5/fs/Resource} resource
 	 * @returns {Promise<boolean>}
 	 */
-	async writePreloadModule(moduleName, info, resource) {
+	async writePreloadModule(moduleName: string, info: ModuleInfo, resource) {
 		const outW = this.outW;
 
 		if ( /\.js$/.test(moduleName) && (info == null || !info.requiresTopLevelScope) ) {
@@ -536,7 +536,7 @@ class BundleBuilder {
 	 *
 	 * @param {ModuleInfo} info
 	 */
-	exportGlobalNames(info) {
+	exportGlobalNames(info: ModuleInfo) {
 		if ( !info || !info.exposedGlobals || !info.exposedGlobals.length ) {
 			return;
 		}

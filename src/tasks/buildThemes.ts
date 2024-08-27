@@ -87,13 +87,7 @@ async function buildThemeInWorker(taskUtil, options, transferList) {
  * @param {boolean} [parameters.options.cssVariables=false]
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
-export default async function({
-	workspace, dependencies, taskUtil,
-	options: {
-		projectName, inputPattern, librariesPattern, themesPattern, compress,
-		cssVariables
-	}
-}) {
+export default async function({ workspace, dependencies, taskUtil, options: { projectName, inputPattern, librariesPattern, themesPattern, compress, cssVariables } }: object) {
 	const combo = new ReaderCollectionPrioritized({
 		name: `theme - prioritize workspace over dependencies: ${projectName}`,
 		readers: [workspace, dependencies]

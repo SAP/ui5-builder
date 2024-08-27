@@ -29,9 +29,7 @@ import ReaderCollectionPrioritized from "@ui5/fs/ReaderCollectionPrioritized";
  * @returns {Promise} Promise resolving with <code>undefined</code> once data has been written
  */
 /* eslint-enable max-len */
-export default async function({
-	workspace, dependencies, taskUtil, options: {projectName, bundleDefinition, bundleOptions}
-}) {
+export default async function({ workspace, dependencies, taskUtil, options: { projectName, bundleDefinition, bundleOptions } }: object) {
 	let combo = new ReaderCollectionPrioritized({
 		name: `generateBundle - prioritize workspace over dependencies: ${projectName}`,
 		readers: [workspace, dependencies]

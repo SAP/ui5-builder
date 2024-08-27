@@ -32,7 +32,7 @@ function getTimestamp() {
  * @param {string} parameters.options.pattern Pattern to locate the files to be processed
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
-export default function({workspace, options: {pattern}}) {
+export default function({ workspace, options: { pattern } }: object) {
 	const timestamp = getTimestamp();
 
 	return workspace.byGlob(pattern)

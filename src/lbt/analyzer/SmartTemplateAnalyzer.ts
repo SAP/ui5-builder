@@ -69,16 +69,7 @@ class TemplateComponentAnalyzer {
 		return info;
 	}
 
-	/**
-	 * Evaluates a manifest after it has been read and parsed
-	 * and adds any newly found dependencies to the given info object.
-	 *
-	 * @param {object} manifest JSON with app descriptor structure
-	 * @param {ModuleInfo} info ModuleInfo object that should be enriched
-	 * @returns {ModuleInfo} ModuleInfo object that should be enriched
-	 * @private
-	 */
-	async _analyzeManifest( manifest, info ) {
+	private async _analyzeManifest( manifest: object, info: ModuleInfo ) {
 		const promises = [];
 		const that = this;
 		const st = (manifest && manifest["sap.ui.generic.app"]) || {};

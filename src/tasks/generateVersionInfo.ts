@@ -22,7 +22,7 @@ const MANIFEST_JSON = "manifest.json";
  * @param {object} parameters.options.rootProject DuplexCollection to read and write files
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
-export default async ({workspace, dependencies, options: {rootProject, pattern}}) => {
+export default async ({ workspace, dependencies, options: { rootProject, pattern } }) => {
 	let resources = await dependencies.byGlob(pattern);
 
 	resources = resources.filter((res) => res.getProject()?.getType() === "library");

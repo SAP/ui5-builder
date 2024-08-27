@@ -10,7 +10,7 @@ import Resource from "@ui5/fs/Resource";
  * @param {string} encoding character encoding used, e.g. utf8, latin1, ..
  * @returns {Promise<string|undefined>} escaped string if non-ascii characters present, <code>undefined</code> otherwise
  */
-const escape = async function(input, options={}, encoding="utf8") {
+const escape = async function(input: string, options: object = {}, encoding: string = "utf8") {
 	const resource = new Resource({
 		path: "/my.properties",
 		buffer: Buffer.from(input, encoding)

@@ -21,7 +21,7 @@ class ResourceCollector {
 	 * @param {ResourcePool} pool
 	 * @param {ResourceFilterList} [filter] used to filter the resources based on their name
 	 */
-	constructor(pool, filter) {
+	constructor(pool: ResourcePool, filter?: ResourceFilterList) {
 		this._pool = pool;
 		/**
 		 * Global filters that should be taken into account when collecting resources.
@@ -68,7 +68,7 @@ class ResourceCollector {
 	 *
 	 * @param {Object<string, string[]>} list component to list of components
 	 */
-	setExternalResources(list) {
+	setExternalResources(list: { [s: string]: string[]; }) {
 		this._externalResources = list;
 	}
 

@@ -11,7 +11,7 @@ import {Syntax} from "../utils/parseUtils.js";
  * @param {string} [literal]
  * @returns {boolean} Whether the node is a literal and whether its value matches the given string
  */
-export function isString(node, literal) {
+export function isString(node: ESTree, literal?: string) {
 	const value = getStringValue(node);
 	if (value === undefined) {
 		return false;
@@ -122,7 +122,7 @@ export function getValue(obj, names) {
  * @throws {TypeError}
  * @returns {string[]}
  */
-export function getStringArray(array, skipNonStringLiterals) {
+export function getStringArray(array: ESTree, skipNonStringLiterals: boolean) {
 	return array.elements.reduce( (result, item) => {
 		const value = getStringValue(item);
 		if ( value !== undefined ) {

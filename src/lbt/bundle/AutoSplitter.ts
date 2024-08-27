@@ -21,7 +21,7 @@ class AutoSplitter {
 	 * @param {ResourcePool} pool
 	 * @param {Resolver} resolver
 	 */
-	constructor(pool, resolver) {
+	constructor(pool: ResourcePool, resolver: Resolver) {
 		this.pool = pool;
 		this.resolver = resolver;
 		this.optimizeXMLViews = false;
@@ -36,7 +36,7 @@ class AutoSplitter {
 	 * @param {object} options
 	 * @returns {Promise<Array>}
 	 */
-	async run(moduleDef, options) {
+	async run(moduleDef: object, options: object) {
 		options = options || {};
 		const numberOfParts = options.numberOfParts;
 		let totalSize = 0;

@@ -30,7 +30,17 @@ import {fileURLToPath} from "node:url";
  * @returns {Promise<@ui5/fs/Resource[]>} Promise resolving with newly created resources
  */
 export default async function jsdocGenerator(
-	{sourcePath, targetPath, tmpPath, options: {projectName, namespace, version, variants}} = {}
+	{ sourcePath, targetPath, tmpPath, options: { projectName, namespace, version, variants } }: {
+    sourcePath: string;
+    targetPath: string;
+    tmpPath: string;
+    options: {
+        projectName: string;
+        namespace: string;
+        version: string;
+        variants?: Array<any>;
+    };
+} = {}
 ) {
 	if (!sourcePath || !targetPath || !tmpPath || !projectName || !namespace || !version) {
 		throw new Error("[jsdocGenerator]: One or more mandatory parameters not provided");
@@ -82,7 +92,14 @@ export default async function jsdocGenerator(
  * @param {Array} parameters.variants JSDoc variants to be built
  * @returns {string} jsdoc-config.json content string
  */
-async function generateJsdocConfig({targetPath, tmpPath, namespace, projectName, version, variants}) {
+async function generateJsdocConfig({ targetPath, tmpPath, namespace, projectName, version, variants }: {
+    targetPath: string;
+    tmpPath: string;
+    projectName: string;
+    version: string;
+    namespace: string;
+    variants: Array<any>;
+}) {
 	// Backlash needs to be escaped as double-backslash
 	// This is not only relevant for win32 paths but also for
 	//	Unix directory names that contain a backslash in their name
@@ -139,7 +156,7 @@ async function generateJsdocConfig({targetPath, tmpPath, namespace, projectName,
  * @param {string} config jsdoc-config.json content
  * @returns {string} Full path to the written jsdoc-config.json file
  */
-async function writeJsdocConfig(targetDirPath, config) {
+async function writeJsdocConfig(targetDirPath: string, config: string) {
 	const configPath = path.join(targetDirPath, "jsdoc-config.json");
 	await writeFile(configPath, config);
 	return configPath;
@@ -155,7 +172,10 @@ async function writeJsdocConfig(targetDirPath, config) {
  * @param {string} parameters.configPath Full path to jsdoc-config.json file
  * @returns {Promise<undefined>}
  */
-async function buildJsdoc({sourcePath, configPath}) {
+async function buildJsdoc({ sourcePath, configPath }: {
+    sourcePath: string;
+    configPath: string;
+}) {
 	const args = [
 		fileURLToPath(import.meta.resolve("jsdoc/jsdoc.js")),
 		"-c",

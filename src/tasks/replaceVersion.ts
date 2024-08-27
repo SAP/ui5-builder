@@ -19,7 +19,7 @@ import stringReplacer from "../processors/stringReplacer.js";
  * @param {string} parameters.options.version Replacement version
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
-export default function({workspace, options: {pattern, version}}) {
+export default function({ workspace, options: { pattern, version } }: object) {
 	return workspace.byGlob(pattern)
 		.then((allResources) => {
 			return stringReplacer({

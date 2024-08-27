@@ -29,7 +29,7 @@ import stringReplacer from "../processors/stringReplacer.js";
  * @param {string} parameters.options.pattern Pattern to locate the files to be processed
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
-export default function({workspace, options: {copyright, pattern}}) {
+export default function({ workspace, options: { copyright, pattern } }: object) {
 	if (!copyright) {
 		return Promise.resolve();
 	}

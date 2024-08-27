@@ -123,7 +123,7 @@ class ComponentAnalyzer {
 	 * @returns {ModuleInfo} ModuleInfo object that should be enriched
 	 * @private
 	 */
-	_analyzeManifest( manifest, info ) {
+	private _analyzeManifest( manifest: object, info: ModuleInfo ) {
 		const sapApp = (manifest && manifest["sap.app"]) || {};
 		const ui5 = (manifest && manifest["sap.ui5"]) || {};
 

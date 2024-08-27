@@ -8,7 +8,7 @@ import posixPath from "node:path/posix";
  * @module @ui5/builder/processors/versionInfoGenerator
  */
 
-function pad(v) {
+function pad(v: number) {
 	return String(v).padStart(2, "0");
 }
 function getTimestamp() {
@@ -99,7 +99,7 @@ const processManifest = async (manifestResource) => {
  * @param {string} libraryPathPrefix e.g. "lib/x"
  * @returns {boolean} whether or not this component is bundled with the library
  */
-const isBundledWithLibrary = (embeddedBy, componentPath, libraryPathPrefix) => {
+const isBundledWithLibrary = (embeddedBy: string, componentPath: string, libraryPathPrefix: string) => {
 	if (typeof embeddedBy === "undefined") {
 		log.verbose("  Component doesn't declare 'sap.app/embeddedBy', don't list it as 'embedded'");
 		return false;
@@ -138,7 +138,7 @@ const isBundledWithLibrary = (embeddedBy, componentPath, libraryPathPrefix) => {
  * @param {string} subPath relative sub path, e.g. "sub"
  * @returns {string} manifest path, e.g. "lib/x/sub/manifest.json"
  */
-const getManifestPath = (filePath, subPath) => {
+const getManifestPath = (filePath: string, subPath: string) => {
 	return posixPath.resolve(posixPath.dirname(filePath), subPath, "manifest.json");
 };
 
@@ -153,7 +153,7 @@ class DependencyInfo {
 	 * @param {module:@ui5/builder/processors/versionInfoGenerator~ManifestLibraries} libs
 	 * @param {string} name library name, e.g. "lib.x"
 	 */
-	constructor(libs, name) {
+	constructor(libs, name: string) {
 		this.libs = libs;
 		this.name = name;
 	}
@@ -166,7 +166,7 @@ class DependencyInfo {
 	 * @param {boolean} lazy
 	 * @returns {{lazy: boolean}} the added library
 	 */
-	addResolvedLibDependency(libName, lazy) {
+	addResolvedLibDependency(libName: string, lazy: boolean) {
 		let alreadyResolved = this._libsResolved[libName];
 		if (!alreadyResolved) {
 			alreadyResolved = Object.create(null);
@@ -189,7 +189,7 @@ class DependencyInfo {
 	 * @param {Map<string,DependencyInfo>} dependencyInfoMap
 	 * @returns {module:@ui5/builder/processors/versionInfoGenerator~ManifestLibraries} resolved libraries
 	 */
-	getResolvedLibraries(dependencyInfoMap) {
+	getResolvedLibraries(dependencyInfoMap: Map<string, DependencyInfo>) {
 		if (!this._libsResolved) {
 			// early set if there is a potential cycle
 			this._libsResolved = Object.create(null);
@@ -227,7 +227,7 @@ class DependencyInfo {
  * @param {object} obj the object
  * @returns {object} the object with sorted keys
  */
-const sortObjectKeys = (obj) => {
+const sortObjectKeys = (obj: object) => {
 	const sortedObject = Object.create(null);
 	const keys = Object.keys(obj);
 	keys.sort();
@@ -244,7 +244,7 @@ const sortObjectKeys = (obj) => {
  * @param {Map<string, DependencyInfo>} dependencyInfoMap
  * @returns {{dependencies: {libs: ManifestLibraries}}} manifestHints
  */
-const getManifestHints = (dependencyInfo, dependencyInfoMap) => {
+const getManifestHints = (dependencyInfo: DependencyInfo, dependencyInfoMap: Map<string, DependencyInfo>) => {
 	if (dependencyInfo) {
 		const libsResolved = dependencyInfo.getResolvedLibraries(dependencyInfoMap);
 		if (libsResolved && Object.keys(libsResolved).length) {
@@ -276,7 +276,7 @@ const getManifestHints = (dependencyInfo, dependencyInfoMap) => {
  * @param {string} [name] library name, if not provided using the ManifestInfo's id
  * @returns {Promise<{manifestInfo: ManifestInfo, libraryArtifactInfo: ArtifactInfo}>}
  */
-async function processManifestAndGetArtifactInfo(libraryManifest, name) {
+async function processManifestAndGetArtifactInfo(libraryManifest, name?: string) {
 	const manifestInfo = await processManifest(libraryManifest);
 	name = name || manifestInfo.id;
 	const libraryArtifactInfo = Object.create(null);
@@ -377,7 +377,13 @@ const processLibraryInfo = async (libraryInfo) => {
  * @returns {Promise<@ui5/fs/Resource[]>} Promise resolving with an array containing the versionInfo resource
  */
 
-export default async function({options}) {
+export default async function({ options }: {
+    options: {
+        rootProjectName: string;
+        rootProjectVersion: string;
+        libraryInfos: object;
+    };
+}) {
 	if (!options.rootProjectName || options.rootProjectVersion === undefined || options.libraryInfos === undefined) {
 		throw new Error("[versionInfoGenerator]: Missing options parameters");
 	}

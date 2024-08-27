@@ -17,7 +17,7 @@ import fsInterface from "@ui5/fs/fsInterface";
  * @param {string} parameters.options.projectNamespace Namespace of the application
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
-export default async function({workspace, options}) {
+export default async function({ workspace, options }: object) {
 	const {projectNamespace} = options;
 
 	// Note: all "manifest.json" files in the given namespace

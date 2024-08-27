@@ -29,7 +29,7 @@ function isAbsoluteUrl(url) {
  *                          to which a bundleName should be resolved to
  * @returns {string} Relative bundle URL (e.g. "i18n/i18n.properties")
  */
-function getRelativeBundleUrlFromName(bundleName, sapAppId) {
+function getRelativeBundleUrlFromName(bundleName: string, sapAppId: string) {
 	const bundleUrl = "/resources/" + bundleName.replace(/\./g, "/") + ".properties";
 	return normalizeBundleUrl(bundleUrl, sapAppId);
 }
@@ -65,7 +65,7 @@ function resolveUI5Url(sUrl) {
  *                          to which the URL is relative to
  * @returns {string} Normalized relative bundle URL (e.g. "i18n/i18n.properties")
  */
-function normalizeBundleUrl(bundleUrl, sapAppId) {
+function normalizeBundleUrl(bundleUrl: string, sapAppId: string) {
 	// Create absolute path with namespace from sap.app/id
 	const absoluteNamespace = `/resources/${sapAppId.replaceAll(/\./g, "/")}`;
 
@@ -82,7 +82,7 @@ function normalizeBundleUrl(bundleUrl, sapAppId) {
  *                          to which a bundleName should be resolved to
  * @param {string} [defaultBundleUrl] Default bundle url in case bundleConfig is not defined
  */
-function getBundleUrlFromConfig(bundleConfig, sapAppId, defaultBundleUrl) {
+function getBundleUrlFromConfig(bundleConfig: object, sapAppId: string, defaultBundleUrl?: string) {
 	if (!bundleConfig) {
 		// Use default URL (or undefined if argument is not provided)
 		return defaultBundleUrl;
@@ -124,7 +124,7 @@ class ManifestEnhancer {
 	 * @param {string} filePath manifest.json file path
 	 * @param {fs} fs Node fs or custom [fs interface]{@link module:@ui5/fs/fsInterface}
 	 */
-	constructor(manifest, filePath, fs) {
+	constructor(manifest: string, filePath: string, fs: fs) {
 		this.fsReadDir = promisify(fs.readdir);
 		this.cwd = path.dirname(filePath);
 		this.filePath = filePath;
@@ -263,7 +263,7 @@ class ManifestEnhancer {
 	 *
 	 * @param {object} bundleConfig
 	 */
-	async processTerminologiesAndEnhanceWith(bundleConfig) {
+	async processTerminologiesAndEnhanceWith(bundleConfig: object) {
 		const bundleConfigs = [];
 		const terminologyBundleConfigs = [];
 
@@ -405,7 +405,7 @@ class ManifestEnhancer {
  *    [fs interface]{@link module:@ui5/fs/fsInterface}.
  * @returns {Promise<Array<@ui5/fs/Resource|undefined>>} Promise resolving with an array of modified resources
  */
-export default async function({resources, fs}) {
+export default async function({ resources, fs }: object) {
 	const res = await Promise.all(
 		resources.map(async (resource) => {
 			const manifest = await resource.getString();

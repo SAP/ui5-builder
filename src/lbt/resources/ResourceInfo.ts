@@ -8,7 +8,7 @@ class ResourceInfo {
 	/**
 	 * @param {string} name name of the resource
 	 */
-	constructor(name) {
+	constructor(name: string) {
 		this.name = name;
 		this.i18nName = null;
 		this.i18nLocale = null;
@@ -59,7 +59,7 @@ class ResourceInfo {
 	 * @param {string} prefix
 	 * @param {ResourceInfo} orig
 	 */
-	copyFrom(prefix, orig) {
+	copyFrom(prefix: string, orig: ResourceInfo) {
 		this.i18nName = orig.i18nName;
 		this.i18nLocale = orig.i18nLocale;
 		this.isDebug = orig.isDebug;

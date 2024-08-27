@@ -55,7 +55,7 @@ const taskInfos = {
  * @throws {Error} In case the specified task does not exist
  * @returns {Promise<@ui5/builder/tasks/taskRepository~TaskInfo>} Object containing the task module
  */
-export async function getTask(taskName) {
+export async function getTask(taskName: string) {
 	const taskInfo = taskInfos[taskName];
 
 	if (!taskInfo) {

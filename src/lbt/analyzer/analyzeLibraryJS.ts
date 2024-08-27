@@ -99,7 +99,7 @@ async function analyze(resource) {
 	 * @param {Node} node
 	 * @returns {SapUiDefineCall}
 	 */
-	function analyzeSapUiDefineCalls(node) {
+	function analyzeSapUiDefineCalls(node: Node) {
 		// Analyze sap.ui.define calls
 		if ( [CALL_AMD_DEFINE, CALL_SAP_UI_DEFINE].some(
 			(defCall) => isMethodCall(node, defCall)) ) {
@@ -121,7 +121,7 @@ async function analyze(resource) {
 	 * @param {Node} node
 	 * @returns {boolean}
 	 */
-	function isInitLibraryCall(node) {
+	function isInitLibraryCall(node: Node) {
 		// sap.ui.getCore()
 		if (
 			node.type == Syntax.CallExpression &&

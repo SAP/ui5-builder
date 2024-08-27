@@ -24,7 +24,7 @@ import {createResource} from "@ui5/fs/resourceFactory";
  * 															to merge with new changes
  * @returns {Promise<@ui5/fs/Resource[]>} Promise resolving with flex changes bundle resources
  */
-export default function({resources, options: {pathPrefix, hasFlexBundleVersion}, existingFlexBundle = {}}) {
+export default function({ resources, options: { pathPrefix, hasFlexBundleVersion }, existingFlexBundle = {} }: object) {
 	let bundleName = "changes-bundle.json";
 
 	function sortByTimeStamp(a, b) {
@@ -37,7 +37,7 @@ export default function({resources, options: {pathPrefix, hasFlexBundleVersion},
 	 * @param {Array} changesContent Array of resources files
 	 * @returns {string} Json sting of changes and control variants
 	 */
-	function sortAndStringifyInFlexFormat(changesContent) {
+	function sortAndStringifyInFlexFormat(changesContent: Array<any>) {
 		changesContent = changesContent.sort(sortByTimeStamp);
 		const changes = [];
 		const variantDependentControlChanges = [];
@@ -109,7 +109,7 @@ export default function({resources, options: {pathPrefix, hasFlexBundleVersion},
 	 * @param {object} newFlexBundle Object with new content of flexibility-bundle.json
 	 * @returns {object} Object with merged content of new and existing flexibility-bundle.json
 	 */
-	function mergeFlexChangeBundles(newFlexBundle) {
+	function mergeFlexChangeBundles(newFlexBundle: object) {
 		const result = {};
 
 		Object.keys(newFlexBundle).forEach((key) => {

@@ -33,11 +33,11 @@ const copyrightCommentsAndBundleCommentPattern = /copyright|\(c\)(?:[0-9]+|\s+[0
  * @param {object} parameters.sourceMapOptions
  * @returns {Promise<undefined>} Promise resolving once minification of the resource has finished
  */
-export default async function execMinification({
-	filename,
-	dbgFilename,
-	code,
-	sourceMapOptions
+export default async function execMinification({ filename, dbgFilename, code, sourceMapOptions }: {
+    filename: string;
+    dbgFilename: string;
+    code: string;
+    sourceMapOptions: object;
 }) {
 	try {
 		return await minify({

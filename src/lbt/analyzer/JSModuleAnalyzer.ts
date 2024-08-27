@@ -253,7 +253,7 @@ class JSModuleAnalyzer {
 	 * @param {string} defaultName default name
 	 * @param {ModuleInfo} info module info
 	 */
-	analyze(ast, defaultName, info) {
+	analyze(ast: object, defaultName: string, info: ModuleInfo) {
 		let mainModuleFound = false;
 		/**
 		 * Number of (sap.ui.)define calls without a module ID.

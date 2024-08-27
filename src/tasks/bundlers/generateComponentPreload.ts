@@ -33,9 +33,7 @@ import {negateFilters} from "../../lbt/resources/ResourceFilterList.js";
  * @param {string[]} [parameters.options.skipBundles] Names of bundles that should not be created
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
-export default async function({
-	workspace, taskUtil, options: {projectName, paths, namespaces, skipBundles = [], excludes = []}
-}) {
+export default async function({ workspace, taskUtil, options: { projectName, paths, namespaces, skipBundles = [], excludes = [] } }: object) {
 	let nonDbgWorkspace = workspace;
 	if (taskUtil) {
 		nonDbgWorkspace = taskUtil.resourceFactory.createFilterReader({

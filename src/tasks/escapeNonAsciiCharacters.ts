@@ -19,7 +19,7 @@ import nonAsciiEscaper from "../processors/nonAsciiEscaper.js";
  * @param {string} parameters.options.encoding source file encoding either "UTF-8" or "ISO-8859-1"
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
-export default async function({workspace, options: {pattern, encoding}}) {
+export default async function({ workspace, options: { pattern, encoding } }: object) {
 	if (!encoding) {
 		throw new Error("[escapeNonAsciiCharacters] Mandatory option 'encoding' not provided");
 	}

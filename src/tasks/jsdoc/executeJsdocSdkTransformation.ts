@@ -27,7 +27,7 @@ import sdkTransformer from "../../processors/jsdoc/sdkTransformer.js";
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
 const executeJsdocSdkTransformation = async function(
-	{workspace, dependencies, options: {projectName, dotLibraryPattern}} = {}
+	{ workspace, dependencies, options: { projectName, dotLibraryPattern } }: object = {}
 ) {
 	if (!projectName || !dotLibraryPattern) {
 		throw new Error("[executeJsdocSdkTransformation]: One or more mandatory options not provided");

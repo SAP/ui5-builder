@@ -37,7 +37,7 @@ class GraphNode {
  * @returns {Promise<object>}
  * @private
  */
-function createDependencyGraph(pool, moduleNames, indegreeOnly) {
+function createDependencyGraph(pool: ResourcePool, moduleNames: string[], indegreeOnly: boolean) {
 	const graph = Object.create(null);
 
 	const promises = moduleNames.map( (moduleName) => {
@@ -86,7 +86,7 @@ function createDependencyGraph(pool, moduleNames, indegreeOnly) {
  * @returns {Promise<Array>} sorted list of modules
  * @private
  */
-function topologicalSort(pool, moduleNames) {
+function topologicalSort(pool: ResourcePool, moduleNames: string[]) {
 	return createDependencyGraph(pool, moduleNames, false).
 		then(function(graph) {
 		// now do a topological sort.

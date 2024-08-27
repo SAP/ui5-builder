@@ -162,9 +162,7 @@ async function getSourceMapFromUrl({sourceMappingUrl, resourcePath, readFile}) {
  * @returns {Promise<module:@ui5/builder/processors/minifier~MinifierResult[]>}
  *   Promise resolving with object of resource, dbgResource and sourceMap
  */
-export default async function({
-	resources, fs, taskUtil, options: {readSourceMappingUrl = false, addSourceMappingUrl = true, useWorkers = false
-	} = {}}) {
+export default async function({ resources, fs, taskUtil, options: { readSourceMappingUrl = false, addSourceMappingUrl = true, useWorkers = false } = {} }: object) {
 	let minify;
 	if (readSourceMappingUrl && !fs) {
 		throw new Error(`Option 'readSourceMappingUrl' requires parameter 'fs' to be provided`);

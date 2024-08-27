@@ -7,7 +7,7 @@
  *
  * @returns {module:@ui5/builder/processors/bundlers/moduleBundler~ModuleBundleDefinition}
  */
-export function applyDefaultsToBundleDefinition(bundleDefinition, taskUtil) {
+export function applyDefaultsToBundleDefinition(bundleDefinition: object, taskUtil) {
 	bundleDefinition.sections = bundleDefinition?.sections?.map((section) => {
 		const defaultValues = {
 			resolve: false,

@@ -16,7 +16,10 @@ const log = getLogger("lbt:graph:dominatorTree");
  * @returns {Node} Root node of the dominator tree.
  * @private
  */
-function calculateDominatorTree({n0, nodes}) {
+function calculateDominatorTree({ n0, nodes }: {
+    nodes: Map<string, Node>;
+    n0: Node;
+}) {
 	// initialize set of dominators for each node
 	for ( const n of nodes.values() ) {
 		if ( n === n0 ) {

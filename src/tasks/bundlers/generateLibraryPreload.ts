@@ -245,7 +245,7 @@ function getSapUiCoreBunDef(name, filters, preload) {
  * inclusion overrides an earlier exclusion, and vice versa.
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
-export default async function({workspace, taskUtil, options: {skipBundles = [], excludes = [], projectName}}) {
+export default async function({ workspace, taskUtil, options: { skipBundles = [], excludes = [], projectName } }: object) {
 	let nonDbgWorkspace = workspace;
 	if (taskUtil) {
 		nonDbgWorkspace = taskUtil.resourceFactory.createFilterReader({

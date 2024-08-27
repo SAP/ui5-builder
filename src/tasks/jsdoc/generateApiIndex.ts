@@ -23,11 +23,7 @@ import apiIndexGenerator from "../../processors/jsdoc/apiIndexGenerator.js";
  * @param {string} parameters.options.projectName Project name
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
-export default async function({
-	workspace,
-	dependencies,
-	options: {projectName}
-}) {
+export default async function({ workspace, dependencies, options: { projectName } }: object) {
 	const combo = new ReaderCollectionPrioritized({
 		name: `generateApiIndex - workspace + dependencies: ${projectName}`,
 		readers: [workspace, dependencies]

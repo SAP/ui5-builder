@@ -22,7 +22,7 @@ import manifestCreator from "../processors/manifestCreator.js";
  * @param {string} parameters.options.projectName Project name
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
-export default function({workspace, taskUtil, options: {projectName}}) {
+export default function({ workspace, taskUtil, options: { projectName } }: object) {
 	// Note:
 	// *.library files are needed to identify libraries
 	// *.json files are needed to avoid overwriting them

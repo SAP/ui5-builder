@@ -26,8 +26,12 @@ import transformer from "./lib/transformApiJson.js";
  *
  * @returns {Promise<@ui5/fs/Resource[]>} Promise resolving with created resources
  */
-const sdkTransformer = async function({
-	apiJsonPath, dotLibraryPath, dependencyApiJsonPaths, targetApiJsonPath, fs} = {}
+const sdkTransformer = async function({ apiJsonPath, dotLibraryPath, dependencyApiJsonPaths, targetApiJsonPath, fs }: {
+    apiJsonPath: string;
+    dotLibraryPath: string;
+    dependencyApiJsonPaths: string[];
+    targetApiJsonPath: string;
+} = {}
 ) {
 	if (!apiJsonPath || !dotLibraryPath || !targetApiJsonPath || !dependencyApiJsonPaths || !fs) {
 		throw new Error("[sdkTransformer]: One or more mandatory parameters not provided");

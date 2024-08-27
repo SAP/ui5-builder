@@ -14,7 +14,7 @@ import bootstrapHtmlTransformer from "../processors/bootstrapHtmlTransformer.js"
  * @param {string} [parameters.options.projectNamespace] Project namespace
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
-export default async function({workspace, options}) {
+export default async function({ workspace, options }: object) {
 	const {projectName} = options;
 	const namespace = options.projectNamespace;
 

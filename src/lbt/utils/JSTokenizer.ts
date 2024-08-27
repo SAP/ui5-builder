@@ -342,7 +342,7 @@
 	 * @private
 	 * @param {int} iIndex - the new index
 	 */
-	JSTokenizer.prototype.setIndex = function(iIndex) {
+	JSTokenizer.prototype.setIndex = function(iIndex: int) {
 		if (iIndex < this.at - 1) {
 			throw new Error("Must not set index " + iIndex
 				+ " before previous index " + (this.at - 1));
@@ -362,7 +362,7 @@
 	 * @param {int} iStart The start position
 	 * @returns {object} the JavaScript object
 	 */
-	JSTokenizer.parseJS = function(sSource, iStart) {
+	JSTokenizer.parseJS = function(sSource: string, iStart: int) {
 
 		var oJSTokenizer = new JSTokenizer();
 		var result;

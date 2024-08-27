@@ -39,12 +39,7 @@ import {createAdapter} from "@ui5/fs/resourceFactory";
  * @param {@ui5/project/build/helpers/TaskUtil|object} [parameters.taskUtil] TaskUtil
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
-export default async function generateJsdoc({
-	taskUtil,
-	workspace,
-	dependencies,
-	options = {}
-}) {
+export default async function generateJsdoc({ taskUtil, workspace, dependencies, options = {} }: object) {
 	const {projectName, namespace, version, pattern} =
 	/** @type {module:@ui5/builder/tasks/jsdoc/generateJsdoc~GenerateJsdocOptions} */ (options);
 
@@ -100,7 +95,7 @@ const utils = {
 	 * @param {string} projectName Project name used for naming the temporary working directory
 	 * @returns {Promise<object>} Promise resolving with sourcePath, targetPath and tmpPath strings
 	 */
-	createTmpDirs: async function(projectName) {
+	createTmpDirs: async function(projectName: string) {
 		const tmpDirPath = await utils.createTmpDir(projectName);
 
 		const sourcePath = path.join(tmpDirPath, "src"); // dir will be created by writing project resources below
@@ -128,7 +123,7 @@ const utils = {
 	 * @param {string} projectName Project name used for naming the temporary directory
 	 * @returns {Promise<string>} Promise resolving with path of the temporary directory
 	 */
-	createTmpDir: async function(projectName) {
+	createTmpDir: async function(projectName: string) {
 		const sanitizedProjectName = projectName.replace(/[^A-Za-z0-9]/g, "");
 
 		const tmpRootPath = path.join(os.tmpdir(), "ui5-tooling");
@@ -148,7 +143,7 @@ const utils = {
 	 * @param {string} parameters.targetPath Path to write the resources to
 	 * @returns {Promise<number>} Promise resolving with number of resources written to given directory
 	 */
-	writeResourcesToDir: async function({workspace, pattern, targetPath}) {
+	writeResourcesToDir: async function({ workspace, pattern, targetPath }: object) {
 		const fsTarget = createAdapter({
 			fsBasePath: targetPath,
 			virBasePath: "/resources/"
@@ -170,7 +165,7 @@ const utils = {
 	 * @param {string} parameters.targetPath Path to write the resources to
 	 * @returns {Promise<number>} Promise resolving with number of resources written to given directory
 	 */
-	writeDependencyApisToDir: async function({dependencies, targetPath}) {
+	writeDependencyApisToDir: async function({ dependencies, targetPath }: object) {
 		const depApis = await dependencies.byGlob("/test-resources/**/designtime/api.json");
 
 		// Clone resources before changing their path

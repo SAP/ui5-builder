@@ -14,7 +14,7 @@ class ResourceInfoList {
 	 *
 	 * @param {string} prefix
 	 */
-	constructor(prefix) {
+	constructor(prefix: string) {
 		/**
 		 * List of resources information objects
 		 *
@@ -41,7 +41,7 @@ class ResourceInfoList {
 	 *
 	 * @param {ResourceInfo} info
 	 */
-	add(info) {
+	add(info: ResourceInfo) {
 		const relativeName = ResourceInfoList.makePathRelativeTo(this.name, info.name);
 		// search for a resource with the same name
 		let myInfo = this.resourcesByName.get(relativeName);
@@ -87,7 +87,7 @@ class ResourceInfoList {
 	 * @param {string} name
 	 * @returns {string}
 	 */
-	static makePathRelativeTo(prefix, name) {
+	static makePathRelativeTo(prefix: string, name: string) {
 		let back = "";
 		while ( !name.startsWith(prefix) ) {
 			const p = prefix.lastIndexOf("/", prefix.length - 2);
@@ -108,7 +108,7 @@ class ResourceInfoList {
 	 * @param {string} path
 	 * @returns {string|null} Non-debug name of the module
 	 */
-	static getNonDebugName(path) {
+	static getNonDebugName(path: string) {
 		if ( DEBUG_RESOURCES_PATTERN.test(path) ) {
 			return path.replace( DEBUG_RESOURCES_PATTERN, "$1");
 		}

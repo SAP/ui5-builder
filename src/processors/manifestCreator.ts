@@ -131,7 +131,7 @@ class LibraryBundle {
 	 * @param {string} prefix
 	 * @param {@ui5/fs/Resource[]} resources
 	 */
-	constructor(prefix, resources) {
+	constructor(prefix: string, resources) {
 		this.prefix = prefix;
 		this.resources = resources.filter((res) => res.getPath().startsWith(prefix));
 	}
@@ -141,7 +141,7 @@ class LibraryBundle {
 	 * @param {string} name
 	 * @returns {@ui5/fs/Resource}
 	 */
-	findResource(name) {
+	findResource(name: string) {
 		return this.resources.find((res) => res.getPath() === this.prefix + name);
 	}
 
@@ -150,7 +150,7 @@ class LibraryBundle {
 	 * @param {RegExp} pattern
 	 * @returns {@ui5/fs/Resource[]}
 	 */
-	getResources(pattern) {
+	getResources(pattern: RegExp) {
 		return this.resources.filter((res) => pattern == null || pattern.test(res.getPath()));
 	}
 }
@@ -519,7 +519,7 @@ async function createManifest(
 	 *   supportedLocales or the i18n String if not a ".properties" file.
 	 *   <code>null</code> if given i18n String is <code>null</code>
 	 */
-	function createI18nSection(i18n, i18nToSupportedLocales) {
+	function createI18nSection(i18n: string, i18nToSupportedLocales: Map<string, Set<string>>) {
 		if (i18n === undefined) {
 			return undefined;
 		}

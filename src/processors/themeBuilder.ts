@@ -25,7 +25,7 @@ export class ThemeBuilder {
 	 * @param {fs|module:@ui5/fs/fsInterface} fs Node fs or custom
 	 * 		[fs interface]{@link module:@ui5/fs/fsInterface}
 	 */
-	constructor({fs}) {
+	constructor({ fs }: fs | module) {
 		this.builder = new less.Builder({fs});
 	}
 
@@ -41,7 +41,10 @@ export class ThemeBuilder {
 	 *   (library-skeleton.css, [library-skeleton-RTL.css])
 	 * @returns {Promise<@ui5/fs/Resource[]>} Resolving with array of created files
 	 */
-	build(resources, {compress = false, cssVariables = false} = {}) {
+	public build(resources, { compress = false, cssVariables = false }: {
+    compress?: boolean;
+    cssVariables?: boolean;
+} = {}) {
 		const files = [];
 
 		const compile = (resource) => {
@@ -120,7 +123,7 @@ export class ThemeBuilder {
  	 *
 	 * @public
 	 */
-	clearCache() {
+	public clearCache() {
 		this.builder.clearCache();
 	}
 }
@@ -151,11 +154,7 @@ export class ThemeBuilder {
  * @param {module:@ui5/builder/processors/ThemeBuilder~ThemeBuilderOptions} [parameters.options] Options
  * @returns {Promise<@ui5/fs/Resource[]>} Promise resolving with theme resources
  */
-export default async function({
-	resources,
-	fs,
-	options = {}
-}) {
+export default async function({ resources, fs, options = {} }: object) {
 	const {compress, cssVariables} =
 	/** @type {module:@ui5/builder/processors/ThemeBuilder~ThemeBuilderOptions} */ (options);
 	const themeBuilder = new ThemeBuilder({fs});

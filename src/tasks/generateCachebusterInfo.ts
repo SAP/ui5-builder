@@ -49,7 +49,7 @@ function getSigner(type) {
  * @param {string} [parameters.options.signatureType='time'] Type of signature to be used ('time' or 'hash')
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
-export default function({workspace, options}) {
+export default function({ workspace, options }: object) {
 	const {signatureType} = options;
 	const namespace = options.projectNamespace;
 

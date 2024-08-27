@@ -112,7 +112,7 @@ class XMLTemplateAnalyzer {
 	 * @param {string} moduleName
 	 * @param {boolean} conditional
 	 */
-	_addDependency(moduleName, conditional) {
+	_addDependency(moduleName: string, conditional: boolean) {
 		// don't add references to 'self'
 		if ( this.info.name === moduleName ) {
 			return;
@@ -133,7 +133,7 @@ class XMLTemplateAnalyzer {
 	 * @param {ModuleInfo} info ModuleInfo to enrich
 	 * @returns {Promise<ModuleInfo>} the created ModuleInfo
 	 */
-	analyzeView(xml, info) {
+	analyzeView(xml: string, info: ModuleInfo) {
 		return this._analyze(xml, info, false);
 	}
 
@@ -144,7 +144,7 @@ class XMLTemplateAnalyzer {
 	 * @param {ModuleInfo} info ModuleInfo to enrich
 	 * @returns {Promise<ModuleInfo>} the created ModuleInfo
 	 */
-	analyzeFragment(xml, info) {
+	analyzeFragment(xml: string, info: ModuleInfo) {
 		return this._analyze(xml, info, true);
 	}
 

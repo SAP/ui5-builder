@@ -154,7 +154,7 @@ export default class ResourceFilterList {
 	* @param {string} filterStr comma separated list of simple filters
 	* @returns {ResourceFilterList}
 	*/
-	static fromString(filterStr) {
+	static fromString(filterStr: string) {
 		const result = new ResourceFilterList();
 		if ( filterStr != null ) {
 			result.addFilters( filterStr.trim().split(/\s*,\s*/).filter(Boolean) );

@@ -10,7 +10,7 @@ import nonAsciiEscaper from "../../processors/nonAsciiEscaper.js";
  * @param {Resource} resource the resource for which the content will be escaped
  * @returns {Promise<string>} resolves with the escaped string content of the given Resource
  */
-export default async function(resource) {
+export default async function(resource: Resource) {
 	const project = resource.getProject();
 	let propertiesFileSourceEncoding = project && project.getPropertiesFileSourceEncoding();
 

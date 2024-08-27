@@ -32,9 +32,13 @@ import createIndex from "./lib/createIndexFiles.js";
  * <code>api-index-deprecated.json</code>, <code>api-index-experimental.json</code> and
  * <code>api-index-since.json</code> (names depend on the supplied paths)
  */
-const apiIndexGenerator = async function({
-	versionInfoPath, testResourcesRootPath, targetApiIndexPath, targetApiIndexDeprecatedPath,
-	targetApiIndexExperimentalPath, targetApiIndexSincePath, fs
+const apiIndexGenerator = async function({ versionInfoPath, testResourcesRootPath, targetApiIndexPath, targetApiIndexDeprecatedPath, targetApiIndexExperimentalPath, targetApiIndexSincePath, fs }: {
+    versionInfoPath: string;
+    testResourcesRootPath: string;
+    targetApiIndexPath: string;
+    targetApiIndexDeprecatedPath: string;
+    targetApiIndexExperimentalPath: string;
+    targetApiIndexSincePath: string;
 } = {}) {
 	if (!versionInfoPath || !testResourcesRootPath || !targetApiIndexPath || !targetApiIndexDeprecatedPath ||
 			!targetApiIndexExperimentalPath || !targetApiIndexSincePath || !fs) {

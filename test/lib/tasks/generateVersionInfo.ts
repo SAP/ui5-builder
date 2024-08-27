@@ -15,7 +15,7 @@ const projectCache = {};
  * @param {string} [type="library"] Project type
  * @returns {object} Project mock
  */
-const createProjectMetadata = (names, version, type) => {
+const createProjectMetadata = (names: string[], version?: string, type?: string) => {
 	const key = names.join(".");
 
 	// Cache projects in order to return same object instance
@@ -172,7 +172,7 @@ test.serial("integration: Library without i18n bundle file", async (t) => {
  * @param {string} [embeddedBy]
  * @returns {Promise<void>}
  */
-const createManifestResource = async (dependencies, resourceFactory, names, deps, embeds, embeddedBy) => {
+const createManifestResource = async (dependencies, resourceFactory, names: string[], deps: object[], embeds?: string[], embeddedBy?: string) => {
 	const content = {
 		"sap.app": {
 			"id": names.join("."),
@@ -214,7 +214,7 @@ const createManifestResource = async (dependencies, resourceFactory, names, deps
  * @param {string[]} names e.g. ["lib", "a"]
  * @returns {Promise<void>}
  */
-async function createDotLibrary(dependencies, resourceFactory, names) {
+async function createDotLibrary(dependencies, resourceFactory, names: string[]) {
 	await dependencies.write(resourceFactory.createResource({
 		path: `/resources/${names.join("/")}/.library`,
 		string: `
@@ -239,7 +239,7 @@ async function createDotLibrary(dependencies, resourceFactory, names) {
  * @param {object[]} deps
  * @param {string[]} [embeds]
  */
-const createResources = async (dependencies, resourceFactory, names, deps, embeds) => {
+const createResources = async (dependencies, resourceFactory, names: string[], deps: object[], embeds?: string[]) => {
 	await createDotLibrary(dependencies, resourceFactory, names);
 	await createManifestResource(dependencies, resourceFactory, names, deps, embeds);
 };

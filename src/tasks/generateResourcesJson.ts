@@ -108,7 +108,7 @@ function getCreatorOptions(projectName) {
  * @param {string} parameters.options.projectName Project name
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
-export default async function({workspace, dependencies, taskUtil, options: {projectName}}) {
+export default async function({ workspace, dependencies, taskUtil, options: { projectName } }: object) {
 	let resources = await workspace.byGlob(["/resources/**/*"].concat(DEFAULT_EXCLUDES));
 	let dependencyResources =
 			await dependencies.byGlob("/resources/**/*.{js,json,xml,html,properties,library,js.map}");

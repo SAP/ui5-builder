@@ -82,7 +82,7 @@ function getBundleDefinition(config) {
  * @param {string} [parameters.options.projectNamespace] Project namespace
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
-export default async function({workspace, dependencies, taskUtil, options}) {
+export default async function({ workspace, dependencies, taskUtil, options }: object) {
 	const {projectName} = options;
 	const namespace = options.projectNamespace;
 	const coreVersion = taskUtil?.getProject("sap.ui.core")?.getVersion();

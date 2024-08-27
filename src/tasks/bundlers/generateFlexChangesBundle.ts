@@ -28,7 +28,7 @@ import semver from "semver";
  * @param {string} [parameters.options.projectNamespace] Project Namespace
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
-export default async function({workspace, taskUtil, options = {}}) {
+export default async function({ workspace, taskUtil, options = {} }: object) {
 	const namespace = options.projectNamespace;
 
 	// Use the given namespace if available, otherwise use no namespace

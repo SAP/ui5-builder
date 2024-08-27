@@ -23,7 +23,7 @@ import fsInterface from "@ui5/fs/fsInterface";
  * @param {string} themeFolder Virtual path including /resources/
  * @returns {string} Relative path to root namespace
  */
-function getPathToRoot(themeFolder) {
+function getPathToRoot(themeFolder: string) {
 	// -2 for initial "/"" and "resources/"
 	return "../".repeat(themeFolder.split("/").length - 2);
 }
@@ -34,7 +34,7 @@ function getPathToRoot(themeFolder) {
  * @param {string} filePath The path to the desired file
  * @returns {string} The less import statement
  */
-function lessImport(filePath) {
+function lessImport(filePath: string) {
 	return `@import "${filePath}";\n`;
 }
 
@@ -219,7 +219,7 @@ async function generateCssVariablesLess({workspace, combo, namespace}) {
  * Omit for type <code>theme-library</code>
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
-export default async function({workspace, dependencies, options}) {
+export default async function({ workspace, dependencies, options }: object) {
 	const {projectName, version} = options;
 	const namespace = options.projectNamespace;
 

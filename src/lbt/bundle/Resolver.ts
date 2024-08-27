@@ -45,7 +45,7 @@ class BundleResolver {
 	 			List of default file types to which a prefix pattern shall be expanded.
 	 * @returns {Promise<ResolvedBundleDefinition>}
 	 */
-	resolve(bundle) {
+	resolve(bundle: ModuleDefinition) {
 		const fileTypes = bundle.defaultFileTypes || DEFAULT_FILE_TYPES;
 		let visitedResources = Object.create(null);
 		let selectedResources = Object.create(null);
@@ -66,7 +66,7 @@ class BundleResolver {
 		 * @param {JSModuleSectionDefinition} section
 		 * @returns {Collection<ModuleName>}
 		 */
-		function collectModulesForSection(section) {
+		function collectModulesForSection(section: JSModuleSectionDefinition) {
 			let prevLength;
 			let newKeys;
 

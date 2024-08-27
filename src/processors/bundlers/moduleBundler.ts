@@ -145,9 +145,7 @@ const log = getLogger("builder:processors:bundlers:moduleBundler");
  * Promise resolving with module bundle resources
  */
 /* eslint-enable max-len */
-export default function({resources, options: {
-	bundleDefinition, bundleOptions, moduleNameMapping, targetUi5CoreVersion, allowStringBundling = false
-}}) {
+export default function({ resources, options: { bundleDefinition, bundleOptions, moduleNameMapping, targetUi5CoreVersion, allowStringBundling = false } }: object) {
 	// Apply defaults without modifying the passed object
 	bundleOptions = Object.assign({}, {
 		optimize: true,
