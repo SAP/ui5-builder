@@ -1,5 +1,5 @@
 import test from "ava";
-import ResourceFilterList, {negateFilters} from "../../../../lib/lbt/resources/ResourceFilterList.js";
+import ResourceFilterList, {negateFilters} from "../../../../src/lbt/resources/ResourceFilterList.js";
 
 test("single string matcher", (t) => {
 	const filterList = new ResourceFilterList([

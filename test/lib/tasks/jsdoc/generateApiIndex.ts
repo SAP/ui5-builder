@@ -10,10 +10,10 @@ test.beforeEach(async (t) => {
 
 	t.context.apiIndexGeneratorStub = sinon.stub().resolves(["resource A", "resource B"]);
 
-	t.context.generateApiIndex = await esmock("../../../../lib/tasks/jsdoc/generateApiIndex.js", {
+	t.context.generateApiIndex = await esmock("../../../../src/tasks/jsdoc/generateApiIndex.js", {
 		"@ui5/fs/ReaderCollectionPrioritized": t.context.ReaderCollectionPrioritizedStubClass,
 		"@ui5/fs/fsInterface": t.context.fsInterfaceStub,
-		"../../../../lib/processors/jsdoc/apiIndexGenerator": t.context.apiIndexGeneratorStub,
+		"../../../../src/processors/jsdoc/apiIndexGenerator": t.context.apiIndexGeneratorStub,
 	});
 });
 

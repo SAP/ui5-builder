@@ -1,5 +1,5 @@
 import test from "ava";
-import flexChangesBundler from "../../../../lib/processors/bundlers/flexChangesBundler.js";
+import flexChangesBundler from "../../../../src/processors/bundlers/flexChangesBundler.js";
 
 test("flexChangesBundler with empty resources", async (t) => {
 	const resources = [];

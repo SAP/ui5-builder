@@ -1,5 +1,5 @@
 import test from "ava";
-import replaceVersion from "../../../lib/tasks/replaceVersion.js";
+import replaceVersion from "../../../src/tasks/replaceVersion.js";
 import {createAdapter, createResource} from "@ui5/fs/resourceFactory";
 import DuplexCollection from "@ui5/fs/DuplexCollection";
 

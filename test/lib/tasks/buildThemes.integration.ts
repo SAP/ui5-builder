@@ -1,5 +1,5 @@
 import test from "ava";
-import buildThemes from "../../../lib/tasks/buildThemes.js";
+import buildThemes from "../../../src/tasks/buildThemes.js";
 import {createAdapter, createResource} from "@ui5/fs/resourceFactory";
 import DuplexCollection from "@ui5/fs/DuplexCollection";
 

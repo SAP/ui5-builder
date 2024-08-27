@@ -21,7 +21,7 @@ test.beforeEach(async (t) => {
 		info: sinon.stub(),
 	};
 
-	t.context.generateJsdoc = await esmock("../../../../lib/tasks/jsdoc/generateJsdoc.js", {
+	t.context.generateJsdoc = await esmock("../../../../src/tasks/jsdoc/generateJsdoc.js", {
 		"graceful-fs": {
 			mkdtemp: t.context.mkdtempStub,
 			mkdir: t.context.mkdirStub,
@@ -35,7 +35,7 @@ test.beforeEach(async (t) => {
 		"@ui5/logger": {
 			getLogger: sinon.stub().returns(t.context.log),
 		},
-		"../../../../lib/processors/jsdoc/jsdocGenerator": t.context.jsdocGeneratorStub,
+		"../../../../src/processors/jsdoc/jsdocGenerator": t.context.jsdocGeneratorStub,
 	});
 });
 

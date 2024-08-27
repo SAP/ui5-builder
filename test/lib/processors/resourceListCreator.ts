@@ -2,7 +2,7 @@ import test from "ava";
 import sinonGlobal from "sinon";
 import esmock from "esmock";
 import {createResource} from "@ui5/fs/resourceFactory";
-import XMLTemplateAnalyzer from "../../../lib/lbt/analyzer/XMLTemplateAnalyzer.js";
+import XMLTemplateAnalyzer from "../../../src/lbt/analyzer/XMLTemplateAnalyzer.js";
 
 test.beforeEach(async (t) => {
 	const sinon = t.context.sinon = sinonGlobal.createSandbox();
@@ -20,20 +20,20 @@ test.beforeEach(async (t) => {
 	class XMLTemplateAnalyzerSpy extends XMLTemplateAnalyzer {}
 	t.context.XMLTemplateAnalyzerAnalyzeViewSpy = sinon.spy(XMLTemplateAnalyzerSpy.prototype, "analyzeView");
 
-	t.context.resourceListCreator = await esmock("../../../lib/processors/resourceListCreator.js", {
+	t.context.resourceListCreator = await esmock("../../../src/processors/resourceListCreator.js", {
 		"@ui5/logger": {
 			getLogger: sinon.stub().withArgs("builder:processors:resourceListCreator")
 				.returns(t.context.resourceListCreatorLog),
 		},
-		"../../../lib/lbt/resources/ResourceCollector.js":
-			await esmock("../../../lib/lbt/resources/ResourceCollector.js", {
+		"../../../src/lbt/resources/ResourceCollector.js":
+			await esmock("../../../src/lbt/resources/ResourceCollector.js", {
 				"@ui5/logger": {
 					getLogger: sinon.stub().withArgs("lbt:resources:ResourceCollector")
 						.returns(t.context.ResourceCollectorLog),
 				},
 			}),
 	}, {
-		"../../../lib/lbt/analyzer/XMLTemplateAnalyzer.js": XMLTemplateAnalyzerSpy,
+		"../../../src/lbt/analyzer/XMLTemplateAnalyzer.js": XMLTemplateAnalyzerSpy,
 	});
 });
 

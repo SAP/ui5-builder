@@ -1,9 +1,9 @@
 import test from "ava";
 import sinon from "sinon";
 import {pd} from "pretty-data";
-import BundleResolver from "../../../../lib/lbt/bundle/Resolver.js";
-import AutoSplitter from "../../../../lib/lbt/bundle/AutoSplitter.js";
-import ModuleInfo from "../../../../lib/lbt/resources/ModuleInfo.js";
+import BundleResolver from "../../../../src/lbt/bundle/Resolver.js";
+import AutoSplitter from "../../../../src/lbt/bundle/AutoSplitter.js";
+import ModuleInfo from "../../../../src/lbt/resources/ModuleInfo.js";
 
 function createMockPool(dependencies) {
 	return {

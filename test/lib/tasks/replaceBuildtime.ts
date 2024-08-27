@@ -1,5 +1,5 @@
 import test from "ava";
-import replaceBuildtime from "../../../lib/tasks/replaceBuildtime.js";
+import replaceBuildtime from "../../../src/tasks/replaceBuildtime.js";
 import {createAdapter, createResource} from "@ui5/fs/resourceFactory";
 import DuplexCollection from "@ui5/fs/DuplexCollection";
 

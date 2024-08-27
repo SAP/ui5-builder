@@ -1,5 +1,5 @@
 import test from "ava";
-import generateLibraryManifest from "../../../lib/tasks/generateLibraryManifest.js";
+import generateLibraryManifest from "../../../src/tasks/generateLibraryManifest.js";
 import {createAdapter, createResource} from "@ui5/fs/resourceFactory";
 
 function createWorkspace() {

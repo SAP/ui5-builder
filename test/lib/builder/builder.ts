@@ -7,7 +7,7 @@ const readFile = promisify(fs.readFile);
 import {directoryDeepEqual, findFiles} from "../../utils/fshelper.js";
 import sinon from "sinon";
 import {graphFromObject, graphFromPackageDependencies} from "@ui5/project/graph";
-import * as taskRepository from "../../../lib/tasks/taskRepository.js";
+import * as taskRepository from "../../../src/tasks/taskRepository.js";
 import {setLogLevel} from "@ui5/logger";
 
 // Using CommonsJS require since JSON module imports are still experimental

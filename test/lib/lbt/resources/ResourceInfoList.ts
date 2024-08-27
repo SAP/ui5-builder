@@ -1,5 +1,5 @@
 import test from "ava";
-import ResourceInfoList from "../../../../lib/lbt/resources/ResourceInfoList.js";
+import ResourceInfoList from "../../../../src/lbt/resources/ResourceInfoList.js";
 
 test("add: add new resources", (t) => {
 	const resourceInfoList = new ResourceInfoList("prefix");

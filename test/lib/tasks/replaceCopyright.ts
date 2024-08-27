@@ -1,5 +1,5 @@
 import test from "ava";
-import replaceCopyright from "../../../lib/tasks/replaceCopyright.js";
+import replaceCopyright from "../../../src/tasks/replaceCopyright.js";
 import {createAdapter, createResource} from "@ui5/fs/resourceFactory";
 import DuplexCollection from "@ui5/fs/DuplexCollection";
 

@@ -1,5 +1,5 @@
 import test from "ava";
-import * as ModuleName from "../../../../lib/lbt/utils/ModuleName.js";
+import * as ModuleName from "../../../../src/lbt/utils/ModuleName.js";
 
 test("fromUI5LegacyName", (t) => {
 	t.is(ModuleName.fromUI5LegacyName(""), ".js");

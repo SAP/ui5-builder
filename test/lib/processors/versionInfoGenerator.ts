@@ -7,7 +7,7 @@ test.beforeEach(async (t) => {
 	t.context.infoLogStub = sinon.stub();
 	t.context.verboseLogStub = sinon.stub();
 	t.context.sillyLogStub = sinon.stub();
-	t.context.versionInfoGenerator = await esmock("../../../lib/processors/versionInfoGenerator.js", {
+	t.context.versionInfoGenerator = await esmock("../../../src/processors/versionInfoGenerator.js", {
 		"@ui5/logger": {
 			getLogger: () => ({
 				warn: t.context.warnLogStub,

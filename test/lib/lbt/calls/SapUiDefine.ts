@@ -1,6 +1,6 @@
 import test from "ava";
-import {parseJS, Syntax} from "../../../../lib/lbt/utils/parseUtils.js";
-import SapUiDefineCall from "../../../../lib/lbt/calls/SapUiDefine.js";
+import {parseJS, Syntax} from "../../../../src/lbt/utils/parseUtils.js";
+import SapUiDefineCall from "../../../../src/lbt/calls/SapUiDefine.js";
 import sinonGlobal from "sinon";
 import esmock from "esmock";
 
@@ -12,7 +12,7 @@ function parse(code) {
 async function setupSapUiDefineCallWithStubbedLogger({context}) {
 	const {sinon} = context;
 	context.warningLogSpy = sinon.spy();
-	context.SapUiDefineCallWithStubbedLogger = await esmock("../../../../lib/lbt/calls/SapUiDefine.js", {
+	context.SapUiDefineCallWithStubbedLogger = await esmock("../../../../src/lbt/calls/SapUiDefine.js", {
 		"@ui5/logger": {
 			getLogger: {
 				warn: context.warningLogSpy,

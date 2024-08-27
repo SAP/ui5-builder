@@ -1,5 +1,5 @@
 import test from "ava";
-import ModuleInfo from "../../../../lib/lbt/resources/ModuleInfo.js";
+import ModuleInfo from "../../../../src/lbt/resources/ModuleInfo.js";
 
 test("ModuleInfo: constructor", (t) => {
 	const moduleInfo = new ModuleInfo("myName");

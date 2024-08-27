@@ -1,7 +1,7 @@
 import test from "ava";
 import sinon from "sinon";
-import minifier from "../../../lib/processors/minifier.js";
-import {__localFunctions__} from "../../../lib/processors/minifier.js";
+import minifier from "../../../src/processors/minifier.js";
+import {__localFunctions__} from "../../../src/processors/minifier.js";
 import {createResource} from "@ui5/fs/resourceFactory";
 
 // Node.js itself tries to parse sourceMappingURLs in all JavaScript files. This is unwanted and might even lead to

@@ -1,6 +1,6 @@
 import test from "ava";
 import path from "node:path";
-import ComponentAnalyzer from "../../../../lib/lbt/analyzer/ComponentAnalyzer.js";
+import ComponentAnalyzer from "../../../../src/lbt/analyzer/ComponentAnalyzer.js";
 import sinon from "sinon";
 
 function createMockPool(relPath, manifest) {

@@ -1,6 +1,6 @@
 import test from "ava";
 import sinonGlobal from "sinon";
-import minify from "../../../lib/tasks/minify.js";
+import minify from "../../../src/tasks/minify.js";
 import * as resourceFactory from "@ui5/fs/resourceFactory";
 import DuplexCollection from "@ui5/fs/DuplexCollection";
 

@@ -2,13 +2,13 @@ import test from "ava";
 import sinon from "sinon";
 import esmock from "esmock";
 import Resource from "@ui5/fs/Resource";
-import LocatorResourcePool from "../../../../lib/lbt/resources/LocatorResourcePool.js";
+import LocatorResourcePool from "../../../../src/lbt/resources/LocatorResourcePool.js";
 
 test.beforeEach(async (t) => {
 	t.context.logWarnSpy = sinon.spy();
 	t.context.logVerboseSpy = sinon.spy();
 
-	t.context.ResourceCollector = await esmock("../../../../lib/lbt/resources/ResourceCollector.js", {
+	t.context.ResourceCollector = await esmock("../../../../src/lbt/resources/ResourceCollector.js", {
 		"@ui5/logger": {
 			getLogger: sinon.stub().withArgs("lbt:resources:ResourceCollector").returns({
 				warn: t.context.logWarnSpy,

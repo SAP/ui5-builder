@@ -1,5 +1,5 @@
 import test from "ava";
-import escapeNonAsciiCharacters from "../../../lib/tasks/escapeNonAsciiCharacters.js";
+import escapeNonAsciiCharacters from "../../../src/tasks/escapeNonAsciiCharacters.js";
 import {createAdapter, createResource} from "@ui5/fs/resourceFactory";
 import DuplexCollection from "@ui5/fs/DuplexCollection";
 

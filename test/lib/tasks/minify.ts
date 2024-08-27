@@ -20,9 +20,9 @@ test.beforeEach(async (t) => {
 
 	t.context.fsInterfaceStub = sinon.stub().returns("fs interface");
 	t.context.minifierStub = sinon.stub();
-	t.context.minify = await esmock("../../../lib/tasks/minify.js", {
+	t.context.minify = await esmock("../../../src/tasks/minify.js", {
 		"@ui5/fs/fsInterface": t.context.fsInterfaceStub,
-		"../../../lib/processors/minifier.js": t.context.minifierStub,
+		"../../../src/processors/minifier.js": t.context.minifierStub,
 	});
 });
 test.afterEach.always(async (t) => {

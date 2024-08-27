@@ -1,5 +1,5 @@
 import test from "ava";
-import JSTokenizer from "../../../../lib/lbt/utils/JSTokenizer.js";
+import JSTokenizer from "../../../../src/lbt/utils/JSTokenizer.js";
 
 test("valid expressions", function (t) {
 	const list = [

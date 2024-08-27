@@ -3,7 +3,7 @@ import path from "node:path";
 import sinon from "sinon";
 import {directoryDeepEqual, fileEqual, findFiles} from "../../../utils/fshelper.js";
 import {graphFromObject} from "@ui5/project/graph";
-import * as taskRepository from "../../../../lib/tasks/taskRepository.js";
+import * as taskRepository from "../../../../src/tasks/taskRepository.js";
 
 const __dirname = import.meta.dirname;
 const applicationBPath = path.join(__dirname, "..", "..", "..", "fixtures", "application.b");

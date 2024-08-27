@@ -1,5 +1,5 @@
 import test from "ava";
-import BundleWriter from "../../../../lib/lbt/bundle/BundleWriter.js";
+import BundleWriter from "../../../../src/lbt/bundle/BundleWriter.js";
 
 test("Constructor", (t) => {
 	const w = new BundleWriter();

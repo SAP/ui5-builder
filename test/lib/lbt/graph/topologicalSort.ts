@@ -1,6 +1,6 @@
 import test from "ava";
-import topologicalSort from "../../../../lib/lbt/graph/topologicalSort.js";
-import ModuleInfo from "../../../../lib/lbt/resources/ModuleInfo.js";
+import topologicalSort from "../../../../src/lbt/graph/topologicalSort.js";
+import ModuleInfo from "../../../../src/lbt/resources/ModuleInfo.js";
 
 function createMockPool(dependencyMapping) {
 	return {

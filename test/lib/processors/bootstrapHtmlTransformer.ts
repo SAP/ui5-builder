@@ -7,7 +7,7 @@ test.beforeEach(async (t) => {
 	const loggerStub = {
 		warn: t.context.logWarnSpy,
 	};
-	t.context.bootstrapHtmlTransformer = await esmock("../../../lib/processors/bootstrapHtmlTransformer.js", {
+	t.context.bootstrapHtmlTransformer = await esmock("../../../src/processors/bootstrapHtmlTransformer.js", {
 		"@ui5/logger": {
 			getLogger: sinon.stub().withArgs("builder:processors:bootstrapHtmlTransformer").returns(loggerStub),
 		},

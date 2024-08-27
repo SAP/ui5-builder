@@ -14,8 +14,8 @@ test.beforeEach(async (t) => {
 	t.context.ResourceStub = sinon.stub();
 	t.context.libraryLessGeneratorStub = sinon.stub();
 
-	t.context.generateThemeDesignerResources = await esmock("../../../lib/tasks/generateThemeDesignerResources", {
-		"../../../lib/processors/libraryLessGenerator": t.context.libraryLessGeneratorStub,
+	t.context.generateThemeDesignerResources = await esmock("../../../src/tasks/generateThemeDesignerResources", {
+		"../../../src/processors/libraryLessGenerator": t.context.libraryLessGeneratorStub,
 		"@ui5/fs/ReaderCollectionPrioritized": t.context.ReaderCollectionPrioritizedStub,
 		"@ui5/fs/fsInterface": t.context.fsInterfaceStub,
 		"@ui5/fs/Resource": t.context.ResourceStub,

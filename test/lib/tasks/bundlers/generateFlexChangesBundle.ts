@@ -1,6 +1,6 @@
 import test from "ava";
 import sinon from "sinon";
-import generateFlexChangesBundle from "../../../../lib/tasks/bundlers/generateFlexChangesBundle.js";
+import generateFlexChangesBundle from "../../../../src/tasks/bundlers/generateFlexChangesBundle.js";
 
 function createPlaceholderResource(content) {
 	return {

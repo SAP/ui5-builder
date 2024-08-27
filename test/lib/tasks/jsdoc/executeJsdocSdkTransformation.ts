@@ -15,13 +15,13 @@ test.beforeEach(async (t) => {
 	t.context.sdkTransformerStub = sinon.stub().resolves(["resource A", "resource B"]);
 
 	t.context.executeJsdocSdkTransformation =
-		await esmock("../../../../lib/tasks/jsdoc/executeJsdocSdkTransformation.js", {
+		await esmock("../../../../src/tasks/jsdoc/executeJsdocSdkTransformation.js", {
 			"@ui5/fs/ReaderCollectionPrioritized": t.context.ReaderCollectionPrioritizedStubClass,
 			"@ui5/fs/fsInterface": t.context.fsInterfaceStub,
 			"@ui5/logger": {
 				getLogger: sinon.stub().returns(t.context.log),
 			},
-			"../../../../lib/processors/jsdoc/sdkTransformer.js": t.context.sdkTransformerStub,
+			"../../../../src/processors/jsdoc/sdkTransformer.js": t.context.sdkTransformerStub,
 		});
 });
 

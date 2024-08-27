@@ -47,16 +47,16 @@ test.beforeEach(async (t) => {
 	t.context.ReaderCollectionPrioritizedStub = sinon.stub().returns(t.context.combo);
 	t.context.moduleBundlerStub = sinon.stub().resolves([]);
 
-	const ModuleName = await esmock("../../../../lib/lbt/utils/ModuleName.js");
+	const ModuleName = await esmock("../../../../src/lbt/utils/ModuleName.js");
 	t.context.getNonDebugName = sinon.stub().callsFake((...args) => {
 		return ModuleName.getNonDebugName(...args);
 	});
 
-	t.context.generateBundle = await esmock("../../../../lib/tasks/bundlers/generateBundle.js", {
+	t.context.generateBundle = await esmock("../../../../src/tasks/bundlers/generateBundle.js", {
 		"@ui5/fs/ReaderCollectionPrioritized": t.context.ReaderCollectionPrioritizedStub,
-		"../../../../lib/processors/bundlers/moduleBundler": t.context.moduleBundlerStub,
+		"../../../../src/processors/bundlers/moduleBundler": t.context.moduleBundlerStub,
 	}, {
-		"../../../../lib/lbt/utils/ModuleName.js": {
+		"../../../../src/lbt/utils/ModuleName.js": {
 			getNonDebugName: t.context.getNonDebugName,
 		},
 	});

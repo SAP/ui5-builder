@@ -36,8 +36,8 @@ test.beforeEach(async (t) => {
 		},
 	};
 	t.context.generateStandaloneAppBundle =
-		await esmock("../../../../lib/tasks/bundlers/generateStandaloneAppBundle.js", {
-			"../../../../lib/processors/bundlers/moduleBundler.js": t.context.moduleBundlerStub,
+		await esmock("../../../../src/tasks/bundlers/generateStandaloneAppBundle.js", {
+			"../../../../src/processors/bundlers/moduleBundler.js": t.context.moduleBundlerStub,
 		});
 });
 

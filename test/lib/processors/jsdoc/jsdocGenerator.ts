@@ -3,7 +3,7 @@ import test from "ava";
 import sinon from "sinon";
 import esmock from "esmock";
 import {fileURLToPath} from "node:url";
-import jsdocGenerator from "../../../../lib/processors/jsdoc/jsdocGenerator.js";
+import jsdocGenerator from "../../../../src/processors/jsdoc/jsdocGenerator.js";
 
 test.serial("generateJsdocConfig", async (t) => {
 	const res = await jsdocGenerator._generateJsdocConfig({
@@ -16,7 +16,7 @@ test.serial("generateJsdocConfig", async (t) => {
 		variants: ["apijson"],
 	});
 
-	const jsdocGeneratorPath = path.resolve(import.meta.dirname, "..", "..", "..", "..", "lib", "processors",
+	const jsdocGeneratorPath = path.resolve(import.meta.dirname, "..", "..", "..", "..", "src", "processors",
 		"jsdoc");
 
 	const backslashRegex = /\\/g;
@@ -60,7 +60,7 @@ test.serial("generateJsdocConfig", async (t) => {
 });
 
 test.serial("writeJsdocConfig", async (t) => {
-	const jsdocGenerator = await esmock("../../../../lib/processors/jsdoc/jsdocGenerator.js", {
+	const jsdocGenerator = await esmock("../../../../src/processors/jsdoc/jsdocGenerator.js", {
 		"graceful-fs": {
 			writeFile: (configPath, configContent, callback) => {
 				t.deepEqual(configPath, path.join("/", "some", "path", "jsdoc-config.json"),
@@ -83,7 +83,7 @@ test.serial("buildJsdoc", async (t) => {
 		},
 	});
 
-	const jsdocGenerator = await esmock("../../../../lib/processors/jsdoc/jsdocGenerator.js", {
+	const jsdocGenerator = await esmock("../../../../src/processors/jsdoc/jsdocGenerator.js", {
 		"node:child_process": {
 			spawn: cpStub,
 		},
@@ -129,7 +129,7 @@ test.serial("jsdocGenerator", async (t) => {
 		byPath: byPathStub,
 	});
 
-	const jsdocGenerator = await esmock("../../../../lib/processors/jsdoc/jsdocGenerator.js", {
+	const jsdocGenerator = await esmock("../../../../src/processors/jsdoc/jsdocGenerator.js", {
 		"@ui5/fs/resourceFactory": {
 			createAdapter: createAdapterStub,
 		},

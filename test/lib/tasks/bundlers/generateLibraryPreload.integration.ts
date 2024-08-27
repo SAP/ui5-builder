@@ -4,8 +4,8 @@ import {createAdapter, createResource} from "@ui5/fs/resourceFactory";
 import DuplexCollection from "@ui5/fs/DuplexCollection";
 import {graphFromObject} from "@ui5/project/graph";
 import {directoryDeepEqual, fileEqual, findFiles} from "../../../utils/fshelper.js";
-import generateLibraryPreload from "../../../../lib/tasks/bundlers/generateLibraryPreload.js";
-import * as taskRepository from "../../../../lib/tasks/taskRepository.js";
+import generateLibraryPreload from "../../../../src/tasks/bundlers/generateLibraryPreload.js";
+import * as taskRepository from "../../../../src/tasks/taskRepository.js";
 
 const __dirname = import.meta.dirname;
 const libraryDPath = path.join(__dirname, "..", "..", "..", "fixtures", "library.d");

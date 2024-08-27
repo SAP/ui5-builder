@@ -1,9 +1,9 @@
 import test from "ava";
 import semver from "semver";
-import {getTask, getAllTaskNames, getRemovedTaskNames, getVersions} from "../../../lib/tasks/taskRepository.js";
+import {getTask, getAllTaskNames, getRemovedTaskNames, getVersions} from "../../../src/tasks/taskRepository.js";
 
 test("Task retrieval", async (t) => {
-	const escapeNonAsciiCharacters = (await import("../../../lib/tasks/escapeNonAsciiCharacters.js")).default;
+	const escapeNonAsciiCharacters = (await import("../../../src/tasks/escapeNonAsciiCharacters.js")).default;
 	const taskInfoPromise = getTask("escapeNonAsciiCharacters");
 	t.true(taskInfoPromise instanceof Promise);
 	const taskInfo = await taskInfoPromise;

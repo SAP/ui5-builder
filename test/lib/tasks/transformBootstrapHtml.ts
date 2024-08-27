@@ -11,11 +11,11 @@ test.beforeEach(async (t) => {
 
 	t.context.bootstrapHtmlTransformerStub = sinon.stub();
 
-	t.context.transformBootstrapHtml = await esmock("../../../lib/tasks/transformBootstrapHtml.js", {
+	t.context.transformBootstrapHtml = await esmock("../../../src/tasks/transformBootstrapHtml.js", {
 		"@ui5/logger": {
 			getLogger: sinon.stub().withArgs("builder:tasks:transformBootstrapHtml").returns(t.context.log),
 		},
-		"../../../lib/processors/bootstrapHtmlTransformer": t.context.bootstrapHtmlTransformerStub,
+		"../../../src/processors/bootstrapHtmlTransformer": t.context.bootstrapHtmlTransformerStub,
 	});
 });
 

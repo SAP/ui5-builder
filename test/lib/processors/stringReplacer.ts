@@ -1,6 +1,6 @@
 import test from "ava";
 import _sinon from "sinon";
-import stringReplacer from "../../../lib/processors/stringReplacer.js";
+import stringReplacer from "../../../src/processors/stringReplacer.js";
 
 test.beforeEach((t) => {
 	t.context.sinon = _sinon.createSandbox();

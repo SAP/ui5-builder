@@ -1,5 +1,5 @@
 import test from "ava";
-import ResourceInfo from "../../../../lib/lbt/resources/ResourceInfo.js";
+import ResourceInfo from "../../../../src/lbt/resources/ResourceInfo.js";
 
 test("ResourceInfo: constructor", (t) => {
 	const resourceInfo = new ResourceInfo("myName");

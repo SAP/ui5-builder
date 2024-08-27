@@ -1,5 +1,5 @@
 import test from "ava";
-import LocatorResourcePool from "../../../../lib/lbt/resources/LocatorResourcePool.js";
+import LocatorResourcePool from "../../../../src/lbt/resources/LocatorResourcePool.js";
 import Resource from "@ui5/fs/Resource";
 
 test("getIgnoreMissingModules", (t) => {

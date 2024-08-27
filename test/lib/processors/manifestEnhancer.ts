@@ -12,7 +12,7 @@ test.beforeEach(async (t) => {
 		verbose: t.context.logVerboseSpy,
 		error: t.context.logErrorSpy,
 	};
-	const manifestEnhancerImport = await esmock("../../../lib/processors/manifestEnhancer.js", {
+	const manifestEnhancerImport = await esmock("../../../src/processors/manifestEnhancer.js", {
 		"@ui5/logger": {
 			getLogger: sinon.stub().withArgs("builder:processors:manifestEnhancer").returns(loggerStub),
 		},

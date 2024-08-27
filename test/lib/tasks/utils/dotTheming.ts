@@ -4,7 +4,7 @@ import esmock from "esmock";
 
 test.beforeEach(async (t) => {
 	t.context.sinon = sinonGlobal.createSandbox();
-	t.context.dotTheming = await esmock("../../../../lib/tasks/utils/dotTheming", {});
+	t.context.dotTheming = await esmock("../../../../src/tasks/utils/dotTheming", {});
 
 	t.context.createDotThemingResource = (path, dotTheming) => {
 		return {

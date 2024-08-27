@@ -3,9 +3,9 @@ import test from "ava";
 
 import sinon from "sinon";
 import esmock from "esmock";
-import Builder from "../../../../lib/lbt/bundle/Builder.js";
-import {__localFunctions__} from "../../../../lib/lbt/bundle/Builder.js";
-import ResourcePool from "../../../../lib/lbt/resources/ResourcePool.js";
+import Builder from "../../../../src/lbt/bundle/Builder.js";
+import {__localFunctions__} from "../../../../src/lbt/bundle/Builder.js";
+import ResourcePool from "../../../../src/lbt/resources/ResourcePool.js";
 
 // Node.js itself tries to parse sourceMappingURLs in all JavaScript files. This is unwanted and might even lead to
 // obscure errors when dynamically generating Data-URI soruceMappingURL values.
@@ -23,7 +23,7 @@ test.beforeEach(async (t) => {
 		error: t.context.errorLogStub,
 	};
 
-	t.context.BuilderWithStub = await esmock("../../../../lib/lbt/bundle/Builder", {
+	t.context.BuilderWithStub = await esmock("../../../../src/lbt/bundle/Builder", {
 		"@ui5/logger": {
 			getLogger: () => myLoggerInstance,
 		},
@@ -1231,7 +1231,7 @@ test.serial("integration(legacy): createBundle with bundleInfo with requiresTopL
 		warn: warnLogStub,
 		error: errorLogStub,
 	};
-	const BuilderWithStub = await esmock("../../../../lib/lbt/bundle/Builder", {
+	const BuilderWithStub = await esmock("../../../../src/lbt/bundle/Builder", {
 		"@ui5/logger": {
 			getLogger: () => myLoggerInstance,
 		},
@@ -1359,7 +1359,7 @@ test.serial("integration: createBundle with bundleInfo", async (t) => {
 		warn: warnLogStub,
 		error: errorLogStub,
 	};
-	const BuilderWithStub = await esmock("../../../../lib/lbt/bundle/Builder", {
+	const BuilderWithStub = await esmock("../../../../src/lbt/bundle/Builder", {
 		"@ui5/logger": {
 			getLogger: () => myLoggerInstance,
 		},
@@ -3147,7 +3147,7 @@ test.serial("getUi5MajorVersion with cache", async (t) => {
 	});
 
 	const mySemverValidStub = sinon.stub().returns(true);
-	const BuilderWithSemverStub = await esmock("../../../../lib/lbt/bundle/Builder", {
+	const BuilderWithSemverStub = await esmock("../../../../src/lbt/bundle/Builder", {
 		semver: {
 			valid: mySemverValidStub,
 		},

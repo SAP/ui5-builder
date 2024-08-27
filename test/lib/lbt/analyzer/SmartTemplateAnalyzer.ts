@@ -1,12 +1,12 @@
 import test from "ava";
-import ModuleInfo from "../../../../lib/lbt/resources/ModuleInfo.js";
-import {parseJS} from "../../../../lib/lbt/utils/parseUtils.js";
+import ModuleInfo from "../../../../src/lbt/resources/ModuleInfo.js";
+import {parseJS} from "../../../../src/lbt/utils/parseUtils.js";
 import sinonGlobal from "sinon";
 import esmock from "esmock";
 
 test.beforeEach(async (t) => {
 	t.context.sinon = sinonGlobal.createSandbox();
-	t.context.SmartTemplateAnalyzer = await esmock("../../../../lib/lbt/analyzer/SmartTemplateAnalyzer.js");
+	t.context.SmartTemplateAnalyzer = await esmock("../../../../src/lbt/analyzer/SmartTemplateAnalyzer.js");
 });
 
 test.afterEach.always((t) => {

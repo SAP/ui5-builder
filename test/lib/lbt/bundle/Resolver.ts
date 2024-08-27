@@ -2,8 +2,8 @@ import test from "ava";
 import sinon from "sinon";
 import esmock from "esmock";
 
-import Resolver from "../../../../lib/lbt/bundle/Resolver.js";
-import ResourcePool from "../../../../lib/lbt/resources/ResourcePool.js";
+import Resolver from "../../../../src/lbt/bundle/Resolver.js";
+import ResourcePool from "../../../../src/lbt/resources/ResourcePool.js";
 
 const sortedCopy = (array) => array.slice().sort();
 
@@ -239,7 +239,7 @@ test.serial("no errors for dependencies between non-decomposable bundles", async
 		silly: sinon.stub(),
 		verbose: sinon.stub(),
 	};
-	const ResolverWithStub = await esmock("../../../../lib/lbt/bundle/Resolver", {
+	const ResolverWithStub = await esmock("../../../../src/lbt/bundle/Resolver", {
 		"@ui5/logger": {
 			getLogger: () => myLoggerInstance,
 		},

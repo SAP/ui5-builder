@@ -109,7 +109,7 @@ test.beforeEach(async (t) => {
 		isLevelEnabled: () => true,
 	};
 
-	t.context.generateVersionInfo = await esmock("../../../lib/tasks/generateVersionInfo.js", {
+	t.context.generateVersionInfo = await esmock("../../../src/tasks/generateVersionInfo.js", {
 
 	}, {
 		"@ui5/logger": {

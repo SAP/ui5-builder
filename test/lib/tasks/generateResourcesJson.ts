@@ -33,8 +33,8 @@ test.beforeEach(async (t) => {
 	t.context.resourceListCreatorStub = sinon.stub();
 	t.context.resourceListCreatorStub.returns(Promise.resolve([]));
 
-	t.context.generateResourcesJson = await esmock("../../../lib/tasks/generateResourcesJson.js", {
-		"../../../lib/processors/resourceListCreator": t.context.resourceListCreatorStub,
+	t.context.generateResourcesJson = await esmock("../../../src/tasks/generateResourcesJson.js", {
+		"../../../src/processors/resourceListCreator": t.context.resourceListCreatorStub,
 	});
 });
 

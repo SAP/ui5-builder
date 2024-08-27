@@ -6,7 +6,7 @@ export default [
 		// Add project-specific ESLint config rules here
 		// in order to override common config
 		ignores: [
-			"lib/processors/jsdoc/lib",
+			"src/processors/jsdoc/lib",
 		],
 	},
 ];

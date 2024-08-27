@@ -20,8 +20,8 @@ test.beforeEach(async (t) => {
 
 	t.context.moduleBundlerStub = sinon.stub().resolves([]);
 
-	t.context.generateLibraryPreload = await esmock("../../../../lib/tasks/bundlers/generateLibraryPreload.js", {
-		"../../../../lib/processors/bundlers/moduleBundler.js": t.context.moduleBundlerStub,
+	t.context.generateLibraryPreload = await esmock("../../../../src/tasks/bundlers/generateLibraryPreload.js", {
+		"../../../../src/processors/bundlers/moduleBundler.js": t.context.moduleBundlerStub,
 		"@ui5/logger": {
 			getLogger: sinon.stub().withArgs("builder:tasks:bundlers:generateLibraryPreload").returns(t.context.log),
 		},

@@ -1,7 +1,7 @@
 import test from "ava";
 import sinon from "sinon";
 import esmock from "esmock";
-import {deserializeResources} from "../../../lib/processors/themeBuilderWorker.js";
+import {deserializeResources} from "../../../src/processors/themeBuilderWorker.js";
 let buildThemes;
 
 test.before(async () => {
@@ -20,10 +20,10 @@ test.beforeEach(async (t) => {
 	t.context.comboByGlob = sinon.stub().resolves([]);
 	t.context.ReaderCollectionPrioritizedStub.returns({byGlob: t.context.comboByGlob});
 
-	buildThemes = await esmock.p("../../../lib/tasks/buildThemes.js", {
+	buildThemes = await esmock.p("../../../src/tasks/buildThemes.js", {
 		"@ui5/fs/fsInterface": t.context.fsInterfaceStub,
 		"@ui5/fs/ReaderCollectionPrioritized": t.context.ReaderCollectionPrioritizedStub,
-		"../../../lib/processors/themeBuilder.js": t.context.themeBuilderStub,
+		"../../../src/processors/themeBuilder.js": t.context.themeBuilderStub,
 	});
 });
 

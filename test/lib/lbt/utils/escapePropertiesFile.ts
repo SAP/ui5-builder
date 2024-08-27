@@ -8,8 +8,8 @@ test.beforeEach(async (t) => {
 	t.context.nonAsciiEscaperStub = sinon.stub().resolves();
 	t.context.nonAsciiEscaperStub.getEncodingFromAlias = t.context.getEncodingFromAliasStub;
 
-	t.context.escapePropertiesFile = await esmock("../../../../lib/lbt/utils/escapePropertiesFile", {
-		"../../../../lib/processors/nonAsciiEscaper": t.context.nonAsciiEscaperStub,
+	t.context.escapePropertiesFile = await esmock("../../../../src/lbt/utils/escapePropertiesFile", {
+		"../../../../src/processors/nonAsciiEscaper": t.context.nonAsciiEscaperStub,
 	});
 });
 

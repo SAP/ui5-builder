@@ -24,12 +24,12 @@ test.beforeEach(async (t) => {
 
 	t.context.manifestEnhancerStub = sinon.stub();
 	t.context.fsInterfaceStub = sinon.stub().returns("fs interface");
-	t.context.enhanceManifest = await esmock("../../../lib/tasks/enhanceManifest.js", {
+	t.context.enhanceManifest = await esmock("../../../src/tasks/enhanceManifest.js", {
 		"@ui5/logger": {
 			getLogger: sinon.stub().withArgs("builder:tasks:enhanceManifest").returns(t.context.log),
 		},
 		"@ui5/fs/fsInterface": t.context.fsInterfaceStub,
-		"../../../lib/processors/manifestEnhancer": t.context.manifestEnhancerStub,
+		"../../../src/processors/manifestEnhancer": t.context.manifestEnhancerStub,
 	});
 	t.context.workspace = createWorkspace();
 });

@@ -11,7 +11,7 @@ test.beforeEach(async (t) => {
 		verbose: sinon.stub(),
 	};
 
-	t.context.processor = await esmock("../../../lib/processors/libraryLessGenerator.js", {
+	t.context.processor = await esmock("../../../src/processors/libraryLessGenerator.js", {
 		"@ui5/logger": {
 			getLogger: sinon.stub().withArgs("builder:processors:libraryLessGenerator").returns(t.context.loggerStub),
 		},

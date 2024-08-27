@@ -1,6 +1,6 @@
 import test from "ava";
-import XMLTemplateAnalyzer from "../../../../lib/lbt/analyzer/XMLTemplateAnalyzer.js";
-import ModuleInfo from "../../../../lib/lbt/resources/ModuleInfo.js";
+import XMLTemplateAnalyzer from "../../../../src/lbt/analyzer/XMLTemplateAnalyzer.js";
+import ModuleInfo from "../../../../src/lbt/resources/ModuleInfo.js";
 import sinon from "sinon";
 import esmock from "esmock";
 
@@ -64,7 +64,7 @@ test.serial("integration: Analysis of an xml view with core:require from databin
 		error: errorLogStub,
 		verbose: sinon.stub(),
 	};
-	const XMLTemplateAnalyzerWithStubbedLogger = await esmock("../../../../lib/lbt/analyzer/XMLTemplateAnalyzer.js", {
+	const XMLTemplateAnalyzerWithStubbedLogger = await esmock("../../../../src/lbt/analyzer/XMLTemplateAnalyzer.js", {
 		"@ui5/logger": {
 			getLogger: sinon.stub().returns(myLoggerInstance),
 		},
@@ -123,7 +123,7 @@ test.serial("integration: Analysis of an xml view with core:require from databin
 	const myLoggerInstance = {
 		verbose: verboseLogStub,
 	};
-	const XMLTemplateAnalyzerWithStubbedLogger = await esmock("../../../../lib/lbt/analyzer/XMLTemplateAnalyzer.js", {
+	const XMLTemplateAnalyzerWithStubbedLogger = await esmock("../../../../src/lbt/analyzer/XMLTemplateAnalyzer.js", {
 		"@ui5/logger": {
 			getLogger: sinon.stub().returns(myLoggerInstance),
 		},
@@ -175,7 +175,7 @@ test.serial("integration: Analysis of an xml view with core:require from express
 	const myLoggerInstance = {
 		verbose: verboseLogStub,
 	};
-	const XMLTemplateAnalyzerWithStubbedLogger = await esmock("../../../../lib/lbt/analyzer/XMLTemplateAnalyzer.js", {
+	const XMLTemplateAnalyzerWithStubbedLogger = await esmock("../../../../src/lbt/analyzer/XMLTemplateAnalyzer.js", {
 		"@ui5/logger": {
 			getLogger: sinon.stub().returns(myLoggerInstance),
 		},

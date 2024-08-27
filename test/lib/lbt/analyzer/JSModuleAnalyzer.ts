@@ -2,9 +2,9 @@ import test from "ava";
 
 import fs from "node:fs";
 import path from "node:path";
-import {ecmaVersion, parseJS, VisitorKeys} from "../../../../lib/lbt/utils/parseUtils.js";
-import ModuleInfo from "../../../../lib/lbt/resources/ModuleInfo.js";
-import JSModuleAnalyzer, {EnrichedVisitorKeys} from "../../../../lib/lbt/analyzer/JSModuleAnalyzer.js";
+import {ecmaVersion, parseJS, VisitorKeys} from "../../../../src/lbt/utils/parseUtils.js";
+import ModuleInfo from "../../../../src/lbt/resources/ModuleInfo.js";
+import JSModuleAnalyzer, {EnrichedVisitorKeys} from "../../../../src/lbt/analyzer/JSModuleAnalyzer.js";
 
 const EXPECTED_MODULE_NAME = "sap/ui/testmodule.js";
 

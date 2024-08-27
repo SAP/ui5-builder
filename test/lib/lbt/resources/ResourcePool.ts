@@ -1,14 +1,14 @@
 import test from "ava";
-import ModuleInfo from "../../../../lib/lbt/resources/ModuleInfo.js";
-import ResourceFilterList from "../../../../lib/lbt/resources/ResourceFilterList.js";
+import ModuleInfo from "../../../../src/lbt/resources/ModuleInfo.js";
+import ResourceFilterList from "../../../../src/lbt/resources/ResourceFilterList.js";
 import sinonGlobal from "sinon";
 import esmock from "esmock";
 
 test.beforeEach(async (t) => {
 	const sinon = t.context.sinon = sinonGlobal.createSandbox();
 	t.context.LibraryFileAnalyzerGetDependencyInfosStub = sinon.stub().returns({});
-	t.context.ResourcePool = await esmock("../../../../lib/lbt/resources/ResourcePool.js", {
-		"../../../../lib/lbt/resources/LibraryFileAnalyzer.js": {
+	t.context.ResourcePool = await esmock("../../../../src/lbt/resources/ResourcePool.js", {
+		"../../../../src/lbt/resources/LibraryFileAnalyzer.js": {
 			getDependencyInfos: t.context.LibraryFileAnalyzerGetDependencyInfosStub,
 		},
 	});

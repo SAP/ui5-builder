@@ -1,7 +1,7 @@
 import test from "ava";
 import sinon from "sinon";
 import esmock from "esmock";
-import apiIndexGenerator from "../../../../lib/processors/jsdoc/apiIndexGenerator.js";
+import apiIndexGenerator from "../../../../src/processors/jsdoc/apiIndexGenerator.js";
 
 test.afterEach.always((t) => {
 	sinon.restore();
@@ -21,8 +21,8 @@ test.serial("apiIndexGenerator", async (t) => {
 		.onCall(2).returns("result resource C")
 		.onCall(3).returns("result resource D");
 
-	const apiIndexGenerator = await esmock("../../../../lib/processors/jsdoc/apiIndexGenerator.js", {
-		"../../../../lib/processors/jsdoc/lib/createIndexFiles.js": createApiIndexStub,
+	const apiIndexGenerator = await esmock("../../../../src/processors/jsdoc/apiIndexGenerator.js", {
+		"../../../../src/processors/jsdoc/lib/createIndexFiles.js": createApiIndexStub,
 		"@ui5/fs/resourceFactory": {
 			createResource: createResourceStub,
 		},

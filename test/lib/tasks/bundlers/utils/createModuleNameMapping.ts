@@ -1,6 +1,6 @@
 import test from "ava";
 import sinonGlobal from "sinon";
-import createModuleNameMapping from "../../../../../lib/tasks/bundlers/utils/createModuleNameMapping.js";
+import createModuleNameMapping from "../../../../../src/tasks/bundlers/utils/createModuleNameMapping.js";
 
 test.beforeEach((t) => {
 	const sinon = t.context.sinon = sinonGlobal.createSandbox();

@@ -1,6 +1,6 @@
 import test from "ava";
-import dependencyGraph from "../../../../lib/lbt/graph/dependencyGraph.js";
-import ModuleInfo from "../../../../lib/lbt/resources/ModuleInfo.js";
+import dependencyGraph from "../../../../src/lbt/graph/dependencyGraph.js";
+import ModuleInfo from "../../../../src/lbt/resources/ModuleInfo.js";
 
 function createMockPool(dependencyMapping) {
 	return {

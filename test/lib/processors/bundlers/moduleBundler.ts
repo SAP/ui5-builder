@@ -21,13 +21,13 @@ test.beforeEach(async (t) => {
 	};
 	t.context.BundleBuilder = sinon.stub().returns(t.context.builder);
 
-	t.context.processor = await esmock("../../../../lib/processors/bundlers/moduleBundler.js", {
+	t.context.processor = await esmock("../../../../src/processors/bundlers/moduleBundler.js", {
 		"@ui5/logger": {
 			getLogger: sinon.stub().withArgs("builder:processors:bundlers:moduleBundler").returns(t.context.log),
 		},
 		"@ui5/fs/Resource": t.context.Resource,
-		"../../../../lib/lbt/resources/LocatorResourcePool": t.context.LocatorResourcePool,
-		"../../../../lib/lbt/bundle/Builder": t.context.BundleBuilder,
+		"../../../../src/lbt/resources/LocatorResourcePool": t.context.LocatorResourcePool,
+		"../../../../src/lbt/bundle/Builder": t.context.BundleBuilder,
 	});
 });
 

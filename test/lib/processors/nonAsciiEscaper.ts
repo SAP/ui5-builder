@@ -1,5 +1,5 @@
 import test from "ava";
-import nonAsciiEscaper from "../../../lib/processors/nonAsciiEscaper.js";
+import nonAsciiEscaper from "../../../src/processors/nonAsciiEscaper.js";
 import Resource from "@ui5/fs/Resource";
 
 /**

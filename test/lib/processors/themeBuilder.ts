@@ -2,8 +2,8 @@ import test from "ava";
 import {createAdapter, createResource} from "@ui5/fs/resourceFactory";
 import fsInterface from "@ui5/fs/fsInterface";
 
-import themeBuilderProcessor from "../../../lib/processors/themeBuilder.js";
-import {ThemeBuilder} from "../../../lib/processors/themeBuilder.js";
+import themeBuilderProcessor from "../../../src/processors/themeBuilder.js";
+import {ThemeBuilder} from "../../../src/processors/themeBuilder.js";
 
 async function prepareResources({library} = {}) {
 	const input =

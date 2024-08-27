@@ -1,6 +1,6 @@
 import test from "ava";
 import {Syntax as EspreeSyntax, VisitorKeys as EspreeVisitorKeys} from "espree";
-import {parseJS, Syntax, VisitorKeys} from "../../../../lib/lbt/utils/parseUtils.js";
+import {parseJS, Syntax, VisitorKeys} from "../../../../src/lbt/utils/parseUtils.js";
 
 test("invalid options", (t) => {
 	t.throws(function () {

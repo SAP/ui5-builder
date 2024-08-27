@@ -1,7 +1,7 @@
 import test from "ava";
 import sinonGlobal from "sinon";
 import esmock from "esmock";
-import sdkTransformer from "../../../../lib/processors/jsdoc/sdkTransformer.js";
+import sdkTransformer from "../../../../src/processors/jsdoc/sdkTransformer.js";
 
 test.beforeEach(async (t) => {
 	const sinon = t.context.sinon = sinonGlobal.createSandbox();
@@ -10,8 +10,8 @@ test.beforeEach(async (t) => {
 
 	t.context.createResourceStub = sinon.stub().returns("result resource");
 
-	t.context.sdkTransformer = await esmock("../../../../lib/processors/jsdoc/sdkTransformer.js", {
-		"../../../../lib/processors/jsdoc/lib/transformApiJson.js": t.context.transformApiJsonStub,
+	t.context.sdkTransformer = await esmock("../../../../src/processors/jsdoc/sdkTransformer.js", {
+		"../../../../src/processors/jsdoc/lib/transformApiJson.js": t.context.transformApiJsonStub,
 		"@ui5/fs/resourceFactory": {
 			createResource: t.context.createResourceStub,
 		},

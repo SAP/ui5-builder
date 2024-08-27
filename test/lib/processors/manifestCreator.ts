@@ -98,7 +98,7 @@ test.beforeEach(async (t) => {
 		verbose: t.context.verboseLogStub,
 	};
 	t.context.getProjectVersion = sinon.stub();
-	t.context.manifestCreator = await esmock("../../../lib/processors/manifestCreator.js", {
+	t.context.manifestCreator = await esmock("../../../src/processors/manifestCreator.js", {
 		"@ui5/logger": {
 			getLogger: sinon.stub().withArgs("builder:processors:manifestCreator").returns(t.context.loggerStub),
 		},

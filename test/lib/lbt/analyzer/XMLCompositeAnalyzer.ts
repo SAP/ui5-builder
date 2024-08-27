@@ -1,7 +1,7 @@
 import test from "ava";
-import {parseJS} from "../../../../lib/lbt/utils/parseUtils.js";
-import XMLCompositeAnalyzer from "../../../../lib/lbt/analyzer/XMLCompositeAnalyzer.js";
-import ModuleInfo from "../../../../lib/lbt/resources/ModuleInfo.js";
+import {parseJS} from "../../../../src/lbt/utils/parseUtils.js";
+import XMLCompositeAnalyzer from "../../../../src/lbt/analyzer/XMLCompositeAnalyzer.js";
+import ModuleInfo from "../../../../src/lbt/resources/ModuleInfo.js";
 import sinonGlobal from "sinon";
 
 test.beforeEach((t) => {

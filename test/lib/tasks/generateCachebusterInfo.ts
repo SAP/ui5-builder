@@ -3,7 +3,7 @@ import path from "node:path";
 import {directoryDeepEqual, fileEqual, findFiles, readFileContent} from "../../utils/fshelper.js";
 
 import {graphFromObject} from "@ui5/project/graph";
-import * as taskRepository from "../../../lib/tasks/taskRepository.js";
+import * as taskRepository from "../../../src/tasks/taskRepository.js";
 
 const __dirname = import.meta.dirname;
 

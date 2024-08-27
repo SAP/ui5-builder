@@ -1,5 +1,5 @@
 import test from "ava";
-import {getDependencyInfos} from "../../../../lib/lbt/resources/LibraryFileAnalyzer.js";
+import {getDependencyInfos} from "../../../../src/lbt/resources/LibraryFileAnalyzer.js";
 
 test("extract packaging info from .library file", (t) => {
 	const libraryFile = `\
