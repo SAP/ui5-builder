@@ -1,4 +1,3 @@
-
 import xml2js from "xml2js";
 import {fromUI5LegacyName, fromRequireJSName} from "../utils/ModuleName.js";
 import JSTokenizer from "../utils/JSTokenizer.js";
@@ -50,21 +49,31 @@ const XMLVIEW_CONTROLLERNAME_ATTRIBUTE = "controllerName";
 const XMLVIEW_RESBUNDLENAME_ATTRIBUTE = "resourceBundleName";
 const XMLVIEW_CORE_REQUIRE_ATTRIBUTE_NS = {
 	uri: "sap.ui.core",
-	local: "require"
+	local: "require",
 };
 const VIEW_TYPE_ATTRIBUTE = "type";
 
 /*
  * Helper to simplify access to node attributes.
  */
+/**
+ *
+ * @param node
+ * @param attr
+ */
 function getAttribute(node, attr) {
-	return (node.$ && node.$[attr] && node.$[attr].value) || null;
+	return (node.$?.[attr]?.value) || null;
 }
+/**
+ *
+ * @param node
+ * @param attrNS
+ */
 function getAttributeNS(node, attrNS) {
 	const attr = Object.values(node.$ || []).find((n) => {
 		return n.uri === attrNS.uri && n.local === attrNS.local;
 	});
-	return (attr && attr.value) || null;
+	return (attr?.value) || null;
 }
 
 /**
@@ -92,7 +101,6 @@ function getAttributeNS(node, attrNS) {
  *
  * @author Frank Weigel
  * @since 1.23.0
- * @private
  */
 class XMLTemplateAnalyzer {
 	constructor(pool) {
@@ -101,7 +109,7 @@ class XMLTemplateAnalyzer {
 			explicitRoot: false,
 			explicitChildren: true,
 			preserveChildrenOrder: true,
-			xmlns: true
+			xmlns: true,
 		});
 		this.busy = false;
 	}
@@ -109,12 +117,12 @@ class XMLTemplateAnalyzer {
 	/**
 	 * Add a dependency if it is new.
 	 *
-	 * @param {string} moduleName
-	 * @param {boolean} conditional
+	 * @param moduleName
+	 * @param conditional
 	 */
 	_addDependency(moduleName: string, conditional: boolean) {
 		// don't add references to 'self'
-		if ( this.info.name === moduleName ) {
+		if (this.info.name === moduleName) {
 			return;
 		}
 
@@ -129,9 +137,9 @@ class XMLTemplateAnalyzer {
 	/**
 	 * Enrich the given ModuleInfo for an XMLView.
 	 *
-	 * @param {string} xml xml string to be analyzed
-	 * @param {ModuleInfo} info ModuleInfo to enrich
-	 * @returns {Promise<ModuleInfo>} the created ModuleInfo
+	 * @param xml xml string to be analyzed
+	 * @param info ModuleInfo to enrich
+	 * @returns the created ModuleInfo
 	 */
 	analyzeView(xml: string, info: ModuleInfo) {
 		return this._analyze(xml, info, false);
@@ -140,16 +148,16 @@ class XMLTemplateAnalyzer {
 	/**
 	 * Enrich the given ModuleInfo for a fragment (XML).
 	 *
-	 * @param {string} xml xml string to be analyzed
-	 * @param {ModuleInfo} info ModuleInfo to enrich
-	 * @returns {Promise<ModuleInfo>} the created ModuleInfo
+	 * @param xml xml string to be analyzed
+	 * @param info ModuleInfo to enrich
+	 * @returns the created ModuleInfo
 	 */
 	analyzeFragment(xml: string, info: ModuleInfo) {
 		return this._analyze(xml, info, true);
 	}
 
 	_analyze(xml, info, isFragment) {
-		if ( this.busy ) {
+		if (this.busy) {
 			// TODO delegate to fresh instances instead
 			throw new Error("XMLTemplateAnalyzer is unexpectedly busy");
 		}
@@ -160,16 +168,16 @@ class XMLTemplateAnalyzer {
 		this.promises = [];
 		this.busy = true;
 
-		return new Promise( (resolve, reject) => {
+		return new Promise((resolve, reject) => {
 			this._parser.parseString(xml, (err, result) => {
 				// parse error
-				if ( err ) {
+				if (err) {
 					this.busy = false;
 					reject(new Error(`Error while parsing XML document ${info.name}: ${err.message}`));
 					return;
 				}
 
-				if ( !result ) {
+				if (!result) {
 					// Handle empty xml views/fragments
 					reject(new Error("Invalid empty XML document: " + info.name));
 					return;
@@ -177,7 +185,7 @@ class XMLTemplateAnalyzer {
 
 				// console.log(result);
 				// clear();
-				if ( isFragment ) {
+				if (isFragment) {
 					// all fragments implicitly depend on the fragment class
 					this.info.addImplicitDependency(FRAGMENT_MODULE);
 					this._analyzeNode(result);
@@ -186,7 +194,7 @@ class XMLTemplateAnalyzer {
 					this._analyzeViewRootNode(result);
 				}
 
-				Promise.all(this.promises).then( () => {
+				Promise.all(this.promises).then(() => {
 					this.busy = false;
 					resolve(info);
 				});
@@ -199,16 +207,16 @@ class XMLTemplateAnalyzer {
 		this.info.addImplicitDependency(XMLVIEW_MODULE);
 
 		const controllerName = getAttribute(node, XMLVIEW_CONTROLLERNAME_ATTRIBUTE);
-		if ( controllerName ) {
-			this._addDependency( fromUI5LegacyName(controllerName, ".controller.js"), this.conditional );
+		if (controllerName) {
+			this._addDependency(fromUI5LegacyName(controllerName, ".controller.js"), this.conditional);
 		}
 
 		const resourceBundleName = getAttribute(node, XMLVIEW_RESBUNDLENAME_ATTRIBUTE);
-		if ( resourceBundleName ) {
+		if (resourceBundleName) {
 			const resourceBundleModuleName = fromUI5LegacyName(resourceBundleName, ".properties");
 			log.verbose(`Found dependency to resource bundle ${resourceBundleModuleName}`);
 			// TODO locale dependent dependencies: this._addDependency(resourceBundleModuleName);
-			this._addDependency( resourceBundleModuleName, this.conditional );
+			this._addDependency(resourceBundleModuleName, this.conditional);
 		}
 
 		this._analyzeCoreRequire(node);
@@ -223,23 +231,23 @@ class XMLTemplateAnalyzer {
 		const oldConditional = this.conditional;
 		const oldTemplateTag = this.templateTag;
 
-		if ( namespace === TEMPLATING_NAMESPACE ) {
-			if ( TEMPLATING_CONDITONAL_TAGS.test(localName) ) {
+		if (namespace === TEMPLATING_NAMESPACE) {
+			if (TEMPLATING_CONDITONAL_TAGS.test(localName)) {
 				this.conditional = true;
 			}
 			this.templateTag = true;
-		} else if ( namespace === XHTML_NAMESPACE || namespace === SVG_NAMESPACE ) {
+		} else if (namespace === XHTML_NAMESPACE || namespace === SVG_NAMESPACE) {
 
 			// ignore XHTML and SVG nodes
 
-		} else if ( PATTERN_LIBRARY_NAMESPACES.test(namespace) ) {
+		} else if (PATTERN_LIBRARY_NAMESPACES.test(namespace)) {
 			// looks like a UI5 library or package name
-			const moduleName = fromUI5LegacyName( (namespace ? namespace + "." : "") + localName );
+			const moduleName = fromUI5LegacyName((namespace ? namespace + "." : "") + localName);
 
 			this._analyzeCoreRequire(node);
 
 			// ignore FragmentDefinition (also skipped by runtime XMLTemplateProcessor)
-			if ( FRAGMENTDEFINITION_MODULE !== moduleName ) {
+			if (FRAGMENTDEFINITION_MODULE !== moduleName) {
 				this.promises.push(this._analyzeModuleDependency(node, moduleName, this.conditional));
 			}
 		}
@@ -252,9 +260,9 @@ class XMLTemplateAnalyzer {
 	}
 
 	_analyzeChildren(node) {
-		if ( Array.isArray(node.$$) ) {
-			node.$$.forEach( (child) => {
-				return this._analyzeNode( child);
+		if (Array.isArray(node.$$)) {
+			node.$$.forEach((child) => {
+				return this._analyzeNode(child);
 			});
 		}
 	}
@@ -262,7 +270,7 @@ class XMLTemplateAnalyzer {
 	_analyzeCoreRequire(node) {
 		const coreRequire = getAttributeNS(node, XMLVIEW_CORE_REQUIRE_ATTRIBUTE_NS);
 		let requireContext;
-		if ( coreRequire ) {
+		if (coreRequire) {
 			// expression binding syntax within coreRequire and a template parent node
 			// These expressions cannot be parsed using parseJS and if within a template tag
 			// represent an expression binding which needs to be evaluated before analysis
@@ -284,10 +292,10 @@ class XMLTemplateAnalyzer {
 				);
 				log.verbose(e.stack);
 			}
-			if ( requireContext ) {
+			if (requireContext) {
 				Object.keys(requireContext).forEach((key) => {
 					const requireJsName = requireContext[key];
-					if ( requireJsName && typeof requireJsName === "string" ) {
+					if (requireJsName && typeof requireJsName === "string") {
 						this._addDependency(fromRequireJSName(requireJsName), this.conditional);
 					} else {
 						log.error(`Ignoring core:require: '${key}' refers to invalid module name '${requireJsName}'`);
@@ -308,61 +316,61 @@ class XMLTemplateAnalyzer {
 			// - ComponentContainer reference another component by 'componentName'
 			// - Fragment references a fragment by 'fragmentName' . 'type'
 
-			if ( moduleName === COMPONENTCONTAINER_MODULE ) {
+			if (moduleName === COMPONENTCONTAINER_MODULE) {
 				const componentName = getAttribute(node, COMPONENTCONTAINER_COMPONENTNAME_ATTRIBUTE);
-				if ( componentName ) {
+				if (componentName) {
 					const componentModuleName =
-						fromUI5LegacyName( componentName, "/Component.js" );
+						fromUI5LegacyName(componentName, "/Component.js");
 					this._addDependency(componentModuleName, conditional);
 				}
 				// TODO what about component.json? handle it transitively via Component.js?
-			} else if ( moduleName === FRAGMENT_MODULE ) {
+			} else if (moduleName === FRAGMENT_MODULE) {
 				const fragmentName = getAttribute(node, FRAGMENT_FRAGMENTNAME_ATTRIBUTE);
 				const type = getAttribute(node, FRAGMENT_TYPE_ATTRIBUTE);
-				if ( fragmentName && type ) {
+				if (fragmentName && type) {
 					const fragmentModuleName =
-						fromUI5LegacyName( fragmentName, this._getFragmentExtension(type) );
+						fromUI5LegacyName(fragmentName, this._getFragmentExtension(type));
 					// console.log("child fragment detected %s", fragmentModuleName);
 					this._addDependency(fragmentModuleName, conditional);
 				}
-			} else if ( moduleName === HTMLVIEW_MODULE ) {
+			} else if (moduleName === HTMLVIEW_MODULE) {
 				const viewName = getAttribute(node, ANYVIEW_VIEWNAME_ATTRIBUTE);
-				if ( viewName ) {
-					const childViewModuleName = fromUI5LegacyName( viewName, ".view.html" );
+				if (viewName) {
+					const childViewModuleName = fromUI5LegacyName(viewName, ".view.html");
 					// console.log("child view detected %s", childViewModuleName);
 					this._addDependency(childViewModuleName, conditional);
 				}
-			} else if ( moduleName === JSVIEW_MODULE ) {
+			} else if (moduleName === JSVIEW_MODULE) {
 				const viewName = getAttribute(node, ANYVIEW_VIEWNAME_ATTRIBUTE);
-				if ( viewName ) {
-					const childViewModuleName = fromUI5LegacyName( viewName, ".view.js" );
+				if (viewName) {
+					const childViewModuleName = fromUI5LegacyName(viewName, ".view.js");
 					// console.log("child view detected %s", childViewModuleName);
 					this._addDependency(childViewModuleName, conditional);
 				}
-			} else if ( moduleName === JSONVIEW_MODULE ) {
+			} else if (moduleName === JSONVIEW_MODULE) {
 				const viewName = getAttribute(node, ANYVIEW_VIEWNAME_ATTRIBUTE);
-				if ( viewName ) {
-					const childViewModuleName = fromUI5LegacyName( viewName, ".view.json" );
+				if (viewName) {
+					const childViewModuleName = fromUI5LegacyName(viewName, ".view.json");
 					// console.log("child view detected %s", childViewModuleName);
 					this._addDependency(childViewModuleName, conditional);
 				}
-			} else if ( moduleName === XMLVIEW_MODULE ) {
+			} else if (moduleName === XMLVIEW_MODULE) {
 				const viewName = getAttribute(node, ANYVIEW_VIEWNAME_ATTRIBUTE);
-				if ( viewName ) {
-					const childViewModuleName = fromUI5LegacyName( viewName, ".view.xml" );
+				if (viewName) {
+					const childViewModuleName = fromUI5LegacyName(viewName, ".view.xml");
 					// console.log("child view detected %s", childViewModuleName);
 					this._addDependency(childViewModuleName, conditional);
 				}
-			} else if ( moduleName === TEMPLATEVIEW_MODULE ) {
+			} else if (moduleName === TEMPLATEVIEW_MODULE) {
 				const viewName = getAttribute(node, ANYVIEW_VIEWNAME_ATTRIBUTE);
-				if ( viewName ) {
-					const childViewModuleName = fromUI5LegacyName( viewName, ".view.tmpl" );
+				if (viewName) {
+					const childViewModuleName = fromUI5LegacyName(viewName, ".view.tmpl");
 					// console.log("child view detected %s", childViewModuleName);
 					this._addDependency(childViewModuleName, conditional);
 				}
-			} else if ( moduleName === VIEW_MODULE ) {
+			} else if (moduleName === VIEW_MODULE) {
 				const viewName = getAttribute(node, ANYVIEW_VIEWNAME_ATTRIBUTE);
-				if ( viewName ) {
+				if (viewName) {
 					let childViewModuleName;
 
 					if (viewName.startsWith("module:")) {
@@ -373,23 +381,23 @@ class XMLTemplateAnalyzer {
 						let viewTypeExtension;
 
 						switch (viewType) {
-						case "JS":
-							viewTypeExtension = ".view.js";
-							break;
-						case "JSON":
-							viewTypeExtension = ".view.json";
-							break;
-						case "Template":
-							viewTypeExtension = ".view.tmpl";
-							break;
-						case "XML":
-							viewTypeExtension = ".view.xml";
-							break;
-						case "HTML":
-							viewTypeExtension = ".view.html";
-							break;
-						default:
-							log.warn(`Unable to analyze sap.ui5/rootView: Unknown type '${viewType}'`);
+							case "JS":
+								viewTypeExtension = ".view.js";
+								break;
+							case "JSON":
+								viewTypeExtension = ".view.json";
+								break;
+							case "Template":
+								viewTypeExtension = ".view.tmpl";
+								break;
+							case "XML":
+								viewTypeExtension = ".view.xml";
+								break;
+							case "HTML":
+								viewTypeExtension = ".view.html";
+								break;
+							default:
+								log.warn(`Unable to analyze sap.ui5/rootView: Unknown type '${viewType}'`);
 						}
 
 						if (viewTypeExtension) {
@@ -412,6 +420,5 @@ class XMLTemplateAnalyzer {
 		return ".fragment." + type.toLowerCase();
 	}
 }
-
 
 export default XMLTemplateAnalyzer;

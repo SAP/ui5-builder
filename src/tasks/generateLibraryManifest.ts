@@ -1,28 +1,22 @@
-
 import {getLogger} from "@ui5/logger";
 const log = getLogger("builder:tasks:generateLibraryManifest");
 import manifestCreator from "../processors/manifestCreator.js";
 
 /**
- * @public
  * @module @ui5/builder/tasks/generateLibraryManifest
  */
 
 /**
  * Task for creating a library manifest.json from its .library file.
  *
- * @public
- * @function default
- * @static
- *
- * @param {object} parameters Parameters
- * @param {@ui5/fs/DuplexCollection} parameters.workspace DuplexCollection to read and write files
- * @param {@ui5/project/build/helpers/TaskUtil|object} [parameters.taskUtil] TaskUtil
- * @param {object} parameters.options Options
- * @param {string} parameters.options.projectName Project name
- * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
+ * @param parameters Parameters
+ * @param parameters.workspace DuplexCollection to read and write files
+ * @param [parameters.taskUtil] TaskUtil
+ * @param parameters.options Options
+ * @param parameters.options.projectName Project name
+ * @returns Promise resolving with <code>undefined</code> once data has been written
  */
-export default function({ workspace, taskUtil, options: { projectName } }: object) {
+export default function ({workspace, taskUtil, options: {projectName}}: object) {
 	// Note:
 	// *.library files are needed to identify libraries
 	// *.json files are needed to avoid overwriting them
@@ -35,7 +29,7 @@ export default function({ workspace, taskUtil, options: { projectName } }: objec
 			if (libraryIndicatorResources.length < 1) {
 				// No library found - nothing to do
 				log.verbose(`Could not find a ".library" file for project ${projectName}. ` +
-					`Skipping library manifest generation.`);
+				`Skipping library manifest generation.`);
 				return;
 			}
 
@@ -46,7 +40,7 @@ export default function({ workspace, taskUtil, options: { projectName } }: objec
 				const libraryNamespacePattern = /^\/resources\/(.*)\/\.library$/;
 				const libraryIndicatorPath = libraryIndicatorResource.getPath();
 				const libraryNamespaceMatch = libraryIndicatorPath.match(libraryNamespacePattern);
-				if (libraryNamespaceMatch && libraryNamespaceMatch[1]) {
+				if (libraryNamespaceMatch?.[1]) {
 					const libraryNamespace = libraryNamespaceMatch[1];
 					return manifestCreator({
 						libraryResource: libraryIndicatorResource,
@@ -56,7 +50,7 @@ export default function({ workspace, taskUtil, options: { projectName } }: objec
 							return taskUtil?.getProject(projectName)?.getVersion();
 						},
 						options: {
-						}
+						},
 					}).then((manifest) => {
 						if (manifest) {
 							return workspace.write(manifest);
@@ -64,7 +58,7 @@ export default function({ workspace, taskUtil, options: { projectName } }: objec
 					});
 				} else {
 					log.verbose(`Could not determine library namespace from file "${libraryIndicatorPath}" ` +
-						`for project ${projectName}. Skipping library manifest generation.`);
+					`for project ${projectName}. Skipping library manifest generation.`);
 					return Promise.resolve();
 				}
 			}));

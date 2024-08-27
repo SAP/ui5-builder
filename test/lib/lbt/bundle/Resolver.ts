@@ -12,10 +12,10 @@ const TRIVIAL_MODULE = "sap.ui.define([], function() {});";
 class MockPool extends ResourcePool {
 	constructor(data) {
 		super();
-		for ( const [name, content] of Object.entries(data) ) {
+		for (const [name, content] of Object.entries(data)) {
 			this.addResource({
 				name,
-				buffer: async () => content
+				buffer: async () => content,
 			});
 		}
 	}
@@ -31,7 +31,7 @@ test.serial("resolve without resolving dependencies", async (t) => {
 			});`,
 		"lib/mod1.js": TRIVIAL_MODULE,
 		"lib/mod2.js": TRIVIAL_MODULE,
-		"lib/mod3.js": TRIVIAL_MODULE
+		"lib/mod3.js": TRIVIAL_MODULE,
 	});
 
 	const bundleDefinition = {
@@ -42,9 +42,9 @@ test.serial("resolve without resolving dependencies", async (t) => {
 				filters: [
 					"app.js",
 				],
-				resolve: false
-			}
-		]
+				resolve: false,
+			},
+		],
 	};
 
 	const resolver = new Resolver(pool);
@@ -58,10 +58,9 @@ test.serial("resolve without resolving dependencies", async (t) => {
 	t.deepEqual(
 		sortedCopy(resolvedBundle.sections[0].modules),
 		[
-			"app.js"
+			"app.js",
 		], "bundle should only contain the specified module");
 });
-
 
 test.serial("resolve with resolving static dependencies", async (t) => {
 	const pool = new MockPool({
@@ -74,7 +73,7 @@ test.serial("resolve with resolving static dependencies", async (t) => {
 		"lib/mod1.js": "sap.ui.define(['./mod4'], function() {});",
 		"lib/mod2.js": TRIVIAL_MODULE,
 		"lib/mod3.js": TRIVIAL_MODULE,
-		"lib/mod4.js": TRIVIAL_MODULE
+		"lib/mod4.js": TRIVIAL_MODULE,
 	});
 
 	const bundleDefinition = {
@@ -85,9 +84,9 @@ test.serial("resolve with resolving static dependencies", async (t) => {
 				filters: [
 					"app.js",
 				],
-				resolve: true
-			}
-		]
+				resolve: true,
+			},
+		],
 	};
 
 	const resolver = new Resolver(pool);
@@ -120,7 +119,7 @@ test.serial("resolve, with resolving also conditional dependencies", async (t) =
 		"lib/mod1.js": "sap.ui.define(['./mod4'], function() {});",
 		"lib/mod2.js": TRIVIAL_MODULE,
 		"lib/mod3.js": TRIVIAL_MODULE,
-		"lib/mod4.js": TRIVIAL_MODULE
+		"lib/mod4.js": TRIVIAL_MODULE,
 	});
 
 	const bundleDefinition = {
@@ -132,9 +131,9 @@ test.serial("resolve, with resolving also conditional dependencies", async (t) =
 					"app.js",
 				],
 				resolve: true,
-				resolveConditional: true
-			}
-		]
+				resolveConditional: true,
+			},
+		],
 	};
 
 	const resolver = new Resolver(pool);
@@ -165,7 +164,7 @@ test.serial("embedd a decomposable bundle", async (t) => {
 		"vendor/decomposable-bundle.js": `
 			define("embedded/mod1", function() {});
 			define("lib/mod2", function() {});
-			define("embedded/mod3", function() {});`
+			define("embedded/mod3", function() {});`,
 	});
 
 	const bundleDefinition = {
@@ -174,11 +173,11 @@ test.serial("embedd a decomposable bundle", async (t) => {
 			{
 				mode: "preload",
 				filters: [
-					"vendor/"
+					"vendor/",
 				],
-				resolve: true
-			}
-		]
+				resolve: true,
+			},
+		],
 	};
 
 	const resolver = new Resolver(pool);
@@ -191,7 +190,7 @@ test.serial("embedd a decomposable bundle", async (t) => {
 		sortedCopy(resolvedBundle.sections[0].modules),
 		[
 			"lib/mod2.js",
-			"lib/mod4.js"
+			"lib/mod4.js",
 		], "new bundle should contain the available modules of the decomposed bundle");
 });
 
@@ -204,7 +203,7 @@ test.serial("embedd a non-decomposable bundle", async (t) => {
 		"vendor/non-decomposable-bundle.js": `
 			define("external/mod1", function() {});
 			define("external/mod2", function() {});
-			define("external/mod3", function() {});`
+			define("external/mod3", function() {});`,
 	});
 
 	const bundleDefinition = {
@@ -213,11 +212,11 @@ test.serial("embedd a non-decomposable bundle", async (t) => {
 			{
 				mode: "preload",
 				filters: [
-					"vendor/"
+					"vendor/",
 				],
-				resolve: true
-			}
-		]
+				resolve: true,
+			},
+		],
 	};
 
 	const resolver = new Resolver(pool);
@@ -229,7 +228,7 @@ test.serial("embedd a non-decomposable bundle", async (t) => {
 	t.deepEqual(
 		sortedCopy(resolvedBundle.sections[0].modules),
 		[
-			"vendor/non-decomposable-bundle.js"
+			"vendor/non-decomposable-bundle.js",
 		], "new bundle should contain the non-decomposable bundle");
 });
 
@@ -238,12 +237,12 @@ test.serial("no errors for dependencies between non-decomposable bundles", async
 	const myLoggerInstance = {
 		error: errorLogStub,
 		silly: sinon.stub(),
-		verbose: sinon.stub()
+		verbose: sinon.stub(),
 	};
 	const ResolverWithStub = await esmock("../../../../lib/lbt/bundle/Resolver", {
 		"@ui5/logger": {
-			getLogger: () => myLoggerInstance
-		}
+			getLogger: () => myLoggerInstance,
+		},
 	});
 
 	const pool = new MockPool({
@@ -265,7 +264,7 @@ test.serial("no errors for dependencies between non-decomposable bundles", async
 		"vendor/non-decomposable-bundle3.js": `
 			define("external3/mod1", function() {});
 			define("external3/mod2", function() {});
-			define("external3/mod3", function() {});`
+			define("external3/mod3", function() {});`,
 	});
 
 	const bundleDefinition = {
@@ -274,11 +273,11 @@ test.serial("no errors for dependencies between non-decomposable bundles", async
 			{
 				mode: "preload",
 				filters: [
-					"vendor/"
+					"vendor/",
 				],
-				resolve: true
-			}
-		]
+				resolve: true,
+			},
+		],
 	};
 
 	const resolver = new ResolverWithStub(pool);
@@ -293,7 +292,7 @@ test.serial("no errors for dependencies between non-decomposable bundles", async
 			"lib/mod1.js",
 			"vendor/non-decomposable-bundle1.js",
 			"vendor/non-decomposable-bundle2.js",
-			"vendor/non-decomposable-bundle3.js"
+			"vendor/non-decomposable-bundle3.js",
 		], "new bundle should contain the non-decomposable bundle");
 
 	t.is(errorLogStub.callCount, 2, "Two errors reported");

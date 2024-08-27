@@ -5,10 +5,10 @@ import DuplexCollection from "@ui5/fs/DuplexCollection";
 
 test("integration: replace version", async (t) => {
 	const reader = createAdapter({
-		virBasePath: "/"
+		virBasePath: "/",
 	});
 	const writer = createAdapter({
-		virBasePath: "/"
+		virBasePath: "/",
 	});
 
 	const content = "// timestamp: ${buildtime}";
@@ -17,7 +17,7 @@ test("integration: replace version", async (t) => {
 
 	const resource = createResource({
 		path: "/test.js",
-		string: content
+		string: content,
 	});
 
 	const workspace = new DuplexCollection({reader, writer});
@@ -25,8 +25,8 @@ test("integration: replace version", async (t) => {
 	await replaceBuildtime({
 		workspace,
 		options: {
-			pattern: "/test.js"
-		}
+			pattern: "/test.js",
+		},
 	});
 	const transformedResource = await writer.byPath("/test.js");
 

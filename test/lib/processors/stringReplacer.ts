@@ -17,15 +17,15 @@ test.serial("Replace using string pattern", async (t) => {
 
 	const resource = {
 		getString: sinon.stub().resolves(input),
-		setString: sinon.stub()
+		setString: sinon.stub(),
 	};
 
 	const processedResources = await stringReplacer({
 		resources: [resource],
 		options: {
 			pattern: "bar",
-			replacement: "foo"
-		}
+			replacement: "foo",
+		},
 	});
 
 	t.is(processedResources.length, 1, "Returned one resource");
@@ -40,15 +40,15 @@ test.serial("No replacement", async (t) => {
 
 	const resource = {
 		getString: sinon.stub().resolves(input),
-		setString: sinon.stub()
+		setString: sinon.stub(),
 	};
 
 	const processedResources = await stringReplacer({
 		resources: [resource],
 		options: {
 			pattern: "bar",
-			replacement: "foo"
-		}
+			replacement: "foo",
+		},
 	});
 
 	t.is(processedResources.length, 1, "Returned one resource");
@@ -63,15 +63,15 @@ test.serial("Replace using regular expression", async (t) => {
 
 	const resource = {
 		getString: sinon.stub().resolves(input),
-		setString: sinon.stub()
+		setString: sinon.stub(),
 	};
 
 	const processedResources = await stringReplacer({
 		resources: [resource],
 		options: {
 			pattern: /bar/ig,
-			replacement: "foo"
-		}
+			replacement: "foo",
+		},
 	});
 
 	t.is(processedResources.length, 1, "Returned one resource");
@@ -86,17 +86,17 @@ test.serial("Regular expression requires global flag", async (t) => {
 
 	const resource = {
 		getString: sinon.stub().resolves(input),
-		setString: sinon.stub()
+		setString: sinon.stub(),
 	};
 
 	await t.throwsAsync(stringReplacer({
 		resources: [resource],
 		options: {
 			pattern: /bar/i,
-			replacement: "foo"
-		}
+			replacement: "foo",
+		},
 	}), {
-		message: "String.prototype.replaceAll called with a non-global RegExp argument"
+		message: "String.prototype.replaceAll called with a non-global RegExp argument",
 	}, "Threw with expected error message");
 });
 
@@ -107,15 +107,15 @@ test.serial("Replaces string pattern with UTF8 characters", async (t) => {
 
 	const resource = {
 		getString: sinon.stub().resolves(input),
-		setString: sinon.stub()
+		setString: sinon.stub(),
 	};
 
 	const processedResources = await stringReplacer({
 		resources: [resource],
 		options: {
 			pattern: /早/g,
-			replacement: "午"
-		}
+			replacement: "午",
+		},
 	});
 
 	t.is(processedResources.length, 1, "Returned one resource");
@@ -129,27 +129,27 @@ test.serial("Process multiple resources", async (t) => {
 
 	const resourceA = {
 		getString: sinon.stub().resolves("Resource A"),
-		setString: sinon.stub()
+		setString: sinon.stub(),
 	};
 	const resourceB = {
 		getString: sinon.stub().resolves("Resource B"),
-		setString: sinon.stub()
+		setString: sinon.stub(),
 	};
 	const resourceC = {
 		getString: sinon.stub().resolves("Resource 三"),
-		setString: sinon.stub()
+		setString: sinon.stub(),
 	};
 	const resourceD = {
 		getString: sinon.stub().resolves("Resource D"),
-		setString: sinon.stub()
+		setString: sinon.stub(),
 	};
 
 	const processedResources = await stringReplacer({
 		resources: [resourceA, resourceB, resourceC, resourceD],
 		options: {
 			pattern: /[B-D]/g,
-			replacement: "💎"
-		}
+			replacement: "💎",
+		},
 	});
 
 	t.is(processedResources.length, 4, "Returned all four resources");

@@ -18,38 +18,31 @@ class ResourceCollector {
 	/**
 	 * Collects a set of ResourceInfo objects and groups them by components, libraries and themes.
 	 *
-	 * @param {ResourcePool} pool
-	 * @param {ResourceFilterList} [filter] used to filter the resources based on their name
+	 * @param pool
+	 * @param [filter] used to filter the resources based on their name
 	 */
 	constructor(pool: ResourcePool, filter?: ResourceFilterList) {
 		this._pool = pool;
 		/**
 		 * Global filters that should be taken into account when collecting resources.
 		 *
-		 * @type {ResourceFilterList}
-		 * @private
 		 */
 		this._filter = filter != null ? filter : new ResourceFilterList();
 		/**
 		 * name to resource info
 		 *
-		 * @type {Map<string,ResourceInfo>}
 		 */
 		this._resources = new Map();
 
 		/**
 		 * prefix to ResourceInfoList
 		 *
-		 * @type {Map<string, ResourceInfoList>}
-		 * @private
 		 */
 		this._components = new Map();
 
 		/**
 		 * prefix to ResourceInfoList
 		 *
-		 * @type {Map<string, ResourceInfoList>}
-		 * @private
 		 */
 		this._themePackages = new Map();
 	}
@@ -66,25 +59,25 @@ class ResourceCollector {
 	 *
 	 * If no component is given, orphans will only be reported but not added to any component (default).
 	 *
-	 * @param {Object<string, string[]>} list component to list of components
+	 * @param list component to list of components
 	 */
-	setExternalResources(list: { [s: string]: string[]; }) {
+	setExternalResources(list: Record<string, string[]>) {
 		this._externalResources = list;
 	}
 
 	/**
 	 * Processes a resource
 	 *
-	 * @param {@ui5/fs/Resource} resource
+	 * @param resource
 	 */
 	async visitResource(resource) {
 		const virPath = resource.getPath();
-		if ( !virPath.startsWith("/resources/") ) {
+		if (!virPath.startsWith("/resources/")) {
 			log.warn(`Non-runtime resource ${virPath} ignored`);
 			return;
 		}
 		const name = virPath.slice("/resources/".length);
-		if ( this._filter.matches(name) ) {
+		if (this._filter.matches(name)) {
 			const resourceInfo = new ResourceInfo(name);
 			resourceInfo.size = await resource.getSize();
 			this._resources.set(name, resourceInfo);
@@ -92,16 +85,16 @@ class ResourceCollector {
 			const p = name.lastIndexOf("/");
 			const prefix = name.substring(0, p + 1);
 			const basename = name.substring(p + 1);
-			if ( basename.match("^([^/]*\\.library|Component\\.js|manifest\\.json)$") &&
-					!this._components.has(prefix)) {
+			if (basename.match("^([^/]*\\.library|Component\\.js|manifest\\.json)$") &&
+				!this._components.has(prefix)) {
 				this._components.set(prefix, new ResourceInfoList(prefix));
 			}
 			// a .theme file within a theme folder indicates a library/theme package
 			// Note: ignores .theme files in library folders
 
 			// .theming files are not always present therefore this check is relevant for the library.source.less
-			if ( name.match("(?:[^/]+/)*themes/[^/]+/(?:\\.theming|library\\.source\\.less)") &&
-					!this._themePackages.has(prefix) ) {
+			if (name.match("(?:[^/]+/)*themes/[^/]+/(?:\\.theming|library\\.source\\.less)") &&
+				!this._themePackages.has(prefix)) {
 				// log.info("Found new theme package %s", prefix);
 				this._themePackages.set(prefix, new ResourceInfoList(prefix));
 			}
@@ -110,27 +103,27 @@ class ResourceCollector {
 
 	async enrichWithDependencyInfo(resourceInfo) {
 		return this._pool.getModuleInfo(resourceInfo.name, resourceInfo.module).then(async (moduleInfo) => {
-			if ( !resourceInfo.module && moduleInfo.name ) {
+			if (!resourceInfo.module && moduleInfo.name) {
 				resourceInfo.module = moduleInfo.name;
 			}
 
-			if ( moduleInfo.dynamicDependencies ) {
+			if (moduleInfo.dynamicDependencies) {
 				resourceInfo.dynRequired = true;
 			}
 
-			if ( moduleInfo.dependencies.length > 0 ) {
+			if (moduleInfo.dependencies.length > 0) {
 				resourceInfo.required = resourceInfo.required || new Set();
 				resourceInfo.condRequired = resourceInfo.condRequired || new Set();
 				moduleInfo.dependencies.forEach((dep) => {
-					if ( moduleInfo.isConditionalDependency(dep) ) {
+					if (moduleInfo.isConditionalDependency(dep)) {
 						resourceInfo.condRequired.add(dep);
-					} else if ( !moduleInfo.isImplicitDependency(dep) ) {
+					} else if (!moduleInfo.isImplicitDependency(dep)) {
 						resourceInfo.required.add(dep);
 					}
 				});
 			}
 
-			if ( moduleInfo.subModules.length > 0 ) {
+			if (moduleInfo.subModules.length > 0) {
 				resourceInfo.included = resourceInfo.included || new Set();
 				moduleInfo.subModules.forEach((mod) => {
 					resourceInfo.included.add(mod);
@@ -145,7 +138,7 @@ class ResourceCollector {
 					}
 					if (subModuleInfo) {
 						// Inherit subModule dependencies
-						if ( subModuleInfo.dependencies.length > 0 ) {
+						if (subModuleInfo.dependencies.length > 0) {
 							resourceInfo.required = resourceInfo.required || new Set();
 							resourceInfo.condRequired = resourceInfo.condRequired || new Set();
 							subModuleInfo.dependencies.forEach((dep) => {
@@ -153,12 +146,12 @@ class ResourceCollector {
 									// Don't add dependency if module is already listed as "included"
 									return;
 								}
-								if ( subModuleInfo.isConditionalDependency(dep) ) {
+								if (subModuleInfo.isConditionalDependency(dep)) {
 									// Avoid having module listed in both required and condRequired
 									if (!resourceInfo.required.has(dep)) {
 										resourceInfo.condRequired.add(dep);
 									}
-								} else if ( !subModuleInfo.isImplicitDependency(dep) ) {
+								} else if (!subModuleInfo.isImplicitDependency(dep)) {
 									// Move module from condRequired to required
 									if (resourceInfo.condRequired.has(dep)) {
 										resourceInfo.condRequired.delete(dep);
@@ -169,7 +162,7 @@ class ResourceCollector {
 						}
 
 						// Inherit dynamicDependencies flag
-						if ( moduleInfo.dynamicDependencies ) {
+						if (moduleInfo.dynamicDependencies) {
 							resourceInfo.dynRequired = true;
 						}
 					}
@@ -179,7 +172,7 @@ class ResourceCollector {
 			if (moduleInfo.requiresTopLevelScope) {
 				resourceInfo.requiresTopLevelScope = true;
 			}
-			if (moduleInfo.exposedGlobals != null && moduleInfo.exposedGlobals.length) {
+			if (moduleInfo.exposedGlobals?.length) {
 				resourceInfo.exposedGlobalNames = resourceInfo.exposedGlobalNames || new Set();
 				moduleInfo.exposedGlobals.forEach((exposedGlobalName) => {
 					resourceInfo.exposedGlobalNames.add(exposedGlobalName);
@@ -193,7 +186,7 @@ class ResourceCollector {
 	}
 
 	async determineResourceDetails({
-		debugResources, mergedResources, designtimeResources, supportResources
+		debugResources, mergedResources, designtimeResources, supportResources,
 	}) {
 		const baseNames = new Set();
 		const debugFilter = new ResourceFilterList(debugResources);
@@ -205,14 +198,14 @@ class ResourceCollector {
 		const debugResourcesInfo = [];
 
 		for (const [name, info] of this._resources.entries()) {
-			if ( debugFilter.matches(name) ) {
+			if (debugFilter.matches(name)) {
 				info.isDebug = true;
 				log.verbose(`  Found potential debug resource '${name}'`);
 			}
 
 			// log.verbose(`  checking ${name}`);
 			let m;
-			if ( m = LOCALE.exec(name) ) {
+			if (m = LOCALE.exec(name)) {
 				const baseName = m[1] + m[3];
 				log.verbose(`  Found potential i18n resource '${name}', base name is '${baseName}', locale is ${m[2]}`);
 				info.i18nName = baseName; // e.g. "i18n.properties"
@@ -220,17 +213,17 @@ class ResourceCollector {
 				baseNames.add(baseName);
 			}
 
-			if ( m = THEME.exec(name) ) {
+			if (m = THEME.exec(name)) {
 				// log.verbose("found theme candidate %s with prefix %s", name, m[1]);
-				if ( this._themePackages.has(m[0]) ) {
+				if (this._themePackages.has(m[0])) {
 					const theme = m[2];
 					info.theme = theme;
 					log.verbose(`  Found potential theme resource '${name}', theme ${theme}`);
 				}
 			}
 
-			if ( /(?:\.js|\.view\.xml|\.control\.xml|\.fragment\.xml)$/.test(name) ) {
-				if ( !info.isDebug ) {
+			if (/(?:\.js|\.view\.xml|\.control\.xml|\.fragment\.xml)$/.test(name)) {
+				if (!info.isDebug) {
 					// Only analyze non-dbg files in first run
 					promises.push(
 						this.enrichWithDependencyInfo(info)
@@ -242,7 +235,7 @@ class ResourceCollector {
 			}
 
 			// set the module name for .properties and .json
-			if ( /(?:\.properties|\.json)$/.test(name) ) {
+			if (/(?:\.properties|\.json)$/.test(name)) {
 				promises.push(new Promise((resolve) => {
 					return this._pool.getModuleInfo(info.name).then((moduleInfo) => {
 						if (moduleInfo.name) {
@@ -253,24 +246,24 @@ class ResourceCollector {
 				}));
 			}
 
-			if ( mergeFilter.matches(name) ) {
+			if (mergeFilter.matches(name)) {
 				info.merged = true;
 				log.verbose(`  Found potential merged resource '${name}'`);
 			}
 
-			if ( designtimeFilter.matches(name) ) {
+			if (designtimeFilter.matches(name)) {
 				info.designtime = true;
 				log.verbose(`  Found potential designtime resource '${name}'`);
 			}
 
-			if ( supportFilter.matches(name) ) {
+			if (supportFilter.matches(name)) {
 				info.support = true;
 				log.verbose(`  Found potential support resource '${name}'`);
 			}
 		}
 
 		for (const baseName of baseNames) {
-			if ( this._resources.has(baseName) ) {
+			if (this._resources.has(baseName)) {
 				const info = this._resources.get(baseName);
 				info.i18nName = baseName;
 				info.i18nLocale = "";
@@ -325,12 +318,12 @@ class ResourceCollector {
 
 		const filtersByComponent = new Map();
 
-		if ( this._externalResources != null ) {
-			for ( let [component, filters] of Object.entries(this._externalResources) ) {
+		if (this._externalResources != null) {
+			for (let [component, filters] of Object.entries(this._externalResources)) {
 				const packageFilters = new ResourceFilterList(filters);
-				if ( component === "/" || component === "" ) {
+				if (component === "/" || component === "") {
 					component = "";
-				} else if ( !component.endsWith("/") ) {
+				} else if (!component.endsWith("/")) {
 					component += "/";
 				}
 				log.verbose(`	Resulting filter list for '${component}': '${packageFilters}'`);
@@ -345,30 +338,30 @@ class ResourceCollector {
 		for (const resource of this._resources.values()) {
 			let contained = false;
 			for (const [prefix, list] of this._components.entries()) {
-				if ( resource.name.startsWith(prefix) ) {
+				if (resource.name.startsWith(prefix)) {
 					list.add(resource);
 					contained = true;
-				} else if ( orphanFilters.has(prefix) ) {
+				} else if (orphanFilters.has(prefix)) {
 					// log.verbose(`  checking '${resource.name}' against orphan filter ` +
 					// 	`'${orphanFilters.get(prefix)}' (${prefix})`);
-					if ( orphanFilters.get(prefix).matches(resource.name) ) {
+					if (orphanFilters.get(prefix).matches(resource.name)) {
 						list.add(resource);
 						contained = true;
 					}
 				}
 			}
 
-			if ( resource.theme != null ) {
+			if (resource.theme != null) {
 				// assign theme resources additionally to theme packages
 				for (const [prefix, list] of this._themePackages.entries()) {
-					if ( resource.name.startsWith(prefix) ) {
+					if (resource.name.startsWith(prefix)) {
 						list.add(resource);
 						contained = true;
 					}
 				}
 			}
 
-			if ( contained ) {
+			if (contained) {
 				this._resources.delete(resource.name);
 			}
 		}
@@ -376,7 +369,7 @@ class ResourceCollector {
 
 	/**
 	 *
-	 * @returns {Set<string>} resource names
+	 * @returns resource names
 	 */
 	get resources() {
 		return new Set(this._resources.keys());
@@ -385,14 +378,14 @@ class ResourceCollector {
 	/**
 	 * Components
 	 *
-	 * @returns {Map<string, ResourceInfoList>}
+	 * @returns
 	 */
 	get components() {
 		return this._components;
 	}
 
 	/**
-	 * @returns {Map<string, ResourceInfoList>}
+	 * @returns
 	 */
 	get themePackages() {
 		return this._themePackages;

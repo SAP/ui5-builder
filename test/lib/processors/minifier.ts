@@ -21,10 +21,10 @@ myFunc();
 `;
 	const testResource = createResource({
 		path: "/test.controller.js",
-		string: content
+		string: content,
 	});
 	const [{resource, dbgResource, sourceMapResource}] = await minifier({
-		resources: [testResource]
+		resources: [testResource],
 	});
 
 	const expected = `/*!
@@ -35,29 +35,29 @@ ${SOURCE_MAPPING_URL}=test.controller.js.map`;
 	t.deepEqual(await resource.getString(), expected, "Correct minified content");
 	t.deepEqual(await dbgResource.getString(), content, "Correct debug content");
 	const expectedSourceMap = JSON.stringify({
-		"version": 3,
-		"file": "test.controller.js",
-		"names": [
+		version: 3,
+		file: "test.controller.js",
+		names: [
 			"myFunc",
 			"myArg",
 			"jQuery",
 			"sap",
 			"require",
 			"console",
-			"log"
+			"log",
 		],
-		"sources": [
-			"test-dbg.controller.js"
+		sources: [
+			"test-dbg.controller.js",
 		],
-		"mappings": ";;;AAGC,SAASA,OAAOC,GACfC,OAAOC,IAAIC,QAAQ,aACnBC,QAAQC,IAAI,qBACb,CACDN",
-		"ignoreList": []
+		mappings: ";;;AAGC,SAASA,OAAOC,GACfC,OAAOC,IAAIC,QAAQ,aACnBC,QAAQC,IAAI,qBACb,CACDN",
+		ignoreList: [],
 	});
 	t.deepEqual(await sourceMapResource.getString(), expectedSourceMap, "Correct source map content");
 });
 
 test("Basic minifier with taskUtil and useWorkers: true", async (t) => {
 	const taskUtilMock = {
-		registerCleanupTask: sinon.stub()
+		registerCleanupTask: sinon.stub(),
 	};
 	const content = `/*!
  * \${copyright}
@@ -70,14 +70,14 @@ myFunc();
 `;
 	const testResource = createResource({
 		path: "/test.controller.js",
-		string: content
+		string: content,
 	});
 	const [{resource, dbgResource, sourceMapResource}] = await minifier({
 		resources: [testResource],
 		taskUtil: taskUtilMock,
 		options: {
-			useWorkers: true
-		}
+			useWorkers: true,
+		},
 	});
 
 	const expected = `/*!
@@ -88,22 +88,22 @@ ${SOURCE_MAPPING_URL}=test.controller.js.map`;
 	t.deepEqual(await resource.getString(), expected, "Correct minified content");
 	t.deepEqual(await dbgResource.getString(), content, "Correct debug content");
 	const expectedSourceMap = JSON.stringify({
-		"version": 3,
-		"file": "test.controller.js",
-		"names": [
+		version: 3,
+		file: "test.controller.js",
+		names: [
 			"myFunc",
 			"myArg",
 			"jQuery",
 			"sap",
 			"require",
 			"console",
-			"log"
+			"log",
 		],
-		"sources": [
-			"test-dbg.controller.js"
+		sources: [
+			"test-dbg.controller.js",
 		],
-		"mappings": ";;;AAGC,SAASA,OAAOC,GACfC,OAAOC,IAAIC,QAAQ,aACnBC,QAAQC,IAAI,qBACb,CACDN",
-		"ignoreList": []
+		mappings: ";;;AAGC,SAASA,OAAOC,GACfC,OAAOC,IAAIC,QAAQ,aACnBC,QAAQC,IAAI,qBACb,CACDN",
+		ignoreList: [],
 	});
 	t.deepEqual(await sourceMapResource.getString(), expectedSourceMap, "Correct source map content");
 
@@ -121,7 +121,7 @@ test("Basic minifier with taskUtil and unexpected termination of the workerpool"
 			// Terminate the workerpool in a timeout, so that
 			// the task is already in the queue, but not yet finished.
 			setTimeout(cb);
-		})
+		}),
 	};
 
 	// Create more resources so there to be some pending tasks in the pool
@@ -138,15 +138,15 @@ myFunc${i}();
 `;
 		testResources.push(createResource({
 			path: "/test.controller.js",
-			string: content
+			string: content,
 		}));
 	}
 	await minifier({
 		resources: testResources,
 		taskUtil: taskUtilMock,
 		options: {
-			useWorkers: true
-		}
+			useWorkers: true,
+		},
 	});
 
 	t.pass("No exception from an earlier workerpool termination attempt.");
@@ -164,15 +164,15 @@ myFunc();
 `;
 	const testResource = createResource({
 		path: "/test.controller.js",
-		string: content
+		string: content,
 	});
 	await t.throwsAsync(minifier({
 		resources: [testResource],
 		options: {
-			useWorkers: true
-		}
+			useWorkers: true,
+		},
 	}), {
-		message: "Minifier: Option 'useWorkers' requires a taskUtil instance to be provided"
+		message: "Minifier: Option 'useWorkers' requires a taskUtil instance to be provided",
 	}, "Threw with expected error message");
 });
 
@@ -199,20 +199,20 @@ test3();`;
 	const testResources = [
 		createResource({
 			path: "/test1.controller.js",
-			string: content1
+			string: content1,
 		}),
 		createResource({
 			path: "/test2.fragment.js",
-			string: content2
+			string: content2,
 		}),
 		createResource({
 			path: "/test3.designtime.js",
-			string: content3
-		})
+			string: content3,
+		}),
 	];
 
 	const resources = await minifier({
-		resources: testResources
+		resources: testResources,
 	});
 
 	const expectedMinified1 = `function test1(t){var o=t;console.log(o)}test1();
@@ -223,52 +223,52 @@ ${SOURCE_MAPPING_URL}=test2.fragment.js.map`;
 ${SOURCE_MAPPING_URL}=test3.designtime.js.map`;
 
 	const expectedSourceMap1 = JSON.stringify({
-		"version": 3,
-		"file": "test1.controller.js",
-		"names": [
+		version: 3,
+		file: "test1.controller.js",
+		names: [
 			"test1",
 			"paramA",
 			"variableA",
 			"console",
-			"log"
+			"log",
 		],
-		"sources": [
-			"test1-dbg.controller.js"
+		sources: [
+			"test1-dbg.controller.js",
 		],
-		"mappings": "AACA,SAASA,MAAMC,GACd,IAAIC,EAAYD,EAChBE,QAAQC,IAAIF,EACb,CACAF",
-		"ignoreList": []
+		mappings: "AACA,SAASA,MAAMC,GACd,IAAIC,EAAYD,EAChBE,QAAQC,IAAIF,EACb,CACAF",
+		ignoreList: [],
 	});
 	const expectedSourceMap2 = JSON.stringify({
-		"version": 3,
-		"file": "test2.fragment.js",
-		"names": [
+		version: 3,
+		file: "test2.fragment.js",
+		names: [
 			"test2",
 			"paramA",
 			"variableA",
 			"console",
-			"log"
+			"log",
 		],
-		"sources": [
-			"test2-dbg.fragment.js"
+		sources: [
+			"test2-dbg.fragment.js",
 		],
-		"mappings": "AACA,SAASA,MAAMC,GACd,IAAIC,EAAYD,EAChBE,QAAQC,IAAIF,EACb,CACAF",
-		"ignoreList": []
+		mappings: "AACA,SAASA,MAAMC,GACd,IAAIC,EAAYD,EAChBE,QAAQC,IAAIF,EACb,CACAF",
+		ignoreList: [],
 	});
 	const expectedSourceMap3 = JSON.stringify({
-		"version": 3,
-		"file": "test3.designtime.js",
-		"names": [
+		version: 3,
+		file: "test3.designtime.js",
+		names: [
 			"test3",
 			"paramA",
 			"variableA",
 			"console",
-			"log"
+			"log",
 		],
-		"sources": [
-			"test3-dbg.designtime.js"
+		sources: [
+			"test3-dbg.designtime.js",
 		],
-		"mappings": "AACA,SAASA,MAAMC,GACd,IAAIC,EAAYD,EAChBE,QAAQC,IAAIF,EACb,CACAF",
-		"ignoreList": []
+		mappings: "AACA,SAASA,MAAMC,GACd,IAAIC,EAAYD,EAChBE,QAAQC,IAAIF,EACb,CACAF",
+		ignoreList: [],
 	});
 
 	t.is(resources[0].resource.getPath(), "/test1.controller.js",
@@ -310,15 +310,15 @@ test("Input source map: Incorrect parameters", async (t) => {
 
 	const testResource = createResource({
 		path: "/resources/test.controller.js",
-		string: content
+		string: content,
 	});
 	await t.throwsAsync(minifier({
 		resources: [testResource],
 		options: {
 			readSourceMappingUrl: true,
-		}
+		},
 	}), {
-		message: `Option 'readSourceMappingUrl' requires parameter 'fs' to be provided`
+		message: `Option 'readSourceMappingUrl' requires parameter 'fs' to be provided`,
 	}, "Threw with expected error message");
 });
 
@@ -360,36 +360,36 @@ ${SOURCE_MAPPING_URL}=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjo
 			const err = new Error("ENOENT: no such file or directory, open " + filePath);
 			err.code = "ENOENT";
 			cb(err);
-		})
+		}),
 	};
 
 	const testResource = createResource({
 		path: "/resources/test.controller.js",
-		string: content
+		string: content,
 	});
 	const [{resource, dbgResource, sourceMapResource, dbgSourceMapResource}] = await minifier({
 		resources: [testResource],
 		fs,
 		options: {
 			readSourceMappingUrl: true,
-		}
+		},
 	});
 
 	const expected = `/*!
  * \${copyright}
  */
 "use strict";sap.ui.define(["sap/m/MessageBox","./BaseController"],function(e,t){"use strict";function n(e){return ` +
-	`e&&e.__esModule&&typeof e.default!=="undefined"?e.default:e}const o=n(t);const s=o.extend(` +
-	`"test.controller.Main",{sayHello:function t(){e.show("Hello World!")}});return s});
+		`e&&e.__esModule&&typeof e.default!=="undefined"?e.default:e}const o=n(t);const s=o.extend(` +
+		`"test.controller.Main",{sayHello:function t(){e.show("Hello World!")}});return s});
 ${SOURCE_MAPPING_URL}=test.controller.js.map`;
 	t.deepEqual(await resource.getString(), expected, "Correct minified content");
 	// Existing inline source map is moved into a separate file
 	const expectedDbgContent = content.replace(/data:application\/json;charset=utf-8;base64,.+/, "test-dbg.controller.js.map\n");
 	t.deepEqual(await dbgResource.getString(), expectedDbgContent, "Correct debug content");
 	const expectedSourceMap = JSON.stringify({
-		"version": 3,
-		"file": "test.controller.js",
-		"names": [
+		version: 3,
+		file: "test.controller.js",
+		names: [
 			"sap",
 			"ui",
 			"define",
@@ -404,20 +404,20 @@ ${SOURCE_MAPPING_URL}=test.controller.js.map`;
 			"extend",
 			"sayHello",
 			"_sayHello",
-			"show"
+			"show",
 		],
-		"sources": [
-			"test.controller.ts"
+		sources: [
+			"test.controller.ts",
 		],
 		// eslint-disable-next-line
 		"mappings": ";;;AAAA,aAAAA,IAAAC,GAAAC,OAAA,iDAAAC,EAAAC,GAAA,sBAAAC,EAAAC,GAAA,OAAAA,KAAAC,mBAAAD,EAAAE,UAAA,YAAAF,EAAAE,QAAAF,CAAA,OAIOG,EAAcJ,EAAAD,GAErB,MAGqBM,EAAaD,EAAcE,OAAA,wBACxCC,SAAQ,SAAAC,IACdV,EAAWW,KAAK,eACjB,IAAC,OAHmBJ,CAAI",
-		"ignoreList": []
+		ignoreList: [],
 	});
 	t.deepEqual(await sourceMapResource.getString(), expectedSourceMap, "Correct source map content");
 	const expectedDbgSourceMap = JSON.stringify({
-		"version": 3,
-		"file": "test-dbg.controller.js",
-		"names": [
+		version: 3,
+		file: "test-dbg.controller.js",
+		names: [
 			"sap",
 			"ui",
 			"define",
@@ -432,10 +432,10 @@ ${SOURCE_MAPPING_URL}=test.controller.js.map`;
 			"extend",
 			"sayHello",
 			"_sayHello",
-			"show"
+			"show",
 		],
-		"sources": [
-			"test.controller.ts"
+		sources: [
+			"test.controller.ts",
 		],
 		// eslint-disable-next-line
 		"mappings": "AAAA;AACA;AACA;AAFA;;AAAAA,GAAA,CAAAC,EAAA,CAAAC,MAAA,qDAAAC,UAAA,EAAAC,gBAAA;EAAA;;EAAA,SAAAC,uBAAAC,GAAA;IAAA,OAAAA,GAAA,IAAAA,GAAA,CAAAC,UAAA,WAAAD,GAAA,CAAAE,OAAA,mBAAAF,GAAA,CAAAE,OAAA,GAAAF,GAAA;EAAA;EAAA,MAIOG,cAAc,GAAAJ,sBAAA,CAAAD,gBAAA;EAErB;AACA;AACA;EAFA,MAGqBM,IAAI,GAASD,cAAc,CAAAE,MAAA;IACxCC,QAAQ,WAAAC,UAAA,EAAS;MACvBV,UAAU,CAACW,IAAI,CAAC,cAAc,CAAC;IAChC;EAAC;EAAA,OAHmBJ,IAAI;AAAA"
@@ -472,9 +472,9 @@ ${SOURCE_MAPPING_URL}=test.controller.js.map
 `;
 
 	const inputSourceMapContent = JSON.stringify({
-		"version": 3,
-		"file": "test.controller.js",
-		"names": [
+		version: 3,
+		file: "test.controller.js",
+		names: [
 			"sap",
 			"ui",
 			"define",
@@ -489,10 +489,10 @@ ${SOURCE_MAPPING_URL}=test.controller.js.map
 			"extend",
 			"sayHello",
 			"_sayHello",
-			"show"
+			"show",
 		],
-		"sources": [
-			"test.controller.ts"
+		sources: [
+			"test.controller.ts",
 		],
 		// eslint-disable-next-line
 		"mappings": "AAAA;AACA;AACA;AAFA;;AAAAA,GAAA,CAAAC,EAAA,CAAAC,MAAA,qDAAAC,UAAA,EAAAC,gBAAA;EAAA;;EAAA,SAAAC,uBAAAC,GAAA;IAAA,OAAAA,GAAA,IAAAA,GAAA,CAAAC,UAAA,WAAAD,GAAA,CAAAE,OAAA,mBAAAF,GAAA,CAAAE,OAAA,GAAAF,GAAA;EAAA;EAAA,MAIOG,cAAc,GAAAJ,sBAAA,CAAAD,gBAAA;EAErB;AACA;AACA;EAFA,MAGqBM,IAAI,GAASD,cAAc,CAAAE,MAAA;IACxCC,QAAQ,WAAAC,UAAA,EAAS;MACvBV,UAAU,CAACW,IAAI,CAAC,cAAc,CAAC;IAChC;EAAC;EAAA,OAHmBJ,IAAI;AAAA"
@@ -501,42 +501,42 @@ ${SOURCE_MAPPING_URL}=test.controller.js.map
 	const fs = {
 		readFile: sinon.stub().callsFake((filePath, cb) => {
 			switch (filePath) {
-			case "/resources/test.controller.js.map":
-				cb(null, inputSourceMapContent);
-				return;
+				case "/resources/test.controller.js.map":
+					cb(null, inputSourceMapContent);
+					return;
 			}
 			const err = new Error("ENOENT: no such file or directory, open " + filePath);
 			err.code = "ENOENT";
 			cb(err);
-		})
+		}),
 	};
 
 	const testResource = createResource({
 		path: "/resources/test.controller.js",
-		string: content
+		string: content,
 	});
 	const [{resource, dbgResource, sourceMapResource, dbgSourceMapResource}] = await minifier({
 		resources: [testResource],
 		fs,
 		options: {
 			readSourceMappingUrl: true,
-		}
+		},
 	});
 
 	const expected = `/*!
  * \${copyright}
  */
 "use strict";sap.ui.define(["sap/m/MessageBox","./BaseController"],function(e,t){"use strict";function n(e){return ` +
-	`e&&e.__esModule&&typeof e.default!=="undefined"?e.default:e}const o=n(t);const s=o.extend(` +
-	`"test.controller.Main",{sayHello:function t(){e.show("Hello World!")}});return s});
+		`e&&e.__esModule&&typeof e.default!=="undefined"?e.default:e}const o=n(t);const s=o.extend(` +
+		`"test.controller.Main",{sayHello:function t(){e.show("Hello World!")}});return s});
 ${SOURCE_MAPPING_URL}=test.controller.js.map`;
 	t.deepEqual(await resource.getString(), expected, "Correct minified content");
 	const expectedDbgContent = content.replace("test.controller.js.map", "test-dbg.controller.js.map");
 	t.deepEqual(await dbgResource.getString(), expectedDbgContent, "Correct debug content");
 	const expectedSourceMap = JSON.stringify({
-		"version": 3,
-		"file": "test.controller.js",
-		"names": [
+		version: 3,
+		file: "test.controller.js",
+		names: [
 			"sap",
 			"ui",
 			"define",
@@ -551,20 +551,20 @@ ${SOURCE_MAPPING_URL}=test.controller.js.map`;
 			"extend",
 			"sayHello",
 			"_sayHello",
-			"show"
+			"show",
 		],
-		"sources": [
-			"test.controller.ts"
+		sources: [
+			"test.controller.ts",
 		],
 		// eslint-disable-next-line
 		"mappings": ";;;AAAA,aAAAA,IAAAC,GAAAC,OAAA,iDAAAC,EAAAC,GAAA,sBAAAC,EAAAC,GAAA,OAAAA,KAAAC,mBAAAD,EAAAE,UAAA,YAAAF,EAAAE,QAAAF,CAAA,OAIOG,EAAcJ,EAAAD,GAErB,MAGqBM,EAAaD,EAAcE,OAAA,wBACxCC,SAAQ,SAAAC,IACdV,EAAWW,KAAK,eACjB,IAAC,OAHmBJ,CAAI",
-		"ignoreList": []
+		ignoreList: [],
 	});
 	t.deepEqual(await sourceMapResource.getString(), expectedSourceMap, "Correct source map content");
 	const expectedDbgSourceMap = JSON.stringify({
-		"version": 3,
-		"file": "test-dbg.controller.js",
-		"names": [
+		version: 3,
+		file: "test-dbg.controller.js",
+		names: [
 			"sap",
 			"ui",
 			"define",
@@ -579,10 +579,10 @@ ${SOURCE_MAPPING_URL}=test.controller.js.map`;
 			"extend",
 			"sayHello",
 			"_sayHello",
-			"show"
+			"show",
 		],
-		"sources": [
-			"test.controller.ts"
+		sources: [
+			"test.controller.ts",
 		],
 		// eslint-disable-next-line
 		"mappings": "AAAA;AACA;AACA;AAFA;;AAAAA,GAAA,CAAAC,EAAA,CAAAC,MAAA,qDAAAC,UAAA,EAAAC,gBAAA;EAAA;;EAAA,SAAAC,uBAAAC,GAAA;IAAA,OAAAA,GAAA,IAAAA,GAAA,CAAAC,UAAA,WAAAD,GAAA,CAAAE,OAAA,mBAAAF,GAAA,CAAAE,OAAA,GAAAF,GAAA;EAAA;EAAA,MAIOG,cAAc,GAAAJ,sBAAA,CAAAD,gBAAA;EAErB;AACA;AACA;EAFA,MAGqBM,IAAI,GAASD,cAAc,CAAAE,MAAA;IACxCC,QAAQ,WAAAC,UAAA,EAAS;MACvBV,UAAU,CAACW,IAAI,CAAC,cAAc,CAAC;IAChC;EAAC;EAAA,OAHmBJ,IAAI;AAAA"
@@ -630,27 +630,27 @@ ${SOURCE_MAPPING_URL}=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjo
 			const err = new Error("ENOENT: no such file or directory, open " + filePath);
 			err.code = "ENOENT";
 			cb(err);
-		})
+		}),
 	};
 
 	const testResource = createResource({
 		path: "/resources/test.controller.js",
-		string: content
+		string: content,
 	});
 	const [{resource, dbgResource, sourceMapResource, dbgSourceMapResource}] = await minifier({
 		resources: [testResource],
 		fs,
 		options: {
 			readSourceMappingUrl: true,
-		}
+		},
 	});
 
 	const expected = `/*!
  * \${copyright}
  */
 "use strict";sap.ui.define(["sap/m/MessageBox","./BaseController"],function(e,t){"use strict";function n(e){return ` +
-	`e&&e.__esModule&&typeof e.default!=="undefined"?e.default:e}const o=n(t);const s=o.extend(` +
-	`"test.controller.Main",{sayHello:function t(){e.show("Hello World!")}});return s});
+		`e&&e.__esModule&&typeof e.default!=="undefined"?e.default:e}const o=n(t);const s=o.extend(` +
+		`"test.controller.Main",{sayHello:function t(){e.show("Hello World!")}});return s});
 ${SOURCE_MAPPING_URL}=test.controller.js.map`;
 	t.deepEqual(await resource.getString(), expected, "Correct minified content");
 	// Existing inline source map is moved into a separate file
@@ -658,9 +658,9 @@ ${SOURCE_MAPPING_URL}=test.controller.js.map`;
 	const expectedDbgContent = content.replace(/data:application\/json;charset=utf-8;base64,.+/, "test-dbg.controller.js.map\n");
 	t.deepEqual(await dbgResource.getString(), expectedDbgContent, "Correct debug content");
 	const expectedSourceMap = JSON.stringify({
-		"version": 3,
-		"file": "test.controller.js",
-		"names": [
+		version: 3,
+		file: "test.controller.js",
+		names: [
 			"sap",
 			"ui",
 			"define",
@@ -675,25 +675,25 @@ ${SOURCE_MAPPING_URL}=test.controller.js.map`;
 			"extend",
 			"sayHello",
 			"_sayHello",
-			"show"
+			"show",
 		],
-		"sources": [
-			"test.controller.ts"
+		sources: [
+			"test.controller.ts",
 		],
-		"sourcesContent":
+		sourcesContent:
 		[
 			// eslint-disable-next-line
 			"/*!\n * ${copyright}\n */\nimport MessageBox from \"sap/m/MessageBox\";\nimport BaseController from \"./BaseController\";\n\n/**\n * @namespace com.mb.ts.testapp.controller\n */\nexport default class Main extends BaseController {\n\tpublic sayHello(): void {\n\tMessageBox.show(\"Hello World!\");\n\t}\n}\n"
 		],
 		// eslint-disable-next-line
 		"mappings": ";;;AAAA,aAAAA,IAAAC,GAAAC,OAAA,iDAAAC,EAAAC,GAAA,sBAAAC,EAAAC,GAAA,OAAAA,KAAAC,mBAAAD,EAAAE,UAAA,YAAAF,EAAAE,QAAAF,CAAA,OAIOG,EAAcJ,EAAAD,GAErB,MAGqBM,EAAaD,EAAcE,OAAA,wBACxCC,SAAQ,SAAAC,IACdV,EAAWW,KAAK,eACjB,IAAC,OAHmBJ,CAAI",
-		"ignoreList": []
+		ignoreList: [],
 	});
 	t.deepEqual(await sourceMapResource.getString(), expectedSourceMap, "Correct source map content");
 	const expectedDbgSourceMap = JSON.stringify({
-		"version": 3,
-		"file": "test-dbg.controller.js",
-		"names": [
+		version: 3,
+		file: "test-dbg.controller.js",
+		names: [
 			"sap",
 			"ui",
 			"define",
@@ -708,12 +708,12 @@ ${SOURCE_MAPPING_URL}=test.controller.js.map`;
 			"extend",
 			"sayHello",
 			"_sayHello",
-			"show"
+			"show",
 		],
-		"sources": [
-			"test.controller.ts"
+		sources: [
+			"test.controller.ts",
 		],
-		"sourcesContent":
+		sourcesContent:
 		[
 			// eslint-disable-next-line
 			"/*!\n * ${copyright}\n */\nimport MessageBox from \"sap/m/MessageBox\";\nimport BaseController from \"./BaseController\";\n\n/**\n * @namespace com.mb.ts.testapp.controller\n */\nexport default class Main extends BaseController {\n\tpublic sayHello(): void {\n\tMessageBox.show(\"Hello World!\");\n\t}\n}\n"
@@ -744,42 +744,42 @@ ${SOURCE_MAPPING_URL}=Component-preload.js.map
 	// "names" array. This reflect the behavior of the UI5 Tooling bundler and causes issues with Terser. See:
 	// https://github.com/jridgewell/trace-mapping/pull/29
 	const inputSourceMapContent = JSON.stringify({
-		"version": 3,
-		"file": "Component-preload.js",
-		"sections":
+		version: 3,
+		file: "Component-preload.js",
+		sections:
 		[
 			{
-				"offset":
+				offset:
 				{
-					"line": 1,
-					"column": 0
+					line: 1,
+					column: 0,
 				},
-				"map":
+				map:
 				{
-					"version": 3,
-					"sources":
+					version: 3,
+					sources:
 					[
-						"Component-preload.js?bundle-code-0"
+						"Component-preload.js?bundle-code-0",
 					],
-					"mappings": "AAAA;AACA",
-					"sourcesContent":
+					mappings: "AAAA;AACA",
+					sourcesContent:
 					[
-						"sap.ui.require.preload({\n"
+						"sap.ui.require.preload({\n",
 					],
-					"sourceRoot": ""
-				}
+					sourceRoot: "",
+				},
 			},
 			{
-				"offset":
+				offset:
 				{
-					"line": 3,
-					"column": 0
+					line: 3,
+					column: 0,
 				},
-				"map":
+				map:
 				{
-					"version": 3,
-					"file": "Main.controller.js",
-					"names":
+					version: 3,
+					file: "Main.controller.js",
+					names:
 					[
 						"sap",
 						"ui",
@@ -795,43 +795,43 @@ ${SOURCE_MAPPING_URL}=Component-preload.js.map
 						"extend",
 						"sayHello",
 						"_sayHello",
-						"show"
+						"show",
 					],
-					"sources":
+					sources:
 					[
-						"Main-dbg.controller.js"
+						"Main-dbg.controller.js",
 					],
 					// eslint-disable-next-line
 					"mappings": "AAAA;;;AAGA,aAEAA,IAAIC,GAAGC,OAAO,CAAC,mBAAoB,oBAAqB,SAAUC,EAAYC,GAC5E,aAEA,SAASC,EAAuBC,GAC9B,OAAOA,GAAOA,EAAIC,mBAAqBD,EAAIE,UAAY,YAAcF,EAAIE,QAAUF,CACrF,CACA,MAAMG,EAAiBJ,EAAuBD,GAI9C,MAAMM,EAAOD,EAAeE,OAAO,uBAAwB,CACzDC,SAAU,SAASC,IACjBV,EAAWW,KAAK,eAClB,IAEF,OAAOJ,CACT",
-					"sourceRoot": "controller"
-				}
-			}
-		]
+					sourceRoot: "controller",
+				},
+			},
+		],
 	});
 
 	const fs = {
 		readFile: sinon.stub().callsFake((filePath, cb) => {
 			switch (filePath) {
-			case "/resources/Component-preload.js.map":
-				cb(null, inputSourceMapContent);
-				return;
+				case "/resources/Component-preload.js.map":
+					cb(null, inputSourceMapContent);
+					return;
 			}
 			const err = new Error("ENOENT: no such file or directory, open " + filePath);
 			err.code = "ENOENT";
 			cb(err);
-		})
+		}),
 	};
 
 	const testResource = createResource({
 		path: "/resources/Component-preload.js",
-		string: content
+		string: content,
 	});
 	const [{resource, dbgResource, sourceMapResource, dbgSourceMapResource}] = await minifier({
 		resources: [testResource],
 		fs,
 		options: {
 			readSourceMappingUrl: true,
-		}
+		},
 	});
 	/* eslint-disable max-len */
 	const expected = `//@ui5-bundle test/Component-preload.js
@@ -846,9 +846,9 @@ ${SOURCE_MAPPING_URL}=Component-preload.js.map`;
 	const expectedDbgContent = content.replace("Component-preload.js.map", "Component-preload-dbg.js.map");
 	t.deepEqual(await dbgResource.getString(), expectedDbgContent, "Correct debug content");
 	const expectedSourceMap = JSON.stringify({
-		"version": 3,
-		"file": "Component-preload.js",
-		"names": [
+		version: 3,
+		file: "Component-preload.js",
+		names: [
 			"sap",
 			"ui",
 			"require",
@@ -865,59 +865,59 @@ ${SOURCE_MAPPING_URL}=Component-preload.js.map`;
 			"extend",
 			"sayHello",
 			"_sayHello",
-			"show"
+			"show",
 		],
-		"sources": [
+		sources: [
 			"Component-preload.js?bundle-code-0",
-			"controller/Main-dbg.controller.js"
+			"controller/Main-dbg.controller.js",
 		],
-		"sourcesContent":
+		sourcesContent:
 		[
 			"sap.ui.require.preload({\n",
-			null
+			null,
 		],
 		// eslint-disable-next-line
 		"mappings": ";AAAAA,IAAAC,GAAAC,QAAAC,QAAA,CACA;;;;ACEA,aAEAH,IAAIC,GAAGG,OAAO,CAAC,mBAAoB,oBAAqB,SAAUC,EAAYC,GAC5E,aAEA,SAASC,EAAuBC,GAC9B,OAAOA,GAAOA,EAAIC,mBAAqBD,EAAIE,UAAY,YAAcF,EAAIE,QAAUF,CACrF,CACA,MAAMG,EAAiBJ,EAAuBD,GAI9C,MAAMM,EAAOD,EAAeE,OAAO,uBAAwB,CACzDC,SAAU,SAASC,IACjBV,EAAWW,KAAK,eAClB,IAEF,OAAOJ,CACT,E",
-		"ignoreList": []
+		ignoreList: [],
 	});
 	t.deepEqual(await sourceMapResource.getString(), expectedSourceMap, "Correct source map content");
 	const expectedDbgSourceMap = JSON.stringify({
-		"version": 3,
-		"file": "Component-preload-dbg.js",
-		"sections":
+		version: 3,
+		file: "Component-preload-dbg.js",
+		sections:
 		[
 			{
-				"offset":
+				offset:
 				{
-					"line": 1,
-					"column": 0
+					line: 1,
+					column: 0,
 				},
-				"map":
+				map:
 				{
-					"version": 3,
-					"sources":
+					version: 3,
+					sources:
 					[
-						"Component-preload.js?bundle-code-0"
+						"Component-preload.js?bundle-code-0",
 					],
-					"mappings": "AAAA;AACA",
-					"sourcesContent":
+					mappings: "AAAA;AACA",
+					sourcesContent:
 					[
-						"sap.ui.require.preload({\n"
+						"sap.ui.require.preload({\n",
 					],
-					"sourceRoot": ""
-				}
+					sourceRoot: "",
+				},
 			},
 			{
-				"offset":
+				offset:
 				{
-					"line": 3,
-					"column": 0
+					line: 3,
+					column: 0,
 				},
-				"map":
+				map:
 				{
-					"version": 3,
-					"file": "Main.controller.js",
-					"names":
+					version: 3,
+					file: "Main.controller.js",
+					names:
 					[
 						"sap",
 						"ui",
@@ -933,18 +933,18 @@ ${SOURCE_MAPPING_URL}=Component-preload.js.map`;
 						"extend",
 						"sayHello",
 						"_sayHello",
-						"show"
+						"show",
 					],
-					"sources":
+					sources:
 					[
-						"Main-dbg.controller.js"
+						"Main-dbg.controller.js",
 					],
 					// eslint-disable-next-line
 					"mappings": "AAAA;;;AAGA,aAEAA,IAAIC,GAAGC,OAAO,CAAC,mBAAoB,oBAAqB,SAAUC,EAAYC,GAC5E,aAEA,SAASC,EAAuBC,GAC9B,OAAOA,GAAOA,EAAIC,mBAAqBD,EAAIE,UAAY,YAAcF,EAAIE,QAAUF,CACrF,CACA,MAAMG,EAAiBJ,EAAuBD,GAI9C,MAAMM,EAAOD,EAAeE,OAAO,uBAAwB,CACzDC,SAAU,SAASC,IACjBV,EAAWW,KAAK,eAClB,IAEF,OAAOJ,CACT",
-					"sourceRoot": "controller"
-				}
-			}
-		]
+					sourceRoot: "controller",
+				},
+			},
+		],
 	});
 	t.deepEqual(await dbgSourceMapResource.getString(), expectedDbgSourceMap,
 		"Correct source map content for debug variant ");
@@ -983,32 +983,32 @@ ${SOURCE_MAPPING_URL}=test.controller.js.map
 			const err = new Error("ENOENT: no such file or directory, open " + filePath);
 			err.code = "ENOENT";
 			cb(err);
-		})
+		}),
 	};
 
 	const testResource = createResource({
 		path: "/resources/test.controller.js",
-		string: content
+		string: content,
 	});
 	const [{resource, dbgResource, sourceMapResource, dbgSourceMapResource}] = await minifier({
 		resources: [testResource],
-		fs
+		fs,
 	});
 
 	const expected = `/*!
  * \${copyright}
  */
 "use strict";sap.ui.define(["sap/m/MessageBox","./BaseController"],function(e,t){"use strict";function n(e){return ` +
-	`e&&e.__esModule&&typeof e.default!=="undefined"?e.default:e}const o=n(t);const s=o.extend(` +
-	`"test.controller.Main",{sayHello:function t(){e.show("Hello World!")}});return s});
+		`e&&e.__esModule&&typeof e.default!=="undefined"?e.default:e}const o=n(t);const s=o.extend(` +
+		`"test.controller.Main",{sayHello:function t(){e.show("Hello World!")}});return s});
 ${SOURCE_MAPPING_URL}=test.controller.js.map`;
 	t.deepEqual(await resource.getString(), expected, "Correct minified content");
 	const expectedDbgContent = content.replace(/\/\/#.*\s+$/, ""); // Remove sourceMappingURL reference
 	t.deepEqual(await dbgResource.getString(), expectedDbgContent, "Correct debug content");
 	const expectedSourceMap = JSON.stringify({
-		"version": 3,
-		"file": "test.controller.js",
-		"names": [
+		version: 3,
+		file: "test.controller.js",
+		names: [
 			"sap",
 			"ui",
 			"define",
@@ -1023,14 +1023,14 @@ ${SOURCE_MAPPING_URL}=test.controller.js.map`;
 			"extend",
 			"sayHello",
 			"_sayHello",
-			"show"
+			"show",
 		],
-		"sources": [
-			"test-dbg.controller.js"
+		sources: [
+			"test-dbg.controller.js",
 		],
 		// eslint-disable-next-line
 		"mappings": ";;;AAGA,aAEAA,IAAIC,GAAGC,OAAO,CAAC,mBAAoB,oBAAqB,SAAUC,EAAYC,GAC5E,aAEA,SAASC,EAAuBC,GAC9B,OAAOA,GAAOA,EAAIC,mBAAqBD,EAAIE,UAAY,YAAcF,EAAIE,QAAUF,CACrF,CACA,MAAMG,EAAiBJ,EAAuBD,GAI9C,MAAMM,EAAOD,EAAeE,OAAO,uBAAwB,CACzDC,SAAU,SAASC,IACjBV,EAAWW,KAAK,eAClB,IAEF,OAAOJ,CACT",
-		"ignoreList": []
+		ignoreList: [],
 	});
 	t.deepEqual(await sourceMapResource.getString(), expectedSourceMap, "Correct source map content");
 	t.is(dbgSourceMapResource, undefined,
@@ -1048,16 +1048,16 @@ ${SOURCE_MAPPING_URL}=data:application/json;charset=utf-8;base64,foo
 			const err = new Error("ENOENT: no such file or directory, open " + filePath);
 			err.code = "ENOENT";
 			cb(err);
-		})
+		}),
 	};
 
 	const testResource = createResource({
 		path: "/resources/test.controller.js",
-		string: content
+		string: content,
 	});
 	const [{resource, dbgResource, dbgSourceMapResource}] = await minifier({
 		resources: [testResource],
-		fs
+		fs,
 	});
 
 	const expected = `console.log("Hello");
@@ -1086,22 +1086,22 @@ ${SOURCE_MAPPING_URL}=Demo.view.js.map
 			const err = new Error("ENOENT: no such file or directory, open " + filePath);
 			err.code = "ENOENT";
 			cb(err);
-		})
+		}),
 	};
 
 	const testResource = createResource({
 		path: "/resources/Demo.view.js",
 		string: content,
 		sourceMetadata: {
-			contentModified: true // Flag content as modified
-		}
+			contentModified: true, // Flag content as modified
+		},
 	});
 	const [{resource, dbgResource, sourceMapResource, dbgSourceMapResource}] = await minifier({
 		resources: [testResource],
 		fs,
 		options: {
-			readSourceMappingUrl: true
-		}
+			readSourceMappingUrl: true,
+		},
 	});
 
 	const expected = `"use strict";
@@ -1114,17 +1114,17 @@ ${SOURCE_MAPPING_URL}=Demo.view.js.map`;
 	const expectedDbgContent = content.replace(/\/\/#.*\s+$/, ""); // Remove sourceMappingURL reference
 	t.deepEqual(await dbgResource.getString(), expectedDbgContent, "Correct debug content");
 	const expectedSourceMap = JSON.stringify({
-		"version": 3,
-		"file": "Demo.view.js",
-		"names": [
+		version: 3,
+		file: "Demo.view.js",
+		names: [
 			"console",
-			"log"
+			"log",
 		],
-		"sources": [
-			"Demo-dbg.view.js"
+		sources: [
+			"Demo-dbg.view.js",
 		],
-		"mappings": "AAAA;;;;GAMAA,QAAQC,IAAI",
-		"ignoreList": []
+		mappings: "AAAA;;;;GAMAA,QAAQC,IAAI",
+		ignoreList: [],
 	});
 	t.deepEqual(await sourceMapResource.getString(), expectedSourceMap, "Correct source map content");
 	t.is(dbgSourceMapResource, undefined,
@@ -1142,41 +1142,41 @@ console.log("Hello");
 ${SOURCE_MAPPING_URL}=../different-name.map
 `;
 	const inputSourceMapContent = JSON.stringify({
-		"version": 3,
-		"file": "Demo.view.js",
-		"names": [
+		version: 3,
+		file: "Demo.view.js",
+		names: [
 			"console",
-			"log"
+			"log",
 		],
-		"sources": [
-			"Demo.view.ts"
+		sources: [
+			"Demo.view.ts",
 		],
-		"mappings": ";;AAAA;AACA;AACA;AACA;AACCA,OAAO,CAACC,GAAG,CAAC,OAAO,CAAC"
+		mappings: ";;AAAA;AACA;AACA;AACA;AACCA,OAAO,CAACC,GAAG,CAAC,OAAO,CAAC",
 	});
 
 	const fs = {
 		readFile: sinon.stub().callsFake((filePath, cb) => {
 			switch (filePath) {
-			case "/different-name.map":
-				cb(null, inputSourceMapContent);
-				return;
+				case "/different-name.map":
+					cb(null, inputSourceMapContent);
+					return;
 			}
 			const err = new Error("ENOENT: no such file or directory, open " + filePath);
 			err.code = "ENOENT";
 			cb(err);
-		})
+		}),
 	};
 
 	const testResource = createResource({
 		path: "/resources/Demo.view.js",
-		string: content
+		string: content,
 	});
 	const [{resource, dbgResource, sourceMapResource, dbgSourceMapResource}] = await minifier({
 		resources: [testResource],
 		fs,
 		options: {
-			readSourceMappingUrl: true
-		}
+			readSourceMappingUrl: true,
+		},
 	});
 
 	const expected = `"use strict";
@@ -1189,17 +1189,17 @@ ${SOURCE_MAPPING_URL}=Demo.view.js.map`;
 	const expectedDbgContent = content.replace("../different-name.map", "Demo-dbg.view.js.map");
 	t.deepEqual(await dbgResource.getString(), expectedDbgContent, "Correct debug content");
 	const expectedSourceMap = JSON.stringify({
-		"version": 3,
-		"file": "Demo.view.js",
-		"names": [
+		version: 3,
+		file: "Demo.view.js",
+		names: [
 			"console",
-			"log"
+			"log",
 		],
-		"sources": [
-			"Demo.view.ts"
+		sources: [
+			"Demo.view.ts",
 		],
-		"mappings": ";;;;GAICA,QAAQC,IAAI",
-		"ignoreList": []
+		mappings: ";;;;GAICA,QAAQC,IAAI",
+		ignoreList: [],
 	});
 	t.deepEqual(await sourceMapResource.getString(), expectedSourceMap, "Correct source map content");
 	t.is(await dbgSourceMapResource.getString(), inputSourceMapContent.replace("Demo.view.js", "Demo-dbg.view.js"),
@@ -1222,19 +1222,19 @@ ${SOURCE_MAPPING_URL}=https://ui5.sap.com/resources/my/test/module.js.map
 			const err = new Error("ENOENT: no such file or directory, open " + filePath);
 			err.code = "ENOENT";
 			cb(err);
-		})
+		}),
 	};
 
 	const testResource = createResource({
 		path: "/resources/Test.js",
-		string: content
+		string: content,
 	});
 	const [{resource, dbgResource, dbgSourceMapResource}] = await minifier({
 		resources: [testResource],
 		fs,
 		options: {
-			readSourceMappingUrl: true
-		}
+			readSourceMappingUrl: true,
+		},
 	});
 
 	const expected = `"use strict";
@@ -1263,10 +1263,10 @@ test();
 `;
 	const testResource = createResource({
 		path: "/test.view.js",
-		string: content
+		string: content,
 	});
 	const [{resource, dbgResource, sourceMapResource}] = await minifier({
-		resources: [testResource]
+		resources: [testResource],
 	});
 
 	const expected = `/*
@@ -1277,20 +1277,20 @@ ${SOURCE_MAPPING_URL}=test.view.js.map`;
 	t.deepEqual(await resource.getString(), expected, "Correct minified content");
 	t.deepEqual(await dbgResource.getString(), content, "Correct debug content");
 	const expectedSourceMap = JSON.stringify({
-		"version": 3,
-		"file": "test.view.js",
-		"names": [
+		version: 3,
+		file: "test.view.js",
+		names: [
 			"test",
 			"paramA",
 			"variableA",
 			"console",
-			"log"
+			"log",
 		],
-		"sources": [
-			"test-dbg.view.js"
+		sources: [
+			"test-dbg.view.js",
 		],
-		"mappings": ";;;AAIA,SAASA,KAAKC,GACb,IAAIC,EAAYD,EAChBE,QAAQC,IAAIF,EACb,CACAF",
-		"ignoreList": []
+		mappings: ";;;AAIA,SAASA,KAAKC,GACb,IAAIC,EAAYD,EAChBE,QAAQC,IAAIF,EACb,CACAF",
+		ignoreList: [],
 	});
 	t.deepEqual(await sourceMapResource.getString(), expectedSourceMap, "Correct source map content");
 });
@@ -1299,13 +1299,13 @@ test("Should not detect '^ (c) ^' as copyright comment", async (t) => {
 	const content = `// ^ (c) ^`;
 	const testResource = createResource({
 		path: "/test.view.js",
-		string: content
+		string: content,
 	});
 	const [{resource}] = await minifier({
 		resources: [testResource],
 		options: {
-			addSourceMappingUrl: false
-		}
+			addSourceMappingUrl: false,
+		},
 	});
 
 	t.is(await resource.getString(), "", "Comment should be removed");
@@ -1322,10 +1322,10 @@ test();`;
 
 	const testResource = createResource({
 		path: "/test.js",
-		string: content
+		string: content,
 	});
 	const [{resource}] = await minifier({
-		resources: [testResource]
+		resources: [testResource],
 	});
 
 	const expected = `//@ui5-bundle-raw-include sap/ui/my/module.js
@@ -1345,10 +1345,10 @@ test();`;
 
 	const testResource = createResource({
 		path: "/test.js",
-		string: content
+		string: content,
 	});
 	const [{resource}] = await minifier({
-		resources: [testResource]
+		resources: [testResource],
 	});
 
 	const expected = `//@ui5-bundle sap/ui/my/module.js
@@ -1368,13 +1368,13 @@ test();`;
 
 	const testResource = createResource({
 		path: "/test.js",
-		string: content
+		string: content,
 	});
 	const [{resource}] = await minifier({
 		resources: [testResource],
 		options: {
-			addSourceMappingUrl: false
-		}
+			addSourceMappingUrl: false,
+		},
 	});
 
 	const expected = `//@ui5-bundle sap/ui/my/module.js
@@ -1393,13 +1393,13 @@ test();`;
 
 	const testResource = createResource({
 		path: "/test.js",
-		string: content
+		string: content,
 	});
 	const [{resource}] = await minifier({
 		resources: [testResource],
 		options: {
-			addSourceMappingUrl: true
-		}
+			addSourceMappingUrl: true,
+		},
 	});
 
 	const expected = `//@ui5-bundle sap/ui/my/module.js
@@ -1419,11 +1419,11 @@ test();`;
 
 	const testResource = createResource({
 		path: "/test.js",
-		string: content
+		string: content,
 	});
 	const [{resource}] = await minifier({
 		resources: [testResource],
-		options: {}
+		options: {},
 	});
 
 	const expected = `//@ui5-bundle sap/ui/my/module.js
@@ -1438,10 +1438,10 @@ this code can't be parsed!`;
 
 	const testResource = createResource({
 		path: "/test.js",
-		string: content
+		string: content,
 	});
 	const error = await t.throwsAsync(minifier({
-		resources: [testResource]
+		resources: [testResource],
 	}));
 
 	t.regex(error.message, /Minification failed with error/, "Error should contain expected message");
@@ -1460,9 +1460,9 @@ test("getSourceMapFromUrl: Base64", async (t) => {
 	// The above is a base64 encoded version of the following string
 	// (identical to one in the inline-input source map test somewhere above):
 	const decodedSourceMap = JSON.stringify({
-		"version": 3,
-		"file": "test.controller.js",
-		"names": [
+		version: 3,
+		file: "test.controller.js",
+		names: [
 			"sap",
 			"ui",
 			"define",
@@ -1477,10 +1477,10 @@ test("getSourceMapFromUrl: Base64", async (t) => {
 			"extend",
 			"sayHello",
 			"_sayHello",
-			"show"
+			"show",
 		],
-		"sources": [
-			"test.controller.ts"
+		sources: [
+			"test.controller.ts",
 		],
 		// eslint-disable-next-line
 		"mappings": "AAAA;AACA;AACA;AAFA;;AAAAA,GAAA,CAAAC,EAAA,CAAAC,MAAA,qDAAAC,UAAA,EAAAC,gBAAA;EAAA;;EAAA,SAAAC,uBAAAC,GAAA;IAAA,OAAAA,GAAA,IAAAA,GAAA,CAAAC,UAAA,WAAAD,GAAA,CAAAE,OAAA,mBAAAF,GAAA,CAAAE,OAAA,GAAAF,GAAA;EAAA;EAAA,MAIOG,cAAc,GAAAJ,sBAAA,CAAAD,gBAAA;EAErB;AACA;AACA;EAFA,MAGqBM,IAAI,GAASD,cAAc,CAAAE,MAAA;IACxCC,QAAQ,WAAAC,UAAA,EAAS;MACvBV,UAAU,CAACW,IAAI,CAAC,cAAc,CAAC;IAChC;EAAC;EAAA,OAHmBJ,IAAI;AAAA"
@@ -1489,7 +1489,7 @@ test("getSourceMapFromUrl: Base64", async (t) => {
 	const res = await getSourceMapFromUrl({
 		sourceMappingUrl,
 		resourcePath: "/some/module.js",
-		readFile: readFileStub
+		readFile: readFileStub,
 	});
 
 	t.is(res, decodedSourceMap, "Expected source map content");
@@ -1503,7 +1503,7 @@ test("getSourceMapFromUrl: Unexpected data: format", async (t) => {
 	const res = await getSourceMapFromUrl({
 		sourceMappingUrl,
 		resourcePath: "/some/module.js",
-		readFile: readFileStub
+		readFile: readFileStub,
 	});
 
 	t.is(res, undefined, "No source map content returned");
@@ -1518,7 +1518,7 @@ test("getSourceMapFromUrl: File reference", async (t) => {
 	const res = await getSourceMapFromUrl({
 		sourceMappingUrl,
 		resourcePath: "/some/module.js",
-		readFile: readFileStub
+		readFile: readFileStub,
 	});
 
 	t.is(res, "Source Map Content", "Expected source map content");
@@ -1534,7 +1534,7 @@ test("getSourceMapFromUrl: File reference not found", async (t) => {
 	const res = await getSourceMapFromUrl({
 		sourceMappingUrl,
 		resourcePath: "/some/module.js",
-		readFile: readFileStub
+		readFile: readFileStub,
 	});
 
 	t.is(res, undefined, "No source map content returned"); // Error is suppressed
@@ -1550,7 +1550,7 @@ test("getSourceMapFromUrl: HTTPS URL reference", async (t) => {
 	const res = await getSourceMapFromUrl({
 		sourceMappingUrl,
 		resourcePath: "/some/module.js",
-		readFile: readFileStub
+		readFile: readFileStub,
 	});
 
 	t.is(res, undefined, "No source map content returned");
@@ -1565,7 +1565,7 @@ test("getSourceMapFromUrl: Absolute path reference", async (t) => {
 	const res = await getSourceMapFromUrl({
 		sourceMappingUrl,
 		resourcePath: "/some/module.js",
-		readFile: readFileStub
+		readFile: readFileStub,
 	});
 
 	t.is(res, undefined, "No source map content returned");
@@ -1585,10 +1585,10 @@ myFunc();
 `;
 	const testResource = createResource({
 		path: "/test.controller.js",
-		string: content
+		string: content,
 	});
 	const [{resource, dbgResource, sourceMapResource}] = await minifier({
-		resources: [testResource]
+		resources: [testResource],
 	});
 
 	const expected = `#!/usr/bin/env node
@@ -1600,22 +1600,22 @@ ${SOURCE_MAPPING_URL}=test.controller.js.map`;
 	t.deepEqual(await resource.getString(), expected, "Correct minified content");
 	t.deepEqual(await dbgResource.getString(), content, "Correct debug content");
 	const expectedSourceMap = JSON.stringify({
-		"version": 3,
-		"file": "test.controller.js",
-		"names": [
+		version: 3,
+		file: "test.controller.js",
+		names: [
 			"myFunc",
 			"myArg",
 			"jQuery",
 			"sap",
 			"require",
 			"console",
-			"log"
+			"log",
 		],
-		"sources": [
-			"test-dbg.controller.js"
+		sources: [
+			"test-dbg.controller.js",
 		],
-		"mappings": ";;;;AAIC,SAASA,OAAOC,GACfC,OAAOC,IAAIC,QAAQ,aACnBC,QAAQC,IAAI,qBACb,CACDN",
-		"ignoreList": []
+		mappings: ";;;;AAIC,SAASA,OAAOC,GACfC,OAAOC,IAAIC,QAAQ,aACnBC,QAAQC,IAAI,qBACb,CACDN",
+		ignoreList: [],
 	});
 	t.deepEqual(await sourceMapResource.getString(), expectedSourceMap, "Correct source map content");
 });

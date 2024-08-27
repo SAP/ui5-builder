@@ -6,15 +6,14 @@ import bootstrapHtmlTransformer from "../processors/bootstrapHtmlTransformer.js"
 /**
  * Task for transforming the application bootstrap HTML file.
  *
- * @module builder/tasks/transformBootstrapHtml
- * @param {object} parameters Parameters
- * @param {@ui5/fs/DuplexCollection} parameters.workspace DuplexCollection to read and write files
- * @param {object} parameters.options Options
- * @param {string} parameters.options.projectName Project name
- * @param {string} [parameters.options.projectNamespace] Project namespace
- * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
+ * @param parameters Parameters
+ * @param parameters.workspace DuplexCollection to read and write files
+ * @param parameters.options Options
+ * @param parameters.options.projectName Project name
+ * @param [parameters.options.projectNamespace] Project namespace
+ * @returns Promise resolving with <code>undefined</code> once data has been written
  */
-export default async function({ workspace, options }: object) {
+export default async function ({workspace, options}: object) {
 	const {projectName} = options;
 	const namespace = options.projectNamespace;
 
@@ -32,8 +31,8 @@ export default async function({ workspace, options }: object) {
 	const processedResources = await bootstrapHtmlTransformer({
 		resources: [resource],
 		options: {
-			src: "resources/sap-ui-custom.js"
-		}
+			src: "resources/sap-ui-custom.js",
+		},
 	});
 	await Promise.all(processedResources.map((resource) => workspace.write(resource)));
 }

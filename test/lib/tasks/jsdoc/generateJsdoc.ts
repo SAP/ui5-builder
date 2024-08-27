@@ -14,26 +14,26 @@ test.beforeEach(async (t) => {
 
 	t.context.writeStub = sinon.stub().resolves();
 	t.context.createAdapterStub = sinon.stub().returns({
-		write: t.context.writeStub
+		write: t.context.writeStub,
 	});
 
 	t.context.log = {
-		info: sinon.stub()
+		info: sinon.stub(),
 	};
 
 	t.context.generateJsdoc = await esmock("../../../../lib/tasks/jsdoc/generateJsdoc.js", {
 		"graceful-fs": {
 			mkdtemp: t.context.mkdtempStub,
-			mkdir: t.context.mkdirStub
+			mkdir: t.context.mkdirStub,
 		},
 		"rimraf": {
-			rimraf: t.context.rimrafStub
+			rimraf: t.context.rimrafStub,
 		},
 		"@ui5/fs/resourceFactory": {
-			createAdapter: t.context.createAdapterStub
+			createAdapter: t.context.createAdapterStub,
 		},
 		"@ui5/logger": {
-			getLogger: sinon.stub().returns(t.context.log)
+			getLogger: sinon.stub().returns(t.context.log),
 		},
 		"../../../../lib/processors/jsdoc/jsdocGenerator": t.context.jsdocGeneratorStub,
 	});
@@ -127,15 +127,15 @@ test.serial("writeResourcesToDir with byGlob even if byGlobSource is available",
 			byGlob: (pattern) => {
 				t.is(pattern, "some pattern", "Glob with correct pattern");
 				return Promise.resolve(["resource A", "resource B"]);
-			}
+			},
 		},
 		pattern: "some pattern",
-		targetPath: path.join("/", "some", "target", "path")
+		targetPath: path.join("/", "some", "target", "path"),
 	});
 
 	t.deepEqual(createAdapterStub.getCall(0).args[0], {
 		fsBasePath: path.join("/", "some", "target", "path"),
-		virBasePath: "/resources/"
+		virBasePath: "/resources/",
 	}, "createAdapter called with correct arguments");
 
 	t.is(writeStub.callCount, 2, "Write got called four times");
@@ -152,15 +152,15 @@ test.serial("writeResourcesToDir with byGlob", async (t) => {
 			byGlob: (pattern) => {
 				t.is(pattern, "some pattern", "Glob with correct pattern");
 				return Promise.resolve(["resource A", "resource B"]);
-			}
+			},
 		},
 		pattern: "some pattern",
-		targetPath: path.join("/", "some", "target", "path")
+		targetPath: path.join("/", "some", "target", "path"),
 	});
 
 	t.deepEqual(createAdapterStub.getCall(0).args[0], {
 		fsBasePath: path.join("/", "some", "target", "path"),
-		virBasePath: "/resources/"
+		virBasePath: "/resources/",
 	}, "createAdapter called with correct arguments");
 
 	t.is(writeStub.callCount, 2, "Write got called four times");
@@ -178,20 +178,20 @@ test.serial("writeDependencyApisToDir with byGlob", async (t) => {
 	const cloneStubA = sinon.stub().resolves({
 		// Cloned resource
 		id: "resource A",
-		setPath: setPathStubA
+		setPath: setPathStubA,
 	});
 	const cloneStubB = sinon.stub().resolves({
 		// Cloned resource
 		id: "resource B",
-		setPath: setPathStubB
+		setPath: setPathStubB,
 	});
 	const initialResourceA = {
 		// Globbed resource
-		clone: cloneStubA
+		clone: cloneStubA,
 	};
 	const initialResourceB = {
 		// Globbed resource
-		clone: cloneStubB
+		clone: cloneStubB,
 	};
 
 	await generateJsdocUtils.writeDependencyApisToDir({
@@ -200,9 +200,9 @@ test.serial("writeDependencyApisToDir with byGlob", async (t) => {
 				t.is(pattern, "/test-resources/**/designtime/api.json",
 					"Dependency api.json glob with correct pattern");
 				return Promise.resolve([initialResourceA, initialResourceB]);
-			}
+			},
 		},
-		targetPath: path.join("/", "some", "target", "path")
+		targetPath: path.join("/", "some", "target", "path"),
 	});
 
 	t.is(cloneStubA.callCount, 1, "resource A got cloned once");
@@ -216,7 +216,7 @@ test.serial("writeDependencyApisToDir with byGlob", async (t) => {
 
 	t.deepEqual(createAdapterStub.getCall(0).args[0], {
 		fsBasePath: path.join("/", "some", "target", "path"),
-		virBasePath: "/"
+		virBasePath: "/",
 	}, "createAdapter called with correct arguments");
 
 	t.is(writeStub.callCount, 2, "Write got called four times");
@@ -235,19 +235,19 @@ test.serial("generateJsdoc", async (t) => {
 		sourcePath: path.join("/", "some", "source", "path"),
 		targetPath: path.join("/", "some", "target", "path"),
 		tmpPath: path.join("/", "some", "tmp", "path"),
-		cleanup: cleanupStub
+		cleanup: cleanupStub,
 	});
 	const writeResourcesToDirStub = sinon.stub(generateJsdocUtils, "writeResourcesToDir").resolves(1);
 	const writeDependencyApisToDirStub = sinon.stub(generateJsdocUtils, "writeDependencyApisToDir").resolves(0);
 
 	const writeStub = sinon.stub().resolves();
 	const workspace = {
-		write: writeStub
+		write: writeStub,
 	};
 
 	const registerCleanupTaskStub = sinon.stub();
 	const taskUtil = {
-		registerCleanupTask: registerCleanupTaskStub
+		registerCleanupTask: registerCleanupTaskStub,
 	};
 	await generateJsdoc({
 		taskUtil,
@@ -257,8 +257,8 @@ test.serial("generateJsdoc", async (t) => {
 			pattern: "some pattern",
 			projectName: "some.project",
 			namespace: "some/project",
-			version: "some version"
-		}
+			version: "some version",
+		},
 	});
 
 	t.is(createTmpDirsStub.callCount, 1, "createTmpDirs got called once");
@@ -273,13 +273,13 @@ test.serial("generateJsdoc", async (t) => {
 	t.deepEqual(writeResourcesToDirStub.getCall(0).args[0], {
 		workspace,
 		pattern: "some pattern",
-		targetPath: path.join("/", "some", "source", "path") // one's target is another one's source
+		targetPath: path.join("/", "some", "source", "path"), // one's target is another one's source
 	}, "writeResourcesToDir got called with correct arguments");
 
 	t.is(writeDependencyApisToDirStub.callCount, 1, "writeDependencyApisToDir got called once");
 	t.deepEqual(writeDependencyApisToDirStub.getCall(0).args[0], {
 		dependencies: "dependencies",
-		targetPath: path.join("/", "some", "tmp", "path", "dependency-apis")
+		targetPath: path.join("/", "some", "tmp", "path", "dependency-apis"),
 	}, "writeDependencyApisToDir got called with correct arguments");
 
 	t.is(jsdocGeneratorStub.callCount, 1, "jsdocGenerator processor got called once");
@@ -291,8 +291,8 @@ test.serial("generateJsdoc", async (t) => {
 			projectName: "some.project",
 			namespace: "some/project",
 			version: "some version",
-			variants: ["apijson"]
-		}
+			variants: ["apijson"],
+		},
 	}, "jsdocGenerator got called with correct arguments");
 
 	t.is(writeStub.callCount, 2, "Write got called twice");
@@ -313,18 +313,18 @@ test.serial("generateJsdoc with missing resources", async (t) => {
 		sourcePath: path.join("/", "some", "source", "path"),
 		targetPath: path.join("/", "some", "target", "path"),
 		tmpPath: path.join("/", "some", "tmp", "path"),
-		cleanup: cleanupStub
+		cleanup: cleanupStub,
 	});
 	sinon.stub(generateJsdocUtils, "writeResourcesToDir").resolves(0);
 	sinon.stub(generateJsdocUtils, "writeDependencyApisToDir").resolves(0);
 
 	const writeStub = sinon.stub().resolves();
 	const workspace = {
-		write: writeStub
+		write: writeStub,
 	};
 	const registerCleanupTaskStub = sinon.stub();
 	const taskUtil = {
-		registerCleanupTask: registerCleanupTaskStub
+		registerCleanupTask: registerCleanupTaskStub,
 	};
 	await generateJsdoc({
 		taskUtil,
@@ -334,8 +334,8 @@ test.serial("generateJsdoc with missing resources", async (t) => {
 			pattern: "some pattern",
 			projectName: "some.project",
 			namespace: "some/project",
-			version: "some version"
-		}
+			version: "some version",
+		},
 	});
 
 	t.is(registerCleanupTaskStub.callCount, 1, "registerCleanupTask called once");
@@ -344,7 +344,7 @@ test.serial("generateJsdoc with missing resources", async (t) => {
 
 	t.is(log.info.callCount, 1, "One message has been logged");
 	t.deepEqual(log.info.getCall(0).args[0], "Failed to find any input resources for project some.project " +
-		"using pattern some pattern. Skipping JSDoc generation...",
+	"using pattern some pattern. Skipping JSDoc generation...",
 	"Correct message has been logged");
 
 	t.is(jsdocGeneratorStub.callCount, 0, "jsdocGenerator processor has *not* been called");
@@ -357,7 +357,7 @@ test.serial("generateJsdoc with missing resources", async (t) => {
 test.serial("generateJsdoc no parameters", async (t) => {
 	const {generateJsdoc} = t.context;
 	await t.throwsAsync(generateJsdoc(), {
-		instanceOf: TypeError
+		instanceOf: TypeError,
 	}, "TypeError thrown");
 });
 

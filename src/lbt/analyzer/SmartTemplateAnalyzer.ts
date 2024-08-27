@@ -39,7 +39,6 @@ const CALL_SAP_UI_DEFINE = ["sap", "ui", "define"];
 /**
  * Analyzes the manifest for a Smart Template App (next to its Component.js) to find more dependencies.
  *
- * @private
  */
 class TemplateComponentAnalyzer {
 	constructor(pool) {
@@ -48,16 +47,16 @@ class TemplateComponentAnalyzer {
 
 	async analyze(resource, info) {
 		// ignore base class for components
-		if ( resource.name === "sap/ui/core/Component.js" ) {
+		if (resource.name === "sap/ui/core/Component.js") {
 			return info;
 		}
 
 		const manifestName = resource.name.replace(/Component\.js$/, "manifest.json");
 		try {
 			const manifestResource = await this._pool.findResource(manifestName).catch(() => null);
-			if ( manifestResource ) {
+			if (manifestResource) {
 				const fileContent = await manifestResource.buffer();
-				await this._analyzeManifest( JSON.parse(fileContent.toString()), info );
+				await this._analyzeManifest(JSON.parse(fileContent.toString()), info);
 			} else {
 				log.verbose(`No manifest found for '${resource.name}', skipping analysis`);
 			}
@@ -69,21 +68,29 @@ class TemplateComponentAnalyzer {
 		return info;
 	}
 
-	private async _analyzeManifest( manifest: object, info: ModuleInfo ) {
+	private async _analyzeManifest(manifest: object, info: ModuleInfo) {
 		const promises = [];
 		const that = this;
 		const st = (manifest && manifest["sap.ui.generic.app"]) || {};
+		/**
+		 *
+		 * @param page
+		 */
 		function recursePage(page) {
-			if ( page.component && page.component.name ) {
-				const module = fromUI5LegacyName( page.component.name + ".Component" );
+			if (page.component?.name) {
+				const module = fromUI5LegacyName(page.component.name + ".Component");
 				log.verbose(`Template app: Add dependency to template component ${module}`);
 				info.addDependency(module);
-				promises.push( that._analyzeTemplateComponent(module, page, info) );
+				promises.push(that._analyzeTemplateComponent(module, page, info));
 			}
 			recurse(page);
 		}
+		/**
+		 *
+		 * @param ctx
+		 */
 		function recurse(ctx) {
-			if ( Array.isArray(ctx.pages) ) {
+			if (Array.isArray(ctx.pages)) {
 				ctx.pages.forEach(recursePage);
 			} else if (typeof ctx.pages === "object") {
 				Object.values(ctx.pages).forEach(recursePage);
@@ -101,10 +108,9 @@ class TemplateComponentAnalyzer {
 			const code = await resource.buffer();
 			const ast = parseJS(code);
 			const defaultTemplateName = this._analyzeAST(moduleName, ast);
-			const templateName = (pageConfig.component && pageConfig.component.settings &&
-									pageConfig.component.settings.templateName) || defaultTemplateName;
-			if ( templateName ) {
-				const templateModuleName = fromUI5LegacyName( templateName, ".view.xml" );
+			const templateName = (pageConfig.component?.settings?.templateName) || defaultTemplateName;
+			if (templateName) {
+				const templateModuleName = fromUI5LegacyName(templateName, ".view.xml");
 				log.verbose(`Template app: Add dependency to template view ${templateModuleName}`);
 				appInfo.addDependency(templateModuleName);
 			}
@@ -119,21 +125,21 @@ class TemplateComponentAnalyzer {
 
 	_analyzeAST(moduleName, ast) {
 		let templateName = "";
-		if ( ast.body.length > 0 && (isMethodCall(ast.body[0].expression, CALL_SAP_UI_DEFINE) ||
-				isMethodCall(ast.body[0].expression, CALL_DEFINE)) ) {
+		if (ast.body.length > 0 && (isMethodCall(ast.body[0].expression, CALL_SAP_UI_DEFINE) ||
+			isMethodCall(ast.body[0].expression, CALL_DEFINE))) {
 			const defineCall = new SapUiDefine(ast.body[0].expression, moduleName);
 			const TA = defineCall.findImportName("sap/suite/ui/generic/template/lib/TemplateAssembler.js");
 			// console.log("local name for TemplateAssembler: %s", TA);
-			if ( TA && defineCall.factory ) {
+			if (TA && defineCall.factory) {
 				if (defineCall.factory.type === Syntax.ArrowFunctionExpression &&
 					defineCall.factory.expression === true) {
-					if ( this._isTemplateClassDefinition(TA, defineCall.factory.body) ) {
+					if (this._isTemplateClassDefinition(TA, defineCall.factory.body)) {
 						templateName =
 							this._analyzeTemplateClassDefinition(defineCall.factory.body.arguments[2]) || templateName;
 					}
 				} else {
-					defineCall.factory.body.body.forEach( (stmt) => {
-						if ( stmt.type === Syntax.ReturnStatement &&
+					defineCall.factory.body.body.forEach((stmt) => {
+						if (stmt.type === Syntax.ReturnStatement &&
 							this._isTemplateClassDefinition(TA, stmt.argument)
 						) {
 							templateName =

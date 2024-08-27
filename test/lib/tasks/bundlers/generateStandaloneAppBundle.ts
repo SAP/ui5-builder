@@ -19,7 +19,7 @@ test.beforeEach(async (t) => {
 				gte: sinon.stub().withArgs("4.0").returns(false),
 			};
 		},
-		getVersion: () => "1.120.0"
+		getVersion: () => "1.120.0",
 	};
 	t.context.taskUtil = {
 		getProject: sinon.stub().returns(project),
@@ -29,15 +29,15 @@ test.beforeEach(async (t) => {
 		STANDARD_TAGS: {
 			HasDebugVariant: "<HasDebugVariant>",
 			IsDebugVariant: "<IsDebugVariant>",
-			OmitFromBuildResult: "<OmitFromBuildResult>"
+			OmitFromBuildResult: "<OmitFromBuildResult>",
 		},
 		resourceFactory: {
-			createFilterReader: t.context.createFilterReaderStub
-		}
+			createFilterReader: t.context.createFilterReaderStub,
+		},
 	};
 	t.context.generateStandaloneAppBundle =
 		await esmock("../../../../lib/tasks/bundlers/generateStandaloneAppBundle.js", {
-			"../../../../lib/processors/bundlers/moduleBundler.js": t.context.moduleBundlerStub
+			"../../../../lib/processors/bundlers/moduleBundler.js": t.context.moduleBundlerStub,
 		});
 });
 
@@ -47,9 +47,9 @@ test.afterEach.always((t) => {
 
 function createDummyResource(id) {
 	return {
-		getPath: function() {
+		getPath: function () {
 			return "/resources/ponyPath" + id;
-		}
+		},
 	};
 }
 
@@ -57,10 +57,10 @@ test.serial("execute module bundler and write results", async (t) => {
 	const {generateStandaloneAppBundle} = t.context;
 	let dummyResourceId = 0;
 	const dummyReaderWriter = {
-		_byGlob: async function() {
+		_byGlob: async function () {
 			return [createDummyResource(dummyResourceId++), createDummyResource(dummyResourceId++)];
 		},
-		write: function() {}
+		write: function () {},
 	};
 	sinon.stub(dummyReaderWriter, "write").resolves();
 	const params = {
@@ -68,8 +68,8 @@ test.serial("execute module bundler and write results", async (t) => {
 		dependencies: dummyReaderWriter,
 		options: {
 			projectName: "some.project.name",
-			projectNamespace: "some/project/namespace"
-		}
+			projectNamespace: "some/project/namespace",
+		},
 	};
 	await generateStandaloneAppBundle(params);
 
@@ -78,7 +78,7 @@ test.serial("execute module bundler and write results", async (t) => {
 	const {resources, options} = t.context.moduleBundlerStub.getCall(0).args[0];
 	t.is(resources.length, 4, "moduleBundler got supplied with 4 resources");
 	t.deepEqual(options.bundleDefinition.sections[0].filters, [
-		"jquery.sap.global.js"
+		"jquery.sap.global.js",
 	], "Correct filter in first bundle definition section");
 	t.deepEqual(options.bundleDefinition.sections[1].filters, [
 		"some/project/namespace/",
@@ -86,7 +86,7 @@ test.serial("execute module bundler and write results", async (t) => {
 		"some/project/namespace/changes/changes-bundle.json",
 		"some/project/namespace/changes/flexibility-bundle.json",
 		"!some/project/namespace/test/",
-		"sap/ui/core/Core.js"
+		"sap/ui/core/Core.js",
 	], "Correct filter in second bundle definition section");
 	t.deepEqual(options.bundleDefinition.defaultFileTypes, [
 		".js",
@@ -97,7 +97,7 @@ test.serial("execute module bundler and write results", async (t) => {
 		".view.html",
 		".view.json",
 		".view.xml",
-		".properties"
+		".properties",
 	], "Correct default file types in bundle definition");
 });
 
@@ -105,56 +105,10 @@ test.serial("execute module bundler and write results without namespace", async 
 	const {generateStandaloneAppBundle} = t.context;
 	let dummyResourceId = 0;
 	const dummyReaderWriter = {
-		_byGlob: async function() {
+		_byGlob: async function () {
 			return [createDummyResource(dummyResourceId++), createDummyResource(dummyResourceId++)];
 		},
-		write: function() {}
-	};
-	sinon.stub(dummyReaderWriter, "write").resolves();
-	const params = {
-		workspace: dummyReaderWriter,
-		dependencies: dummyReaderWriter,
-		options: {
-			projectName: "some.project.name"
-		}
-	};
-	await generateStandaloneAppBundle(params);
-
-	t.is(t.context.moduleBundlerStub.callCount, 2);
-
-	const {resources, options} = t.context.moduleBundlerStub.getCall(0).args[0];
-	t.is(resources.length, 4, "moduleBundler got supplied with 4 resources");
-	t.deepEqual(options.bundleDefinition.sections[0].filters, [
-		"jquery.sap.global.js"
-	], "Correct filter in first bundle definition section");
-	t.deepEqual(options.bundleDefinition.sections[1].filters, [
-		"/",
-		"/**/manifest.json",
-		"/changes/changes-bundle.json",
-		"/changes/flexibility-bundle.json",
-		"!/test/",
-		"sap/ui/core/Core.js"
-	], "Correct filter in second bundle definition section");
-});
-
-
-test.serial("execute module bundler and write results in evo mode", async (t) => {
-	const {generateStandaloneAppBundle} = t.context;
-	let dummyResourceId = 0;
-
-	const ui5LoaderDummyResource = {
-		getPath: function() {
-			return "/resources/ui5loader.js"; // Triggers evo mode
-		}
-	};
-	const dummyReaderWriter = {
-		_byGlob: async function() {
-			if (dummyResourceId === 0) {
-				return [ui5LoaderDummyResource, createDummyResource(dummyResourceId++)];
-			}
-			return [createDummyResource(dummyResourceId++), createDummyResource(dummyResourceId++)];
-		},
-		write: function() {}
+		write: function () {},
 	};
 	sinon.stub(dummyReaderWriter, "write").resolves();
 	const params = {
@@ -162,8 +116,7 @@ test.serial("execute module bundler and write results in evo mode", async (t) =>
 		dependencies: dummyReaderWriter,
 		options: {
 			projectName: "some.project.name",
-			projectNamespace: "some/project/namespace"
-		}
+		},
 	};
 	await generateStandaloneAppBundle(params);
 
@@ -172,7 +125,53 @@ test.serial("execute module bundler and write results in evo mode", async (t) =>
 	const {resources, options} = t.context.moduleBundlerStub.getCall(0).args[0];
 	t.is(resources.length, 4, "moduleBundler got supplied with 4 resources");
 	t.deepEqual(options.bundleDefinition.sections[0].filters, [
-		"ui5loader-autoconfig.js"
+		"jquery.sap.global.js",
+	], "Correct filter in first bundle definition section");
+	t.deepEqual(options.bundleDefinition.sections[1].filters, [
+		"/",
+		"/**/manifest.json",
+		"/changes/changes-bundle.json",
+		"/changes/flexibility-bundle.json",
+		"!/test/",
+		"sap/ui/core/Core.js",
+	], "Correct filter in second bundle definition section");
+});
+
+test.serial("execute module bundler and write results in evo mode", async (t) => {
+	const {generateStandaloneAppBundle} = t.context;
+	let dummyResourceId = 0;
+
+	const ui5LoaderDummyResource = {
+		getPath: function () {
+			return "/resources/ui5loader.js"; // Triggers evo mode
+		},
+	};
+	const dummyReaderWriter = {
+		_byGlob: async function () {
+			if (dummyResourceId === 0) {
+				return [ui5LoaderDummyResource, createDummyResource(dummyResourceId++)];
+			}
+			return [createDummyResource(dummyResourceId++), createDummyResource(dummyResourceId++)];
+		},
+		write: function () {},
+	};
+	sinon.stub(dummyReaderWriter, "write").resolves();
+	const params = {
+		workspace: dummyReaderWriter,
+		dependencies: dummyReaderWriter,
+		options: {
+			projectName: "some.project.name",
+			projectNamespace: "some/project/namespace",
+		},
+	};
+	await generateStandaloneAppBundle(params);
+
+	t.is(t.context.moduleBundlerStub.callCount, 2);
+
+	const {resources, options} = t.context.moduleBundlerStub.getCall(0).args[0];
+	t.is(resources.length, 4, "moduleBundler got supplied with 4 resources");
+	t.deepEqual(options.bundleDefinition.sections[0].filters, [
+		"ui5loader-autoconfig.js",
 	], "Evo mode active - Correct filter in first bundle definition section");
 	t.deepEqual(options.bundleDefinition.sections[1].filters, [
 		"some/project/namespace/",
@@ -180,7 +179,7 @@ test.serial("execute module bundler and write results in evo mode", async (t) =>
 		"some/project/namespace/changes/changes-bundle.json",
 		"some/project/namespace/changes/flexibility-bundle.json",
 		"!some/project/namespace/test/",
-		"sap/ui/core/Core.js"
+		"sap/ui/core/Core.js",
 	], "Correct filter in second bundle definition section");
 });
 
@@ -196,12 +195,12 @@ test.serial("execute module bundler with taskUtil", async (t) => {
 	taskUtil.getTag.withArgs(dummyResource2, taskUtil.STANDARD_TAGS.IsDebugVariant).returns(true);
 
 	const ui5LoaderDummyResource = {
-		getPath: function() {
+		getPath: function () {
 			return "/resources/ui5loader.js"; // Triggers evo mode
-		}
+		},
 	};
 	const dummyReaderWriter = {
-		_byGlob: async function() {
+		_byGlob: async function () {
 			return [
 				ui5LoaderDummyResource,
 				dummyResource1,
@@ -210,7 +209,7 @@ test.serial("execute module bundler with taskUtil", async (t) => {
 				dummyResource4,
 			];
 		},
-		write: function() {}
+		write: function () {},
 	};
 	sinon.stub(dummyReaderWriter, "write").resolves();
 	const params = {
@@ -219,8 +218,8 @@ test.serial("execute module bundler with taskUtil", async (t) => {
 		taskUtil,
 		options: {
 			projectName: "some.project.name",
-			projectNamespace: "some/project/namespace"
-		}
+			projectNamespace: "some/project/namespace",
+		},
 	};
 	await generateStandaloneAppBundle(params);
 
@@ -251,7 +250,6 @@ test.serial("execute module bundler with taskUtil", async (t) => {
 		"TaskUtil getTag got called with correct argument");
 	t.is(filterReaderCallbackRes2, true, "First filter-reader callback returned expected value");
 
-
 	t.is(moduleBundlerStub.callCount, 2);
 
 	t.is(moduleBundlerStub.getCall(0).args.length, 1);
@@ -281,7 +279,7 @@ test.serial("execute module bundler with taskUtil", async (t) => {
 					sort: true,
 					declareRawModules: false,
 					renderer: false,
-					resolveConditional: false
+					resolveConditional: false,
 				},
 				{
 					filters: [
@@ -297,7 +295,7 @@ test.serial("execute module bundler with taskUtil", async (t) => {
 					resolve: true,
 					resolveConditional: true,
 					declareRawModules: false,
-					sort: true
+					sort: true,
 				},
 				{
 					filters: [
@@ -309,11 +307,11 @@ test.serial("execute module bundler with taskUtil", async (t) => {
 					resolve: false,
 					resolveConditional: false,
 					sort: true,
-					async: false
+					async: false,
 				},
 			],
 		},
-		targetUi5CoreVersion: "1.120.0"
+		targetUi5CoreVersion: "1.120.0",
 	});
 
 	t.is(moduleBundlerStub.getCall(1).args.length, 1);
@@ -343,7 +341,7 @@ test.serial("execute module bundler with taskUtil", async (t) => {
 					sort: true,
 					resolveConditional: false,
 					renderer: false,
-					declareRawModules: false
+					declareRawModules: false,
 				},
 				{
 					filters: [
@@ -355,17 +353,17 @@ test.serial("execute module bundler with taskUtil", async (t) => {
 					resolveConditional: false,
 					sort: true,
 					declareRawModules: false,
-					async: false
+					async: false,
 				},
 			],
 		},
 		bundleOptions: {
-			optimize: false
+			optimize: false,
 		},
 		moduleNameMapping: {
-			"/resources/ponyPath2-dbg.js": "ponyPath2.js"
+			"/resources/ponyPath2-dbg.js": "ponyPath2.js",
 		},
-		targetUi5CoreVersion: "1.120.0"
+		targetUi5CoreVersion: "1.120.0",
 	});
 });
 
@@ -383,9 +381,9 @@ test.serial("execute module bundler with taskUtil, UI5 Version >= 2", async (t) 
 			getSpecVersion: () => {
 				return {
 					lt: sinon.stub().withArgs("4.0").returns(false),
-					gte: sinon.stub().withArgs("4.0").returns(true)
+					gte: sinon.stub().withArgs("4.0").returns(true),
 				};
-			}
+			},
 		};
 	};
 
@@ -393,12 +391,12 @@ test.serial("execute module bundler with taskUtil, UI5 Version >= 2", async (t) 
 	taskUtil.getTag.withArgs(dummyResource2, taskUtil.STANDARD_TAGS.IsDebugVariant).returns(true);
 
 	const ui5LoaderDummyResource = {
-		getPath: function() {
+		getPath: function () {
 			return "/resources/ui5loader.js"; // Triggers evo mode
-		}
+		},
 	};
 	const dummyReaderWriter = {
-		_byGlob: async function() {
+		_byGlob: async function () {
 			return [
 				ui5LoaderDummyResource,
 				dummyResource1,
@@ -407,7 +405,7 @@ test.serial("execute module bundler with taskUtil, UI5 Version >= 2", async (t) 
 				dummyResource4,
 			];
 		},
-		write: function() {}
+		write: function () {},
 	};
 	sinon.stub(dummyReaderWriter, "write").resolves();
 	const params = {
@@ -416,8 +414,8 @@ test.serial("execute module bundler with taskUtil, UI5 Version >= 2", async (t) 
 		taskUtil,
 		options: {
 			projectName: "some.project.name",
-			projectNamespace: "some/project/namespace"
-		}
+			projectNamespace: "some/project/namespace",
+		},
 	};
 	await generateStandaloneAppBundle(params);
 
@@ -447,7 +445,6 @@ test.serial("execute module bundler with taskUtil, UI5 Version >= 2", async (t) 
 	t.deepEqual(taskUtil.getTag.getCall(0).args, ["resource", "<HasDebugVariant>"],
 		"TaskUtil getTag got called with correct argument");
 	t.is(filterReaderCallbackRes2, true, "First filter-reader callback returned expected value");
-
 
 	t.is(moduleBundlerStub.callCount, 2);
 
@@ -494,7 +491,7 @@ test.serial("execute module bundler with taskUtil, UI5 Version >= 2", async (t) 
 					resolve: true,
 					resolveConditional: true,
 					declareRawModules: false,
-					sort: true
+					sort: true,
 				},
 				{
 					filters: [
@@ -505,11 +502,11 @@ test.serial("execute module bundler with taskUtil, UI5 Version >= 2", async (t) 
 					renderer: false,
 					resolve: false,
 					resolveConditional: false,
-					sort: true
+					sort: true,
 				},
 			],
 		},
-		targetUi5CoreVersion: "2.0.0"
+		targetUi5CoreVersion: "2.0.0",
 	});
 
 	t.is(moduleBundlerStub.getCall(1).args.length, 1);
@@ -550,17 +547,17 @@ test.serial("execute module bundler with taskUtil, UI5 Version >= 2", async (t) 
 					renderer: false,
 					resolve: false,
 					resolveConditional: false,
-					sort: true
+					sort: true,
 				},
 			],
 		},
 		bundleOptions: {
-			optimize: false
+			optimize: false,
 		},
 		moduleNameMapping: {
-			"/resources/ponyPath2-dbg.js": "ponyPath2.js"
+			"/resources/ponyPath2-dbg.js": "ponyPath2.js",
 		},
-		targetUi5CoreVersion: "2.0.0"
+		targetUi5CoreVersion: "2.0.0",
 	});
 });
 
@@ -572,12 +569,12 @@ test.serial("Error: Failed to resolve non-debug name", async (t) => {
 	taskUtil.getTag.withArgs(dummyResource1, taskUtil.STANDARD_TAGS.IsDebugVariant).returns(true);
 
 	const dummyReaderWriter = {
-		_byGlob: async function() {
+		_byGlob: async function () {
 			return [
 				dummyResource1,
 			];
 		},
-		write: function() {}
+		write: function () {},
 	};
 	sinon.stub(dummyReaderWriter, "write").resolves();
 	const params = {
@@ -586,11 +583,11 @@ test.serial("Error: Failed to resolve non-debug name", async (t) => {
 		taskUtil,
 		options: {
 			projectName: "some.project.name",
-			projectNamespace: "some/project/namespace"
-		}
+			projectNamespace: "some/project/namespace",
+		},
 	};
 
 	await t.throwsAsync(generateStandaloneAppBundle(params), {
-		message: "Failed to resolve non-debug name for /resources/ponyPath1.js"
+		message: "Failed to resolve non-debug name for /resources/ponyPath1.js",
 	});
 });

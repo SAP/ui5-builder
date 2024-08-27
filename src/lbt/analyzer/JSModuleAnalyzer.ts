@@ -19,7 +19,10 @@ const log = getLogger("lbt:analyzer:JSModuleAnalyzer");
 
 // ------------------------------------------------------------------------------------------------------------------
 
-export const EnrichedVisitorKeys = (function() {
+export const EnrichedVisitorKeys = (function () {
+	/**
+	 *
+	 */
 	function toBeDone() {
 		return null;
 	}
@@ -172,31 +175,31 @@ export const EnrichedVisitorKeys = (function() {
 		 */
 		WhileStatement: ["body"],
 		WithStatement: [],
-		YieldExpression: []
+		YieldExpression: [],
 	};
 
 	// check for unknown keys in our configuration
-	for ( const type in TempKeys ) {
-		if ( VisitorKeys[type] === undefined ) {
+	for (const type in TempKeys) {
+		if (VisitorKeys[type] === undefined) {
 			throw new Error(`Configuration contains unknown node type '${type}'`);
 		}
 	}
 
 	// merge with 'official' visitor keys
-	Object.keys(VisitorKeys).forEach( (type) => {
+	Object.keys(VisitorKeys).forEach((type) => {
 		const visitorKeys = VisitorKeys[type];
 		const condKeys = TempKeys[type];
-		if ( Array.isArray(condKeys) ) {
+		if (Array.isArray(condKeys)) {
 			// check configured keys against visitor keys
-			condKeys.forEach( (key) => {
-				if ( !visitorKeys.includes(key) ) {
+			condKeys.forEach((key) => {
+				if (!visitorKeys.includes(key)) {
 					throw new Error(`Configuration for type '${type}' contains unknown key '${key}'`);
 				}
 			});
-			TempKeys[type] = visitorKeys.map( (key) => ({
+			TempKeys[type] = visitorKeys.map((key) => ({
 				key: key,
-				conditional: condKeys.includes(key)
-			}) );
+				conditional: condKeys.includes(key),
+			}));
 		} else if (condKeys === null) {
 			// this is a 'toBeDone' node type, keep null and complain at runtime when such a node occurs
 		} else {
@@ -206,7 +209,6 @@ export const EnrichedVisitorKeys = (function() {
 
 	return TempKeys;
 }());
-
 
 const CALL_AMD_DEFINE = ["define"];
 const CALL_AMD_REQUIRE = ["require"];
@@ -223,7 +225,10 @@ const CALL_JQUERY_SAP_REQUIRE = [["jQuery", "$"], "sap", "require"];
 const CALL_JQUERY_SAP_REGISTER_PRELOADED_MODULES = [["jQuery", "$"], "sap", "registerPreloadedModules"];
 const SPECIAL_AMD_DEPENDENCIES = ["require", "exports", "module"];
 
-
+/**
+ *
+ * @param node
+ */
 function isCallableExpression(node) {
 	return node.type == Syntax.FunctionExpression || node.type == Syntax.ArrowFunctionExpression;
 }
@@ -231,6 +236,10 @@ function isCallableExpression(node) {
 /*
  * Dummy implementation.
  * Sole purpose is to easier align with the old (Java) implementation of the bundle tooling.
+ */
+/**
+ *
+ * @param node
  */
 function getDocumentation(node) {
 	return undefined;
@@ -243,15 +252,14 @@ function getDocumentation(node) {
  *
  * @author Frank Weigel
  * @since 1.1.2
- * @private
  */
 class JSModuleAnalyzer {
 	/**
 	 * Analyzes the JS AST
 	 *
-	 * @param {object} ast js ast
-	 * @param {string} defaultName default name
-	 * @param {ModuleInfo} info module info
+	 * @param ast js ast
+	 * @param defaultName default name
+	 * @param info module info
 	 */
 	analyze(ast: object, defaultName: string, info: ModuleInfo) {
 		let mainModuleFound = false;
@@ -284,7 +292,6 @@ class JSModuleAnalyzer {
 		 * </ul>
 		 * this value is true
 		 *
-		 * @type {boolean}
 		 */
 		let bIsUi5Module = false;
 
@@ -295,14 +302,14 @@ class JSModuleAnalyzer {
 		visit(ast, false);
 
 		// ...then all the comments
-		if ( Array.isArray(ast.comments) ) {
+		if (Array.isArray(ast.comments)) {
 			ast.comments.forEach((comment) => {
-				if ( comment.type === "Line" && comment.value.startsWith("@ui5-bundle") ) {
-					if ( comment.value.startsWith("@ui5-bundle-raw-include ") ) {
+				if (comment.type === "Line" && comment.value.startsWith("@ui5-bundle")) {
+					if (comment.value.startsWith("@ui5-bundle-raw-include ")) {
 						const subModule = comment.value.slice("@ui5-bundle-raw-include ".length);
 						info.addSubModule(subModule);
 						log.verbose(`Bundle include directive ${subModule}`);
-					} else if ( comment.value.startsWith("@ui5-bundle ") ) {
+					} else if (comment.value.startsWith("@ui5-bundle ")) {
 						const bundleName = comment.value.slice("@ui5-bundle ".length);
 						if (comment.start === 0) {
 							// Remember the name from the first line to use it as final name
@@ -319,13 +326,13 @@ class JSModuleAnalyzer {
 		}
 
 		// ...and finally take conclusions about the file's content
-		if ( firstLineBundleName ) {
+		if (firstLineBundleName) {
 			// If the first line has a bundle name, use it and override all other found names
 			info.name = firstLineBundleName;
-		} else if ( !mainModuleFound ) {
+		} else if (!mainModuleFound) {
 			// if there's exactly one module definition in this file but it didn't
 			// immediately qualify as main module, make it now the main module
-			if ( candidateName != null && nModuleDeclarations == 1 ) {
+			if (candidateName != null && nModuleDeclarations == 1) {
 				info.name = candidateName;
 				info.description = candidateDescription;
 				mainModuleFound = true;
@@ -336,9 +343,9 @@ class JSModuleAnalyzer {
 		}
 
 		// depending on the used module APIs, add an implicit dependency to the loader entry module
-		if ( info.format === ModuleFormat.UI5_LEGACY ) {
+		if (info.format === ModuleFormat.UI5_LEGACY) {
 			info.addImplicitDependency(MODULE__JQUERY_SAP_GLOBAL);
-		} else if ( info.format === ModuleFormat.UI5_DEFINE ) {
+		} else if (info.format === ModuleFormat.UI5_DEFINE) {
 			// Note: the implicit dependency for sap.ui.define modules points to the standard UI5
 			// loader config module. A more general approach would be to add a dependency to the loader
 			// only, but then standard configuration would be missed by dependency resolution
@@ -346,206 +353,219 @@ class JSModuleAnalyzer {
 			info.addImplicitDependency(MODULE__UI5LOADER_AUTOCONFIG);
 		}
 
-		if ( !bIsUi5Module ) {
+		if (!bIsUi5Module) {
 			// when there are no indicators for module APIs, mark the module as 'raw' module
 			info.rawModule = true;
 		}
 
 		const scopeManager = escope.analyze(ast);
 		const currentScope = scopeManager.acquire(ast); // global scope
-		if ( currentScope.set.size > 0 ) {
+		if (currentScope.set.size > 0) {
 			info.requiresTopLevelScope = true;
 			info.exposedGlobals = Array.from(currentScope.set.keys());
 			// console.log(info.name, "exposed globals", info.exposedGlobals, "ignoredGlobals", info.ignoredGlobals);
 		}
 
-
 		// hoisted functions
+		/**
+		 *
+		 * @param name
+		 * @param description
+		 */
 		function setMainModuleInfo(name, description) {
-			if ( mainModuleFound ) {
+			if (mainModuleFound) {
 				throw new Error("Conflicting main modules found (unnamed + named)");
 			}
 			mainModuleFound = true;
 			info.name = name;
-			if ( description != null ) {
+			if (description != null) {
 				info.description = description;
 			}
 		}
 
+		/**
+		 *
+		 * @param node
+		 * @param conditional
+		 */
 		function visit(node, conditional) {
 			// console.log("visiting ", node);
 
-			if ( node == null ) {
+			if (node == null) {
 				return;
 			}
 
-			if ( Array.isArray(node) ) {
+			if (Array.isArray(node)) {
 				node.forEach((child) => visit(child, conditional));
 				return;
 			}
 
 			const condKeys = EnrichedVisitorKeys[node.type];
 			switch (node.type) {
-			case Syntax.CallExpression:
-				if ( !conditional && isMethodCall(node, CALL_JQUERY_SAP_DECLARE) ) {
+				case Syntax.CallExpression:
+					if (!conditional && isMethodCall(node, CALL_JQUERY_SAP_DECLARE)) {
 					// recognized a call to jQuery.sap.declare()
-					nModuleDeclarations++;
-					info.setFormat(ModuleFormat.UI5_LEGACY);
-					bIsUi5Module = true;
-					onDeclare(node);
-				} else if ( !conditional &&
-								(isMethodCall(node, CALL_SAP_UI_DEFINE) || isMethodCall(node, CALL_AMD_DEFINE)) ) {
+						nModuleDeclarations++;
+						info.setFormat(ModuleFormat.UI5_LEGACY);
+						bIsUi5Module = true;
+						onDeclare(node);
+					} else if (!conditional &&
+						(isMethodCall(node, CALL_SAP_UI_DEFINE) || isMethodCall(node, CALL_AMD_DEFINE))) {
 					// recognized a call to define() or sap.ui.define()
 					// console.log("**** recognized a call to sap.ui.define");
-					nModuleDeclarations++;
-					if ( isMethodCall(node, CALL_SAP_UI_DEFINE) ) {
-						info.setFormat(ModuleFormat.UI5_DEFINE);
-					} else {
-						info.setFormat(ModuleFormat.AMD);
-					}
-					bIsUi5Module = true;
-					onDefine(node);
-
-					const args = node.arguments;
-					let iArg = 0;
-					if ( iArg < args.length && isString(args[iArg]) ) {
-						iArg++;
-					}
-					if ( iArg < args.length && args[iArg].type == Syntax.ArrayExpression ) {
-						iArg++;
-					}
-					if ( iArg < args.length && isCallableExpression(args[iArg]) ) {
-						// unconditionally execute the factory function
-						visit(args[iArg].body, conditional);
-					}
-				} else if ( isMethodCall(node, CALL_REQUIRE_PREDEFINE) || isMethodCall(node, CALL_SAP_UI_PREDEFINE) ) {
-					// recognized a call to require.predefine() or sap.ui.predefine()
-					if (!conditional) {
+						nModuleDeclarations++;
+						if (isMethodCall(node, CALL_SAP_UI_DEFINE)) {
+							info.setFormat(ModuleFormat.UI5_DEFINE);
+						} else {
+							info.setFormat(ModuleFormat.AMD);
+						}
 						bIsUi5Module = true;
-					}
-					info.setFormat(ModuleFormat.UI5_DEFINE);
-					onSapUiPredefine(node, conditional);
+						onDefine(node);
 
-					const args = node.arguments;
-					let iArg = 0;
-					if ( iArg < args.length && isString(args[iArg]) ) {
-						iArg++;
-					}
-					if ( iArg < args.length && args[iArg].type == Syntax.ArrayExpression ) {
-						iArg++;
-					}
-					if ( iArg < args.length && isCallableExpression(args[iArg]) ) {
+						const args = node.arguments;
+						let iArg = 0;
+						if (iArg < args.length && isString(args[iArg])) {
+							iArg++;
+						}
+						if (iArg < args.length && args[iArg].type == Syntax.ArrayExpression) {
+							iArg++;
+						}
+						if (iArg < args.length && isCallableExpression(args[iArg])) {
 						// unconditionally execute the factory function
-						visit(args[iArg].body, conditional);
-					}
-				} else if ( isMethodCall(node, CALL_SAP_UI_REQUIRE) || isMethodCall(node, CALL_AMD_REQUIRE) ) {
-					// recognized a call to require() or sap.ui.require()
-					if ( isMethodCall(node, CALL_SAP_UI_REQUIRE) ) {
+							visit(args[iArg].body, conditional);
+						}
+					} else if (isMethodCall(node, CALL_REQUIRE_PREDEFINE) || isMethodCall(node, CALL_SAP_UI_PREDEFINE)) {
+					// recognized a call to require.predefine() or sap.ui.predefine()
+						if (!conditional) {
+							bIsUi5Module = true;
+						}
 						info.setFormat(ModuleFormat.UI5_DEFINE);
-					} else {
-						info.setFormat(ModuleFormat.AMD);
-					}
-					let iArg = 0;
-					const args = node.arguments;
-					if ( iArg < args.length && args[iArg].type == Syntax.ArrayExpression ) {
+						onSapUiPredefine(node, conditional);
+
+						const args = node.arguments;
+						let iArg = 0;
+						if (iArg < args.length && isString(args[iArg])) {
+							iArg++;
+						}
+						if (iArg < args.length && args[iArg].type == Syntax.ArrayExpression) {
+							iArg++;
+						}
+						if (iArg < args.length && isCallableExpression(args[iArg])) {
+						// unconditionally execute the factory function
+							visit(args[iArg].body, conditional);
+						}
+					} else if (isMethodCall(node, CALL_SAP_UI_REQUIRE) || isMethodCall(node, CALL_AMD_REQUIRE)) {
+					// recognized a call to require() or sap.ui.require()
+						if (isMethodCall(node, CALL_SAP_UI_REQUIRE)) {
+							info.setFormat(ModuleFormat.UI5_DEFINE);
+						} else {
+							info.setFormat(ModuleFormat.AMD);
+						}
+						let iArg = 0;
+						const args = node.arguments;
+						if (iArg < args.length && args[iArg].type == Syntax.ArrayExpression) {
 						// TODO onAsyncRequire(node, node.getChild(1));
 						// requireJS signature, handle as such
-						analyzeDependencyArray(args[iArg].elements, conditional, null);
-						iArg++;
-					}
-					if ( iArg < args.length && isCallableExpression(args[iArg]) ) {
+							analyzeDependencyArray(args[iArg].elements, conditional, null);
+							iArg++;
+						}
+						if (iArg < args.length && isCallableExpression(args[iArg])) {
 						// analyze the callback function
-						visit(args[iArg].body, conditional);
-					}
-				} else if ( isMethodCall(node, CALL_REQUIRE_SYNC) || isMethodCall(node, CALL_SAP_UI_REQUIRE_SYNC) ) {
+							visit(args[iArg].body, conditional);
+						}
+					} else if (isMethodCall(node, CALL_REQUIRE_SYNC) || isMethodCall(node, CALL_SAP_UI_REQUIRE_SYNC)) {
 					// recognizes a call to sap.ui.requireSync
-					info.setFormat(ModuleFormat.UI5_DEFINE);
+						info.setFormat(ModuleFormat.UI5_DEFINE);
 
-					onSapUiRequireSync(node, conditional);
-				} else if ( isMethodCall(node, CALL_JQUERY_SAP_REQUIRE) ) {
+						onSapUiRequireSync(node, conditional);
+					} else if (isMethodCall(node, CALL_JQUERY_SAP_REQUIRE)) {
 					// recognizes a call to jQuery.sap.require
-					info.setFormat(ModuleFormat.UI5_LEGACY);
-					onJQuerySapRequire(node, conditional);
-				} else if ( isMethodCall(node, CALL_JQUERY_SAP_REGISTER_PRELOADED_MODULES) ) {
+						info.setFormat(ModuleFormat.UI5_LEGACY);
+						onJQuerySapRequire(node, conditional);
+					} else if (isMethodCall(node, CALL_JQUERY_SAP_REGISTER_PRELOADED_MODULES)) {
 					// recognizes a call to jQuery.sap.registerPreloadedModules
-					if (!conditional) {
-						bIsUi5Module = true;
-					}
-					info.setFormat(ModuleFormat.UI5_LEGACY);
-					onRegisterPreloadedModules(node, /* evoSyntax= */ false);
-				} else if ( isMethodCall(node, CALL_SAP_UI_REQUIRE_PRELOAD) ) {
+						if (!conditional) {
+							bIsUi5Module = true;
+						}
+						info.setFormat(ModuleFormat.UI5_LEGACY);
+						onRegisterPreloadedModules(node, /* evoSyntax= */ false);
+					} else if (isMethodCall(node, CALL_SAP_UI_REQUIRE_PRELOAD)) {
 					// recognizes a call to sap.ui.require.preload
-					if (!conditional) {
-						bIsUi5Module = true;
-					}
-					info.setFormat(ModuleFormat.UI5_DEFINE);
-					onRegisterPreloadedModules(node, /* evoSyntax= */ true);
-				} else if ( isCallableExpression(node.callee) ) {
+						if (!conditional) {
+							bIsUi5Module = true;
+						}
+						info.setFormat(ModuleFormat.UI5_DEFINE);
+						onRegisterPreloadedModules(node, /* evoSyntax= */ true);
+					} else if (isCallableExpression(node.callee)) {
 					// recognizes a scope function declaration + argument
-					visit(node.arguments, conditional);
-					// NODE-TODO defaults of callee?
-					visit(node.callee.body, conditional);
-				} else {
+						visit(node.arguments, conditional);
+						// NODE-TODO defaults of callee?
+						visit(node.callee.body, conditional);
+					} else {
 					// default visit
-					for ( const key of condKeys ) {
-						visit(node[key.key], key.conditional || conditional);
+						for (const key of condKeys) {
+							visit(node[key.key], key.conditional || conditional);
+						}
 					}
-				}
-				break;
+					break;
 
-			case Syntax.IfStatement:
+				case Syntax.IfStatement:
 				// recognizes blocks of the form
 				//     if ( !jQuery.sap.isDeclared() ) {
 				//         ...
 				//     }
 				// required for the analysis of files that have been build with the
 				// embedding merge writer (e.g. sap-ui-core-all.js)
-				if ( node.test.type == Syntax.UnaryExpression &&
+					if (node.test.type == Syntax.UnaryExpression &&
 						node.test.operator === "!" &&
-						isMethodCall(node.test.argument, CALL_JQUERY_SAP_IS_DECLARED ) ) {
-					visit(node.consequent, conditional);
-					visit(node.alternate, true);
-				} else {
+						isMethodCall(node.test.argument, CALL_JQUERY_SAP_IS_DECLARED)) {
+						visit(node.consequent, conditional);
+						visit(node.alternate, true);
+					} else {
 					// default visit
-					for ( const key of condKeys ) {
+						for (const key of condKeys) {
+							visit(node[key.key], key.conditional || conditional);
+						}
+					}
+					break;
+
+				case Syntax.PropertyDefinition:
+
+					// Instance properties (static=false) are only initialized when an instance is created (conditional)
+					// but a computed key is always evaluated on class initialization (eager)
+					visit(node.key, conditional);
+					visit(node.value, !node.static || conditional);
+
+					break;
+
+				default:
+					if (condKeys == null) {
+						log.error(`Unhandled AST node type ${node.type}`, node);
+						throw new Error(`Unhandled AST node type ${node.type}`);
+					}
+					// default visit
+					for (const key of condKeys) {
 						visit(node[key.key], key.conditional || conditional);
 					}
-				}
-				break;
-
-			case Syntax.PropertyDefinition:
-
-				// Instance properties (static=false) are only initialized when an instance is created (conditional)
-				// but a computed key is always evaluated on class initialization (eager)
-				visit(node.key, conditional);
-				visit(node.value, !node.static || conditional);
-
-				break;
-
-			default:
-				if ( condKeys == null ) {
-					log.error(`Unhandled AST node type ${node.type}`, node);
-					throw new Error(`Unhandled AST node type ${node.type}`);
-				}
-				// default visit
-				for ( const key of condKeys ) {
-					visit(node[key.key], key.conditional || conditional);
-				}
-				break;
+					break;
 			}
 		}
 
+		/**
+		 *
+		 * @param node
+		 */
 		function onDeclare(node) {
 			const args = node.arguments;
 			if (args.length > 0) {
 				const value = getStringValue(args[0]);
 				if (value !== undefined) {
 					const name = fromUI5LegacyName(value);
-					if ( nModuleDeclarations === 1 && !mainModuleFound) {
+					if (nModuleDeclarations === 1 && !mainModuleFound) {
 						// if this is the first declaration, then this is the main module declaration
 						// note that this overrides an already given name
 						setMainModuleInfo(name, getDocumentation(node));
-					} else if ( nModuleDeclarations > 1 && name === info.name ) {
+					} else if (nModuleDeclarations > 1 && name === info.name) {
 						// ignore duplicate declarations (e.g. in behavior file of design time controls)
 						log.warn(`Duplicate declaration of module name at ${getLocation(args)} in ${name}`);
 					} else {
@@ -562,6 +582,10 @@ class JSModuleAnalyzer {
 			}
 		}
 
+		/**
+		 *
+		 * @param defineCall
+		 */
 		function onDefine(defineCall) {
 			const args = defineCall.arguments;
 			const nArgs = args.length;
@@ -572,16 +596,16 @@ class JSModuleAnalyzer {
 
 			// determine the name of the module
 			let name = null;
-			if ( i < nArgs ) {
-				const value = getStringValue( args[i] );
-				if ( value !== undefined ) {
+			if (i < nArgs) {
+				const value = getStringValue(args[i]);
+				if (value !== undefined) {
 					name = fromRequireJSName(value);
-					if ( name === defaultName ) {
+					if (name === defaultName) {
 						// hardcoded name equals the file name, so this definition qualifies as main module definition
 						setMainModuleInfo(name, desc);
 					} else {
 						info.addSubModule(name);
-						if ( candidateName == null ) {
+						if (candidateName == null) {
 							// remember the name and description in case no other module qualifies as main module
 							candidateName = name;
 							candidateDescription = desc;
@@ -591,14 +615,14 @@ class JSModuleAnalyzer {
 				}
 			}
 
-			if ( !name ) {
+			if (!name) {
 				nUnnamedDefines++;
-				if ( nUnnamedDefines > 1 ) {
+				if (nUnnamedDefines > 1) {
 					throw new Error(
 						"If multiple modules are contained in a file, only one of them may omit the module ID " +
 						name + " " + nUnnamedDefines);
 				}
-				if ( defaultName == null ) {
+				if (defaultName == null) {
 					throw new Error("Unnamed module found, but no default name given");
 				}
 				name = defaultName;
@@ -607,77 +631,92 @@ class JSModuleAnalyzer {
 			}
 
 			// process array of required modules, if given
-			if ( i < nArgs && args[i].type === Syntax.ArrayExpression ) {
+			if (i < nArgs && args[i].type === Syntax.ArrayExpression) {
 				analyzeDependencyArray(args[i].elements, false, name); // TODO not always false, depends on context?
 				i++;
 			}
 		}
 
+		/**
+		 *
+		 * @param requireCall
+		 * @param conditional
+		 */
 		function onJQuerySapRequire(requireCall, conditional) {
 			const args = requireCall.arguments;
 			const nArgs = args.length;
 
-			if ( nArgs > 0 && args[0].type == Syntax.OBJECT ) {
+			if (nArgs > 0 && args[0].type == Syntax.OBJECT) {
 				log.verbose("jQuery.sap.require: Cannot evaluate complex require (view/controller)");
 			} else {
 				// UI5 signature with one or many required modules
 				for (let i = 0; i < nArgs; i++) {
 					const arg = args[i];
 					const value = getStringValue(arg);
-					if ( value !== undefined ) {
-						const requiredModuleName = fromUI5LegacyName( value );
+					if (value !== undefined) {
+						const requiredModuleName = fromUI5LegacyName(value);
 						info.addDependency(requiredModuleName, conditional);
-					} else if ( arg.type == Syntax.ConditionalExpression) {
+					} else if (arg.type == Syntax.ConditionalExpression) {
 						const consequentValue = getStringValue(arg.consequent);
 						const alternateValue = getStringValue(arg.alternate);
-						if ( consequentValue !== undefined ) {
-							const requiredModuleName1 = fromUI5LegacyName( consequentValue );
+						if (consequentValue !== undefined) {
+							const requiredModuleName1 = fromUI5LegacyName(consequentValue);
 							info.addDependency(requiredModuleName1, true);
 						}
-						if ( alternateValue !== undefined ) {
-							const requiredModuleName2 = fromUI5LegacyName( alternateValue );
+						if (alternateValue !== undefined) {
+							const requiredModuleName2 = fromUI5LegacyName(alternateValue);
 							info.addDependency(requiredModuleName2, true);
 						}
-						if ( consequentValue === undefined || alternateValue === undefined ) {
-							log.verbose(`jQuery.sap.require: Cannot evaluate dynamic arguments: ${arg && arg.type}`);
+						if (consequentValue === undefined || alternateValue === undefined) {
+							log.verbose(`jQuery.sap.require: Cannot evaluate dynamic arguments: ${arg?.type}`);
 							info.dynamicDependencies = true;
 						}
 					} else {
-						log.verbose(`jQuery.sap.require: Cannot evaluate dynamic arguments: ${arg && arg.type}`);
+						log.verbose(`jQuery.sap.require: Cannot evaluate dynamic arguments: ${arg?.type}`);
 						info.dynamicDependencies = true;
 					}
 				}
 			}
 		}
 
+		/**
+		 *
+		 * @param node
+		 * @param conditional
+		 */
 		function onSapUiRequireSync(node, conditional) {
 			const args = node.arguments;
 			const nArgs = args.length;
 			const i = 0;
 
-			if ( i < nArgs ) {
+			if (i < nArgs) {
 				const value = getStringValue(args[i]);
-				if ( value !== undefined ) {
+				if (value !== undefined) {
 					// sap.ui.requireSync does not support relative dependencies
-					const moduleName = fromRequireJSName( value );
+					const moduleName = fromRequireJSName(value);
 					info.addDependency(moduleName, conditional);
 				} else {
-					log.verbose(`sap.ui.requireSync: Cannot evaluate dynamic arguments: ${args[i] && args[i].type}`);
+					log.verbose(`sap.ui.requireSync: Cannot evaluate dynamic arguments: ${args[i]?.type}`);
 					info.dynamicDependencies = true;
 				}
 			}
 		}
 
+		/**
+		 *
+		 * @param predefineCall
+		 * @param conditional
+		 */
 		function onSapUiPredefine(predefineCall, conditional) {
 			const args = predefineCall.arguments;
 			const nArgs = args.length;
 			let i = 0;
 
 			// determine the name of the module
-			if ( i < nArgs ) {
+			if (i < nArgs) {
 				const value = getStringValue(args[i++]);
-				if ( value !== undefined ) {
-					const moduleName = fromRequireJSName( value );
+				if (value !== undefined) {
+					const moduleName = fromRequireJSName(value);
 					info.addSubModule(moduleName);
 
 					// add dependencies
@@ -698,6 +737,11 @@ class JSModuleAnalyzer {
 			}
 		}
 
+		/**
+		 *
+		 * @param node
+		 * @param evoSyntax
+		 */
 		function onRegisterPreloadedModules(node, evoSyntax) {
 			const args = node.arguments;
 
@@ -705,7 +749,7 @@ class JSModuleAnalyzer {
 			let modules = null;
 			let namesUseLegacyNotation = false;
 
-			if ( evoSyntax ) {
+			if (evoSyntax) {
 				modules = args[0];
 			} else {
 				const obj = args[0];
@@ -715,40 +759,46 @@ class JSModuleAnalyzer {
 					modules = findOwnProperty(obj, "modules");
 				}
 			}
-			if ( modules && modules.type == Syntax.ObjectExpression ) {
-				modules.properties.forEach( function(property) {
+			if (modules && modules.type == Syntax.ObjectExpression) {
+				modules.properties.forEach(function (property) {
 					let	moduleName = getPropertyKey(property);
-					if ( !moduleName ) {
+					if (!moduleName) {
 						return;
 					}
-					if ( namesUseLegacyNotation ) {
+					if (namesUseLegacyNotation) {
 						moduleName = fromUI5LegacyName(moduleName);
 					}
 					info.addSubModule(moduleName);
 				});
 			} else {
-				log.verbose(`Cannot evaluate registerPreloadedModules: ${modules && modules.type}`);
+				log.verbose(`Cannot evaluate registerPreloadedModules: ${modules?.type}`);
 			}
 		}
 
+		/**
+		 *
+		 * @param array
+		 * @param conditional
+		 * @param name
+		 */
 		function analyzeDependencyArray(array, conditional, name) {
 			// console.log(array);
-			array.forEach( (item) => {
+			array.forEach((item) => {
 				const value = getStringValue(item);
-				if ( value !== undefined ) {
+				if (value !== undefined) {
 					// ignore special AMD dependencies (require, exports, module)
-					if ( SPECIAL_AMD_DEPENDENCIES.includes(value) ) {
+					if (SPECIAL_AMD_DEPENDENCIES.includes(value)) {
 						return;
 					}
 					let requiredModule;
 					if (name == null) {
-						requiredModule = fromRequireJSName( value );
+						requiredModule = fromRequireJSName(value);
 					} else {
 						requiredModule = resolveRelativeRequireJSName(name, value);
 					}
-					info.addDependency( requiredModule, conditional );
+					info.addDependency(requiredModule, conditional);
 				} else {
-					log.verbose(`sap.ui.require/sap.ui.define: Cannot evaluate dynamic argument: ${item && item.type}`);
+					log.verbose(`sap.ui.require/sap.ui.define: Cannot evaluate dynamic argument: ${item?.type}`);
 					info.dynamicDependencies = true;
 				}
 			});
@@ -794,6 +844,5 @@ class JSModuleAnalyzer {
 		*/
 	}
 }
-
 
 export default JSModuleAnalyzer;

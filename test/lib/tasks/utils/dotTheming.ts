@@ -10,7 +10,7 @@ test.beforeEach(async (t) => {
 		return {
 			getPath: () => path,
 			getString: async () => JSON.stringify(dotTheming, null, 2),
-			setString: t.context.sinon.stub()
+			setString: t.context.sinon.stub(),
 		};
 	};
 });
@@ -27,15 +27,15 @@ test("updateLibraryDotTheming: Default case", async (t) => {
 		sEntity: "Library",
 		sId: "sap/ui/core",
 		aFiles: [
-			"existing", "entries"
-		]
+			"existing", "entries",
+		],
 	});
 
 	await updateLibraryDotTheming({
 		resource,
 		namespace: "sap/ui/core",
 		version: "1.2.3",
-		hasThemes: true
+		hasThemes: true,
 	});
 
 	t.is(resource.setString.callCount, 1);
@@ -44,10 +44,10 @@ test("updateLibraryDotTheming: Default case", async (t) => {
 			sEntity: "Library",
 			sId: "sap/ui/core",
 			aFiles: [
-				"existing", "entries"
+				"existing", "entries",
 			],
 			sVersion: "1.2.3",
-		}, null, 2)
+		}, null, 2),
 	]);
 });
 
@@ -59,15 +59,15 @@ test("updateLibraryDotTheming: No themes", async (t) => {
 		sEntity: "Library",
 		sId: "sap/ui/core",
 		aFiles: [
-			"existing", "entries"
-		]
+			"existing", "entries",
+		],
 	});
 
 	await updateLibraryDotTheming({
 		resource,
 		namespace: "sap/ui/core",
 		version: "1.2.3",
-		hasThemes: false
+		hasThemes: false,
 	});
 
 	t.is(resource.setString.callCount, 1);
@@ -76,11 +76,11 @@ test("updateLibraryDotTheming: No themes", async (t) => {
 			sEntity: "Library",
 			sId: "sap/ui/core",
 			aFiles: [
-				"existing", "entries"
+				"existing", "entries",
 			],
 			sVersion: "1.2.3",
-			bIgnore: true
-		}, null, 2)
+			bIgnore: true,
+		}, null, 2),
 	]);
 });
 
@@ -91,14 +91,14 @@ test("updateLibraryDotTheming: Existing sVersion", async (t) => {
 	const resource = createDotThemingResource("/resources/sap/ui/core/.theming", {
 		sEntity: "Library",
 		sId: "sap/ui/core",
-		sVersion: "1.2.3"
+		sVersion: "1.2.3",
 	});
 
 	await updateLibraryDotTheming({
 		resource,
 		namespace: "sap/ui/core",
 		version: "1.2.4",
-		hasThemes: true
+		hasThemes: true,
 	});
 
 	t.is(resource.setString.callCount, 1);
@@ -107,7 +107,7 @@ test("updateLibraryDotTheming: Existing sVersion", async (t) => {
 			sEntity: "Library",
 			sId: "sap/ui/core",
 			sVersion: "1.2.4",
-		}, null, 2)
+		}, null, 2),
 	]);
 });
 
@@ -123,9 +123,9 @@ test("updateLibraryDotTheming: Missing sEntity", async (t) => {
 		resource,
 		namespace: "sap/ui/core",
 		version: "1.2.3",
-		hasThemes: true
+		hasThemes: true,
 	}), {
-		message: "Missing 'sEntity' property in /resources/sap/ui/core/.theming"
+		message: "Missing 'sEntity' property in /resources/sap/ui/core/.theming",
 	});
 });
 
@@ -142,9 +142,9 @@ test("updateLibraryDotTheming: Incorrect sEntity", async (t) => {
 		resource,
 		namespace: "sap/ui/core",
 		version: "1.2.3",
-		hasThemes: true
+		hasThemes: true,
 	}), {
-		message: "Incorrect 'sEntity' value 'Wrong' in /resources/sap/ui/core/.theming: Expected 'Library'"
+		message: "Incorrect 'sEntity' value 'Wrong' in /resources/sap/ui/core/.theming: Expected 'Library'",
 	});
 });
 
@@ -160,9 +160,9 @@ test("updateLibraryDotTheming: Missing sId", async (t) => {
 		resource,
 		namespace: "sap/ui/core",
 		version: "1.2.3",
-		hasThemes: true
+		hasThemes: true,
 	}), {
-		message: "Missing 'sId' property in /resources/sap/ui/core/.theming"
+		message: "Missing 'sId' property in /resources/sap/ui/core/.theming",
 	});
 });
 
@@ -179,8 +179,8 @@ test("updateLibraryDotTheming: Incorrect sId", async (t) => {
 		resource,
 		namespace: "sap/ui/core",
 		version: "1.2.3",
-		hasThemes: true
+		hasThemes: true,
 	}), {
-		message: "Incorrect 'sId' value 'Wrong' in /resources/sap/ui/core/.theming: Expected 'sap/ui/core'"
+		message: "Incorrect 'sId' value 'Wrong' in /resources/sap/ui/core/.theming: Expected 'sap/ui/core'",
 	});
 });

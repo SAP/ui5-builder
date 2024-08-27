@@ -9,7 +9,7 @@ function createWorkspace() {
 		project: {
 			getName: () => "test.lib",
 			getVersion: () => "2.0.0",
-		}
+		},
 	});
 }
 
@@ -19,14 +19,14 @@ test.beforeEach(async (t) => {
 	t.context.log = {
 		verbose: sinon.stub(),
 		warn: sinon.stub(),
-		error: sinon.stub()
+		error: sinon.stub(),
 	};
 
 	t.context.manifestEnhancerStub = sinon.stub();
 	t.context.fsInterfaceStub = sinon.stub().returns("fs interface");
 	t.context.enhanceManifest = await esmock("../../../lib/tasks/enhanceManifest.js", {
 		"@ui5/logger": {
-			getLogger: sinon.stub().withArgs("builder:tasks:enhanceManifest").returns(t.context.log)
+			getLogger: sinon.stub().withArgs("builder:tasks:enhanceManifest").returns(t.context.log),
 		},
 		"@ui5/fs/fsInterface": t.context.fsInterfaceStub,
 		"../../../lib/processors/manifestEnhancer": t.context.manifestEnhancerStub,
@@ -53,7 +53,7 @@ test.serial("Transforms single manifest.json resource", async (t) => {
 	"title": "{{title}}"
 }
 `,
-		project: t.context.workspace._project
+		project: t.context.workspace._project,
 	});
 
 	const workspace = {
@@ -65,7 +65,7 @@ test.serial("Transforms single manifest.json resource", async (t) => {
 		write: (actualResource) => {
 			t.deepEqual(actualResource, resource,
 				"Expected resource is written back to workspace");
-		}
+		},
 	};
 
 	t.context.manifestEnhancerStub.returns([resource]);
@@ -73,8 +73,8 @@ test.serial("Transforms single manifest.json resource", async (t) => {
 	await enhanceManifest({
 		workspace,
 		options: {
-			projectNamespace: "sap/ui/demo/app"
-		}
+			projectNamespace: "sap/ui/demo/app",
+		},
 	});
 
 	t.is(t.context.manifestEnhancerStub.callCount, 1,
@@ -82,7 +82,7 @@ test.serial("Transforms single manifest.json resource", async (t) => {
 
 	t.true(t.context.manifestEnhancerStub.calledWithExactly({
 		resources: [resource],
-		fs: "fs interface"
+		fs: "fs interface",
 	}), "Processor should be called with expected arguments");
 
 	t.true(log.warn.notCalled, "No warnings should be logged");
@@ -110,7 +110,7 @@ test.serial("Transforms all manifest.json resources", async (t) => {
 		}
 	}
 }`,
-		project: t.context.workspace._project
+		project: t.context.workspace._project,
 	});
 
 	const resourceReuseComp1 = createResource({
@@ -129,7 +129,7 @@ test.serial("Transforms all manifest.json resources", async (t) => {
 		}
 	}
 }`,
-		project: t.context.workspace._project
+		project: t.context.workspace._project,
 	});
 
 	const resourceReuseComp2 = createResource({
@@ -149,7 +149,7 @@ test.serial("Transforms all manifest.json resources", async (t) => {
 		}
 	}
 }`,
-		project: t.context.workspace._project
+		project: t.context.workspace._project,
 	});
 
 	const workspace = {
@@ -170,7 +170,7 @@ test.serial("Transforms all manifest.json resources", async (t) => {
 			}
 			t.deepEqual(actualResource, expectedResource,
 				"Expected resource is written back to workspace");
-		}
+		},
 	};
 
 	t.context.manifestEnhancerStub.returns([resourceLib, resourceReuseComp1]);
@@ -178,8 +178,8 @@ test.serial("Transforms all manifest.json resources", async (t) => {
 	await enhanceManifest({
 		workspace,
 		options: {
-			projectNamespace: "sap/ui/demo/lib"
-		}
+			projectNamespace: "sap/ui/demo/lib",
+		},
 	});
 
 	t.is(t.context.manifestEnhancerStub.callCount, 1,
@@ -187,7 +187,7 @@ test.serial("Transforms all manifest.json resources", async (t) => {
 
 	t.true(t.context.manifestEnhancerStub.calledWithExactly({
 		resources: [resourceLib, resourceReuseComp1, resourceReuseComp2],
-		fs: "fs interface"
+		fs: "fs interface",
 	}), "Processor should be called with expected arguments");
 
 	t.true(log.warn.notCalled, "No warnings should be logged");
@@ -215,7 +215,7 @@ test.serial("Transforms multiple manifest.json resources", async (t) => {
 		}
 	}
 }`,
-		project: t.context.workspace._project
+		project: t.context.workspace._project,
 	});
 
 	const resourceReuseComp1 = createResource({
@@ -234,7 +234,7 @@ test.serial("Transforms multiple manifest.json resources", async (t) => {
 		}
 	}
 }`,
-		project: t.context.workspace._project
+		project: t.context.workspace._project,
 	});
 
 	const resourceReuseComp2 = createResource({
@@ -253,7 +253,7 @@ test.serial("Transforms multiple manifest.json resources", async (t) => {
 		}
 	}
 }`,
-		project: t.context.workspace._project
+		project: t.context.workspace._project,
 	});
 
 	const workspace = {
@@ -274,7 +274,7 @@ test.serial("Transforms multiple manifest.json resources", async (t) => {
 			}
 			t.deepEqual(actualResource, expectedResource,
 				"Expected resource is written back to workspace");
-		}
+		},
 	};
 
 	t.context.manifestEnhancerStub.returns([resourceLib, resourceReuseComp1, resourceReuseComp2]);
@@ -282,8 +282,8 @@ test.serial("Transforms multiple manifest.json resources", async (t) => {
 	await enhanceManifest({
 		workspace,
 		options: {
-			projectNamespace: "sap/ui/demo/lib"
-		}
+			projectNamespace: "sap/ui/demo/lib",
+		},
 	});
 
 	t.is(t.context.manifestEnhancerStub.callCount, 1,
@@ -291,7 +291,7 @@ test.serial("Transforms multiple manifest.json resources", async (t) => {
 
 	t.true(t.context.manifestEnhancerStub.calledWithExactly({
 		resources: [resourceLib, resourceReuseComp1, resourceReuseComp2],
-		fs: "fs interface"
+		fs: "fs interface",
 	}), "Processor should be called with expected arguments");
 
 	t.true(log.warn.notCalled, "No warnings should be logged");
@@ -312,7 +312,7 @@ test.serial("Should not rewrite the manifest.json if no changes were made", asyn
 	"type": "application"
 }
 `,
-		project: t.context.workspace._project
+		project: t.context.workspace._project,
 	});
 
 	const workspace = {
@@ -323,7 +323,7 @@ test.serial("Should not rewrite the manifest.json if no changes were made", asyn
 		},
 		write: (actualResource) => {
 			t.fail("No resource should be rewritten");
-		}
+		},
 	};
 
 	t.context.manifestEnhancerStub.returns([]);
@@ -331,8 +331,8 @@ test.serial("Should not rewrite the manifest.json if no changes were made", asyn
 	await enhanceManifest({
 		workspace,
 		options: {
-			projectNamespace: "sap/ui/demo/app"
-		}
+			projectNamespace: "sap/ui/demo/app",
+		},
 	});
 
 	t.is(t.context.manifestEnhancerStub.callCount, 1,
@@ -340,7 +340,7 @@ test.serial("Should not rewrite the manifest.json if no changes were made", asyn
 
 	t.true(t.context.manifestEnhancerStub.calledWithExactly({
 		resources: [resource],
-		fs: "fs interface"
+		fs: "fs interface",
 	}), "Processor should be called with expected arguments");
 
 	t.true(log.warn.notCalled, "No warnings should be logged");

@@ -1,5 +1,3 @@
-
-
 const NL = "\n";
 const ENDS_WITH_NEW_LINE = /(\r\n|\r|\n)[ \t]*$/;
 const SPACES_OR_TABS_ONLY = /^[ \t]+$/;
@@ -14,7 +12,6 @@ const SPACES_OR_TABS_ONLY = /^[ \t]+$/;
  *
  * @author Frank Weigel
  * @since 1.27.0
- * @private
  */
 class BundleWriter {
 	constructor() {
@@ -29,15 +26,15 @@ class BundleWriter {
 
 	write(...str) {
 		let writeBuf = "";
-		for ( let i = 0; i < str.length; i++ ) {
+		for (let i = 0; i < str.length; i++) {
 			writeBuf += str[i];
-			if (str[i] != null && str[i].split) {
+			if (str[i]?.split) {
 				const strSplit = str[i].split(NL);
 				this.lineOffset += strSplit.length - 1;
 				this.columnOffset += strSplit[strSplit.length - 1].length;
 			}
 		}
-		if ( writeBuf.length >= 1 ) {
+		if (writeBuf.length >= 1) {
 			this.buf += writeBuf;
 			this.endsWithNewLine =
 				ENDS_WITH_NEW_LINE.test(writeBuf) ||
@@ -46,9 +43,9 @@ class BundleWriter {
 	}
 
 	writeln(...str) {
-		for ( let i = 0; i < str.length; i++ ) {
+		for (let i = 0; i < str.length; i++) {
 			this.buf += str[i];
-			if (str[i] != null && str[i].split) {
+			if (str[i]?.split) {
 				const strSplit = str[i].split(NL);
 				this.lineOffset += strSplit.length - 1;
 			}
@@ -60,7 +57,7 @@ class BundleWriter {
 	}
 
 	ensureNewLine() {
-		if ( !this.endsWithNewLine ) {
+		if (!this.endsWithNewLine) {
 			this.buf += NL;
 			this.endsWithNewLine = true;
 			this.lineOffset += 1;
@@ -77,7 +74,7 @@ class BundleWriter {
 	}
 
 	startSegment(module) {
-		if ( this.currentSegment ) {
+		if (this.currentSegment) {
 			throw new Error("trying to start a segment while another segment is still open");
 		}
 		this.currentSegment = {
@@ -88,7 +85,7 @@ class BundleWriter {
 	}
 
 	endSegment() {
-		if ( !this.currentSegment ) {
+		if (!this.currentSegment) {
 			throw new Error("trying to end a segment while no segment is open");
 		}
 		this.currentSegment.endIndex = this.length;

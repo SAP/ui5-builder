@@ -48,45 +48,45 @@ const expectedManifestContentObject = () => {
 	return {
 		"_version": "1.21.0",
 		"sap.app": {
-			"id": "library.e",
-			"type": "library",
-			"embeds": [],
-			"i18n": {
-				"bundleUrl": "i18n/i18n.properties",
-				"supportedLocales": [
+			id: "library.e",
+			type: "library",
+			embeds: [],
+			i18n: {
+				bundleUrl: "i18n/i18n.properties",
+				supportedLocales: [
 					"",
 					"de",
-					"en"
-				]
+					"en",
+				],
 			},
-			"applicationVersion": {
-				"version": "1.0.0"
+			applicationVersion: {
+				version: "1.0.0",
 			},
-			"title": "Library E",
-			"description": "Library E",
-			"resources": "resources.json",
-			"offline": true
+			title: "Library E",
+			description: "Library E",
+			resources: "resources.json",
+			offline: true,
 		},
 		"sap.ui": {
-			"technology": "UI5",
-			"supportedThemes": []
+			technology: "UI5",
+			supportedThemes: [],
 		},
 		"sap.ui5": {
-			"dependencies": {
-				"libs": {
-					"sap.ui.core": {}
-				}
+			dependencies: {
+				libs: {
+					"sap.ui.core": {},
+				},
 			},
-			"library": {
-				"i18n": false
-			}
-		}
+			library: {
+				i18n: false,
+			},
+		},
 	};
 };
 
 const expectedManifestContent = JSON.stringify(expectedManifestContentObject(), null, 2);
 const expectedManifestContentSpecialCharsObject = expectedManifestContentObject();
-expectedManifestContentSpecialCharsObject["sap.app"]["i18n"]["bundleUrl"] = "i18n(.*)./i18n(.*).properties";
+expectedManifestContentSpecialCharsObject["sap.app"].i18n.bundleUrl = "i18n(.*)./i18n(.*).properties";
 const expectedManifestContentSpecialChars = JSON.stringify(expectedManifestContentSpecialCharsObject, null, 2);
 
 test.beforeEach(async (t) => {
@@ -95,13 +95,13 @@ test.beforeEach(async (t) => {
 
 	t.context.loggerStub = {
 		error: t.context.errorLogStub,
-		verbose: t.context.verboseLogStub
+		verbose: t.context.verboseLogStub,
 	};
 	t.context.getProjectVersion = sinon.stub();
 	t.context.manifestCreator = await esmock("../../../lib/processors/manifestCreator.js", {
 		"@ui5/logger": {
-			getLogger: sinon.stub().withArgs("builder:processors:manifestCreator").returns(t.context.loggerStub)
-		}
+			getLogger: sinon.stub().withArgs("builder:processors:manifestCreator").returns(t.context.loggerStub),
+		},
 	});
 });
 
@@ -118,13 +118,13 @@ test.serial("default manifest creation", async (t) => {
 		},
 		getString: async () => {
 			return libraryContent;
-		}
+		},
 	};
 	const resources = ["", "_en", "_de"].map((lang) => {
 		return {
 			getPath: () => {
 				return `${prefix}i18n/i18n${lang}.properties`;
-			}
+			},
 		};
 	});
 
@@ -163,13 +163,13 @@ test.serial("default manifest creation (multi-line documentation)", async (t) =>
 				</appData>
 
 			</library>`;
-		}
+		},
 	};
 	const resources = ["", "_en", "_de"].map((lang) => {
 		return {
 			getPath: () => {
 				return `${prefix}i18n/i18n${lang}.properties`;
-			}
+			},
 		};
 	});
 
@@ -216,11 +216,11 @@ test.serial("default manifest creation i18n empty string", async (t) => {
 						</manifest>
 					</appData>
 				</library>`;
-		}
+		},
 	};
 
 	const expectedManifestContentObjectModified = expectedManifestContentObject();
-	expectedManifestContentObjectModified["sap.app"]["i18n"] = "";
+	expectedManifestContentObjectModified["sap.app"].i18n = "";
 	const expectedManifestContent = JSON.stringify(expectedManifestContentObjectModified, null, 2);
 	const result = await manifestCreator({libraryResource, resources: [], getProjectVersion, options: {}});
 	t.is(await result.getString(), expectedManifestContent, "Correct result returned");
@@ -249,14 +249,14 @@ test.serial("default manifest creation with invalid version", async (t) => {
 					</dependencies>
 
 				</library>`;
-		}
+		},
 	};
 
 	getProjectVersion.withArgs("library.e").returns("1.2.3");
 
 	const expectedManifestContentObjectModified = expectedManifestContentObject();
-	expectedManifestContentObjectModified["sap.app"]["i18n"] = undefined;
-	expectedManifestContentObjectModified["sap.app"]["applicationVersion"]["version"] = "1.2.3";
+	expectedManifestContentObjectModified["sap.app"].i18n = undefined;
+	expectedManifestContentObjectModified["sap.app"].applicationVersion.version = "1.2.3";
 	const expectedManifestContent = JSON.stringify(expectedManifestContentObjectModified, null, 2);
 	const result = await manifestCreator({libraryResource, resources: [], getProjectVersion, options: {}});
 	t.is(await result.getString(), expectedManifestContent, "Correct result returned");
@@ -301,30 +301,30 @@ test.serial("default manifest creation with sourceTemplate and thirdparty", asyn
 					</appData>
 
 				</library>`;
-		}
+		},
 	};
 
 	getProjectVersion.withArgs("library.e").returns("1.2.3");
 	getProjectVersion.withArgs("my.lib").returns("4.5.6");
 
 	const expectedManifestContentObjectModified = expectedManifestContentObject();
-	expectedManifestContentObjectModified["sap.app"]["i18n"] = undefined;
-	expectedManifestContentObjectModified["sap.app"]["applicationVersion"]["version"] = "1.2.3";
-	expectedManifestContentObjectModified["sap.app"]["sourceTemplate"]= {
+	expectedManifestContentObjectModified["sap.app"].i18n = undefined;
+	expectedManifestContentObjectModified["sap.app"].applicationVersion.version = "1.2.3";
+	expectedManifestContentObjectModified["sap.app"].sourceTemplate = {
 		id: "myid",
-		version: "1.2.3"
+		version: "1.2.3",
 	};
-	expectedManifestContentObjectModified["sap.app"]["openSourceComponents"]= [{
-		"name": "jquery-3",
-		"packagedWithMySelf": true,
-		"version": "3.5.1"
+	expectedManifestContentObjectModified["sap.app"].openSourceComponents = [{
+		name: "jquery-3",
+		packagedWithMySelf: true,
+		version: "3.5.1",
 	}, {
-		"name": "jquery-2",
-		"packagedWithMySelf": true,
-		"version": "2.2.3"
+		name: "jquery-2",
+		packagedWithMySelf: true,
+		version: "2.2.3",
 	}];
-	expectedManifestContentObjectModified["sap.ui5"]["dependencies"]["libs"]["my.lib"] = {
-		"minVersion": "4.5.6"
+	expectedManifestContentObjectModified["sap.ui5"].dependencies.libs["my.lib"] = {
+		minVersion: "4.5.6",
 	};
 	const expectedManifestContent = JSON.stringify(expectedManifestContentObjectModified, null, 2);
 	const result = await manifestCreator({libraryResource, resources: [], getProjectVersion, options: {}});
@@ -356,13 +356,13 @@ test.serial("default manifest creation no project versions", async (t) => {
 					</dependencies>
 
 				</library>`;
-		}
+		},
 	};
 
 	const expectedManifestContentObjectModified = expectedManifestContentObject();
-	expectedManifestContentObjectModified["sap.app"]["i18n"] = undefined;
-	expectedManifestContentObjectModified["sap.app"]["applicationVersion"] = {};
-	expectedManifestContentObjectModified["sap.ui5"]["dependencies"]["libs"]["my.lib"] = {};
+	expectedManifestContentObjectModified["sap.app"].i18n = undefined;
+	expectedManifestContentObjectModified["sap.app"].applicationVersion = {};
+	expectedManifestContentObjectModified["sap.ui5"].dependencies.libs["my.lib"] = {};
 	const expectedManifestContent = JSON.stringify(expectedManifestContentObjectModified, null, 2);
 	const result = await manifestCreator({libraryResource, resources: [], getProjectVersion, options: {}});
 	t.is(await result.getString(), expectedManifestContent, "Correct result returned");
@@ -375,32 +375,32 @@ test.serial("manifest creation omitMinVersions=true", async (t) => {
 	const expectedManifestContent = JSON.stringify({
 		"_version": "1.21.0",
 		"sap.app": {
-			"id": "library.e",
-			"type": "library",
-			"embeds": [],
-			"applicationVersion": {},
-			"title": "Library E",
-			"description": "Library E",
-			"resources": "resources.json",
-			"offline": true
+			id: "library.e",
+			type: "library",
+			embeds: [],
+			applicationVersion: {},
+			title: "Library E",
+			description: "Library E",
+			resources: "resources.json",
+			offline: true,
 		},
 		"sap.ui": {
-			"technology": "UI5",
-			"supportedThemes": []
+			technology: "UI5",
+			supportedThemes: [],
 		},
 		"sap.ui5": {
-			"dependencies": {
-				"minUI5Version": "",
-				"libs": {
+			dependencies: {
+				minUI5Version: "",
+				libs: {
 					"my.lib": {
-						"minVersion": ""
-					}
-				}
+						minVersion: "",
+					},
+				},
 			},
-			"library": {
-				"i18n": false
-			}
-		}
+			library: {
+				i18n: false,
+			},
+		},
 	}, null, 2);
 
 	const libraryResource = {
@@ -419,7 +419,7 @@ test.serial("manifest creation omitMinVersions=true", async (t) => {
 					    </dependency>
 					</dependencies>
 				</library>`;
-		}
+		},
 	};
 
 	const result = await manifestCreator({
@@ -427,8 +427,8 @@ test.serial("manifest creation omitMinVersions=true", async (t) => {
 		resources: [],
 		getProjectVersion,
 		options: {
-			omitMinVersions: true
-		}
+			omitMinVersions: true,
+		},
 	});
 
 	t.is(await result.getString(), expectedManifestContent, "Correct result returned");
@@ -444,13 +444,13 @@ test.serial("default manifest creation with special characters", async (t) => {
 		},
 		getString: async () => {
 			return libraryContentSpecialChars;
-		}
+		},
 	};
 	const resources = ["", "_en", "_de"].map((lang) => {
 		return {
 			getPath: () => {
 				return `${prefix}i18n(.*)./i18n(.*)${lang}.properties`;
-			}
+			},
 		};
 	});
 
@@ -458,7 +458,7 @@ test.serial("default manifest creation with special characters", async (t) => {
 	resources.push({
 		getPath: () => {
 			return `${prefix}model/data.json`;
-		}
+		},
 	});
 
 	const result = await manifestCreator({libraryResource, resources, getProjectVersion, options: {}});
@@ -475,21 +475,21 @@ test.serial("default manifest creation with special characters small app descrip
 		},
 		getString: async () => {
 			return libraryContent;
-		}
+		},
 	};
 	const resources = ["", "_en", "_de"].map((lang) => {
 		return {
 			getPath: () => {
 				return `${prefix}i18n/i18n${lang}.properties`;
-			}
+			},
 		};
 	});
 
 	const options = {descriptorVersion: "1.9.0"};
 	const result = await manifestCreator({libraryResource, resources, getProjectVersion, options});
 	const expectedManifestContentSmallVersion = expectedManifestContentObject();
-	expectedManifestContentSmallVersion["_version"] = "1.9.0";
-	expectedManifestContentSmallVersion["sap.app"]["i18n"] = "i18n/i18n.properties";
+	expectedManifestContentSmallVersion._version = "1.9.0";
+	expectedManifestContentSmallVersion["sap.app"].i18n = "i18n/i18n.properties";
 	const expectedManifestContentSmallVersionString = JSON.stringify(expectedManifestContentSmallVersion, null, 2);
 	t.is(await result.getString(), expectedManifestContentSmallVersionString, "Correct result returned");
 	t.is(errorLogStub.callCount, 0);
@@ -504,17 +504,17 @@ test.serial("default manifest creation with special characters very small app de
 		},
 		getString: async () => {
 			return libraryContent;
-		}
+		},
 	};
 
 	const options = {descriptorVersion: "1.1.0"};
 	const result = await manifestCreator({libraryResource, resources: [], getProjectVersion, options});
 	const expectedManifestContentSmallVersion = expectedManifestContentObject();
-	expectedManifestContentSmallVersion["_version"] = "1.1.0";
-	expectedManifestContentSmallVersion["sap.app"]["_version"] = "1.2.0";
-	expectedManifestContentSmallVersion["sap.ui"]["_version"] = "1.1.0";
-	expectedManifestContentSmallVersion["sap.ui5"]["_version"] = "1.1.0";
-	expectedManifestContentSmallVersion["sap.app"]["i18n"] = "i18n/i18n.properties";
+	expectedManifestContentSmallVersion._version = "1.1.0";
+	expectedManifestContentSmallVersion["sap.app"]._version = "1.2.0";
+	expectedManifestContentSmallVersion["sap.ui"]._version = "1.1.0";
+	expectedManifestContentSmallVersion["sap.ui5"]._version = "1.1.0";
+	expectedManifestContentSmallVersion["sap.app"].i18n = "i18n/i18n.properties";
 	const sResult = await result.getString();
 	t.deepEqual(JSON.parse(sResult), expectedManifestContentSmallVersion, "Correct result returned");
 	t.is(errorLogStub.callCount, 0);
@@ -528,30 +528,30 @@ test.serial("manifest creation with themes", async (t) => {
 	const expectedManifestContent = JSON.stringify({
 		"_version": "1.21.0",
 		"sap.app": {
-			"id": "sap.ui.test",
-			"type": "library",
-			"embeds": [],
-			"applicationVersion": {
-				"version": "1.0.0"
+			id: "sap.ui.test",
+			type: "library",
+			embeds: [],
+			applicationVersion: {
+				version: "1.0.0",
 			},
-			"title": "sap.ui.test",
-			"resources": "resources.json",
-			"offline": true
+			title: "sap.ui.test",
+			resources: "resources.json",
+			offline: true,
 		},
 		"sap.ui": {
-			"technology": "UI5",
-			"supportedThemes": [
-				"base", "sap_foo"
-			]
+			technology: "UI5",
+			supportedThemes: [
+				"base", "sap_foo",
+			],
 		},
 		"sap.ui5": {
-			"dependencies": {
-				"libs": {}
+			dependencies: {
+				libs: {},
 			},
-			"library": {
-				"i18n": false
-			}
-		}
+			library: {
+				i18n: false,
+			},
+		},
 	}, null, 2);
 
 	const libraryResource = {
@@ -564,7 +564,7 @@ test.serial("manifest creation with themes", async (t) => {
 				<name>sap.ui.test</name>
 				<version>1.0.0</version>
 			</library>`;
-		}
+		},
 	};
 
 	const resources = [];
@@ -572,25 +572,25 @@ test.serial("manifest creation with themes", async (t) => {
 		resources.push({
 			getPath: () => {
 				return `${prefix}themes/${name}/some.less`;
-			}
+			},
 		});
 		resources.push({
 			getPath: () => {
 				return `${prefix}themes/${name}/library.source.less`;
-			}
+			},
 		});
 	});
 	resources.push({
 		getPath: () => {
 			return `${prefix}js/lib/themes/invalid/some.css`;
-		}
+		},
 	});
 
 	const result = await manifestCreator({
 		libraryResource,
 		resources,
 		getProjectVersion,
-		options: {}
+		options: {},
 	});
 	t.is(await result.getString(), expectedManifestContent, "Correct result returned");
 
@@ -611,19 +611,19 @@ test.serial("manifest creation for sap/apf", async (t) => {
 		},
 		getString: async () => {
 			return libraryContent;
-		}
+		},
 	};
 
 	const componentResource = {
 		getPath: () => {
 			return prefix + "Component.js";
-		}
+		},
 	};
 	const resources = ["", "_en", "_de"].map((lang) => {
 		return {
 			getPath: () => {
 				return `${prefix}i18n/i18n${lang}.properties`;
-			}
+			},
 		};
 	});
 	resources.push(componentResource);
@@ -631,7 +631,7 @@ test.serial("manifest creation for sap/apf", async (t) => {
 		libraryResource,
 		resources,
 		getProjectVersion,
-		options: {}
+		options: {},
 	});
 	t.is(await result.getString(), expectedManifestContent, "Correct result returned");
 
@@ -652,28 +652,28 @@ test.serial("manifest creation for sap/ui/core", async (t) => {
 	const expectedManifestContent = JSON.stringify({
 		"_version": "1.21.0",
 		"sap.app": {
-			"id": "sap.ui.core",
-			"type": "library",
-			"embeds": [],
-			"applicationVersion": {
-				"version": "1.0.0"
+			id: "sap.ui.core",
+			type: "library",
+			embeds: [],
+			applicationVersion: {
+				version: "1.0.0",
 			},
-			"title": "sap.ui.core",
-			"resources": "resources.json",
-			"offline": true
+			title: "sap.ui.core",
+			resources: "resources.json",
+			offline: true,
 		},
 		"sap.ui": {
-			"technology": "UI5",
-			"supportedThemes": []
+			technology: "UI5",
+			supportedThemes: [],
 		},
 		"sap.ui5": {
-			"dependencies": {
-				"libs": {}
+			dependencies: {
+				libs: {},
 			},
-			"library": {
-				"i18n": false
-			}
-		}
+			library: {
+				i18n: false,
+			},
+		},
 	}, null, 2);
 
 	const libraryResource = {
@@ -686,20 +686,20 @@ test.serial("manifest creation for sap/ui/core", async (t) => {
 				<name>sap.ui.core</name>
 				<version>1.0.0</version>
 			</library>`;
-		}
+		},
 	};
 
 	const componentResource = {
 		getPath: () => {
 			return "/resources/sap/ui/core/Component.js";
-		}
+		},
 	};
 
 	const result = await manifestCreator({
 		libraryResource,
 		resources: [componentResource],
 		getProjectVersion,
-		options: {}
+		options: {},
 	});
 	t.is(await result.getString(), expectedManifestContent, "Correct result returned");
 
@@ -716,28 +716,28 @@ test.serial("manifest creation with .library / Component.js at same namespace", 
 	const expectedManifestContent = JSON.stringify({
 		"_version": "1.21.0",
 		"sap.app": {
-			"id": "sap.lib1",
-			"type": "library",
-			"embeds": [],
-			"applicationVersion": {
-				"version": "1.0.0"
+			id: "sap.lib1",
+			type: "library",
+			embeds: [],
+			applicationVersion: {
+				version: "1.0.0",
 			},
-			"title": "sap.lib1",
-			"resources": "resources.json",
-			"offline": true
+			title: "sap.lib1",
+			resources: "resources.json",
+			offline: true,
 		},
 		"sap.ui": {
-			"technology": "UI5",
-			"supportedThemes": []
+			technology: "UI5",
+			supportedThemes: [],
 		},
 		"sap.ui5": {
-			"dependencies": {
-				"libs": {}
+			dependencies: {
+				libs: {},
 			},
-			"library": {
-				"i18n": false
-			}
-		}
+			library: {
+				i18n: false,
+			},
+		},
 	}, null, 2);
 
 	const libraryResource = {
@@ -750,20 +750,20 @@ test.serial("manifest creation with .library / Component.js at same namespace", 
 				<name>sap.lib1</name>
 				<version>1.0.0</version>
 			</library>`;
-		}
+		},
 	};
 
 	const componentResource = {
 		getPath: () => {
 			return "/resources/sap/lib1/Component.js";
-		}
+		},
 	};
 
 	const result = await manifestCreator({
 		libraryResource,
 		resources: [componentResource],
 		getProjectVersion,
-		options: {}
+		options: {},
 	});
 	t.is(await result.getString(), expectedManifestContent, "Correct result returned");
 
@@ -784,30 +784,30 @@ test.serial("manifest creation with embedded component", async (t) => {
 	const expectedManifestContent = JSON.stringify({
 		"_version": "1.21.0",
 		"sap.app": {
-			"id": "sap.lib1",
-			"type": "library",
-			"embeds": [
-				"component1"
+			id: "sap.lib1",
+			type: "library",
+			embeds: [
+				"component1",
 			],
-			"applicationVersion": {
-				"version": "1.0.0"
+			applicationVersion: {
+				version: "1.0.0",
 			},
-			"title": "sap.lib1",
-			"resources": "resources.json",
-			"offline": true
+			title: "sap.lib1",
+			resources: "resources.json",
+			offline: true,
 		},
 		"sap.ui": {
-			"technology": "UI5",
-			"supportedThemes": []
+			technology: "UI5",
+			supportedThemes: [],
 		},
 		"sap.ui5": {
-			"dependencies": {
-				"libs": {}
+			dependencies: {
+				libs: {},
 			},
-			"library": {
-				"i18n": false
-			}
-		}
+			library: {
+				i18n: false,
+			},
+		},
 	}, null, 2);
 
 	const libraryResource = {
@@ -820,13 +820,13 @@ test.serial("manifest creation with embedded component", async (t) => {
 				<name>sap.lib1</name>
 				<version>1.0.0</version>
 			</library>`;
-		}
+		},
 	};
 
 	const componentResource = {
 		getPath: () => {
 			return "/resources/sap/lib1/component1/Component.js";
-		}
+		},
 	};
 	const componentManifestResource = {
 		getPath: () => {
@@ -835,19 +835,19 @@ test.serial("manifest creation with embedded component", async (t) => {
 		getString: async () => {
 			return JSON.stringify({
 				"sap.app": {
-					"embeddedBy": "../"
-				}
+					embeddedBy: "../",
+				},
 			});
-		}
+		},
 	};
 
 	const result = await manifestCreator({
 		libraryResource,
 		resources: [
 			componentResource,
-			componentManifestResource
+			componentManifestResource,
 		],
-		getProjectVersion
+		getProjectVersion,
 	});
 	t.is(await result.getString(), expectedManifestContent, "Correct result returned");
 
@@ -866,30 +866,30 @@ test.serial("manifest creation with embedded component (Missing 'embeddedBy')", 
 	const expectedManifestContent = JSON.stringify({
 		"_version": "1.21.0",
 		"sap.app": {
-			"id": "sap.lib1",
-			"type": "library",
-			"embeds": [
-				"component1"
+			id: "sap.lib1",
+			type: "library",
+			embeds: [
+				"component1",
 			],
-			"applicationVersion": {
-				"version": "1.0.0"
+			applicationVersion: {
+				version: "1.0.0",
 			},
-			"title": "sap.lib1",
-			"resources": "resources.json",
-			"offline": true
+			title: "sap.lib1",
+			resources: "resources.json",
+			offline: true,
 		},
 		"sap.ui": {
-			"technology": "UI5",
-			"supportedThemes": []
+			technology: "UI5",
+			supportedThemes: [],
 		},
 		"sap.ui5": {
-			"dependencies": {
-				"libs": {}
+			dependencies: {
+				libs: {},
 			},
-			"library": {
-				"i18n": false
-			}
-		}
+			library: {
+				i18n: false,
+			},
+		},
 	}, null, 2);
 
 	const libraryResource = {
@@ -902,13 +902,13 @@ test.serial("manifest creation with embedded component (Missing 'embeddedBy')", 
 				<name>sap.lib1</name>
 				<version>1.0.0</version>
 			</library>`;
-		}
+		},
 	};
 
 	const componentResource = {
 		getPath: () => {
 			return "/resources/sap/lib1/component1/Component.js";
-		}
+		},
 	};
 	const componentManifestResource = {
 		getPath: () => {
@@ -916,16 +916,16 @@ test.serial("manifest creation with embedded component (Missing 'embeddedBy')", 
 		},
 		getString: async () => {
 			return JSON.stringify({});
-		}
+		},
 	};
 
 	const result = await manifestCreator({
 		libraryResource,
 		resources: [
 			componentResource,
-			componentManifestResource
+			componentManifestResource,
 		],
-		getProjectVersion
+		getProjectVersion,
 	});
 	t.is(await result.getString(), expectedManifestContent, "Correct result returned");
 
@@ -944,30 +944,30 @@ test.serial("manifest creation with embedded component ('embeddedBy' doesn't poi
 	const expectedManifestContent = JSON.stringify({
 		"_version": "1.21.0",
 		"sap.app": {
-			"id": "sap.lib1",
-			"type": "library",
-			"embeds": [
-				"component1"
+			id: "sap.lib1",
+			type: "library",
+			embeds: [
+				"component1",
 			],
-			"applicationVersion": {
-				"version": "1.0.0"
+			applicationVersion: {
+				version: "1.0.0",
 			},
-			"title": "sap.lib1",
-			"resources": "resources.json",
-			"offline": true
+			title: "sap.lib1",
+			resources: "resources.json",
+			offline: true,
 		},
 		"sap.ui": {
-			"technology": "UI5",
-			"supportedThemes": []
+			technology: "UI5",
+			supportedThemes: [],
 		},
 		"sap.ui5": {
-			"dependencies": {
-				"libs": {}
+			dependencies: {
+				libs: {},
 			},
-			"library": {
-				"i18n": false
-			}
-		}
+			library: {
+				i18n: false,
+			},
+		},
 	}, null, 2);
 
 	const libraryResource = {
@@ -980,13 +980,13 @@ test.serial("manifest creation with embedded component ('embeddedBy' doesn't poi
 				<name>sap.lib1</name>
 				<version>1.0.0</version>
 			</library>`;
-		}
+		},
 	};
 
 	const componentResource = {
 		getPath: () => {
 			return "/resources/sap/lib1/component1/Component.js";
-		}
+		},
 	};
 	const componentManifestResource = {
 		getPath: () => {
@@ -995,19 +995,19 @@ test.serial("manifest creation with embedded component ('embeddedBy' doesn't poi
 		getString: async () => {
 			return JSON.stringify({
 				"sap.app": {
-					"embeddedBy": "../foo/"
-				}
+					embeddedBy: "../foo/",
+				},
 			});
-		}
+		},
 	};
 
 	const result = await manifestCreator({
 		libraryResource,
 		resources: [
 			componentResource,
-			componentManifestResource
+			componentManifestResource,
 		],
-		getProjectVersion
+		getProjectVersion,
 	});
 	t.is(await result.getString(), expectedManifestContent, "Correct result returned");
 
@@ -1026,30 +1026,30 @@ test.serial("manifest creation with embedded component ('embeddedBy' absolute pa
 	const expectedManifestContent = JSON.stringify({
 		"_version": "1.21.0",
 		"sap.app": {
-			"id": "sap.lib1",
-			"type": "library",
-			"embeds": [
-				"component1"
+			id: "sap.lib1",
+			type: "library",
+			embeds: [
+				"component1",
 			],
-			"applicationVersion": {
-				"version": "1.0.0"
+			applicationVersion: {
+				version: "1.0.0",
 			},
-			"title": "sap.lib1",
-			"resources": "resources.json",
-			"offline": true
+			title: "sap.lib1",
+			resources: "resources.json",
+			offline: true,
 		},
 		"sap.ui": {
-			"technology": "UI5",
-			"supportedThemes": []
+			technology: "UI5",
+			supportedThemes: [],
 		},
 		"sap.ui5": {
-			"dependencies": {
-				"libs": {}
+			dependencies: {
+				libs: {},
 			},
-			"library": {
-				"i18n": false
-			}
-		}
+			library: {
+				i18n: false,
+			},
+		},
 	}, null, 2);
 
 	const libraryResource = {
@@ -1062,13 +1062,13 @@ test.serial("manifest creation with embedded component ('embeddedBy' absolute pa
 				<name>sap.lib1</name>
 				<version>1.0.0</version>
 			</library>`;
-		}
+		},
 	};
 
 	const componentResource = {
 		getPath: () => {
 			return "/resources/sap/lib1/component1/Component.js";
-		}
+		},
 	};
 	const componentManifestResource = {
 		getPath: () => {
@@ -1077,19 +1077,19 @@ test.serial("manifest creation with embedded component ('embeddedBy' absolute pa
 		getString: async () => {
 			return JSON.stringify({
 				"sap.app": {
-					"embeddedBy": "/"
-				}
+					embeddedBy: "/",
+				},
 			});
-		}
+		},
 	};
 
 	const result = await manifestCreator({
 		libraryResource,
 		resources: [
 			componentResource,
-			componentManifestResource
+			componentManifestResource,
 		],
-		getProjectVersion
+		getProjectVersion,
 	});
 	t.is(await result.getString(), expectedManifestContent, "Correct result returned");
 
@@ -1108,30 +1108,30 @@ test.serial("manifest creation with embedded component ('embeddedBy' empty strin
 	const expectedManifestContent = JSON.stringify({
 		"_version": "1.21.0",
 		"sap.app": {
-			"id": "sap.lib1",
-			"type": "library",
-			"embeds": [
-				"component1"
+			id: "sap.lib1",
+			type: "library",
+			embeds: [
+				"component1",
 			],
-			"applicationVersion": {
-				"version": "1.0.0"
+			applicationVersion: {
+				version: "1.0.0",
 			},
-			"title": "sap.lib1",
-			"resources": "resources.json",
-			"offline": true
+			title: "sap.lib1",
+			resources: "resources.json",
+			offline: true,
 		},
 		"sap.ui": {
-			"technology": "UI5",
-			"supportedThemes": []
+			technology: "UI5",
+			supportedThemes: [],
 		},
 		"sap.ui5": {
-			"dependencies": {
-				"libs": {}
+			dependencies: {
+				libs: {},
 			},
-			"library": {
-				"i18n": false
-			}
-		}
+			library: {
+				i18n: false,
+			},
+		},
 	}, null, 2);
 
 	const libraryResource = {
@@ -1144,13 +1144,13 @@ test.serial("manifest creation with embedded component ('embeddedBy' empty strin
 				<name>sap.lib1</name>
 				<version>1.0.0</version>
 			</library>`;
-		}
+		},
 	};
 
 	const componentResource = {
 		getPath: () => {
 			return "/resources/sap/lib1/component1/Component.js";
-		}
+		},
 	};
 	const componentManifestResource = {
 		getPath: () => {
@@ -1159,19 +1159,19 @@ test.serial("manifest creation with embedded component ('embeddedBy' empty strin
 		getString: async () => {
 			return JSON.stringify({
 				"sap.app": {
-					"embeddedBy": ""
-				}
+					embeddedBy: "",
+				},
 			});
-		}
+		},
 	};
 
 	const result = await manifestCreator({
 		libraryResource,
 		resources: [
 			componentResource,
-			componentManifestResource
+			componentManifestResource,
 		],
-		getProjectVersion
+		getProjectVersion,
 	});
 	t.is(await result.getString(), expectedManifestContent, "Correct result returned");
 
@@ -1184,30 +1184,30 @@ test.serial("manifest creation with embedded component ('embeddedBy' object)", a
 	const expectedManifestContent = JSON.stringify({
 		"_version": "1.21.0",
 		"sap.app": {
-			"id": "sap.lib1",
-			"type": "library",
-			"embeds": [
-				"component1"
+			id: "sap.lib1",
+			type: "library",
+			embeds: [
+				"component1",
 			],
-			"applicationVersion": {
-				"version": "1.0.0"
+			applicationVersion: {
+				version: "1.0.0",
 			},
-			"title": "sap.lib1",
-			"resources": "resources.json",
-			"offline": true
+			title: "sap.lib1",
+			resources: "resources.json",
+			offline: true,
 		},
 		"sap.ui": {
-			"technology": "UI5",
-			"supportedThemes": []
+			technology: "UI5",
+			supportedThemes: [],
 		},
 		"sap.ui5": {
-			"dependencies": {
-				"libs": {}
+			dependencies: {
+				libs: {},
 			},
-			"library": {
-				"i18n": false
-			}
-		}
+			library: {
+				i18n: false,
+			},
+		},
 	}, null, 2);
 
 	const libraryResource = {
@@ -1220,13 +1220,13 @@ test.serial("manifest creation with embedded component ('embeddedBy' object)", a
 				<name>sap.lib1</name>
 				<version>1.0.0</version>
 			</library>`;
-		}
+		},
 	};
 
 	const componentResource = {
 		getPath: () => {
 			return "/resources/sap/lib1/component1/Component.js";
-		}
+		},
 	};
 	const componentManifestResource = {
 		getPath: () => {
@@ -1235,21 +1235,21 @@ test.serial("manifest creation with embedded component ('embeddedBy' object)", a
 		getString: async () => {
 			return JSON.stringify({
 				"sap.app": {
-					"embeddedBy": {
-						"foo": "bar"
-					}
-				}
+					embeddedBy: {
+						foo: "bar",
+					},
+				},
 			});
-		}
+		},
 	};
 
 	const result = await manifestCreator({
 		libraryResource,
 		resources: [
 			componentResource,
-			componentManifestResource
+			componentManifestResource,
 		],
-		getProjectVersion
+		getProjectVersion,
 	});
 	t.is(await result.getString(), expectedManifestContent, "Correct result returned");
 
@@ -1262,28 +1262,28 @@ test.serial("manifest creation with embedded component (no manifest.json)", asyn
 	const expectedManifestContent = JSON.stringify({
 		"_version": "1.21.0",
 		"sap.app": {
-			"id": "sap.lib1",
-			"type": "library",
-			"embeds": [],
-			"applicationVersion": {
-				"version": "1.0.0"
+			id: "sap.lib1",
+			type: "library",
+			embeds: [],
+			applicationVersion: {
+				version: "1.0.0",
 			},
-			"title": "sap.lib1",
-			"resources": "resources.json",
-			"offline": true
+			title: "sap.lib1",
+			resources: "resources.json",
+			offline: true,
 		},
 		"sap.ui": {
-			"technology": "UI5",
-			"supportedThemes": []
+			technology: "UI5",
+			supportedThemes: [],
 		},
 		"sap.ui5": {
-			"dependencies": {
-				"libs": {}
+			dependencies: {
+				libs: {},
 			},
-			"library": {
-				"i18n": false
-			}
-		}
+			library: {
+				i18n: false,
+			},
+		},
 	}, null, 2);
 
 	const libraryResource = {
@@ -1296,21 +1296,21 @@ test.serial("manifest creation with embedded component (no manifest.json)", asyn
 				<name>sap.lib1</name>
 				<version>1.0.0</version>
 			</library>`;
-		}
+		},
 	};
 
 	const componentResource = {
 		getPath: () => {
 			return "/resources/sap/lib1/component1/Component.js";
-		}
+		},
 	};
 
 	const result = await manifestCreator({
 		libraryResource,
 		resources: [
-			componentResource
+			componentResource,
 		],
-		getProjectVersion
+		getProjectVersion,
 	});
 	t.is(await result.getString(), expectedManifestContent, "Correct result returned");
 
@@ -1329,30 +1329,30 @@ test.serial("manifest creation with embedded component (invalid manifest.json)",
 	const expectedManifestContent = JSON.stringify({
 		"_version": "1.21.0",
 		"sap.app": {
-			"id": "sap.lib1",
-			"type": "library",
-			"embeds": [
-				"component1"
+			id: "sap.lib1",
+			type: "library",
+			embeds: [
+				"component1",
 			],
-			"applicationVersion": {
-				"version": "1.0.0"
+			applicationVersion: {
+				version: "1.0.0",
 			},
-			"title": "sap.lib1",
-			"resources": "resources.json",
-			"offline": true
+			title: "sap.lib1",
+			resources: "resources.json",
+			offline: true,
 		},
 		"sap.ui": {
-			"technology": "UI5",
-			"supportedThemes": []
+			technology: "UI5",
+			supportedThemes: [],
 		},
 		"sap.ui5": {
-			"dependencies": {
-				"libs": {}
+			dependencies: {
+				libs: {},
 			},
-			"library": {
-				"i18n": false
-			}
-		}
+			library: {
+				i18n: false,
+			},
+		},
 	}, null, 2);
 
 	const libraryResource = {
@@ -1365,13 +1365,13 @@ test.serial("manifest creation with embedded component (invalid manifest.json)",
 				<name>sap.lib1</name>
 				<version>1.0.0</version>
 			</library>`;
-		}
+		},
 	};
 
 	const componentResource = {
 		getPath: () => {
 			return "/resources/sap/lib1/component1/Component.js";
-		}
+		},
 	};
 	const componentManifestResource = {
 		getPath: () => {
@@ -1379,16 +1379,16 @@ test.serial("manifest creation with embedded component (invalid manifest.json)",
 		},
 		getString: async () => {
 			return "{invalid}";
-		}
+		},
 	};
 
 	const result = await manifestCreator({
 		libraryResource,
 		resources: [
 			componentResource,
-			componentManifestResource
+			componentManifestResource,
 		],
-		getProjectVersion
+		getProjectVersion,
 	});
 	t.is(await result.getString(), expectedManifestContent, "Correct result returned");
 
@@ -1405,12 +1405,12 @@ test.serial("manifest creation for invalid .library content", async (t) => {
 		getString: async () => {
 			return `<?xml version="1.0" encoding="UTF-8" ?>
 			<<>`;
-		}
+		},
 	};
 
 	const error = await t.throwsAsync(manifestCreator({
 		libraryResource,
-		resources: []
+		resources: [],
 	}));
 	t.is(error.message, `Unencoded <
 Line: 1

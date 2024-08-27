@@ -1,4 +1,3 @@
-
 import {parse} from "espree";
 
 const hasOwn = Function.prototype.call.bind(Object.prototype.hasOwnProperty);
@@ -11,6 +10,11 @@ const hasOwn = Function.prototype.call.bind(Object.prototype.hasOwnProperty);
 */
 export const ecmaVersion = 2023;
 
+/**
+ *
+ * @param code
+ * @param userOptions
+ */
 export function parseJS(code, userOptions = {}) {
 	// allowed options and their defaults
 	const options = {

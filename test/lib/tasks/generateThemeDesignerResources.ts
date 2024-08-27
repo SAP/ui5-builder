@@ -8,7 +8,7 @@ test.beforeEach(async (t) => {
 	t.context.fsInterfaceStub = sinon.stub().returns({});
 
 	t.context.ReaderCollectionPrioritizedStub = sinon.stub().returns({
-		byPath: sinon.stub()
+		byPath: sinon.stub(),
 	});
 
 	t.context.ResourceStub = sinon.stub();
@@ -31,20 +31,20 @@ test.serial("generateThemeDesignerResources: Library", async (t) => {
 		ReaderCollectionPrioritizedStub} = t.context;
 
 	const librarySourceLessResource1 = {
-		getPath: sinon.stub().returns("/resources/sap/ui/demo/lib/themes/base/library.source.less")
+		getPath: sinon.stub().returns("/resources/sap/ui/demo/lib/themes/base/library.source.less"),
 	};
 	const librarySourceLessResource2 = {
-		getPath: sinon.stub().returns("/resources/sap/ui/demo/lib/themes/my_theme/library.source.less")
+		getPath: sinon.stub().returns("/resources/sap/ui/demo/lib/themes/my_theme/library.source.less"),
 	};
 	const librarySourceLessResource3 = {
-		getPath: sinon.stub().returns("/resources/sap/ui/demo/lib/themes/sap_fiori_3/library.source.less")
+		getPath: sinon.stub().returns("/resources/sap/ui/demo/lib/themes/sap_fiori_3/library.source.less"),
 	};
 
 	const clonedCoreBaseDotThemingResourceStub = {
-		setPath: sinon.stub()
+		setPath: sinon.stub(),
 	};
 	const coreBaseDotThemingResourceStub = {
-		clone: sinon.stub().resolves(clonedCoreBaseDotThemingResourceStub)
+		clone: sinon.stub().resolves(clonedCoreBaseDotThemingResourceStub),
 	};
 	ReaderCollectionPrioritizedStub.returns({
 		byPath: sinon.stub().callsFake(async (virPath) => {
@@ -53,7 +53,7 @@ test.serial("generateThemeDesignerResources: Library", async (t) => {
 			} else {
 				return null;
 			}
-		})
+		}),
 	});
 
 	const workspace = {
@@ -64,7 +64,7 @@ test.serial("generateThemeDesignerResources: Library", async (t) => {
 				return [];
 			}
 		}),
-		write: sinon.stub()
+		write: sinon.stub(),
 	};
 	const dependencies = {};
 
@@ -80,14 +80,14 @@ test.serial("generateThemeDesignerResources: Library", async (t) => {
 		options: {
 			projectName: "sap.ui.demo.lib",
 			version: "1.2.3",
-			projectNamespace: "sap/ui/demo/lib"
-		}
+			projectNamespace: "sap/ui/demo/lib",
+		},
 	});
 
 	t.is(t.context.ReaderCollectionPrioritizedStub.callCount, 1, "ReaderCollectionPrioritized should be created once");
 	t.deepEqual(t.context.ReaderCollectionPrioritizedStub.getCall(0).args, [{
 		name: `generateThemeDesignerResources - prioritize workspace over dependencies: sap.ui.demo.lib`,
-		readers: [workspace, dependencies]
+		readers: [workspace, dependencies],
 	}]);
 	const combo = t.context.ReaderCollectionPrioritizedStub.getCall(0).returnValue;
 
@@ -110,8 +110,8 @@ test.serial("generateThemeDesignerResources: Library", async (t) => {
 		string: JSON.stringify({
 			sEntity: "Library",
 			sId: "sap/ui/demo/lib",
-			sVersion: "1.2.3"
-		}, null, 2)
+			sVersion: "1.2.3",
+		}, null, 2),
 	}]);
 	const libraryDotTheming = ResourceStub.getCall(0).returnValue;
 
@@ -120,8 +120,8 @@ test.serial("generateThemeDesignerResources: Library", async (t) => {
 		string: JSON.stringify({
 			sEntity: "Theme",
 			sId: "base",
-			sVendor: "SAP"
-		}, null, 2)
+			sVendor: "SAP",
+		}, null, 2),
 	}]);
 	const baseThemeDotTheming = ResourceStub.getCall(1).returnValue;
 
@@ -131,8 +131,8 @@ test.serial("generateThemeDesignerResources: Library", async (t) => {
 			sEntity: "Theme",
 			sId: "my_theme",
 			sVendor: "SAP",
-			oExtends: "base"
-		}, null, 2)
+			oExtends: "base",
+		}, null, 2),
 	}]);
 	const myThemeDotTheming = ResourceStub.getCall(2).returnValue;
 
@@ -171,7 +171,7 @@ test.serial("generateThemeDesignerResources: Library sap.ui.core", async (t) => 
 	const {sinon, generateThemeDesignerResources, libraryLessGeneratorStub, fsInterfaceStub, ResourceStub} = t.context;
 
 	const librarySourceLessResource = {
-		getPath: sinon.stub().returns("/resources/sap/ui/core/themes/base/library.source.less")
+		getPath: sinon.stub().returns("/resources/sap/ui/core/themes/base/library.source.less"),
 	};
 
 	const workspace = {
@@ -189,7 +189,7 @@ test.serial("generateThemeDesignerResources: Library sap.ui.core", async (t) => 
 				return null;
 			}
 		}),
-		write: sinon.stub()
+		write: sinon.stub(),
 	};
 	const dependencies = {};
 
@@ -203,14 +203,14 @@ test.serial("generateThemeDesignerResources: Library sap.ui.core", async (t) => 
 		options: {
 			projectName: "sap.ui.core",
 			version: "1.2.3",
-			projectNamespace: "sap/ui/core"
-		}
+			projectNamespace: "sap/ui/core",
+		},
 	});
 
 	t.is(t.context.ReaderCollectionPrioritizedStub.callCount, 1, "ReaderCollectionPrioritized should be created once");
 	t.deepEqual(t.context.ReaderCollectionPrioritizedStub.getCall(0).args, [{
 		name: `generateThemeDesignerResources - prioritize workspace over dependencies: sap.ui.core`,
-		readers: [workspace, dependencies]
+		readers: [workspace, dependencies],
 	}]);
 	const combo = t.context.ReaderCollectionPrioritizedStub.getCall(0).returnValue;
 
@@ -237,9 +237,9 @@ test.serial("generateThemeDesignerResources: Library sap.ui.core", async (t) => 
 			aFiles: [
 				"library",
 				"global",
-				"css_variables"
-			]
-		}, null, 2)
+				"css_variables",
+			],
+		}, null, 2),
 	}]);
 	const libraryDotTheming = ResourceStub.getCall(0).returnValue;
 
@@ -258,7 +258,7 @@ test.serial("generateThemeDesignerResources: Library sap.ui.core with existing l
 	const {sinon, generateThemeDesignerResources, libraryLessGeneratorStub, fsInterfaceStub, ResourceStub} = t.context;
 
 	const librarySourceLessResource = {
-		getPath: sinon.stub().returns("/resources/sap/ui/core/themes/base/library.source.less")
+		getPath: sinon.stub().returns("/resources/sap/ui/core/themes/base/library.source.less"),
 	};
 
 	const coreLibraryDotThemingResource = {
@@ -266,10 +266,10 @@ test.serial("generateThemeDesignerResources: Library sap.ui.core with existing l
 			sEntity: "Library",
 			sId: "sap/ui/core",
 			aFiles: [
-				"existing", "entries"
-			]
+				"existing", "entries",
+			],
 		}, null, 2),
-		setString: sinon.stub()
+		setString: sinon.stub(),
 	};
 
 	const workspace = {
@@ -289,7 +289,7 @@ test.serial("generateThemeDesignerResources: Library sap.ui.core with existing l
 				return null;
 			}
 		}),
-		write: sinon.stub()
+		write: sinon.stub(),
 	};
 	const dependencies = {};
 
@@ -303,14 +303,14 @@ test.serial("generateThemeDesignerResources: Library sap.ui.core with existing l
 		options: {
 			projectName: "sap.ui.core",
 			version: "1.2.3",
-			projectNamespace: "sap/ui/core"
-		}
+			projectNamespace: "sap/ui/core",
+		},
 	});
 
 	t.is(t.context.ReaderCollectionPrioritizedStub.callCount, 1, "ReaderCollectionPrioritized should be created once");
 	t.deepEqual(t.context.ReaderCollectionPrioritizedStub.getCall(0).args, [{
 		name: `generateThemeDesignerResources - prioritize workspace over dependencies: sap.ui.core`,
-		readers: [workspace, dependencies]
+		readers: [workspace, dependencies],
 	}]);
 	const combo = t.context.ReaderCollectionPrioritizedStub.getCall(0).returnValue;
 
@@ -333,10 +333,10 @@ test.serial("generateThemeDesignerResources: Library sap.ui.core with existing l
 			sEntity: "Library",
 			sId: "sap/ui/core",
 			aFiles: [
-				"existing", "entries"
+				"existing", "entries",
 			],
 			sVersion: "1.2.3",
-		}, null, 2)
+		}, null, 2),
 	]);
 
 	t.is(workspace.write.callCount, 2);
@@ -363,10 +363,10 @@ test.serial("generateThemeDesignerResources: Library sap.ui.core without themes,
 			sId: "sap/ui/core",
 			sVersion: "0.0.0", // existing version should be ignored
 			aFiles: [
-				"existing", "entries"
-			]
+				"existing", "entries",
+			],
 		}, null, 2),
-		setString: sinon.stub()
+		setString: sinon.stub(),
 	};
 
 	const workspace = {
@@ -380,7 +380,7 @@ test.serial("generateThemeDesignerResources: Library sap.ui.core without themes,
 				return null;
 			}
 		}),
-		write: sinon.stub()
+		write: sinon.stub(),
 	};
 	const dependencies = {};
 
@@ -394,8 +394,8 @@ test.serial("generateThemeDesignerResources: Library sap.ui.core without themes,
 		options: {
 			projectName: "sap.ui.core",
 			version: "1.2.3",
-			projectNamespace: "sap/ui/core"
-		}
+			projectNamespace: "sap/ui/core",
+		},
 	});
 
 	t.is(t.context.ReaderCollectionPrioritizedStub.callCount, 0, "ReaderCollectionPrioritized should not be created");
@@ -413,10 +413,10 @@ test.serial("generateThemeDesignerResources: Library sap.ui.core without themes,
 			sId: "sap/ui/core",
 			sVersion: "1.2.3",
 			aFiles: [
-				"existing", "entries"
+				"existing", "entries",
 			],
-			bIgnore: true
-		}, null, 2)
+			bIgnore: true,
+		}, null, 2),
 	]);
 
 	t.is(workspace.write.callCount, 1);
@@ -433,9 +433,9 @@ test.serial("generateThemeDesignerResources: Library sap.ui.core with existing i
 		getPath: () => "/resources/sap/ui/core/.theming",
 		getString: async () => JSON.stringify({
 			sEntity: "Library",
-			sId: "sap/m"
+			sId: "sap/m",
 		}, null, 2),
-		setString: sinon.stub()
+		setString: sinon.stub(),
 	};
 
 	const workspace = {
@@ -449,7 +449,7 @@ test.serial("generateThemeDesignerResources: Library sap.ui.core with existing i
 				return null;
 			}
 		}),
-		write: sinon.stub()
+		write: sinon.stub(),
 	};
 	const dependencies = {};
 
@@ -463,10 +463,10 @@ test.serial("generateThemeDesignerResources: Library sap.ui.core with existing i
 		options: {
 			projectName: "sap.ui.core",
 			version: "1.2.3",
-			projectNamespace: "sap/ui/core"
-		}
+			projectNamespace: "sap/ui/core",
+		},
 	}), {
-		message: "Incorrect 'sId' value 'sap/m' in /resources/sap/ui/core/.theming: Expected 'sap/ui/core'"
+		message: "Incorrect 'sId' value 'sap/m' in /resources/sap/ui/core/.theming: Expected 'sap/ui/core'",
 	});
 
 	t.is(t.context.ReaderCollectionPrioritizedStub.callCount, 0, "ReaderCollectionPrioritized should not be created");
@@ -487,7 +487,7 @@ test.serial("generateThemeDesignerResources: Library sap.ui.documentation is ski
 
 	const workspace = {
 		byGlob: sinon.stub(),
-		write: sinon.stub()
+		write: sinon.stub(),
 	};
 
 	await generateThemeDesignerResources({
@@ -496,8 +496,8 @@ test.serial("generateThemeDesignerResources: Library sap.ui.documentation is ski
 		options: {
 			projectName: "sap.ui.documentation",
 			version: "1.2.3",
-			projectNamespace: "sap/ui/documentation"
-		}
+			projectNamespace: "sap/ui/documentation",
+		},
 	});
 
 	t.is(t.context.ReaderCollectionPrioritizedStub.callCount, 0);
@@ -515,7 +515,7 @@ test.serial("generateThemeDesignerResources: Library without themes", async (t) 
 		byGlob: sinon.stub().callsFake(async () => {
 			return [];
 		}),
-		write: sinon.stub()
+		write: sinon.stub(),
 	};
 
 	await generateThemeDesignerResources({
@@ -524,8 +524,8 @@ test.serial("generateThemeDesignerResources: Library without themes", async (t) 
 		options: {
 			projectName: "sap.ui.demo.lib",
 			version: "1.2.3",
-			projectNamespace: "sap/ui/demo/lib"
-		}
+			projectNamespace: "sap/ui/demo/lib",
+		},
 	});
 
 	t.is(t.context.ReaderCollectionPrioritizedStub.callCount, 0);
@@ -541,8 +541,8 @@ test.serial("generateThemeDesignerResources: Library without themes", async (t) 
 			sEntity: "Library",
 			sId: "sap/ui/demo/lib",
 			sVersion: "1.2.3",
-			bIgnore: true
-		}, null, 2)
+			bIgnore: true,
+		}, null, 2),
 	}]);
 	const libraryDotTheming = ResourceStub.getCall(0).returnValue;
 
@@ -557,7 +557,7 @@ test.serial("generateThemeDesignerResources: Theme-Library", async (t) => {
 	const {sinon, generateThemeDesignerResources, libraryLessGeneratorStub, fsInterfaceStub, ResourceStub} = t.context;
 
 	const librarySourceLessResource = {
-		getPath: sinon.stub().returns("/resources/sap/ui/demo/lib/themes/my_theme/library.source.less")
+		getPath: sinon.stub().returns("/resources/sap/ui/demo/lib/themes/my_theme/library.source.less"),
 	};
 
 	const workspace = {
@@ -568,7 +568,7 @@ test.serial("generateThemeDesignerResources: Theme-Library", async (t) => {
 				return [];
 			}
 		}),
-		write: sinon.stub()
+		write: sinon.stub(),
 	};
 	const dependencies = {};
 
@@ -581,14 +581,14 @@ test.serial("generateThemeDesignerResources: Theme-Library", async (t) => {
 		dependencies,
 		options: {
 			projectName: "sap.ui.demo.lib",
-			version: "1.2.3"
-		}
+			version: "1.2.3",
+		},
 	});
 
 	t.is(t.context.ReaderCollectionPrioritizedStub.callCount, 1, "ReaderCollectionPrioritized should be created once");
 	t.deepEqual(t.context.ReaderCollectionPrioritizedStub.getCall(0).args, [{
 		name: `generateThemeDesignerResources - prioritize workspace over dependencies: sap.ui.demo.lib`,
-		readers: [workspace, dependencies]
+		readers: [workspace, dependencies],
 	}]);
 	const combo = t.context.ReaderCollectionPrioritizedStub.getCall(0).returnValue;
 
@@ -612,8 +612,8 @@ test.serial("generateThemeDesignerResources: Theme-Library", async (t) => {
 			sEntity: "Theme",
 			sId: "my_theme",
 			sVendor: "SAP",
-			oExtends: "base"
-		}, null, 2)
+			oExtends: "base",
+		}, null, 2),
 	}]);
 	const myThemeDotTheming = ResourceStub.getCall(0).returnValue;
 
@@ -632,7 +632,7 @@ test.serial("generateThemeDesignerResources: Theme-Library with CSS Variables", 
 	const {sinon, generateThemeDesignerResources, libraryLessGeneratorStub, ResourceStub} = t.context;
 
 	const librarySourceLessResource = {
-		getPath: sinon.stub().returns("/resources/sap/ui/demo/lib/themes/my_theme/library.source.less")
+		getPath: sinon.stub().returns("/resources/sap/ui/demo/lib/themes/my_theme/library.source.less"),
 	};
 
 	const cssVariablesSourceResource = {
@@ -640,7 +640,7 @@ test.serial("generateThemeDesignerResources: Theme-Library with CSS Variables", 
 	};
 
 	const cssVariableSourceLessResource = {
-		getPath: sinon.stub().returns("/resources/sap/ui/demo/lib/themes/my_theme/css_variables.source.less")
+		getPath: sinon.stub().returns("/resources/sap/ui/demo/lib/themes/my_theme/css_variables.source.less"),
 	};
 
 	const workspace = {
@@ -660,7 +660,7 @@ test.serial("generateThemeDesignerResources: Theme-Library with CSS Variables", 
 				return [];
 			}
 		}),
-		write: sinon.stub()
+		write: sinon.stub(),
 	};
 	const dependencies = {};
 
@@ -673,8 +673,8 @@ test.serial("generateThemeDesignerResources: Theme-Library with CSS Variables", 
 		dependencies,
 		options: {
 			projectName: "sap.ui.demo.lib",
-			version: "1.2.3"
-		}
+			version: "1.2.3",
+		},
 	});
 
 	t.is(ResourceStub.callCount, 2);
@@ -692,7 +692,7 @@ My Content
 /* END "css_variables.source.less" */
 
 @import "../../../../../../sap/ui/core/themes/my_theme/global.less";
-`
+`,
 	}]);
 	const cssVariableResource = ResourceStub.getCall(1).returnValue;
 
@@ -707,7 +707,7 @@ test.serial("generateThemeDesignerResources: Theme-Library with CSS Variables wi
 	const {sinon, generateThemeDesignerResources, libraryLessGeneratorStub, ResourceStub} = t.context;
 
 	const librarySourceLessResource = {
-		getPath: sinon.stub().returns("/resources/sap/ui/demo/lib/themes/my_theme/library.source.less")
+		getPath: sinon.stub().returns("/resources/sap/ui/demo/lib/themes/my_theme/library.source.less"),
 	};
 
 	const cssVariablesSourceResource = {
@@ -715,7 +715,7 @@ test.serial("generateThemeDesignerResources: Theme-Library with CSS Variables wi
 	};
 
 	const cssVariableSourceLessResource = {
-		getPath: sinon.stub().returns("/resources/sap/ui/demo/lib/themes/my_theme/css_variables.source.less")
+		getPath: sinon.stub().returns("/resources/sap/ui/demo/lib/themes/my_theme/css_variables.source.less"),
 	};
 
 	const workspace = {
@@ -735,7 +735,7 @@ test.serial("generateThemeDesignerResources: Theme-Library with CSS Variables wi
 				return [];
 			}
 		}),
-		write: sinon.stub()
+		write: sinon.stub(),
 	};
 	const dependencies = {};
 
@@ -749,14 +749,14 @@ test.serial("generateThemeDesignerResources: Theme-Library with CSS Variables wi
 		options: {
 			projectName: "sap.ui.demo.lib",
 			version: "1.2.3",
-			projectNamespace: "sap/ui/demo/lib"
-		}
+			projectNamespace: "sap/ui/demo/lib",
+		},
 	});
 
 	t.is(t.context.ReaderCollectionPrioritizedStub.callCount, 1, "ReaderCollectionPrioritized should be created once");
 	t.deepEqual(t.context.ReaderCollectionPrioritizedStub.getCall(0).args, [{
 		name: `generateThemeDesignerResources - prioritize workspace over dependencies: sap.ui.demo.lib`,
-		readers: [workspace, dependencies]
+		readers: [workspace, dependencies],
 	}]);
 
 	t.is(ResourceStub.callCount, 3);
@@ -774,7 +774,7 @@ My Content from Namespace
 /* END "css_variables.source.less" */
 
 @import "../../../../../../sap/ui/core/themes/my_theme/global.less";
-`
+`,
 	}]);
 	const cssVariableResource = ResourceStub.getCall(2).returnValue;
 
@@ -791,11 +791,11 @@ test.serial("generateThemeDesignerResources: Theme-Library with CSS Variables wi
 		generateThemeDesignerResources,
 		libraryLessGeneratorStub,
 		ResourceStub,
-		ReaderCollectionPrioritizedStub
+		ReaderCollectionPrioritizedStub,
 	} = t.context;
 
 	const librarySourceLessResource = {
-		getPath: sinon.stub().returns("/resources/sap/ui/demo/lib/themes/my_theme/library.source.less")
+		getPath: sinon.stub().returns("/resources/sap/ui/demo/lib/themes/my_theme/library.source.less"),
 	};
 
 	const cssVariablesSourceResource = {
@@ -803,7 +803,7 @@ test.serial("generateThemeDesignerResources: Theme-Library with CSS Variables wi
 	};
 
 	const cssVariableSourceLessResource = {
-		getPath: sinon.stub().returns("/resources/sap/ui/demo/lib/themes/my_theme/css_variables.source.less")
+		getPath: sinon.stub().returns("/resources/sap/ui/demo/lib/themes/my_theme/css_variables.source.less"),
 	};
 
 	const baseLessResource = {};
@@ -815,7 +815,7 @@ test.serial("generateThemeDesignerResources: Theme-Library with CSS Variables wi
 			} else {
 				return null;
 			}
-		})
+		}),
 	});
 
 	const workspace = {
@@ -835,7 +835,7 @@ test.serial("generateThemeDesignerResources: Theme-Library with CSS Variables wi
 				return [];
 			}
 		}),
-		write: sinon.stub()
+		write: sinon.stub(),
 	};
 	const dependencies = {};
 
@@ -848,8 +848,8 @@ test.serial("generateThemeDesignerResources: Theme-Library with CSS Variables wi
 		dependencies,
 		options: {
 			projectName: "sap.ui.demo.lib",
-			version: "1.2.3"
-		}
+			version: "1.2.3",
+		},
 	});
 
 	t.is(ResourceStub.callCount, 2);
@@ -868,7 +868,7 @@ My Content with Base Theme
 
 @import "../../../../../../../Base/baseLib/my_theme/base.less";
 @import "../../../../../../sap/ui/core/themes/my_theme/global.less";
-`
+`,
 	}]);
 	const cssVariableResource = ResourceStub.getCall(1).returnValue;
 
@@ -884,11 +884,11 @@ test.serial("generateThemeDesignerResources: Base Theme-Library with CSS Variabl
 		sinon,
 		generateThemeDesignerResources,
 		libraryLessGeneratorStub,
-		ResourceStub
+		ResourceStub,
 	} = t.context;
 
 	const librarySourceLessResource = {
-		getPath: sinon.stub().returns("/resources/sap/ui/demo/lib/themes/base/library.source.less")
+		getPath: sinon.stub().returns("/resources/sap/ui/demo/lib/themes/base/library.source.less"),
 	};
 
 	const cssVariablesSourceResource = {
@@ -896,7 +896,7 @@ test.serial("generateThemeDesignerResources: Base Theme-Library with CSS Variabl
 	};
 
 	const cssVariableSourceLessResource = {
-		getPath: sinon.stub().returns("/resources/sap/ui/demo/lib/themes/base/css_variables.source.less")
+		getPath: sinon.stub().returns("/resources/sap/ui/demo/lib/themes/base/css_variables.source.less"),
 	};
 
 	const workspace = {
@@ -916,7 +916,7 @@ test.serial("generateThemeDesignerResources: Base Theme-Library with CSS Variabl
 				return [];
 			}
 		}),
-		write: sinon.stub()
+		write: sinon.stub(),
 	};
 	const dependencies = {};
 
@@ -929,8 +929,8 @@ test.serial("generateThemeDesignerResources: Base Theme-Library with CSS Variabl
 		dependencies,
 		options: {
 			projectName: "sap.ui.demo.lib",
-			version: "1.2.3"
-		}
+			version: "1.2.3",
+		},
 	});
 
 	t.is(ResourceStub.callCount, 2);
@@ -942,7 +942,7 @@ test.serial("generateThemeDesignerResources: Base Theme-Library with CSS Variabl
 `/* NOTE: This file was generated as an optimized version of "css_variables.source.less" for the Theme Designer. */
 
 @import "../../../../../../sap/ui/core/themes/base/global.less";
-`
+`,
 	}]);
 	const cssVariableResource = ResourceStub.getCall(1).returnValue;
 
@@ -957,7 +957,7 @@ test.serial("generateThemeDesignerResources: .theming file missing in sap.ui.cor
 	const {sinon, generateThemeDesignerResources, libraryLessGeneratorStub, ResourceStub} = t.context;
 
 	const librarySourceLessResource = {
-		getPath: sinon.stub().returns("/resources/sap/ui/core/themes/base/library.source.less")
+		getPath: sinon.stub().returns("/resources/sap/ui/core/themes/base/library.source.less"),
 	};
 
 	const workspace = {
@@ -971,7 +971,7 @@ test.serial("generateThemeDesignerResources: .theming file missing in sap.ui.cor
 		byPath: sinon.stub().callsFake(async (virPath) => {
 			return null;
 		}),
-		write: sinon.stub()
+		write: sinon.stub(),
 	};
 	const dependencies = {};
 
@@ -985,10 +985,10 @@ test.serial("generateThemeDesignerResources: .theming file missing in sap.ui.cor
 		options: {
 			projectName: "sap.ui.core",
 			version: "1.2.3",
-			projectNamespace: "sap/ui/core"
-		}
+			projectNamespace: "sap/ui/core",
+		},
 	}), {
-		message: ".theming file for theme base missing in sap.ui.core library source"
+		message: ".theming file for theme base missing in sap.ui.core library source",
 	});
 
 	t.is(ResourceStub.callCount, 1);
@@ -1003,9 +1003,9 @@ test.serial("generateThemeDesignerResources: .theming file missing in sap.ui.cor
 			aFiles: [
 				"library",
 				"global",
-				"css_variables"
-			]
-		}, null, 2)
+				"css_variables",
+			],
+		}, null, 2),
 	}]);
 	const libraryDotTheming = ResourceStub.getCall(0).returnValue;
 
@@ -1020,7 +1020,7 @@ test.serial("generateThemeDesignerResources: Failed to extract library name from
 	const {sinon, generateThemeDesignerResources} = t.context;
 
 	const librarySourceLessResource = {
-		getPath: sinon.stub().returns("/resources/foo/library.source.less")
+		getPath: sinon.stub().returns("/resources/foo/library.source.less"),
 	};
 
 	const workspace = {
@@ -1031,7 +1031,7 @@ test.serial("generateThemeDesignerResources: Failed to extract library name from
 				return [];
 			}
 		}),
-		write: sinon.stub()
+		write: sinon.stub(),
 	};
 	const dependencies = {};
 
@@ -1040,10 +1040,10 @@ test.serial("generateThemeDesignerResources: Failed to extract library name from
 		dependencies,
 		options: {
 			projectName: "sap.ui.demo.lib",
-			version: "1.2.3"
-		}
+			version: "1.2.3",
+		},
 	}), {
-		message: "Failed to extract library name from theme folder path: /resources/foo"
+		message: "Failed to extract library name from theme folder path: /resources/foo",
 	});
 
 	t.is(workspace.write.callCount, 0);

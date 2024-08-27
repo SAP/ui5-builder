@@ -8,7 +8,7 @@ test("Task retrieval", async (t) => {
 	t.true(taskInfoPromise instanceof Promise);
 	const taskInfo = await taskInfoPromise;
 	t.deepEqual(taskInfo, {
-		task: escapeNonAsciiCharacters
+		task: escapeNonAsciiCharacters,
 	}, "Expected task retrieved");
 });
 

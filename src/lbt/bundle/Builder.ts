@@ -28,18 +28,30 @@ const strReplacements = {
 	"\t": "\\t",
 	"\n": "\\n",
 	"'": "\\'",
-	"\\": "\\\\"
+	"\\": "\\\\",
 };
 
+/**
+ *
+ * @param str
+ */
 function makeStringLiteral(str) {
-	return "'" + String(str).replace(/['\r\n\t\\]/g, function(char) {
+	return "'" + String(str).replace(/['\r\n\t\\]/g, function (char) {
 		return strReplacements[char];
 	}) + "'";
 }
+/**
+ *
+ * @param str
+ */
 function removeHashbang(str) {
 	return str.replace(/^#!(.*)/, "");
 }
 
+/**
+ *
+ * @param resolvedBundle
+ */
 function isEmptyBundle(resolvedBundle) {
 	return resolvedBundle.sections.every((section) => section.modules.length === 0);
 }
@@ -70,7 +82,7 @@ class BundleBuilder {
 
 	generateAfterPreloads(section) {
 		let str = `}`;
-		if ( section.name ) {
+		if (section.name) {
 			str += `,"${section.name}"`;
 		}
 		str += `);\n`;
@@ -110,11 +122,11 @@ class BundleBuilder {
 	}
 
 	async createBundle(module, options) {
-		if ( options.numberOfParts > 1 ) {
+		if (options.numberOfParts > 1) {
 			const bundleInfos = [];
-			const submodules = await this.splitter.run( module, options );
-			for ( const submodule of submodules ) {
-				bundleInfos.push( await this._createBundle(submodule, options) );
+			const submodules = await this.splitter.run(module, options);
+			for (const submodule of submodules) {
+				bundleInfos.push(await this._createBundle(submodule, options));
 			}
 			return bundleInfos;
 		} else {
@@ -124,7 +136,7 @@ class BundleBuilder {
 
 	async _createBundle(module, options) {
 		const resolvedModule = await this.resolver.resolve(module);
-		if ( options.skipIfEmpty && isEmptyBundle(resolvedModule) ) {
+		if (options.skipIfEmpty && isEmptyBundle(resolvedModule)) {
 			log.verbose("  Skipping empty bundle " + module.name);
 			return undefined;
 		}
@@ -139,7 +151,7 @@ class BundleBuilder {
 		// when decorateBootstrapModule is false,
 		// we don't write the optimized flag and don't write the try catch wrapper
 		this.shouldDecorate = this.options.decorateBootstrapModule &&
-				this.executesLoaderOrCore(resolvedModule);
+			this.executesLoaderOrCore(resolvedModule);
 		// TODO is the following condition ok or should the availability of jquery.sap.global.js be configurable?
 		this.jqglobalAvailable = !resolvedModule.containsGlobal;
 		this.openModule(resolvedModule.name);
@@ -154,19 +166,19 @@ class BundleBuilder {
 
 		let bundleInfos = [];
 		// create all sections in sequence
-		for ( const section of resolvedModule.sections ) {
+		for (const section of resolvedModule.sections) {
 			log.verbose(`    Adding section${section.name ? " '" + section.name + "'" : ""} of type ${section.mode}`);
-			if ( section.mode === SectionType.BundleInfo ) {
+			if (section.mode === SectionType.BundleInfo) {
 				bundleInfos.push(section);
 			} else {
-				if ( bundleInfos.length > 0 ) {
+				if (bundleInfos.length > 0) {
 					await this.writeBundleInfos(bundleInfos);
 					bundleInfos = [];
 				}
 				await this.addSection(section);
 			}
 		}
-		if ( bundleInfos.length > 0 ) {
+		if (bundleInfos.length > 0) {
 			await this.writeBundleInfos(bundleInfos);
 			bundleInfos = [];
 		}
@@ -180,7 +192,7 @@ class BundleBuilder {
 			name: module.name,
 			content: this.outW.toString(),
 			sourceMap: this.options.sourceMap ? JSON.stringify(this._sourceMap) : null,
-			bundleInfo: bundleInfo
+			bundleInfo: bundleInfo,
 		};
 	}
 
@@ -189,9 +201,9 @@ class BundleBuilder {
 		this.missingRawDeclarations = [];
 
 		this.outW.writeln("//@ui5-bundle " + module);
-		if ( this.shouldDecorate ) {
+		if (this.shouldDecorate) {
 			this.outW.writeln(`window["sap-ui-optimized"] = true;`);
-			if ( this.options.addTryCatchRestartWrapper ) {
+			if (this.options.addTryCatchRestartWrapper) {
 				this.outW.writeln(`try {`);
 			}
 		}
@@ -203,7 +215,7 @@ class BundleBuilder {
 		const sourceMap = createTransientSourceMap({
 			moduleName: transientSourceName,
 			moduleContent: content,
-			includeContent: true
+			includeContent: true,
 		});
 		this.addSourceMap(this._bundleName, sourceMap);
 		this.outW.write(content);
@@ -211,8 +223,8 @@ class BundleBuilder {
 	}
 
 	closeModule(resolvedModule) {
-		if ( resolvedModule.containsCoreSync ) {
-			if ( this.getUi5MajorVersion() >= 2 ) {
+		if (resolvedModule.containsCoreSync) {
+			if (this.getUi5MajorVersion() >= 2) {
 				throw new Error("Requiring sap/ui/core/Core synchronously is not supported as of UI5 Version 2");
 			}
 			this.outW.ensureNewLine(); // for clarity and to avoid issues with single line comments
@@ -220,7 +232,7 @@ class BundleBuilder {
 				`// as this module contains the Core, we ensure that the Core has been booted\n` +
 				`sap.ui.getCore?.().boot?.();`);
 		}
-		if ( this.shouldDecorate && this.options.addTryCatchRestartWrapper ) {
+		if (this.shouldDecorate && this.options.addTryCatchRestartWrapper) {
 			this.outW.ensureNewLine(); // for clarity and to avoid issues with single line comments
 			this.writeWithSourceMap(
 				`} catch(oError) {\n` +
@@ -236,33 +248,33 @@ class BundleBuilder {
 		this.ensureRawDeclarations();
 
 		switch (section.mode) {
-		case SectionType.Provided:
+			case SectionType.Provided:
 			// do nothing
-			return undefined; // nothing to wait for
-		case SectionType.Raw:
-			return await this.writeRaw(section);
-		case SectionType.Preload:
-			return await this.writePreloadFunction(section);
-		case SectionType.BundleInfo:
-			return await this.writeBundleInfos([section]);
-		case SectionType.Require:
-			return await this.writeRequires(section);
-		case SectionType.DepCache:
-			return await this.writeDepCache(section);
-		default:
-			throw new Error("unknown section mode " + section.mode);
+				return undefined; // nothing to wait for
+			case SectionType.Raw:
+				return await this.writeRaw(section);
+			case SectionType.Preload:
+				return await this.writePreloadFunction(section);
+			case SectionType.BundleInfo:
+				return await this.writeBundleInfos([section]);
+			case SectionType.Require:
+				return await this.writeRequires(section);
+			case SectionType.DepCache:
+				return await this.writeDepCache(section);
+			default:
+				throw new Error("unknown section mode " + section.mode);
 		}
 	}
 
 	ensureRawDeclarations() {
-		if ( this.missingRawDeclarations.length && this.jqglobalAvailable ) {
+		if (this.missingRawDeclarations.length && this.jqglobalAvailable) {
 			this.outW.ensureNewLine(); // for clarity and to avoid issues with single line comments
 			/* NODE-TODO, moduleName is not defined
 				It should contain the name of the module which is currently build (1st parameter of _createBundle).
 				But when the ui5loader is present, declareRawModules should be forced to false anyhow.
 			this.outW.writeln("jQuery.sap.declare('", toUI5LegacyName(moduleName), "');");
 			*/
-			this.missingRawDeclarations.forEach( (module) => {
+			this.missingRawDeclarations.forEach((module) => {
 				// 2nd parameter set to 'false': do not create namespaces - they nevertheless would come too late
 				this.outW.writeln(`jQuery.sap.declare('${toUI5LegacyName(module)}', false);`);
 			});
@@ -273,19 +285,19 @@ class BundleBuilder {
 	// TODO check that there are only JS modules contained
 	async writeRaw(section) {
 		// write all modules in sequence
-		for ( const moduleName of section.modules ) {
+		for (const moduleName of section.modules) {
 			const resource = await this.pool.findResourceWithInfo(moduleName);
-			if ( resource != null ) {
+			if (resource != null) {
 				this.outW.startSegment(moduleName);
 				this.outW.ensureNewLine();
 				this.outW.writeln("//@ui5-bundle-raw-include " + moduleName);
 				await this.writeRawModule(moduleName, resource);
 				const compressedSize = this.outW.endSegment();
 				log.verbose(`    ${moduleName} (${resource.info != null ? resource.info.size : -1},${compressedSize})`);
-				if ( section.declareRawModules ) {
+				if (section.declareRawModules) {
 					this.missingRawDeclarations.push(moduleName);
 				}
-				if ( moduleName === MODULE__JQUERY_SAP_GLOBAL ) {
+				if (moduleName === MODULE__JQUERY_SAP_GLOBAL) {
 					this.jqglobalAvailable = true;
 				}
 			} else {
@@ -304,7 +316,7 @@ class BundleBuilder {
 				await this.getSourceMapForModule({
 					moduleName,
 					moduleContent,
-					resourcePath: resource.getPath()
+					resourcePath: resource.getPath(),
 				}));
 			this.addSourceMap(moduleName, moduleSourceMap);
 		}
@@ -322,13 +334,13 @@ class BundleBuilder {
 		this.beforeWriteFunctionPreloadSection(sequence);
 
 		await this.rewriteAMDModules(sequence);
-		if ( sequence.length > 0 ) {
+		if (sequence.length > 0) {
 			this.writeWithSourceMap(`sap.ui.require.preload({\n`);
 			let i = 0;
-			for ( const module of sequence ) {
+			for (const module of sequence) {
 				const resource = await this.pool.findResourceWithInfo(module);
-				if ( resource != null ) {
-					if ( i>0 ) {
+				if (resource != null) {
+					if (i > 0) {
 						outW.writeln(",");
 					}
 					outW.write(`\t"${module.toString()}":`);
@@ -342,7 +354,7 @@ class BundleBuilder {
 				}
 			}
 
-			if ( i > 0 ) {
+			if (i > 0) {
 				outW.writeln();
 			}
 			outW.write(this.generateAfterPreloads(section));
@@ -385,9 +397,9 @@ class BundleBuilder {
 		this._sourceMap.sections.push({
 			offset: {
 				line: this.outW.lineOffset,
-				column: this.outW.columnOffset
+				column: this.outW.columnOffset,
 			},
-			map
+			map,
 		});
 	}
 
@@ -395,8 +407,8 @@ class BundleBuilder {
 		const outW = this.outW;
 
 		const remaining = [];
-		for ( const moduleName of sequence ) {
-			if ( /\.js$/.test(moduleName) ) {
+		for (const moduleName of sequence) {
+			if (moduleName.endsWith(".js")) {
 				const resource = await this.pool.findResourceWithInfo(moduleName);
 
 				if (resource.info?.requiresTopLevelScope && !this.allowStringBundling) {
@@ -412,12 +424,12 @@ class BundleBuilder {
 						await this.getSourceMapForModule({
 							moduleName,
 							moduleContent,
-							resourcePath: resource.getPath()
+							resourcePath: resource.getPath(),
 						}));
 				}
 
 				const rewriteRes = await rewriteDefine({
-					moduleName, moduleContent, moduleSourceMap
+					moduleName, moduleContent, moduleSourceMap,
 				});
 				if (rewriteRes) {
 					const {moduleContent, moduleSourceMap} = rewriteRes;
@@ -446,15 +458,15 @@ class BundleBuilder {
 
 	/**
 	 *
-	 * @param {string} moduleName module name
-	 * @param {ModuleInfo} info
-	 * @param {@ui5/fs/Resource} resource
-	 * @returns {Promise<boolean>}
+	 * @param moduleName module name
+	 * @param info
+	 * @param resource
+	 * @returns
 	 */
 	async writePreloadModule(moduleName: string, info: ModuleInfo, resource) {
 		const outW = this.outW;
 
-		if ( /\.js$/.test(moduleName) && (info == null || !info.requiresTopLevelScope) ) {
+		if (moduleName.endsWith(".js") && (!info?.requiresTopLevelScope)) {
 			outW.writeln(`function(){`);
 			// The module should be written to a new line in order for dev-tools to map breakpoints to it
 			outW.ensureNewLine();
@@ -466,7 +478,7 @@ class BundleBuilder {
 					await this.getSourceMapForModule({
 						moduleName,
 						moduleContent,
-						resourcePath: resource.getPath()
+						resourcePath: resource.getPath(),
 					}));
 
 				this.addSourceMap(moduleName, moduleSourceMap);
@@ -475,7 +487,7 @@ class BundleBuilder {
 			this.exportGlobalNames(info);
 			outW.ensureNewLine();
 			outW.write(`}`);
-		} else if ( /\.js$/.test(moduleName) /* implicitly: && info != null && info.requiresTopLevelScope */ ) {
+		} else if (moduleName.endsWith(".js") /* implicitly: && info != null && info.requiresTopLevelScope */) {
 			log.warn(
 				`Module ${moduleName} requires top level scope and can only be embedded as a string (requires 'eval')`);
 			let moduleContent = (await resource.buffer()).toString();
@@ -489,27 +501,27 @@ class BundleBuilder {
 					await this.getSourceMapForModule({
 						moduleName,
 						moduleContent,
-						resourcePath: resource.getPath()
+						resourcePath: resource.getPath(),
 					}));
 			}
-			outW.write( makeStringLiteral(moduleContent) );
-		} else if ( /\.html$/.test(moduleName) ) {
+			outW.write(makeStringLiteral(moduleContent));
+		} else if (moduleName.endsWith(".html")) {
 			const fileContent = (await resource.buffer()).toString();
-			outW.write( makeStringLiteral( fileContent ) );
-		} else if ( /\.json$/.test(moduleName) ) {
+			outW.write(makeStringLiteral(fileContent));
+		} else if (moduleName.endsWith(".json")) {
 			let fileContent = (await resource.buffer()).toString();
-			if ( this.optimize ) {
+			if (this.optimize) {
 				try {
-					fileContent = JSON.stringify( JSON.parse( fileContent) );
+					fileContent = JSON.stringify(JSON.parse(fileContent));
 				} catch (e) {
 					log.verbose(`Failed to parse JSON file ${moduleName}. Ignoring error, skipping compression.`);
 					log.verbose(e);
 				}
 			}
 			outW.write(makeStringLiteral(fileContent));
-		} else if ( /\.xml$/.test(moduleName) ) {
+		} else if (moduleName.endsWith(".xml")) {
 			let fileContent = (await resource.buffer()).toString();
-			if ( this.optimize ) {
+			if (this.optimize) {
 				// For XML we use the pretty data
 				// Do not minify if XML(View) contains an <*:pre> tag,
 				// because whitespace of HTML <pre> should be preserved (should only happen rarely)
@@ -517,13 +529,13 @@ class BundleBuilder {
 					fileContent = pd.xmlmin(fileContent, false);
 				}
 			}
-			outW.write( makeStringLiteral( fileContent ) );
-		} else if ( /\.properties$/.test(moduleName) ) {
+			outW.write(makeStringLiteral(fileContent));
+		} else if (moduleName.endsWith(".properties")) {
 			// Since the Builder is also used when building non-project resources (e.g. dependencies)
 			// *.properties files should be escaped if encoding option is specified
 			const fileContent = await escapePropertiesFile(resource);
 
-			outW.write( makeStringLiteral( fileContent ) );
+			outW.write(makeStringLiteral(fileContent));
 		} else {
 			log.error("Don't know how to embed module " + moduleName); // TODO throw?
 		}
@@ -534,14 +546,14 @@ class BundleBuilder {
 	/**
 	 * Create exports for globals
 	 *
-	 * @param {ModuleInfo} info
+	 * @param info
 	 */
 	exportGlobalNames(info: ModuleInfo) {
-		if ( !info || !info.exposedGlobals || !info.exposedGlobals.length ) {
+		if (!info?.exposedGlobals?.length) {
 			return;
 		}
 		this.outW.ensureNewLine();
-		info.exposedGlobals.forEach( (globalName) => {
+		info.exposedGlobals.forEach((globalName) => {
 			// Note: globalName can be assumed to be a valid identifier as it is used as variable name anyhow
 			this.writeWithSourceMap(`this.${globalName}=${globalName};\n`);
 		});
@@ -556,7 +568,7 @@ class BundleBuilder {
 	}
 
 	async checkForStringBundling(moduleName) {
-		if (!this.allowStringBundling && /\.js$/.test(moduleName)) {
+		if (!this.allowStringBundling && moduleName.endsWith(".js")) {
 			const resource = await this.pool.findResourceWithInfo(moduleName);
 			if (resource.info?.requiresTopLevelScope) {
 				this.logStringBundlingError(moduleName);
@@ -570,7 +582,7 @@ class BundleBuilder {
 		this.outW.ensureNewLine();
 
 		let bundleInfoStr = "";
-		if ( sections.length > 0 ) {
+		if (sections.length > 0) {
 			bundleInfoStr = "sap.ui.loader.config({bundlesUI5:{\n";
 			let initial = true;
 			for (let idx = 0; idx < sections.length; idx++) {
@@ -587,12 +599,12 @@ class BundleBuilder {
 				}
 
 				if (!section.name) {
-					throw new Error(`A 'bundleInfo' section is missing the mandatory 'name' property.` );
+					throw new Error(`A 'bundleInfo' section is missing the mandatory 'name' property.`);
 				}
 				if (!path.extname(section.name)) {
 					log.warn(`BundleInfo section name '${section.name}' is missing a file extension. ` +
-						`The info might not work as expected. ` +
-						`The name must match the bundle filename (incl. extension such as '.js')`);
+					`The info might not work as expected. ` +
+					`The name must match the bundle filename (incl. extension such as '.js')`);
 				}
 				bundleInfoStr += `"${section.name}":[${modules.map(makeStringLiteral).join(",")}]`;
 			}
@@ -608,7 +620,7 @@ class BundleBuilder {
 		}
 		this.outW.ensureNewLine();
 		if (section.async === false) {
-			section.modules.forEach( (module) => {
+			section.modules.forEach((module) => {
 				this.writeWithSourceMap(this.generateRequireSync(module));
 			});
 		} else {
@@ -696,10 +708,10 @@ class BundleBuilder {
 					}
 				} else if (httpPattern.test(sourceMapUrl)) {
 					log.warn(`Source map reference in module ${moduleName} is an absolute URL. ` +
-						`Currently, only relative URLs are supported.`);
+					`Currently, only relative URLs are supported.`);
 				} else if (path.posix.isAbsolute(sourceMapUrl)) {
 					log.warn(`Source map reference in module ${moduleName} is an absolute path. ` +
-						`Currently, only relative paths are supported.`);
+					`Currently, only relative paths are supported.`);
 				} else {
 					const sourceMapPath = path.posix.join(path.posix.dirname(moduleName), sourceMapUrl);
 
@@ -715,7 +727,7 @@ class BundleBuilder {
 		} else {
 			const sourceMapFileCandidate = resourcePath.slice("/resources/".length) + ".map";
 			log.silly(`Could not find a sourceMappingURL reference in content of module ${moduleName}. ` +
-				`Attempting to find a source map resource based on the module's path: ${sourceMapFileCandidate}`);
+			`Attempting to find a source map resource based on the module's path: ${sourceMapFileCandidate}`);
 			try {
 				const sourceMapResource = await this.pool.findResource(sourceMapFileCandidate);
 				moduleSourceMap = (await sourceMapResource.buffer()).toString();
@@ -724,7 +736,6 @@ class BundleBuilder {
 				log.silly(`Could not find a source map for module ${moduleName}: ${e.message}`);
 			}
 		}
-
 
 		if (moduleSourceMap) {
 			moduleSourceMap = JSON.parse(moduleSourceMap);
@@ -737,20 +748,20 @@ class BundleBuilder {
 				);
 				moduleSourceMap = createTransientSourceMap({
 					moduleName: path.posix.basename(resourcePath),
-					moduleContent
+					moduleContent,
 				});
 			}
 		} else {
 			log.verbose(`No source map available for module ${moduleName}. Creating transient source map...`);
 			moduleSourceMap = createTransientSourceMap({
 				moduleName: path.posix.basename(resourcePath),
-				moduleContent
+				moduleContent,
 			});
 		}
 
 		return {
 			moduleSourceMap,
-			moduleContent: newModuleContent
+			moduleContent: newModuleContent,
 		};
 	}
 }
@@ -765,6 +776,13 @@ const CALL_SAP_UI_DEFINE = ["sap", "ui", "define"];
  * @returns {Promise<object|null>} Object containing <code>moduleContent</code> and
  * 	<code>moduleSourceMap</code> (if one was provided) or <code>null</code> if no rewrite was applicable
  */
+/**
+ *
+ * @param root0
+ * @param root0.moduleName
+ * @param root0.moduleContent
+ * @param root0.moduleSourceMap
+ */
 async function rewriteDefine({moduleName, moduleContent, moduleSourceMap}) {
 	let ast;
 	try {
@@ -775,14 +793,14 @@ async function rewriteDefine({moduleName, moduleContent, moduleSourceMap}) {
 		return {};
 	}
 
-	if ( ast.type === Syntax.Program &&
-			ast.body.length === 1 && ast.body[0].type === Syntax.ExpressionStatement &&
-			isMethodCall(ast.body[0].expression, CALL_SAP_UI_DEFINE) ) {
+	if (ast.type === Syntax.Program &&
+		ast.body.length === 1 && ast.body[0].type === Syntax.ExpressionStatement &&
+		isMethodCall(ast.body[0].expression, CALL_SAP_UI_DEFINE)) {
 		const changes = [];
 		const defineCall = ast.body[0].expression;
 
 		// Inject module name if missing
-		if ( defineCall.arguments.length == 0 ||
+		if (defineCall.arguments.length == 0 ||
 			![Syntax.Literal, Syntax.TemplateLiteral].includes(defineCall.arguments[0].type)) {
 			let value = `"${toRequireJSName(moduleName)}"`;
 			let index;
@@ -798,18 +816,18 @@ async function rewriteDefine({moduleName, moduleContent, moduleSourceMap}) {
 
 			changes.push({
 				index,
-				value
+				value,
 			});
 		}
 
 		// rewrite sap.ui.define to sap.ui.predefine
-		if ( defineCall.callee.type === Syntax.MemberExpression &&
-				defineCall.callee.property.type === Syntax.Identifier &&
-				defineCall.callee.property.name === "define" ) {
+		if (defineCall.callee.type === Syntax.MemberExpression &&
+			defineCall.callee.property.type === Syntax.Identifier &&
+			defineCall.callee.property.name === "define") {
 			changes.push({
 				// asterisk marks the index: sap.ui.*define()
 				index: defineCall.callee.property.range[0],
-				value: "pre"
+				value: "pre",
 			});
 		}
 
@@ -825,6 +843,12 @@ async function rewriteDefine({moduleName, moduleContent, moduleSourceMap}) {
  * @param {object} [moduleSourceMap] Optional source map that should be aligned with the content change
  * @returns {Promise<object>} Object containing <code>moduleContent</code> and
  * 								<code>moduleSourceMap</code> (if one was provided)
+ */
+/**
+ *
+ * @param changes
+ * @param moduleContent
+ * @param moduleSourceMap
  */
 async function transform(changes, moduleContent, moduleSourceMap) {
 	const mappingChanges = [];
@@ -849,7 +873,7 @@ async function transform(changes, moduleContent, moduleSourceMap) {
 			mappingChanges.unshift({
 				line,
 				column,
-				columnDiff: change.value.length
+				columnDiff: change.value.length,
 			});
 		}
 
@@ -889,10 +913,17 @@ async function transform(changes, moduleContent, moduleSourceMap) {
 
 	return {
 		moduleContent: transformedCode,
-		moduleSourceMap
+		moduleSourceMap,
 	};
 }
 
+/**
+ *
+ * @param root0
+ * @param root0.moduleName
+ * @param root0.moduleContent
+ * @param root0.includeContent
+ */
 function createTransientSourceMap({moduleName, moduleContent, includeContent = false}) {
 	const sourceMap = {
 		version: 3,
@@ -901,7 +932,7 @@ function createTransientSourceMap({moduleName, moduleContent, includeContent = f
 		// TODO: check whether moduleContent.match() with \n is better w.r.t performance/memory usage
 		mappings: encodeMappings(moduleContent.split("\n").map((line, i) => {
 			return [[0, 0, i, 0]];
-		}))
+		})),
 	};
 	if (includeContent) {
 		sourceMap.sourcesContent = [moduleContent];
@@ -912,4 +943,5 @@ function createTransientSourceMap({moduleName, moduleContent, includeContent = f
 export default BundleBuilder;
 
 export const __localFunctions__ = (process.env.NODE_ENV === "test") ?
-	{rewriteDefine, createTransientSourceMap} : undefined;
+		{rewriteDefine, createTransientSourceMap} :
+	undefined;

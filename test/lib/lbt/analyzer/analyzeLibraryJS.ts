@@ -12,7 +12,7 @@ function createMockResource(content, path, name = "library.js") {
 		},
 		getName() {
 			return name;
-		}
+		},
 	};
 }
 
@@ -65,9 +65,9 @@ sap.ui.define([
 	const analyzeLibraryJSWithStubbedLogger = await esmock("../../../../lib/lbt/analyzer/analyzeLibraryJS.js", {
 		"@ui5/logger": {
 			getLogger: () => ({
-				error: errorLogStub
-			})
-		}
+				error: errorLogStub,
+			}),
+		},
 	});
 
 	const mockResource = createMockResource(libraryJS, librayJSPath);
@@ -84,7 +84,6 @@ sap.ui.define([
 		" for a library initialization call in 'library/test/library.js'",
 		"The error log message of the first call is correct");
 });
-
 
 test.serial("analyze: library.js with SpreadExpression", async (t) => {
 	const libraryJS = `
@@ -109,9 +108,9 @@ sap.ui.define([
 	const analyzeLibraryJSWithStubbedLogger = await esmock("../../../../lib/lbt/analyzer/analyzeLibraryJS", {
 		"@ui5/logger": {
 			getLogger: () => ({
-				error: errorLogStub
-			})
-		}
+				error: errorLogStub,
+			}),
+		},
 	});
 
 	const mockResource = createMockResource(libraryJS, librayJSPath);
@@ -144,9 +143,9 @@ sap.ui.define([
 	const analyzeLibraryJSWithStubbedLogger = await esmock("../../../../lib/lbt/analyzer/analyzeLibraryJS", {
 		"@ui5/logger": {
 			getLogger: () => ({
-				error: errorLogStub
-			})
-		}
+				error: errorLogStub,
+			}),
+		},
 	});
 
 	const mockResource = createMockResource(libraryJS, librayJSPath);
@@ -181,16 +180,15 @@ sap.ui.define([
 	const analyzeLibraryJSWithStubbedLogger = await esmock("../../../../lib/lbt/analyzer/analyzeLibraryJS", {
 		"@ui5/logger": {
 			getLogger: () => ({
-				error: errorLogStub
-			})
-		}
+				error: errorLogStub,
+			}),
+		},
 	});
 
 	let mockResource = createMockResource(libraryJS, librayJSPath, librayName);
 	let result = await analyzeLibraryJSWithStubbedLogger(mockResource);
 	t.is(errorLogStub.callCount, 0, "Error log is not called");
 	t.is(result.elements[0], "library.test.MenuItem", "The libraryjs is correctly analyzed");
-
 
 	libraryJS = `
 sap.ui.define([
@@ -237,9 +235,9 @@ sap.ui.define([
 	const analyzeLibraryJSWithStubbedLogger = await esmock("../../../../lib/lbt/analyzer/analyzeLibraryJS", {
 		"@ui5/logger": {
 			getLogger: () => ({
-				error: errorLogStub
-			})
-		}
+				error: errorLogStub,
+			}),
+		},
 	});
 
 	const mockResource = createMockResource(libraryJS, librayJSPath, librayName);
@@ -295,9 +293,9 @@ sap.ui.define([
 	const analyzeLibraryJSWithStubbedLogger = await esmock("../../../../lib/lbt/analyzer/analyzeLibraryJS.js", {
 		"@ui5/logger": {
 			getLogger: () => ({
-				error: errorLogStub
-			})
-		}
+				error: errorLogStub,
+			}),
+		},
 	});
 
 	const mockResource = createMockResource(libraryJS, librayJSPath);
@@ -352,9 +350,9 @@ sap.ui.define([
 	const analyzeLibraryJSWithStubbedLogger = await esmock("../../../../lib/lbt/analyzer/analyzeLibraryJS.js", {
 		"@ui5/logger": {
 			getLogger: () => ({
-				error: errorLogStub
-			})
-		}
+				error: errorLogStub,
+			}),
+		},
 	});
 
 	const mockResource = createMockResource(libraryJS, librayJSPath);

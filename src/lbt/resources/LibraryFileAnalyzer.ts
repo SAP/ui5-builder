@@ -9,14 +9,19 @@ const log = getLogger("lbt:resources:LibraryFileAnalyzer");
 const parser = new xml2js.Parser({
 	// explicitChildren: true,
 	preserveChildrenOrder: true,
-	xmlns: true
+	xmlns: true,
 });
 
 /*
  * Helper to simplify access to node attributes.
  */
+/**
+ *
+ * @param node
+ * @param attr
+ */
 function getAttribute(node, attr) {
-	return (node.$ && node.$[attr] && node.$[attr].value) || null;
+	return (node.$?.[attr]?.value) || null;
 }
 
 /*
@@ -24,46 +29,54 @@ function getAttribute(node, attr) {
  * @param {object} rawModule XML2JS object, representing a &lt;raw-module&gt; node from a .library file
  * @returns {{name:string,dependencies?:string[],requiresTopLevelScope?:boolean,ignoredGlobals?:string[]}
  */
+/**
+ *
+ * @param rawModule
+ */
 function createRawInfo(rawModule) {
 	const name = getAttribute(rawModule, "name");
-	if ( name ) {
+	if (name) {
 		const rawInfo = {
 			name,
 			rawModule: true,
-			dependencies: []
+			dependencies: [],
 		};
 		const deps = getAttribute(rawModule, "depends");
-		if ( deps != null ) {
+		if (deps != null) {
 			rawInfo.dependencies = deps.trim().split(/\s*,\s*/);
 		}
 		const requiresTopLevelScope = getAttribute(rawModule, "requiresTopLevelScope");
-		if ( requiresTopLevelScope ) {
+		if (requiresTopLevelScope) {
 			rawInfo.requiresTopLevelScope = requiresTopLevelScope === "true";
 		}
 		const ignoredGlobals = getAttribute(rawModule, "ignoredGlobals");
-		if ( ignoredGlobals ) {
+		if (ignoredGlobals) {
 			rawInfo.ignoredGlobals = ignoredGlobals.trim().split(/\s*,\s*/);
 		}
 		return rawInfo;
 	}
 }
 
-export function getDependencyInfos( name, content ) {
+/**
+ *
+ * @param name
+ * @param content
+ */
+export function getDependencyInfos(name, content) {
 	const infos = Object.create(null);
 	parser.parseString(content, (err, result) => {
-		if ( result &&
-				result.library &&
-				Array.isArray(result.library.appData) &&
-				result.library.appData.length >= 1 &&
-				Array.isArray(result.library.appData[0].packaging) ) {
-			result.library.appData[0].packaging.forEach( (packaging) => {
-				if ( packaging.$ns &&
-						packaging.$ns.uri === "http://www.sap.com/ui5/buildext/packaging" &&
-						Array.isArray(packaging["module-infos"]) ) {
-					packaging["module-infos"].forEach( function(moduleInfos) {
-						moduleInfos["raw-module"] && moduleInfos["raw-module"].forEach( (rawModule) => {
+		if (result?.library &&
+			Array.isArray(result.library.appData) &&
+			result.library.appData.length >= 1 &&
+			Array.isArray(result.library.appData[0].packaging)) {
+			result.library.appData[0].packaging.forEach((packaging) => {
+				if (packaging.$ns &&
+					packaging.$ns.uri === "http://www.sap.com/ui5/buildext/packaging" &&
+					Array.isArray(packaging["module-infos"])) {
+					packaging["module-infos"].forEach(function (moduleInfos) {
+						moduleInfos["raw-module"]?.forEach((rawModule) => {
 							const rawInfo = createRawInfo(rawModule);
-							if ( rawInfo ) {
+							if (rawInfo) {
 								log.verbose(name + " rawInfo: " + JSON.stringify(rawInfo));
 								infos[rawInfo.name] = rawInfo;
 							}

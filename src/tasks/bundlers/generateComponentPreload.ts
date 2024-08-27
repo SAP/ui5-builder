@@ -6,42 +6,37 @@ const log = getLogger("builder:tasks:bundlers:generateComponentPreload");
 import {negateFilters} from "../../lbt/resources/ResourceFilterList.js";
 
 /**
- * @public
  * @module @ui5/builder/tasks/bundlers/generateComponentPreload
  */
 
 /**
  * Task to for application bundling.
  *
- * @public
- * @function default
- * @static
- *
- * @param {object} parameters Parameters
- * @param {@ui5/fs/DuplexCollection} parameters.workspace DuplexCollection to read and write files
- * @param {@ui5/project/build/helpers/TaskUtil|object} [parameters.taskUtil] TaskUtil
- * @param {object} parameters.options Options
- * @param {string} parameters.options.projectName Project name
- * @param {string[]} [parameters.options.excludes=[]] List of modules declared as glob patterns (resource name patterns)
+ * @param parameters Parameters
+ * @param parameters.workspace DuplexCollection to read and write files
+ * @param [parameters.taskUtil] TaskUtil
+ * @param parameters.options Options
+ * @param parameters.options.projectName Project name
+ * @param [parameters.options.excludes] List of modules declared as glob patterns (resource name patterns)
  * that should be excluded.
  * A pattern ending with a slash '/' will, similarly to the use of a single '*' or double '**' asterisk,
  * denote an arbitrary number of characters or folder names.
  * Re-includes should be marked with a leading exclamation mark '!'. The order of filters is relevant; a later
  * inclusion overrides an earlier exclusion, and vice versa.
- * @param {string[]} [parameters.options.paths] Array of paths (or glob patterns) for component files
- * @param {string[]} [parameters.options.namespaces] Array of component namespaces
- * @param {string[]} [parameters.options.skipBundles] Names of bundles that should not be created
- * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
+ * @param [parameters.options.paths] Array of paths (or glob patterns) for component files
+ * @param [parameters.options.namespaces] Array of component namespaces
+ * @param [parameters.options.skipBundles] Names of bundles that should not be created
+ * @returns Promise resolving with <code>undefined</code> once data has been written
  */
-export default async function({ workspace, taskUtil, options: { projectName, paths, namespaces, skipBundles = [], excludes = [] } }: object) {
+export default async function ({workspace, taskUtil, options: {projectName, paths, namespaces, skipBundles = [], excludes = []}}: object) {
 	let nonDbgWorkspace = workspace;
 	if (taskUtil) {
 		nonDbgWorkspace = taskUtil.resourceFactory.createFilterReader({
 			reader: workspace,
-			callback: function(resource) {
+			callback: function (resource) {
 				// Remove any debug variants
 				return !taskUtil.getTag(resource, taskUtil.STANDARD_TAGS.IsDebugVariant);
-			}
+			},
 		});
 	}
 
@@ -67,7 +62,7 @@ export default async function({ workspace, taskUtil, options: { projectName, pat
 			allNamespaces = Array.prototype.concat.apply([], allNamespaces);
 			// As this task is often called with a single namespace, also check
 			//	for bad calls like "namespaces: [undefined]"
-			if (!allNamespaces || !allNamespaces.length || !allNamespaces[0]) {
+			if (!allNamespaces?.length || !allNamespaces[0]) {
 				throw new Error("generateComponentPreload: No component namespace(s) " +
 					`found for project: ${projectName}`);
 			}
@@ -87,7 +82,7 @@ export default async function({ workspace, taskUtil, options: { projectName, pat
 					`${namespace}/**/manifest.json`,
 					`${namespace}/changes/changes-bundle.json`,
 					`${namespace}/changes/flexibility-bundle.json`,
-					`!${namespace}/test/`
+					`!${namespace}/test/`,
 				];
 
 				// Add configured excludes for namespace
@@ -121,7 +116,7 @@ export default async function({ workspace, taskUtil, options: { projectName, pat
 						".view.html",
 						".view.json",
 						".view.xml",
-						".properties"
+						".properties",
 					],
 					sections: [
 						{
@@ -129,9 +124,9 @@ export default async function({ workspace, taskUtil, options: { projectName, pat
 							filters: filters,
 							resolve: false,
 							resolveConditional: false,
-							renderer: false
-						}
-					]
+							renderer: false,
+						},
+					],
 				};
 			});
 
@@ -151,16 +146,16 @@ export default async function({ workspace, taskUtil, options: { projectName, pat
 					bundleDefinition: applyDefaultsToBundleDefinition(bundleDefinition, taskUtil),
 					bundleOptions: {
 						ignoreMissingModules: true,
-						optimize: true
+						optimize: true,
 					},
-					allowStringBundling
+					allowStringBundling,
 				};
 				if (coreVersion) {
 					options.targetUi5CoreVersion = coreVersion;
 				}
 				return moduleBundler({
 					resources,
-					options
+					options,
 				});
 			}));
 		})
@@ -175,7 +170,7 @@ export default async function({ workspace, taskUtil, options: { projectName, pat
 				}
 				return Promise.all([
 					workspace.write(bundle),
-					workspace.write(sourceMap)
+					workspace.write(sourceMap),
 				]);
 			}));
 		});

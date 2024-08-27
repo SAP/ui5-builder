@@ -12,16 +12,15 @@ test.beforeEach(async (t) => {
 		"@ui5/logger": {
 			getLogger: sinon.stub().withArgs("lbt:resources:ResourceCollector").returns({
 				warn: t.context.logWarnSpy,
-				verbose: t.context.logVerboseSpy
-			})
-		}
+				verbose: t.context.logVerboseSpy,
+			}),
+		},
 	});
 });
 
 test.afterEach.always((t) => {
 	sinon.restore();
 });
-
 
 test.serial("add: empty constructor dummy params", (t) => {
 	const {ResourceCollector} = t.context;
@@ -39,7 +38,7 @@ test.serial("setExternalResources: empty filters", (t) => {
 	const {ResourceCollector} = t.context;
 	const resourceCollector = new ResourceCollector();
 	resourceCollector.setExternalResources({
-		"testcomp": []
+		testcomp: [],
 	});
 	const orphanFilters = resourceCollector.createOrphanFilters();
 	t.is(orphanFilters.size, 1, "1 filter");
@@ -73,7 +72,7 @@ test.serial("visitResource: library.source.less", async (t) => {
 	t.is(resourceCollector.themePackages.size, 0, "initially there is no theme package");
 	await resourceCollector.visitResource({
 		getPath: () => "/resources/themes/a/library.source.less",
-		getSize: async () => 13
+		getSize: async () => 13,
 	});
 	t.is(resourceCollector.themePackages.size, 1, "theme package was added");
 });
@@ -84,19 +83,19 @@ test.serial("visitResource: ensure proper matching of indicator files", async (t
 	t.is(resourceCollector.components.size, 0, "initially there are no prefixes");
 	await resourceCollector.visitResource({
 		getPath: () => "/resources/projectA/NotComponent.js",
-		getSize: async () => 13
+		getSize: async () => 13,
 	});
 	await resourceCollector.visitResource({
 		getPath: () => "/resources/projectB/notmanifest.json",
-		getSize: async () => 13
+		getSize: async () => 13,
 	});
 	await resourceCollector.visitResource({
 		getPath: () => "/resources/projectC/not.library.yaml",
-		getSize: async () => 13
+		getSize: async () => 13,
 	});
 	await resourceCollector.visitResource({
 		getPath: () => "/resources/projectD/Component.json",
-		getSize: async () => 13
+		getSize: async () => 13,
 	});
 	t.is(resourceCollector.components.size, 0, "No prefixes should be added");
 });
@@ -105,7 +104,7 @@ test.serial("groupResourcesByComponents: external resources", async (t) => {
 	const {ResourceCollector} = t.context;
 	const resourceCollector = new ResourceCollector();
 	resourceCollector.setExternalResources({
-		"testcomp": ["my/file.js"]
+		testcomp: ["my/file.js"],
 	});
 	await resourceCollector.visitResource({getPath: () => "/resources/testcomp/Component.js", getSize: async () => 13});
 	await resourceCollector.visitResource({getPath: () => "/resources/my/file.js", getSize: async () => 13});
@@ -128,18 +127,18 @@ test.serial("determineResourceDetails: properties", async (t) => {
 	const resourceCollector = new ResourceCollector({
 		getModuleInfo: async (moduleInfo) => {
 			return {
-				name: "myName"
+				name: "myName",
 			};
-		}
+		},
 	});
 	await resourceCollector.visitResource({
-		getPath: () => "/resources/mylib/manifest.json", getSize: async () => 13
+		getPath: () => "/resources/mylib/manifest.json", getSize: async () => 13,
 	});
 	await resourceCollector.visitResource({
-		getPath: () => "/resources/mylib/i18n/i18n_de.properties", getSize: async () => 13
+		getPath: () => "/resources/mylib/i18n/i18n_de.properties", getSize: async () => 13,
 	});
 	await resourceCollector.visitResource({
-		getPath: () => "/resources/mylib/i18n/i18n.properties", getSize: async () => 13
+		getPath: () => "/resources/mylib/i18n/i18n.properties", getSize: async () => 13,
 	});
 	await resourceCollector.determineResourceDetails({});
 	resourceCollector.groupResourcesByComponents();
@@ -225,13 +224,13 @@ test.serial("determineResourceDetails: Debug files and non-debug files", async (
 		"/resources/mylib/MyControlA-dbg.js",
 		"/resources/mylib/MyControlA.js",
 		"/resources/mylib/MyControlB.js",
-		"/resources/mylib/MyControlB-dbg.js"
+		"/resources/mylib/MyControlB-dbg.js",
 	].map((resourcePath) => {
 		return resourceCollector.visitResource({getPath: () => resourcePath, getSize: async () => 13});
 	}));
 
 	await resourceCollector.determineResourceDetails({
-		debugResources: ["**/*-dbg.js"]
+		debugResources: ["**/*-dbg.js"],
 	});
 	t.is(enrichWithDependencyInfoStub.callCount, 3, "enrichWithDependencyInfo is called three times");
 	t.is(enrichWithDependencyInfoStub.getCall(0).args[0].name, "mylib/MyControlA.js",
@@ -276,16 +275,16 @@ test.serial("enrichWithDependencyInfo: add infos to resourceinfo", async (t) => 
 					return dep.includes("implicit");
 				},
 				dependencies: [
-					"mydependency.conditional", "mydependency.implicit", "mydependency"
+					"mydependency.conditional", "mydependency.implicit", "mydependency",
 				],
 				subModules: [
-					"mySubmodule"
+					"mySubmodule",
 				],
 				requiresTopLevelScope: true,
 				exposedGlobals: ["myGlobal"],
-				rawModule: true
+				rawModule: true,
 			};
-		}
+		},
 	});
 	const resourceInfo = {};
 	await resourceCollector.enrichWithDependencyInfo(resourceInfo);
@@ -297,7 +296,7 @@ test.serial("enrichWithDependencyInfo: add infos to resourceinfo", async (t) => 
 		included: new Set(["mySubmodule"]),
 		module: "myname",
 		required: new Set(["mydependency"]),
-		requiresTopLevelScope: true
+		requiresTopLevelScope: true,
 	}, "all information gets used for the resourceInfo");
 });
 
@@ -305,18 +304,18 @@ test.serial("integration: Raw Module Info for debug variant", async (t) => {
 	const resources = [
 		new Resource({
 			path: "/resources/mylib/myRawModuleBundle.js",
-			string: `define('a', () => 'a');define('b', ['a'], (a) => a + 'b');`
+			string: `define('a', () => 'a');define('b', ['a'], (a) => a + 'b');`,
 		}),
 		new Resource({
 			path: "/resources/mylib/externalDependency.js",
-			string: `console.log('Foo');`
+			string: `console.log('Foo');`,
 		}),
 		new Resource({
 			path: "/resources/mylib/myRawModuleBundle-dbg.js",
 			string: `
 define('a', () => 'a');
 define('b', ['a'], (a) => a + 'b');
-`
+`,
 		}),
 		new Resource({
 			path: "/resources/mylib/.library",
@@ -343,19 +342,19 @@ define('b', ['a'], (a) => a + 'b');
 						</module-infos>
 					</packaging>
 				</appData>
-			</library>`
+			</library>`,
 		}),
 	];
 
 	const pool = new LocatorResourcePool();
-	await pool.prepare( resources );
+	await pool.prepare(resources);
 
 	const {ResourceCollector} = t.context;
 	const resourceCollector = new ResourceCollector(pool);
 	await Promise.all(resources.map((resource) => resourceCollector.visitResource(resource)));
 
 	await resourceCollector.determineResourceDetails({
-		debugResources: ["**/*-dbg.js"]
+		debugResources: ["**/*-dbg.js"],
 	});
 
 	resourceCollector.groupResourcesByComponents();
@@ -387,11 +386,11 @@ test.serial("integration: Analyze debug bundle", async (t) => {
 	const resources = [
 		new Resource({
 			path: "/resources/mylib/myBundle.js",
-			string: `sap.ui.predefine('a', () => 'a');sap.ui.predefine('b', ['a'], (a) => a + 'b');`
+			string: `sap.ui.predefine('a', () => 'a');sap.ui.predefine('b', ['a'], (a) => a + 'b');`,
 		}),
 		new Resource({
 			path: "/resources/mylib/myBundle-dbg.js",
-			string: `sap.ui.predefine('a', () => 'a');`
+			string: `sap.ui.predefine('a', () => 'a');`,
 		}),
 		new Resource({
 			path: "/resources/mylib/.library",
@@ -408,19 +407,19 @@ test.serial("integration: Analyze debug bundle", async (t) => {
 						<libraryName>sap.ui.core</libraryName>
 					</dependency>
 				</dependencies>
-			</library>`
+			</library>`,
 		}),
 	];
 
 	const pool = new LocatorResourcePool();
-	await pool.prepare( resources );
+	await pool.prepare(resources);
 
 	const {ResourceCollector} = t.context;
 	const resourceCollector = new ResourceCollector(pool);
 	await Promise.all(resources.map((resource) => resourceCollector.visitResource(resource)));
 
 	await resourceCollector.determineResourceDetails({
-		debugResources: ["**/*-dbg.js"]
+		debugResources: ["**/*-dbg.js"],
 	});
 
 	resourceCollector.groupResourcesByComponents();

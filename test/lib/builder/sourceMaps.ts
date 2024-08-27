@@ -17,12 +17,12 @@ test.beforeEach((t) => {
 		return readFile(new URL(filePath, t.context.destURL), {encoding: "utf8"});
 	};
 
-	t.context.assertSourceMapping = async function(t, {
+	t.context.assertSourceMapping = async function (t, {
 		generatedFilePath,
 		sourceFilePath,
 		code,
 		generatedCode = code,
-		tracedName = undefined
+		tracedName = undefined,
 	}) {
 		const generatedFile = await readDestFile(generatedFilePath);
 		const sourceFile = await readDestFile(sourceFilePath);
@@ -37,7 +37,7 @@ test.beforeEach((t) => {
 
 		const tracedCode = originalPositionFor(tracer, {
 			line: codeLineColumn.line,
-			column: codeLineColumn.col - 1
+			column: codeLineColumn.col - 1,
 		});
 
 		t.is(tracedCode.source, sourceFilePath,
@@ -59,12 +59,12 @@ test.serial("Verify source maps (test.application)", async (t) => {
 	const destURL = t.context.destURL = new URL("./dest-standard-build/", applicationDestRootURL);
 
 	const graph = await graphFromPackageDependencies({
-		cwd: fileURLToPath(applicationURL)
+		cwd: fileURLToPath(applicationURL),
 	});
 	graph.setTaskRepository(taskRepository);
 
 	await graph.build({
-		destPath: fileURLToPath(destURL)
+		destPath: fileURLToPath(destURL),
 	});
 
 	// Default mapping created via minify task
@@ -72,44 +72,44 @@ test.serial("Verify source maps (test.application)", async (t) => {
 		generatedFilePath: "JavaScriptSourceWithCopyrightPlaceholder.js",
 		sourceFilePath: "JavaScriptSourceWithCopyrightPlaceholder-dbg.js",
 		code: "sap.ui.define(",
-		tracedName: "sap"
+		tracedName: "sap",
 	});
 	await t.context.assertSourceMapping(t, {
 		generatedFilePath: "JavaScriptSourceWithCopyrightPlaceholder.js",
 		sourceFilePath: "JavaScriptSourceWithCopyrightPlaceholder-dbg.js",
-		code: "functionWithinJavaScriptSourceWithCopyrightPlaceholder"
+		code: "functionWithinJavaScriptSourceWithCopyrightPlaceholder",
 	});
 	await t.context.assertSourceMapping(t, {
 		generatedFilePath: "JavaScriptSourceWithCopyrightPlaceholder.js",
 		sourceFilePath: "JavaScriptSourceWithCopyrightPlaceholder-dbg.js",
 		code: "functionCallWithinJavaScriptSourceWithCopyrightPlaceholder()",
-		tracedName: "functionCallWithinJavaScriptSourceWithCopyrightPlaceholder"
+		tracedName: "functionCallWithinJavaScriptSourceWithCopyrightPlaceholder",
 	});
 
 	// Mapping from debug variant to TypeScript source
 	await t.context.assertSourceMapping(t, {
 		generatedFilePath: "TypeScriptSource-dbg.js",
 		sourceFilePath: "TypeScriptSource.ts",
-		code: "functionWithinTypeScriptSource"
+		code: "functionWithinTypeScriptSource",
 	});
 	await t.context.assertSourceMapping(t, {
 		generatedFilePath: "TypeScriptSource-dbg.js",
 		sourceFilePath: "TypeScriptSource.ts",
 		code: "functionCallWithinTypeScriptSource()",
-		tracedName: "functionCallWithinTypeScriptSource"
+		tracedName: "functionCallWithinTypeScriptSource",
 	});
 
 	// Mapping from minified Javascript to TypeScript source
 	await t.context.assertSourceMapping(t, {
 		generatedFilePath: "TypeScriptSource.js",
 		sourceFilePath: "TypeScriptSource.ts",
-		code: "functionWithinTypeScriptSource"
+		code: "functionWithinTypeScriptSource",
 	});
 	await t.context.assertSourceMapping(t, {
 		generatedFilePath: "TypeScriptSource.js",
 		sourceFilePath: "TypeScriptSource.ts",
 		code: "functionCallWithinTypeScriptSource()",
-		tracedName: "functionCallWithinTypeScriptSource"
+		tracedName: "functionCallWithinTypeScriptSource",
 	});
 
 	// Mapping from Component-preload.js to JavaScript Source
@@ -118,30 +118,30 @@ test.serial("Verify source maps (test.application)", async (t) => {
 		sourceFilePath: "JavaScriptSourceWithCopyrightPlaceholder-dbg.js",
 		code: "sap.ui.define(",
 		generatedCode: "sap.ui.predefine(",
-		tracedName: "sap"
+		tracedName: "sap",
 	});
 	await t.context.assertSourceMapping(t, {
 		generatedFilePath: "Component-preload.js",
 		sourceFilePath: "JavaScriptSourceWithCopyrightPlaceholder-dbg.js",
-		code: "functionWithinJavaScriptSourceWithCopyrightPlaceholder"
+		code: "functionWithinJavaScriptSourceWithCopyrightPlaceholder",
 	});
 	await t.context.assertSourceMapping(t, {
 		generatedFilePath: "Component-preload.js",
 		sourceFilePath: "JavaScriptSourceWithCopyrightPlaceholder-dbg.js",
 		code: "functionCallWithinJavaScriptSourceWithCopyrightPlaceholder()",
-		tracedName: "functionCallWithinJavaScriptSourceWithCopyrightPlaceholder"
+		tracedName: "functionCallWithinJavaScriptSourceWithCopyrightPlaceholder",
 	});
 
 	// Mapping from Component-preload.js to TypeScript Source
 	await t.context.assertSourceMapping(t, {
 		generatedFilePath: "Component-preload.js",
 		sourceFilePath: "TypeScriptSource.ts",
-		code: "functionWithinTypeScriptSource"
+		code: "functionWithinTypeScriptSource",
 	});
 	await t.context.assertSourceMapping(t, {
 		generatedFilePath: "Component-preload.js",
 		sourceFilePath: "TypeScriptSource.ts",
 		code: "functionCallWithinTypeScriptSource()",
-		tracedName: "functionCallWithinTypeScriptSource"
+		tracedName: "functionCallWithinTypeScriptSource",
 	});
 });

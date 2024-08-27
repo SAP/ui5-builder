@@ -9,12 +9,12 @@ test.beforeEach(async (t) => {
 
 	t.context.resourceListCreatorLog = {
 		error: sinon.stub(),
-		verbose: sinon.stub()
+		verbose: sinon.stub(),
 	};
 	t.context.ResourceCollectorLog = {
 		error: sinon.stub(),
 		warn: sinon.stub(),
-		verbose: sinon.stub()
+		verbose: sinon.stub(),
 	};
 
 	class XMLTemplateAnalyzerSpy extends XMLTemplateAnalyzer {}
@@ -23,17 +23,17 @@ test.beforeEach(async (t) => {
 	t.context.resourceListCreator = await esmock("../../../lib/processors/resourceListCreator.js", {
 		"@ui5/logger": {
 			getLogger: sinon.stub().withArgs("builder:processors:resourceListCreator")
-				.returns(t.context.resourceListCreatorLog)
+				.returns(t.context.resourceListCreatorLog),
 		},
 		"../../../lib/lbt/resources/ResourceCollector.js":
 			await esmock("../../../lib/lbt/resources/ResourceCollector.js", {
 				"@ui5/logger": {
 					getLogger: sinon.stub().withArgs("lbt:resources:ResourceCollector")
-						.returns(t.context.ResourceCollectorLog)
-				}
-			})
+						.returns(t.context.ResourceCollectorLog),
+				},
+			}),
 	}, {
-		"../../../lib/lbt/analyzer/XMLTemplateAnalyzer.js": XMLTemplateAnalyzerSpy
+		"../../../lib/lbt/analyzer/XMLTemplateAnalyzer.js": XMLTemplateAnalyzerSpy,
 	});
 });
 
@@ -45,7 +45,7 @@ test.serial("Empty resources", async (t) => {
 	const {resourceListCreator, resourceListCreatorLog} = t.context;
 
 	const result = await resourceListCreator({
-		resources: []
+		resources: [],
 	});
 	t.deepEqual(result, []);
 	t.is(resourceListCreatorLog.error.callCount, 0);
@@ -61,9 +61,9 @@ test.serial("Empty resources but options", async (t) => {
 		resources: [],
 		options: {
 			externalResources: {
-				"mycomp": [".*dbg.js"]
-			}
-		}
+				mycomp: [".*dbg.js"],
+			},
+		},
 	});
 	t.deepEqual(result, []);
 	t.is(resourceListCreatorLog.error.callCount, 0);
@@ -78,10 +78,10 @@ test.serial("Orphaned resources", async (t) => {
 	// Does not fail by default
 	const resource = createResource({
 		path: "/resources/nomodule.foo",
-		string: "bar content"
+		string: "bar content",
 	});
 	await resourceListCreator({
-		resources: [resource]
+		resources: [resource],
 	});
 	t.is(resourceListCreatorLog.error.callCount, 0);
 	t.is(resourceListCreatorLog.verbose.callCount, 1);
@@ -94,14 +94,14 @@ test.serial("Orphaned resources (failOnOrphans: true)", async (t) => {
 
 	const resource = createResource({
 		path: "/resources/nomodule.foo",
-		string: "bar content"
+		string: "bar content",
 	});
 	const errorObject = await t.throwsAsync(() => {
 		return resourceListCreator({
 			resources: [resource],
 			options: {
-				failOnOrphans: true
-			}
+				failOnOrphans: true,
+			},
 		});
 	});
 	t.is(errorObject.message,
@@ -120,14 +120,14 @@ test.serial("Components and themes", async (t) => {
 
 	const componentResource = createResource({
 		path: "/resources/mylib/manifest.json",
-		string: "bar content"
+		string: "bar content",
 	});
 	const themeResource = createResource({
 		path: "/resources/themes/a/.theming",
-		string: "base less content"
+		string: "base less content",
 	});
 	const resources = await resourceListCreator({
-		resources: [componentResource, themeResource]
+		resources: [componentResource, themeResource],
 	});
 
 	t.is(resourceListCreatorLog.error.callCount, 0);
@@ -138,7 +138,6 @@ test.serial("Components and themes", async (t) => {
 		["\tWriting 'mylib/resources.json'"]);
 	t.deepEqual(resourceListCreatorLog.verbose.getCall(2).args,
 		["\tWriting 'themes/a/resources.json'"]);
-
 
 	t.is(resources.length, 2);
 	const libResourceJson = resources[0];
@@ -183,7 +182,7 @@ test.serial("XML View with control resource as dependency", async (t) => {
 
 	const myAppManifestJsonResource = createResource({
 		path: "/resources/my/app/manifest.json",
-		string: JSON.stringify({"sap.app": {"id": "my.app"}})
+		string: JSON.stringify({"sap.app": {id: "my.app"}}),
 	});
 	const myAppXmlViewResource = createResource({
 		path: "/resources/my/app/view/Main.view.xml",
@@ -205,20 +204,20 @@ test.serial("XML View with control resource as dependency", async (t) => {
 			<!-- Nonexistent control within same project (app), should not be listed -->
 			<myapp:NonexistentControl></myapp:NonexistentControl>
 
-		</mvc:View>`
+		</mvc:View>`,
 	});
 	const myAppButtonResource = createResource({
 		path: "/resources/my/app/controls/Button.js",
-		string: ""
+		string: "",
 	});
 	const myLibButtonResource = createResource({
 		path: "/resources/my/lib/Button.js",
-		string: ""
+		string: "",
 	});
 
 	const resourcesJson = await resourceListCreator({
 		resources: [myAppManifestJsonResource, myAppXmlViewResource, myAppButtonResource],
-		dependencyResources: [myLibButtonResource]
+		dependencyResources: [myLibButtonResource],
 	});
 
 	t.is(resourceListCreatorLog.error.callCount, 0);
@@ -269,7 +268,7 @@ test.serial("Bundle containing an XML View with control resource as dependency",
 
 	const myAppManifestJsonResource = createResource({
 		path: "/resources/my/app/manifest.json",
-		string: JSON.stringify({"sap.app": {"id": "my.app"}})
+		string: JSON.stringify({"sap.app": {id: "my.app"}}),
 	});
 	const myAppXmlViewResource = createResource({
 		path: "/resources/my/app/view/Main.view.xml",
@@ -291,7 +290,7 @@ test.serial("Bundle containing an XML View with control resource as dependency",
 			<!-- Nonexistent control within same project (app), should not be listed -->
 			<myapp:NonexistentControl></myapp:NonexistentControl>
 
-		</mvc:View>`
+		</mvc:View>`,
 	});
 	// eslint-disable-next-line max-len
 	const bundledXmlView = `<mvc:View controllerName="my.app.controller.Main" xmlns="my.lib" xmlns:myapp="my.app.controls" xmlns:mvc="sap.ui.core.mvc"><Button></Button><NonexistentControl></NonexistentControl><myapp:Button></myapp:Button><myapp:NonexistentControl></myapp:NonexistentControl></mvc:View>`;
@@ -302,21 +301,21 @@ sap.ui.require.preload({
 	"my/app/view/Main.view.xml": '${bundledXmlView}',
 	"my/app/controls/Button.js": ''
 });
-`
+`,
 	});
 
 	const myAppButtonResource = createResource({
 		path: "/resources/my/app/controls/Button.js",
-		string: ""
+		string: "",
 	});
 	const myLibButtonResource = createResource({
 		path: "/resources/my/lib/Button.js",
-		string: ""
+		string: "",
 	});
 
 	const resourcesJson = await resourceListCreator({
 		resources: [myAppManifestJsonResource, myAppXmlViewResource, myAppButtonResource, myAppBundleResource],
-		dependencyResources: [myLibButtonResource]
+		dependencyResources: [myLibButtonResource],
 	});
 
 	t.is(resourceListCreatorLog.error.callCount, 0);
@@ -387,7 +386,7 @@ test.serial("Bundle containing subModule which is not available within provided 
 
 	const myAppManifestJsonResource = createResource({
 		path: "/resources/my/app/manifest.json",
-		string: JSON.stringify({"sap.app": {"id": "my.app"}})
+		string: JSON.stringify({"sap.app": {id: "my.app"}}),
 	});
 
 	const myAppBundleResource = createResource({
@@ -396,11 +395,11 @@ test.serial("Bundle containing subModule which is not available within provided 
 sap.ui.require.preload({
 	"my/app/view/Main.view.xml": ''
 });
-`
+`,
 	});
 
 	const resourcesJson = await resourceListCreator({
-		resources: [myAppManifestJsonResource, myAppBundleResource]
+		resources: [myAppManifestJsonResource, myAppBundleResource],
 	});
 
 	t.is(resourceListCreatorLog.error.callCount, 0);
@@ -449,18 +448,18 @@ sap.ui.require.preload({
 
 test.serial("Bundles with subModules should not cause analyzing the same module multiple times", async (t) => {
 	const {
-		sinon, resourceListCreator, resourceListCreatorLog, ResourceCollectorLog, XMLTemplateAnalyzerAnalyzeViewSpy
+		sinon, resourceListCreator, resourceListCreatorLog, ResourceCollectorLog, XMLTemplateAnalyzerAnalyzeViewSpy,
 	} = t.context;
 
 	const myAppManifestJsonResource = createResource({
 		path: "/resources/my/app/manifest.json",
-		string: JSON.stringify({"sap.app": {"id": "my.app"}})
+		string: JSON.stringify({"sap.app": {id: "my.app"}}),
 	});
 
 	const xmlView1content = "<mvc:View xmlns:mvc=\"sap.ui.core.mvc\"></mvc:View>";
 	const myAppViewResource1 = createResource({
 		path: "/resources/my/app/View1.view.xml",
-		string: xmlView1content
+		string: xmlView1content,
 	});
 	// Delay getBuffer to cause situation where the xml resource hasn't been analyzed
 	// when processing the bundle subModules.
@@ -480,7 +479,7 @@ test.serial("Bundles with subModules should not cause analyzing the same module 
 sap.ui.require.preload({
 	"my/app/View1.view.xml": '${xmlView1content}'
 });
-`
+`,
 	});
 	const myAppBundleResource2 = createResource({
 		path: "/resources/my/app/bundle2.js",
@@ -488,11 +487,11 @@ sap.ui.require.preload({
 sap.ui.require.preload({
 	"my/app/View1.view.xml": '${xmlView1content}'
 });
-`
+`,
 	});
 
 	const resourcesJson = await resourceListCreator({
-		resources: [myAppManifestJsonResource, myAppBundleResource1, myAppBundleResource2, myAppViewResource1]
+		resources: [myAppManifestJsonResource, myAppBundleResource1, myAppBundleResource2, myAppViewResource1],
 	});
 
 	t.is(resourceListCreatorLog.error.callCount, 0);
@@ -561,7 +560,7 @@ test.serial("Bundle", async (t) => {
 
 	const myAppManifestJsonResource = createResource({
 		path: "/resources/my/app/manifest.json",
-		string: JSON.stringify({"sap.app": {"id": "my.app"}})
+		string: JSON.stringify({"sap.app": {id: "my.app"}}),
 	});
 
 	const myAppBundleResource = createResource({
@@ -571,7 +570,7 @@ sap.ui.require.preload({
 	"my/app/module1.js": '',
 	"my/app/module2.js": ''
 });
-`
+`,
 	});
 
 	const module1Resource = createResource({
@@ -582,7 +581,7 @@ sap.ui.require.preload({
 					sap.ui.require(["dep2"]);
 				}
 			}
-		})`
+		})`,
 	});
 
 	const module2Resource = createResource({
@@ -593,7 +592,7 @@ sap.ui.require.preload({
 					sap.ui.require(["dep1", "dep3"]);
 				}
 			}
-		})`
+		})`,
 	});
 
 	const resourcesJson = await resourceListCreator({

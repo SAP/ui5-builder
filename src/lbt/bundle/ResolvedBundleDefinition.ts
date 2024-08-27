@@ -1,10 +1,9 @@
-
 import {MODULE__JQUERY_SAP_GLOBAL, MODULE__SAP_UI_CORE_CORE} from "../UI5ClientConstants.js";
 import ModuleInfo from "../resources/ModuleInfo.js";
 import {SectionType} from "./BundleDefinition.js";
 
 class ResolvedBundleDefinition {
-	constructor( bundleDefinition /* , vars*/) {
+	constructor(bundleDefinition /* , vars */) {
 		this.bundleDefinition = bundleDefinition;
 		this.name = bundleDefinition.name;
 		// NODE-TODO (ModuleName) ModuleNamePattern.resolvePlaceholders(bundleDefinition.getName(), vars);
@@ -18,7 +17,7 @@ class ResolvedBundleDefinition {
 			(section) =>
 				(section.mode === SectionType.Raw ||
 					(section.mode === SectionType.Require && section.async === false)) &&
-				section.modules.some((module) => module === MODULE__SAP_UI_CORE_CORE)
+					section.modules.some((module) => module === MODULE__SAP_UI_CORE_CORE)
 		);
 	}
 
@@ -43,27 +42,27 @@ class ResolvedBundleDefinition {
 		bundleInfo.name = this.name;
 
 		let promise = Promise.resolve(true);
-		this.sections.forEach( (section) => {
-			promise = promise.then( () => {
-				if ( section.mode === SectionType.Provided ) {
+		this.sections.forEach((section) => {
+			promise = promise.then(() => {
+				if (section.mode === SectionType.Provided) {
 					return;
 				}
-				if ( section.mode === SectionType.Require ) {
-					section.modules.forEach( (module) => bundleInfo.addDependency(module) );
+				if (section.mode === SectionType.Require) {
+					section.modules.forEach((module) => bundleInfo.addDependency(module));
 					return;
 				}
-				if ( section.mode == SectionType.Raw && section.modules.length ) {
+				if (section.mode == SectionType.Raw && section.modules.length) {
 					// if a bundle contains raw modules, it is a raw module itself
 					bundleInfo.rawModule = true;
 				}
 				let modules = section.modules;
-				if ( section.mode === SectionType.Preload ) {
+				if (section.mode === SectionType.Preload) {
 					modules = section.modules.slice();
 					modules.sort();
 				}
 
 				return Promise.all(
-					modules.map( (submodule) => {
+					modules.map((submodule) => {
 						return pool.getModuleInfo(submodule).then(
 							(subinfo) => {
 								if (!bundleInfo.subModules.includes(subinfo.name) &&
@@ -78,7 +77,7 @@ class ResolvedBundleDefinition {
 			});
 		});
 
-		return promise.then( () => bundleInfo );
+		return promise.then(() => bundleInfo);
 	}
 }
 

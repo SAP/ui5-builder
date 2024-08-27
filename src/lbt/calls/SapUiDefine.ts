@@ -1,4 +1,3 @@
-
 import {Syntax} from "../utils/parseUtils.js";
 import {resolveRelativeRequireJSName} from "../utils/ModuleName.js";
 import {isBoolean, getStringValue} from "../utils/ASTUtils.js";
@@ -13,7 +12,7 @@ class SapUiDefineCall {
 		this.paramNames = null;
 
 		const args = node.arguments;
-		if ( args == null ) {
+		if (args == null) {
 			return;
 		}
 
@@ -28,17 +27,17 @@ class SapUiDefineCall {
 		let params;
 
 		const name = getStringValue(args[i]);
-		if ( i < args.length && name ) {
+		if (i < args.length && name) {
 			// assert(String)
 			this.name = name;
 			i++;
 		}
 
-		if ( i < args.length && args[i].type === Syntax.ArrayExpression ) {
+		if (i < args.length && args[i].type === Syntax.ArrayExpression) {
 			this.dependencyArray = args[i++];
-			this.dependencies = this.dependencyArray.elements.map( (elem) => {
+			this.dependencies = this.dependencyArray.elements.map((elem) => {
 				const value = getStringValue(elem);
-				if ( !value ) {
+				if (!value) {
 					throw new TypeError();
 				}
 				return resolveRelativeRequireJSName(this.name, value);
@@ -46,23 +45,23 @@ class SapUiDefineCall {
 			this.dependencyInsertionIdx = this.dependencyArray.elements.length;
 		}
 
-		if ( i < args.length && (
+		if (i < args.length && (
 			args[i].type === Syntax.FunctionExpression || args[i].type === Syntax.ArrowFunctionExpression)
 		) {
 			this.factory = args[i++];
 			params = this.factory.params;
-			this.paramNames = params.map( (param) => {
-				if ( param.type !== Syntax.Identifier ) {
+			this.paramNames = params.map((param) => {
+				if (param.type !== Syntax.Identifier) {
 					return null;
 				}
 				return param.name;
 			});
-			if ( this.factory.params.length < this.dependencyInsertionIdx ) {
+			if (this.factory.params.length < this.dependencyInsertionIdx) {
 				this.dependencyInsertionIdx = this.factory.params.length;
 			}
 		}
 
-		if ( i < args.length && isBoolean(args[i]) ) {
+		if (i < args.length && isBoolean(args[i])) {
 			this.exportAsGlobal = args[i].value;
 		}
 
@@ -82,11 +81,11 @@ class SapUiDefineCall {
 		// console.log(this.factory.params);
 		this.factory.params.splice(i, 0, b.identifier(shortcut));
 		this.paramNames.splice(i, 0, shortcut);
-	}*/
+	} */
 
 	findImportName(module) {
 		const idx = this.dependencies ? this.dependencies.indexOf(module) : -1;
-		if ( idx >= 0 ) {
+		if (idx >= 0) {
 			return this.paramNames[idx];
 		}
 		return null;

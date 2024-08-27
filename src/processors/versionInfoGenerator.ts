@@ -4,13 +4,19 @@ import {createResource} from "@ui5/fs/resourceFactory";
 import posixPath from "node:path/posix";
 
 /**
- * @public
  * @module @ui5/builder/processors/versionInfoGenerator
  */
 
+/**
+ *
+ * @param v
+ */
 function pad(v: number) {
 	return String(v).padStart(2, "0");
 }
+/**
+ *
+ */
 function getTimestamp() {
 	const date = new Date();
 	const year = date.getFullYear();
@@ -25,7 +31,7 @@ function getTimestamp() {
 /**
  * Manifest libraries as defined in the manifest.json file
  *
- * @typedef {Object<string, {lazy: boolean}>} ManifestLibraries
+ * ManifestLibraries
  *
  * sample:
  * <pre>
@@ -41,21 +47,21 @@ function getTimestamp() {
 /**
  * Extracted information from a manifest's <code>sap.app</code> and <code>sap.ui5</code> sections.
  *
- * @typedef {object} ManifestInfo
+ * id The library name, e.g. "lib.x"
  *
- * @property {string} id The library name, e.g. "lib.x"
- * @property {string} embeddedBy the library this component is embedded in, e.g. "lib.x"
- * @property {string[]} embeds the embedded component names, e.g. ["lib.x.sub"]
- * @property {module:@ui5/builder/processors/versionInfoGenerator~ManifestLibraries} libs the dependencies, e.g.
+ * embeddedBy the library this component is embedded in, e.g. "lib.x"
+ *
+ * embeds the embedded component names, e.g. ["lib.x.sub"]
+ *
+ * libs the dependencies, e.g.
  * 				{"sap.chart":{"lazy": true}, "sap.f":{}}
  */
-
 
 /**
  * Processes manifest resource and extracts information.
  *
- * @param {@ui5/fs/Resource} manifestResource
- * @returns {Promise<module:@ui5/builder/processors/versionInfoGenerator~ManifestInfo>}
+ * @param manifestResource
+ * @returns
  */
 const processManifest = async (manifestResource) => {
 	const manifestContent = await manifestResource.getString();
@@ -64,8 +70,8 @@ const processManifest = async (manifestResource) => {
 
 	// sap.ui5/dependencies is used for the "manifestHints/libs"
 	if (manifestObject["sap.ui5"]) {
-		const manifestDependencies = manifestObject["sap.ui5"]["dependencies"];
-		if (manifestDependencies && manifestDependencies.libs) {
+		const manifestDependencies = manifestObject["sap.ui5"].dependencies;
+		if (manifestDependencies?.libs) {
 			const libs = Object.create(null);
 			for (const [libKey, libValue] of Object.entries(manifestDependencies.libs)) {
 				libs[libKey] = Object.create(null);
@@ -79,13 +85,13 @@ const processManifest = async (manifestResource) => {
 
 	// sap.app/embeds, sap.app/embeddedBy and sap.app/id is used for "components"
 	if (manifestObject["sap.app"]) {
-		const manifestEmbeds = manifestObject["sap.app"]["embeds"];
+		const manifestEmbeds = manifestObject["sap.app"].embeds;
 		manifestInfo.embeds = manifestEmbeds;
 
-		const manifestEmbeddedBy = manifestObject["sap.app"]["embeddedBy"];
+		const manifestEmbeddedBy = manifestObject["sap.app"].embeddedBy;
 		manifestInfo.embeddedBy = manifestEmbeddedBy;
 
-		const id = manifestObject["sap.app"]["id"];
+		const id = manifestObject["sap.app"].id;
 		manifestInfo.id = id;
 	}
 	return manifestInfo;
@@ -94,10 +100,10 @@ const processManifest = async (manifestResource) => {
 /**
  * Checks if a component (componentPath) is bundled with the library (embeddedBy)
  *
- * @param {string} embeddedBy e.g. "../"
- * @param {string} componentPath e.g. "lib/x/sub"
- * @param {string} libraryPathPrefix e.g. "lib/x"
- * @returns {boolean} whether or not this component is bundled with the library
+ * @param embeddedBy e.g. "../"
+ * @param componentPath e.g. "lib/x/sub"
+ * @param libraryPathPrefix e.g. "lib/x"
+ * @returns whether or not this component is bundled with the library
  */
 const isBundledWithLibrary = (embeddedBy: string, componentPath: string, libraryPathPrefix: string) => {
 	if (typeof embeddedBy === "undefined") {
@@ -110,7 +116,7 @@ const isBundledWithLibrary = (embeddedBy: string, componentPath: string, library
 			`(expected 'string'), it won't be listed as 'embedded'`);
 		return false;
 	}
-	if ( !embeddedBy.length ) {
+	if (!embeddedBy.length) {
 		log.error(
 			`  Component '${componentPath}': property 'sap.app/embeddedBy' has an empty string value ` +
 			`(which is invalid), it won't be listed as 'embedded'`
@@ -118,10 +124,10 @@ const isBundledWithLibrary = (embeddedBy: string, componentPath: string, library
 		return false;
 	}
 	let resolvedEmbeddedBy = posixPath.resolve(componentPath, embeddedBy);
-	if ( resolvedEmbeddedBy && !resolvedEmbeddedBy.endsWith("/") ) {
+	if (resolvedEmbeddedBy && !resolvedEmbeddedBy.endsWith("/")) {
 		resolvedEmbeddedBy = resolvedEmbeddedBy + "/";
 	}
-	if ( libraryPathPrefix === resolvedEmbeddedBy ) {
+	if (libraryPathPrefix === resolvedEmbeddedBy) {
 		log.verbose("  Component's 'sap.app/embeddedBy' property points to library, list it as 'embedded'");
 		return true;
 	} else {
@@ -134,9 +140,9 @@ const isBundledWithLibrary = (embeddedBy: string, componentPath: string, library
 /**
  * Retrieves the manifest path of a subcomponent
  *
- * @param {string} filePath path to the manifest, e.g. "lib/x/manifest.json"
- * @param {string} subPath relative sub path, e.g. "sub"
- * @returns {string} manifest path, e.g. "lib/x/sub/manifest.json"
+ * @param filePath path to the manifest, e.g. "lib/x/manifest.json"
+ * @param subPath relative sub path, e.g. "sub"
+ * @returns manifest path, e.g. "lib/x/sub/manifest.json"
  */
 const getManifestPath = (filePath: string, subPath: string) => {
 	return posixPath.resolve(posixPath.dirname(filePath), subPath, "manifest.json");
@@ -150,8 +156,8 @@ const getManifestPath = (filePath: string, subPath: string) => {
 class DependencyInfo {
 	/**
 	 *
-	 * @param {module:@ui5/builder/processors/versionInfoGenerator~ManifestLibraries} libs
-	 * @param {string} name library name, e.g. "lib.x"
+	 * @param libs
+	 * @param name library name, e.g. "lib.x"
 	 */
 	constructor(libs, name: string) {
 		this.libs = libs;
@@ -162,9 +168,9 @@ class DependencyInfo {
 	 * Add library to libsResolved and if already present
 	 * merge lazy property
 	 *
-	 * @param {string} libName library name, e.g. "lib.x"
-	 * @param {boolean} lazy
-	 * @returns {{lazy: boolean}} the added library
+	 * @param libName library name, e.g. "lib.x"
+	 * @param lazy
+	 * @returns the added library
 	 */
 	addResolvedLibDependency(libName: string, lazy: boolean) {
 		let alreadyResolved = this._libsResolved[libName];
@@ -186,8 +192,8 @@ class DependencyInfo {
 	 * - resolved siblings a lazy and a eager dependency becomes eager
 	 * - resolved children become lazy if their parent is lazy
 	 *
-	 * @param {Map<string,DependencyInfo>} dependencyInfoMap
-	 * @returns {module:@ui5/builder/processors/versionInfoGenerator~ManifestLibraries} resolved libraries
+	 * @param dependencyInfoMap
+	 * @returns resolved libraries
 	 */
 	getResolvedLibraries(dependencyInfoMap: Map<string, DependencyInfo>) {
 		if (!this._libsResolved) {
@@ -209,10 +215,10 @@ class DependencyInfo {
 							resolvedLib.lazy || dependencyInfoObjectAdded.lazy);
 					}
 				} else {
-					log.info(`Cannot find dependency '${libName}' `+
-						`defined in the manifest.json or .library file of project '${this.name}'. ` +
-						"This might prevent some UI5 runtime performance optimizations from taking effect. " +
-						"Please double check your project's dependency configuration.");
+					log.info(`Cannot find dependency '${libName}' ` +
+					`defined in the manifest.json or .library file of project '${this.name}'. ` +
+					"This might prevent some UI5 runtime performance optimizations from taking effect. " +
+					"Please double check your project's dependency configuration.");
 				}
 			}
 		}
@@ -220,12 +226,11 @@ class DependencyInfo {
 	}
 }
 
-
 /**
  * Sorts the keys of a given object
  *
- * @param {object} obj the object
- * @returns {object} the object with sorted keys
+ * @param obj the object
+ * @returns the object with sorted keys
  */
 const sortObjectKeys = (obj: object) => {
 	const sortedObject = Object.create(null);
@@ -240,9 +245,9 @@ const sortObjectKeys = (obj: object) => {
 /**
  * Builds the manifestHints object from the dependencyInfo
  *
- * @param {DependencyInfo} dependencyInfo
- * @param {Map<string, DependencyInfo>} dependencyInfoMap
- * @returns {{dependencies: {libs: ManifestLibraries}}} manifestHints
+ * @param dependencyInfo
+ * @param dependencyInfoMap
+ * @returns manifestHints
  */
 const getManifestHints = (dependencyInfo: DependencyInfo, dependencyInfoMap: Map<string, DependencyInfo>) => {
 	if (dependencyInfo) {
@@ -250,8 +255,8 @@ const getManifestHints = (dependencyInfo: DependencyInfo, dependencyInfoMap: Map
 		if (libsResolved && Object.keys(libsResolved).length) {
 			return {
 				dependencies: {
-					libs: sortObjectKeys(libsResolved)
-				}
+					libs: sortObjectKeys(libsResolved),
+				},
 			};
 		}
 	}
@@ -261,20 +266,21 @@ const getManifestHints = (dependencyInfo: DependencyInfo, dependencyInfoMap: Map
  * Common type for Library and Component
  * embeds and bundled components make only sense for library
  *
- * @typedef {object} ArtifactInfo
- * @property {string} componentName The library name, e.g. "lib.x"
- * @property {Set<string>} bundledComponents The embedded components which have an embeddedBy reference to the library
- * @property {DependencyInfo} dependencyInfo The dependency info object
- * @property {module:@ui5/builder/processors/versionInfoGenerator~ArtifactInfo[]} embeds The embedded artifact infos
+ * componentName The library name, e.g. "lib.x"
+ *
+ * bundledComponents The embedded components which have an embeddedBy reference to the library
+ *
+ * dependencyInfo The dependency info object
+ *
+ * embeds The embedded artifact infos
  */
-
 
 /**
  * Processes the manifest and creates a ManifestInfo and an ArtifactInfo.
  *
- * @param {@ui5/fs/Resource} libraryManifest
- * @param {string} [name] library name, if not provided using the ManifestInfo's id
- * @returns {Promise<{manifestInfo: ManifestInfo, libraryArtifactInfo: ArtifactInfo}>}
+ * @param libraryManifest
+ * @param [name] library name, if not provided using the ManifestInfo's id
+ * @returns
  */
 async function processManifestAndGetArtifactInfo(libraryManifest, name?: string) {
 	const manifestInfo = await processManifest(libraryManifest);
@@ -288,8 +294,8 @@ async function processManifestAndGetArtifactInfo(libraryManifest, name?: string)
 /**
  * Processes the library info and fills the maps <code>dependencyInfoMap</code> and <code>embeddedInfoMap</code>.
  *
- * @param {module:@ui5/builder/processors/versionInfoGenerator~LibraryInfo} libraryInfo
- * @returns {Promise<module:@ui5/builder/processors/versionInfoGenerator~ArtifactInfo|undefined>}
+ * @param libraryInfo
+ * @returns
  */
 const processLibraryInfo = async (libraryInfo) => {
 	if (!libraryInfo.libraryManifest) {
@@ -304,7 +310,7 @@ const processLibraryInfo = async (libraryInfo) => {
 	const bundledComponents = new Set();
 	libraryArtifactInfo.bundledComponents = bundledComponents;
 
-	const embeds = manifestInfo.embeds||[]; // e.g. ["sub"]
+	const embeds = manifestInfo.embeds || []; // e.g. ["sub"]
 	// filter only embedded manifests
 	const embeddedPaths = embeds.map((embed) => {
 		return getManifestPath(libraryInfo.libraryManifest.getPath(), embed);
@@ -343,20 +349,20 @@ const processLibraryInfo = async (libraryInfo) => {
  *
  * contains information about the name and the version of the library and its manifest, as well as the nested manifests.
  *
- * @public
- * @typedef {object} LibraryInfo
- * @property {string} name The library name, e.g. "lib.x"
- * @property {string} version The library version, e.g. "1.0.0"
- * @property {@ui5/fs/Resource} libraryManifest library manifest resource,
- *  e.g. resource with path "lib/x/manifest.json"
- * @property {@ui5/fs/Resource[]} embeddedManifests list of embedded manifest resources,
+ * name The library name, e.g. "lib.x"
+ *
+ * version The library version, e.g. "1.0.0"
+ *
+ * libraryManifest library manifest resource,
+ * e.g. resource with path "lib/x/manifest.json"
+ *
+ * embeddedManifests list of embedded manifest resources,
  *  e.g. resource with path "lib/x/sub/manifest.json"
  */
 
 /**
  * Creates sap-ui-version.json.
  *
- * @public
  * @function default
  * @static
  *
@@ -377,12 +383,20 @@ const processLibraryInfo = async (libraryInfo) => {
  * @returns {Promise<@ui5/fs/Resource[]>} Promise resolving with an array containing the versionInfo resource
  */
 
-export default async function({ options }: {
-    options: {
-        rootProjectName: string;
-        rootProjectVersion: string;
-        libraryInfos: object;
-    };
+/**
+ *
+ * @param root0
+ * @param root0.options
+ * @param root0.options.rootProjectName
+ * @param root0.options.rootProjectVersion
+ * @param root0.options.libraryInfos
+ */
+export default async function ({options}: {
+	options: {
+		rootProjectName: string;
+		rootProjectVersion: string;
+		libraryInfos: object;
+	};
 }) {
 	if (!options.rootProjectName || options.rootProjectVersion === undefined || options.libraryInfos === undefined) {
 		throw new Error("[versionInfoGenerator]: Missing options parameters");
@@ -393,10 +407,8 @@ export default async function({ options }: {
 	/**
 	 * componentName to dependency info
 	 *
-	 * @type {Map<string, DependencyInfo>}
 	 */
 	const dependencyInfoMap = new Map();
-
 
 	// process library infos
 	const libraryInfosProcessPromises = options.libraryInfos.map((libraryInfo) => {
@@ -411,13 +423,12 @@ export default async function({ options }: {
 		dependencyInfoMap.set(artifactInfo.componentName, artifactInfo.dependencyInfo);
 	});
 
-
 	const libraries = options.libraryInfos.map((libraryInfo) => {
 		const library = {
 			name: libraryInfo.name,
 			version: libraryInfo.version,
 			buildTimestamp: buildTimestamp,
-			scmRevision: ""// TODO: insert current library scm revision here
+			scmRevision: "", // TODO: insert current library scm revision here
 		};
 
 		const dependencyInfo = dependencyInfoMap.get(libraryInfo.name);
@@ -465,11 +476,11 @@ export default async function({ options }: {
 		scmRevision: "", // TODO: insert current application scm revision here
 		// gav: "", // TODO: insert current application id + version here
 		libraries,
-		components
+		components,
 	};
 
 	return [createResource({
 		path: "/resources/sap-ui-version.json",
-		string: JSON.stringify(versionJson, null, "\t")
+		string: JSON.stringify(versionJson, null, "\t"),
 	})];
 }

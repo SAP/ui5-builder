@@ -1,4 +1,3 @@
-
 import resourceListCreator from "../processors/resourceListCreator.js";
 
 const DEFAULT_EXCLUDES = [
@@ -9,36 +8,39 @@ const DEFAULT_EXCLUDES = [
 	/*
 	 * sap-ui-version.json is not part of the resources
 	 */
-	"!/resources/sap-ui-version.json"
+	"!/resources/sap-ui-version.json",
 ];
 
+/**
+ *
+ * @param projectName
+ */
 function getCreatorOptions(projectName) {
 	const creatorOptions = {};
 	// TODO: Move configuration into ui5.yaml
-	if ( projectName === "sap.ui.core" ) {
+	if (projectName === "sap.ui.core") {
 		Object.assign(creatorOptions, {
 			externalResources: {
 				"sap/ui/core": [
 					"*",
 					"sap/base/",
-					"sap/ui/"
-				]
-			}
+					"sap/ui/",
+				],
+			},
 		});
-	} else if ( projectName === "sap.ui.integration" ) {
+	} else if (projectName === "sap.ui.integration") {
 		Object.assign(creatorOptions, {
 			externalResources: {
 				"sap/ui/integration": [
 					"sap-ui-integration*.js",
-				]
-			}
+				],
+			},
 		});
 	}
 	return creatorOptions;
 }
 
 /**
- * @public
  * @module @ui5/builder/tasks/generateResourcesJson
  */
 
@@ -96,19 +98,15 @@ function getCreatorOptions(projectName) {
  * 	]
  * };
  *
- * @public
- * @function default
- * @static
- *
- * @param {object} parameters Parameters
- * @param {@ui5/fs/DuplexCollection} parameters.workspace DuplexCollection to read and write files
- * @param {@ui5/fs/AbstractReader} parameters.dependencies Reader or Collection to read dependency files
- * @param {@ui5/project/build/helpers/TaskUtil|object} [parameters.taskUtil] TaskUtil
- * @param {object} parameters.options Options
- * @param {string} parameters.options.projectName Project name
- * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
+ * @param parameters Parameters
+ * @param parameters.workspace DuplexCollection to read and write files
+ * @param parameters.dependencies Reader or Collection to read dependency files
+ * @param [parameters.taskUtil] TaskUtil
+ * @param parameters.options Options
+ * @param parameters.options.projectName Project name
+ * @returns Promise resolving with <code>undefined</code> once data has been written
  */
-export default async function({ workspace, dependencies, taskUtil, options: { projectName } }: object) {
+export default async function ({workspace, dependencies, taskUtil, options: {projectName}}: object) {
 	let resources = await workspace.byGlob(["/resources/**/*"].concat(DEFAULT_EXCLUDES));
 	let dependencyResources =
 			await dependencies.byGlob("/resources/**/*.{js,json,xml,html,properties,library,js.map}");

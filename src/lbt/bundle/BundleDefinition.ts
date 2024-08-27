@@ -34,5 +34,5 @@ export const SectionType = {
 	 * of all types: JS, declarative views/fragments.
 	 * Only the dependencies of the modules are stored as 'depCache' configuration.
 	 */
-	DepCache: "depCache"
+	DepCache: "depCache",
 };

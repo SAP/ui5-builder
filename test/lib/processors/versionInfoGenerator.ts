@@ -14,9 +14,9 @@ test.beforeEach(async (t) => {
 				info: t.context.infoLogStub,
 				verbose: t.context.verboseLogStub,
 				silly: t.context.sillyLogStub,
-				isLevelEnabled: () => true
-			})
-		}
+				isLevelEnabled: () => true,
+			}),
+		},
 	});
 });
 
@@ -37,7 +37,6 @@ const assertVersionInfoContent = (t, oExpectedVersionInfo, sActualContent) => {
 		delete lib.buildTimestamp; // removing to allow deep comparison
 	});
 
-
 	t.deepEqual(currentVersionInfo, oExpectedVersionInfo, "Correct content");
 };
 
@@ -50,20 +49,19 @@ test.serial("versionInfoGenerator empty libraryInfos parameter", async (t) => {
 	const result = await resource.getString();
 
 	const oExpected = {
-		"name": "myname",
-		"version": "1.33.7",
-		"scmRevision": "",
-		"libraries": []
+		name: "myname",
+		version: "1.33.7",
+		scmRevision: "",
+		libraries: [],
 	};
 	assertVersionInfoContent(t, oExpected, result);
 });
-
 
 test.serial("versionInfoGenerator simple library infos", async (t) => {
 	const {versionInfoGenerator} = t.context;
 	const options = {
 		rootProjectName: "myname", rootProjectVersion: "1.33.7", libraryInfos: [
-			{name: "my.lib", version: "1.2.3"}
+			{name: "my.lib", version: "1.2.3"},
 		]};
 	const versionInfos = await versionInfoGenerator({options});
 
@@ -71,16 +69,16 @@ test.serial("versionInfoGenerator simple library infos", async (t) => {
 	const result = await resource.getString();
 
 	const oExpected = {
-		"name": "myname",
-		"version": "1.33.7",
-		"scmRevision": "",
-		"libraries": [
+		name: "myname",
+		version: "1.33.7",
+		scmRevision: "",
+		libraries: [
 			{
-				"name": "my.lib",
-				"version": "1.2.3",
-				"scmRevision": ""
-			}
-		]
+				name: "my.lib",
+				version: "1.2.3",
+				scmRevision: "",
+			},
+		],
 	};
 	assertVersionInfoContent(t, oExpected, result);
 	t.is(t.context.verboseLogStub.callCount, 1);
@@ -97,22 +95,22 @@ test.serial("versionInfoGenerator manifest without libs", async (t) => {
 		getString: async () => {
 			return JSON.stringify({
 				"sap.app": {
-					"id": "lib.a",
-					"embeds": []
+					id: "lib.a",
+					embeds: [],
 				},
 				"sap.ui5": {
-					"dependencies": {
-						"minUI5Version": "1.84"
-					}
-				}
+					dependencies: {
+						minUI5Version: "1.84",
+					},
+				},
 			});
-		}
+		},
 	};
 	const libA = {name: "lib.a", version: "1.2.3", libraryManifest: libAManifest};
 
 	const options = {
 		rootProjectName: "myname", rootProjectVersion: "1.33.7", libraryInfos: [
-			libA
+			libA,
 		]};
 	const versionInfos = await versionInfoGenerator({options});
 
@@ -120,16 +118,16 @@ test.serial("versionInfoGenerator manifest without libs", async (t) => {
 	const result = await resource.getString();
 
 	const oExpected = {
-		"name": "myname",
-		"version": "1.33.7",
-		"scmRevision": "",
-		"libraries": [
+		name: "myname",
+		version: "1.33.7",
+		scmRevision: "",
+		libraries: [
 			{
-				"name": "lib.a",
-				"version": "1.2.3",
-				"scmRevision": ""
-			}
-		]
+				name: "lib.a",
+				version: "1.2.3",
+				scmRevision: "",
+			},
+		],
 	};
 	assertVersionInfoContent(t, oExpected, result);
 	t.is(t.context.infoLogStub.callCount, 0);
@@ -145,22 +143,22 @@ test.serial("versionInfoGenerator library infos with dependencies", async (t) =>
 		getString: async () => {
 			return JSON.stringify({
 				"sap.app": {
-					"id": "lib.a",
-					"embeds": []
+					id: "lib.a",
+					embeds: [],
 				},
 				"sap.ui5": {
-					"dependencies": {
-						"minUI5Version": "1.84",
-						"libs": {
+					dependencies: {
+						minUI5Version: "1.84",
+						libs: {
 							"my.dep": {
-								"minVersion": "1.84.0",
-								"lazy": false
-							}
-						}
-					}
-				}
+								minVersion: "1.84.0",
+								lazy: false,
+							},
+						},
+					},
+				},
 			});
-		}
+		},
 	};
 	const libA = {name: "lib.a", version: "1.2.3", libraryManifest: libAManifest};
 	const myDepManifest = {
@@ -170,22 +168,22 @@ test.serial("versionInfoGenerator library infos with dependencies", async (t) =>
 		getString: async () => {
 			return JSON.stringify({
 				"sap.app": {
-					"id": "my.dep",
-					"embeds": []
+					id: "my.dep",
+					embeds: [],
 				},
 				"sap.ui5": {
-					"dependencies": {
-						"minUI5Version": "1.84",
-						"libs": {}
-					}
-				}
+					dependencies: {
+						minUI5Version: "1.84",
+						libs: {},
+					},
+				},
 			});
-		}
+		},
 	};
 	const myDep = {name: "my.dep", version: "1.2.3", libraryManifest: myDepManifest};
 	const options = {
 		rootProjectName: "myname", rootProjectVersion: "1.33.7", libraryInfos: [
-			libA, myDep
+			libA, myDep,
 		]};
 	const versionInfos = await versionInfoGenerator({options});
 
@@ -193,28 +191,28 @@ test.serial("versionInfoGenerator library infos with dependencies", async (t) =>
 	const result = await resource.getString();
 
 	const oExpected = {
-		"name": "myname",
-		"version": "1.33.7",
-		"scmRevision": "",
-		"libraries": [
+		name: "myname",
+		version: "1.33.7",
+		scmRevision: "",
+		libraries: [
 			{
-				"name": "lib.a",
-				"version": "1.2.3",
-				"scmRevision": "",
-				"manifestHints": {
-					"dependencies": {
-						"libs": {
-							"my.dep": {}
-						}
-					}
-				}
+				name: "lib.a",
+				version: "1.2.3",
+				scmRevision: "",
+				manifestHints: {
+					dependencies: {
+						libs: {
+							"my.dep": {},
+						},
+					},
+				},
 			},
 			{
-				"name": "my.dep",
-				"version": "1.2.3",
-				"scmRevision": ""
-			}
-		]
+				name: "my.dep",
+				version: "1.2.3",
+				scmRevision: "",
+			},
+		],
 	};
 	assertVersionInfoContent(t, oExpected, result);
 	t.is(t.context.infoLogStub.callCount, 0);
@@ -230,22 +228,22 @@ test.serial("versionInfoGenerator library infos with dependencies; w/o minVersio
 		getString: async () => {
 			return JSON.stringify({
 				"sap.app": {
-					"id": "lib.a",
-					"embeds": []
+					id: "lib.a",
+					embeds: [],
 				},
 				"sap.ui5": {
-					"dependencies": {
-						"minUI5Version": "",
-						"libs": {
+					dependencies: {
+						minUI5Version: "",
+						libs: {
 							"my.dep": {
-								"minVersion": "",
-								"lazy": false
-							}
-						}
-					}
-				}
+								minVersion: "",
+								lazy: false,
+							},
+						},
+					},
+				},
 			});
-		}
+		},
 	};
 	const libA = {name: "lib.a", version: "1.2.3", libraryManifest: libAManifest};
 	const options = {rootProjectName: "myname", rootProjectVersion: "1.33.7", libraryInfos: [libA]};
@@ -255,23 +253,23 @@ test.serial("versionInfoGenerator library infos with dependencies; w/o minVersio
 	const result = await resource.getString();
 
 	const oExpected = {
-		"name": "myname",
-		"version": "1.33.7",
-		"scmRevision": "",
-		"libraries": [
+		name: "myname",
+		version: "1.33.7",
+		scmRevision: "",
+		libraries: [
 			{
-				"name": "lib.a",
-				"version": "1.2.3",
-				"scmRevision": "",
-				"manifestHints": {
-					"dependencies": {
-						"libs": {
-							"my.dep": {}
-						}
-					}
-				}
-			}
-		]
+				name: "lib.a",
+				version: "1.2.3",
+				scmRevision: "",
+				manifestHints: {
+					dependencies: {
+						libs: {
+							"my.dep": {},
+						},
+					},
+				},
+			},
+		],
 	};
 	assertVersionInfoContent(t, oExpected, result);
 	t.is(t.context.infoLogStub.callCount, 1);
@@ -292,17 +290,17 @@ test.serial("versionInfoGenerator library infos with embeds", async (t) => {
 		getString: async () => {
 			return JSON.stringify({
 				"sap.app": {
-					"id": "lib.a",
-					"embeds": ["sub"]
+					id: "lib.a",
+					embeds: ["sub"],
 				},
 				"sap.ui5": {
-					"dependencies": {
-						"minUI5Version": "1.84",
-						"libs": {}
-					}
-				}
+					dependencies: {
+						minUI5Version: "1.84",
+						libs: {},
+					},
+				},
 			});
-		}
+		},
 	};
 	const subManifest = {
 		getPath: () => {
@@ -311,23 +309,23 @@ test.serial("versionInfoGenerator library infos with embeds", async (t) => {
 		getString: async () => {
 			return JSON.stringify({
 				"sap.app": {
-					"id": "lib.a.sub",
-					"embeds": []
+					id: "lib.a.sub",
+					embeds: [],
 				},
 				"sap.ui5": {
-					"dependencies": {
-						"minUI5Version": "1.84",
-						"libs": {}
-					}
-				}
+					dependencies: {
+						minUI5Version: "1.84",
+						libs: {},
+					},
+				},
 			});
-		}
+		},
 	};
 	const libA = {name: "lib.a", version: "1.2.3", libraryManifest: libAManifest, embeddedManifests: [subManifest]};
 
 	const options = {
 		rootProjectName: "myname", rootProjectVersion: "1.33.7", libraryInfos: [
-			libA
+			libA,
 		]};
 	const versionInfos = await versionInfoGenerator({options});
 
@@ -335,22 +333,22 @@ test.serial("versionInfoGenerator library infos with embeds", async (t) => {
 	const result = await resource.getString();
 
 	const oExpected = {
-		"name": "myname",
-		"version": "1.33.7",
-		"scmRevision": "",
-		"libraries": [
+		name: "myname",
+		version: "1.33.7",
+		scmRevision: "",
+		libraries: [
 			{
-				"name": "lib.a",
-				"version": "1.2.3",
-				"scmRevision": ""
-			}
+				name: "lib.a",
+				version: "1.2.3",
+				scmRevision: "",
+			},
 		],
-		"components": {
+		components: {
 			"lib.a.sub": {
-				"hasOwnPreload": true,
-				"library": "lib.a"
-			}
-		}
+				hasOwnPreload: true,
+				library: "lib.a",
+			},
+		},
 	};
 	assertVersionInfoContent(t, oExpected, result);
 	t.is(t.context.infoLogStub.callCount, 0);
@@ -366,21 +364,21 @@ test.serial("versionInfoGenerator library infos with no embeds", async (t) => {
 		getString: async () => {
 			return JSON.stringify({
 				"sap.app": {
-					"id": "lib.a"
+					id: "lib.a",
 				},
 				"sap.ui5": {
-					"dependencies": {
-						"minUI5Version": "1.84",
-						"libs": {
+					dependencies: {
+						minUI5Version: "1.84",
+						libs: {
 							"my.dep": {
-								"minVersion": "1.84.0",
-								"lazy": false
-							}
-						}
-					}
-				}
+								minVersion: "1.84.0",
+								lazy: false,
+							},
+						},
+					},
+				},
 			});
-		}
+		},
 	};
 	const libA = {name: "lib.a", version: "1.2.3", libraryManifest: libAManifest};
 	const myDepManifest = {
@@ -390,21 +388,21 @@ test.serial("versionInfoGenerator library infos with no embeds", async (t) => {
 		getString: async () => {
 			return JSON.stringify({
 				"sap.app": {
-					"id": "my.dep"
+					id: "my.dep",
 				},
 				"sap.ui5": {
-					"dependencies": {
-						"minUI5Version": "1.84",
-						"libs": {}
-					}
-				}
+					dependencies: {
+						minUI5Version: "1.84",
+						libs: {},
+					},
+				},
 			});
-		}
+		},
 	};
 	const myDep = {name: "my.dep", version: "1.2.3", libraryManifest: myDepManifest};
 	const options = {
 		rootProjectName: "myname", rootProjectVersion: "1.33.7", libraryInfos: [
-			libA, myDep
+			libA, myDep,
 		]};
 	const versionInfos = await versionInfoGenerator({options});
 
@@ -412,28 +410,28 @@ test.serial("versionInfoGenerator library infos with no embeds", async (t) => {
 	const result = await resource.getString();
 
 	const oExpected = {
-		"name": "myname",
-		"version": "1.33.7",
-		"scmRevision": "",
-		"libraries": [
+		name: "myname",
+		version: "1.33.7",
+		scmRevision: "",
+		libraries: [
 			{
-				"name": "lib.a",
-				"version": "1.2.3",
-				"scmRevision": "",
-				"manifestHints": {
-					"dependencies": {
-						"libs": {
-							"my.dep": {}
-						}
-					}
-				}
+				name: "lib.a",
+				version: "1.2.3",
+				scmRevision: "",
+				manifestHints: {
+					dependencies: {
+						libs: {
+							"my.dep": {},
+						},
+					},
+				},
 			},
 			{
-				"name": "my.dep",
-				"version": "1.2.3",
-				"scmRevision": ""
-			}
-		]
+				name: "my.dep",
+				version: "1.2.3",
+				scmRevision: "",
+			},
+		],
 	};
 	assertVersionInfoContent(t, oExpected, result);
 	t.is(t.context.infoLogStub.callCount, 0);
@@ -449,17 +447,17 @@ test.serial("versionInfoGenerator library infos with embeds and embeddedBy (hasO
 		getString: async () => {
 			return JSON.stringify({
 				"sap.app": {
-					"id": "lib.a",
-					"embeds": ["sub"]
+					id: "lib.a",
+					embeds: ["sub"],
 				},
 				"sap.ui5": {
-					"dependencies": {
-						"minUI5Version": "1.84",
-						"libs": {}
-					}
-				}
+					dependencies: {
+						minUI5Version: "1.84",
+						libs: {},
+					},
+				},
 			});
-		}
+		},
 	};
 	const subManifest = {
 		getPath: () => {
@@ -468,24 +466,24 @@ test.serial("versionInfoGenerator library infos with embeds and embeddedBy (hasO
 		getString: async () => {
 			return JSON.stringify({
 				"sap.app": {
-					"id": "lib.a.sub",
-					"embeds": [],
-					"embeddedBy": "../"
+					id: "lib.a.sub",
+					embeds: [],
+					embeddedBy: "../",
 				},
 				"sap.ui5": {
-					"dependencies": {
-						"minUI5Version": "1.84",
-						"libs": {}
-					}
-				}
+					dependencies: {
+						minUI5Version: "1.84",
+						libs: {},
+					},
+				},
 			});
-		}
+		},
 	};
 	const libA = {name: "lib.a", version: "1.2.3", libraryManifest: libAManifest, embeddedManifests: [subManifest]};
 
 	const options = {
 		rootProjectName: "myname", rootProjectVersion: "1.33.7", libraryInfos: [
-			libA
+			libA,
 		]};
 	const versionInfos = await versionInfoGenerator({options});
 
@@ -493,21 +491,21 @@ test.serial("versionInfoGenerator library infos with embeds and embeddedBy (hasO
 	const result = await resource.getString();
 
 	const oExpected = {
-		"name": "myname",
-		"version": "1.33.7",
-		"scmRevision": "",
-		"libraries": [
+		name: "myname",
+		version: "1.33.7",
+		scmRevision: "",
+		libraries: [
 			{
-				"name": "lib.a",
-				"version": "1.2.3",
-				"scmRevision": ""
-			}
+				name: "lib.a",
+				version: "1.2.3",
+				scmRevision: "",
+			},
 		],
-		"components": {
+		components: {
 			"lib.a.sub": {
-				"library": "lib.a"
-			}
-		}
+				library: "lib.a",
+			},
+		},
 	};
 	assertVersionInfoContent(t, oExpected, result);
 	t.is(t.context.infoLogStub.callCount, 0);

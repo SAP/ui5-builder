@@ -18,14 +18,14 @@ test("integration: Build application.g", async (t) => {
 	const cleanupCacheBusterInfo = (fileContent) => fileContent.replace(/(:\s+)(\d+)/g, ": 0");
 
 	const graph = await graphFromObject({
-		dependencyTree: applicationGTree
+		dependencyTree: applicationGTree,
 	});
 
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
 		excludedTasks,
-		includedTasks
+		includedTasks,
 	});
 	const expectedFiles = await findFiles(expectedPath);
 
@@ -56,14 +56,14 @@ test("integration: Build application.g with cachebuster using hashes", async (t)
 	const cleanupCacheBusterInfo = (fileContent) => fileContent.replace(/(:\s+)("[^"]+")/g, ": \"\"");
 
 	const graph = await graphFromObject({
-		dependencyTree: applicationGTreeWithCachebusterHash
+		dependencyTree: applicationGTreeWithCachebusterHash,
 	});
 
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
 		excludedTasks,
-		includedTasks
+		includedTasks,
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -87,51 +87,51 @@ test("integration: Build application.g with cachebuster using hashes", async (t)
 });
 
 const applicationGTree = {
-	"id": "application.g",
-	"version": "1.0.0",
-	"path": applicationGPath,
-	"dependencies": [],
-	"configuration": {
-		"builder": {},
-		"specVersion": "2.0",
-		"type": "application",
-		"metadata": {
-			"name": "application.g",
-			"copyright": "Some fancy copyright"
+	id: "application.g",
+	version: "1.0.0",
+	path: applicationGPath,
+	dependencies: [],
+	configuration: {
+		builder: {},
+		specVersion: "2.0",
+		type: "application",
+		metadata: {
+			name: "application.g",
+			copyright: "Some fancy copyright",
 		},
-		"resources": {
-			"configuration": {
-				"paths": {
-					"webapp": "webapp"
-				}
-			}
-		}
-	}
+		resources: {
+			configuration: {
+				paths: {
+					webapp: "webapp",
+				},
+			},
+		},
+	},
 };
 
 const applicationGTreeWithCachebusterHash = {
-	"id": "application.g",
-	"version": "1.0.0",
-	"path": applicationGPath,
-	"dependencies": [],
-	"configuration": {
-		"builder": {
-			"cachebuster": {
-				"signatureType": "hash"
-			}
+	id: "application.g",
+	version: "1.0.0",
+	path: applicationGPath,
+	dependencies: [],
+	configuration: {
+		builder: {
+			cachebuster: {
+				signatureType: "hash",
+			},
 		},
-		"specVersion": "2.0",
-		"type": "application",
-		"metadata": {
-			"name": "application.g",
-			"copyright": "Some fancy copyright"
+		specVersion: "2.0",
+		type: "application",
+		metadata: {
+			name: "application.g",
+			copyright: "Some fancy copyright",
 		},
-		"resources": {
-			"configuration": {
-				"paths": {
-					"webapp": "webapp"
-				}
-			}
-		}
-	}
+		resources: {
+			configuration: {
+				paths: {
+					webapp: "webapp",
+				},
+			},
+		},
+	},
 };

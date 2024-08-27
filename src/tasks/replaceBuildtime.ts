@@ -1,8 +1,15 @@
 import stringReplacer from "../processors/stringReplacer.js";
 
+/**
+ *
+ * @param v
+ */
 function pad(v) {
 	return String(v).padStart(2, "0");
 }
+/**
+ *
+ */
 function getTimestamp() {
 	const date = new Date();
 	const year = date.getFullYear();
@@ -15,24 +22,19 @@ function getTimestamp() {
 }
 
 /**
- * @public
  * @module @ui5/builder/tasks/replaceBuildtime
  */
 
 /**
  * Task to replace the buildtime <code>${buildtime}</code>.
  *
- * @public
- * @function default
- * @static
- *
- * @param {object} parameters Parameters
- * @param {@ui5/fs/DuplexCollection} parameters.workspace DuplexCollection to read and write files
- * @param {object} parameters.options Options
- * @param {string} parameters.options.pattern Pattern to locate the files to be processed
- * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
+ * @param parameters Parameters
+ * @param parameters.workspace DuplexCollection to read and write files
+ * @param parameters.options Options
+ * @param parameters.options.pattern Pattern to locate the files to be processed
+ * @returns Promise resolving with <code>undefined</code> once data has been written
  */
-export default function({ workspace, options: { pattern } }: object) {
+export default function ({workspace, options: {pattern}}: object) {
 	const timestamp = getTimestamp();
 
 	return workspace.byGlob(pattern)
@@ -41,8 +43,8 @@ export default function({ workspace, options: { pattern } }: object) {
 				resources: processedResources,
 				options: {
 					pattern: "${buildtime}",
-					replacement: timestamp
-				}
+					replacement: timestamp,
+				},
 			});
 		})
 		.then((processedResources) => {

@@ -14,7 +14,7 @@ async function prepareResources({library} = {}) {
 }`;
 
 	const memoryAdapter = createAdapter({
-		virBasePath: "/"
+		virBasePath: "/",
 	});
 
 	let lessFilePath;
@@ -26,14 +26,14 @@ async function prepareResources({library} = {}) {
 
 	const resource = createResource({
 		path: lessFilePath,
-		string: input
+		string: input,
 	});
 
 	await memoryAdapter.write(resource);
 
 	return {
 		resource,
-		memoryAdapter
+		memoryAdapter,
 	};
 }
 
@@ -120,7 +120,7 @@ test("Processor: Builds a less file (default options)", async (t) => {
 
 	const [cssResource, cssRtlResource, jsonResource] = await themeBuilderProcessor({
 		resources: [resource],
-		fs: fsInterface(memoryAdapter)
+		fs: fsInterface(memoryAdapter),
 	});
 
 	const expected = getExpectedResults({compress: false});
@@ -142,8 +142,8 @@ test("Processor: Builds a less file (compress = true)", async (t) => {
 		resources: [resource],
 		fs: fsInterface(memoryAdapter),
 		options: {
-			compress: true
-		}
+			compress: true,
+		},
 	});
 
 	const expected = getExpectedResults({compress: true});
@@ -159,8 +159,8 @@ test("Processor: Builds a less file (compress = false)", async (t) => {
 		resources: [resource],
 		fs: fsInterface(memoryAdapter),
 		options: {
-			compress: false
-		}
+			compress: false,
+		},
 	});
 
 	const expected = getExpectedResults({compress: false});
@@ -176,8 +176,8 @@ test("Processor: Builds a less file (no library)", async (t) => {
 		resources: [resource],
 		fs: fsInterface(memoryAdapter),
 		options: {
-			compress: false
-		}
+			compress: false,
+		},
 	});
 
 	const expected = getExpectedResults({compress: false, library: false});
@@ -205,7 +205,7 @@ test("ThemeBuilder: Builds a less file (compress = true)", async (t) => {
 	const themeBuilder = new ThemeBuilder({fs: fsInterface(memoryAdapter)});
 
 	const [cssResource, cssRtlResource, jsonResource] = await themeBuilder.build([resource], {
-		compress: true
+		compress: true,
 	});
 
 	const expected = getExpectedResults({compress: true});
@@ -220,7 +220,7 @@ test("ThemeBuilder: Builds a less file (compress = false)", async (t) => {
 	const themeBuilder = new ThemeBuilder({fs: fsInterface(memoryAdapter)});
 
 	const [cssResource, cssRtlResource, jsonResource] = await themeBuilder.build([resource], {
-		compress: false
+		compress: false,
 	});
 
 	const expected = getExpectedResults({compress: false});
@@ -235,7 +235,7 @@ test("ThemeBuilder: Builds a less file (no library)", async (t) => {
 	const themeBuilder = new ThemeBuilder({fs: fsInterface(memoryAdapter)});
 
 	const [cssResource, cssRtlResource, jsonResource] = await themeBuilder.build([resource], {
-		compress: false
+		compress: false,
 	});
 
 	const expected = getExpectedResults({compress: false, library: false});
@@ -254,13 +254,13 @@ test("Processor: Builds a less file (cssVariables = true)", async (t) => {
 		cssVariablesSourceResource,
 		cssVariablesResource,
 		cssSkeletonResource,
-		cssSkeletonRtlResource
+		cssSkeletonRtlResource,
 	] = await themeBuilderProcessor({
 		resources: [resource],
 		fs: fsInterface(memoryAdapter),
 		options: {
-			cssVariables: true
-		}
+			cssVariables: true,
+		},
 	});
 
 	const expected = getExpectedResults({cssVariables: true});

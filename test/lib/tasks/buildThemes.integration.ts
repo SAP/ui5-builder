@@ -5,14 +5,14 @@ import DuplexCollection from "@ui5/fs/DuplexCollection";
 
 test("integration: simple", async (t) => {
 	const reader = createAdapter({
-		virBasePath: "/"
+		virBasePath: "/",
 	});
 	const writer = createAdapter({
-		virBasePath: "/"
+		virBasePath: "/",
 	});
 	const duplexCollection = new DuplexCollection({reader, writer});
 	const dependencies = createAdapter({
-		virBasePath: "/"
+		virBasePath: "/",
 	});
 
 	const content =
@@ -42,21 +42,21 @@ test("integration: simple", async (t) => {
 
 	const resource = createResource({
 		path: lessPath,
-		string: content
+		string: content,
 	});
 	await reader.write(resource);
 	await buildThemes({
 		workspace: duplexCollection,
 		dependencies: dependencies,
 		options: {
-			inputPattern: "/resources/super/duper/looper/themes/**/library.source.less"
-		}
+			inputPattern: "/resources/super/duper/looper/themes/**/library.source.less",
+		},
 	});
 
 	const [cssResource, cssRtlResource, parametersResource] = await Promise.all([
 		writer.byPath(cssPath),
 		writer.byPath(cssRtlPath),
-		writer.byPath(parametersPath)
+		writer.byPath(parametersPath),
 	]);
 
 	t.truthy(cssResource, "CSS resource has been created");
@@ -66,7 +66,7 @@ test("integration: simple", async (t) => {
 	const [cssBuffer, cssRtlBuffer, parametersBuffer] = await Promise.all([
 		cssResource.getBuffer(),
 		cssRtlResource.getBuffer(),
-		parametersResource.getBuffer()
+		parametersResource.getBuffer(),
 	]);
 
 	t.deepEqual(cssBuffer.toString(), cssExpected, "Correct CSS content");
@@ -75,14 +75,14 @@ test("integration: simple", async (t) => {
 });
 test("integration: imports", async (t) => {
 	const reader = createAdapter({
-		virBasePath: "/"
+		virBasePath: "/",
 	});
 	const writer = createAdapter({
-		virBasePath: "/"
+		virBasePath: "/",
 	});
 	const duplexCollection = new DuplexCollection({reader, writer});
 	const dependencies = createAdapter({
-		virBasePath: "/"
+		virBasePath: "/",
 	});
 	const lessContent =
 `@import "variables.less";
@@ -114,12 +114,12 @@ test("integration: imports", async (t) => {
 
 	const lessResource = createResource({
 		path: lessPath,
-		string: lessContent
+		string: lessContent,
 	});
 
 	const lessVariablesResource = createResource({
 		path: lessVariablesPath,
-		string: lessVariablesContent
+		string: lessVariablesContent,
 	});
 
 	await Promise.all([lessResource, lessVariablesResource].map((resource) => {
@@ -130,14 +130,14 @@ test("integration: imports", async (t) => {
 		workspace: duplexCollection,
 		dependencies: dependencies,
 		options: {
-			inputPattern: "/resources/super/duper/looper/themes/**/library.source.less"
-		}
+			inputPattern: "/resources/super/duper/looper/themes/**/library.source.less",
+		},
 	});
 
 	const [cssResource, cssRtlResource, parametersResource] = await Promise.all([
 		writer.byPath(cssPath),
 		writer.byPath(cssRtlPath),
-		writer.byPath(parametersPath)
+		writer.byPath(parametersPath),
 	]);
 
 	t.truthy(cssResource, "CSS resource has been created");
@@ -147,7 +147,7 @@ test("integration: imports", async (t) => {
 	const [cssBuffer, cssRtlBuffer, parametersBuffer] = await Promise.all([
 		cssResource.getBuffer(),
 		cssRtlResource.getBuffer(),
-		parametersResource.getBuffer()
+		parametersResource.getBuffer(),
 	]);
 
 	t.deepEqual(cssBuffer.toString(), cssExpected, "Correct CSS content");

@@ -20,4 +20,3 @@ test("wait for resources to finish prepare", async (t) => {
 	await resourcePool.prepare([new Resource({path: "/mypath"})]);
 	t.true(promiseResolved, "addResources promise is resolved before prepare promise is resolved");
 });
-

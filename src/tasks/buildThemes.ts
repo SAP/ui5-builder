@@ -11,6 +11,10 @@ import {setTimeout as setTimeoutPromise} from "node:timers/promises";
 
 let pool;
 
+/**
+ *
+ * @param taskUtil
+ */
 function getPool(taskUtil) {
 	if (!pool) {
 		const MIN_WORKERS = 2;
@@ -22,7 +26,7 @@ function getPool(taskUtil) {
 		const workerPath = fileURLToPath(new URL("../processors/themeBuilderWorker.js", import.meta.url));
 		pool = workerpool.pool(workerPath, {
 			workerType: "thread",
-			maxWorkers
+			maxWorkers,
 		});
 		taskUtil.registerCleanupTask((force) => {
 			const attemptPoolTermination = async () => {
@@ -55,42 +59,42 @@ function getPool(taskUtil) {
 	return pool;
 }
 
+/**
+ *
+ * @param taskUtil
+ * @param options
+ * @param transferList
+ */
 async function buildThemeInWorker(taskUtil, options, transferList) {
 	const toTransfer = transferList ? {transfer: transferList} : undefined;
 
 	return getPool(taskUtil).exec("execThemeBuild", [options], toTransfer);
 }
 
-
 /**
- * @public
  * @module @ui5/builder/tasks/buildThemes
  */
 /**
  * Task to build a library theme.
  *
- * @public
- * @function default
- * @static
- *
- * @param {object} parameters Parameters
- * @param {@ui5/fs/DuplexCollection} parameters.workspace DuplexCollection to read and write files
- * @param {@ui5/fs/AbstractReader} parameters.dependencies Reader or Collection to read dependency files
- * @param {@ui5/builder/tasks/TaskUtil|object} [parameters.taskUtil] TaskUtil instance.
+ * @param parameters Parameters
+ * @param parameters.workspace DuplexCollection to read and write files
+ * @param parameters.dependencies Reader or Collection to read dependency files
+ * @param [parameters.taskUtil] TaskUtil instance.
  *    Required to run buildThemes in parallel execution mode.
- * @param {object} parameters.options Options
- * @param {string} parameters.options.projectName Project name
- * @param {string} parameters.options.inputPattern Search pattern for *.less files to be built
- * @param {string} [parameters.options.librariesPattern] Search pattern for .library files
- * @param {string} [parameters.options.themesPattern] Search pattern for sap.ui.core theme folders
- * @param {boolean} [parameters.options.compress=true]
- * @param {boolean} [parameters.options.cssVariables=false]
- * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
+ * @param parameters.options Options
+ * @param parameters.options.projectName Project name
+ * @param parameters.options.inputPattern Search pattern for *.less files to be built
+ * @param [parameters.options.librariesPattern] Search pattern for .library files
+ * @param [parameters.options.themesPattern] Search pattern for sap.ui.core theme folders
+ * @param [parameters.options.compress]
+ * @param [parameters.options.cssVariables]
+ * @returns Promise resolving with <code>undefined</code> once data has been written
  */
-export default async function({ workspace, dependencies, taskUtil, options: { projectName, inputPattern, librariesPattern, themesPattern, compress, cssVariables } }: object) {
+export default async function ({workspace, dependencies, taskUtil, options: {projectName, inputPattern, librariesPattern, themesPattern, compress, cssVariables}}: object) {
 	const combo = new ReaderCollectionPrioritized({
 		name: `theme - prioritize workspace over dependencies: ${projectName}`,
-		readers: [workspace, dependencies]
+		readers: [workspace, dependencies],
 	});
 
 	compress = compress === undefined ? true : compress;
@@ -134,7 +138,7 @@ export default async function({ workspace, dependencies, taskUtil, options: { pr
 
 	let themeResources = await pThemeResources;
 
-	const isAvailable = function(resource) {
+	const isAvailable = function (resource) {
 		let libraryAvailable = false;
 		let themeAvailable = false;
 		const resourcePath = resource.getPath();
@@ -221,7 +225,7 @@ export default async function({ workspace, dependencies, taskUtil, options: { pr
 			options: {
 				compress,
 				cssVariables: !!cssVariables,
-			}
+			},
 		});
 	}
 

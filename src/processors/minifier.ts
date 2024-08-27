@@ -21,13 +21,17 @@ const httpPattern = /^https?:\/\//i;
 // Shared workerpool across all executions until the taskUtil cleanup is triggered
 let pool;
 
+/**
+ *
+ * @param taskUtil
+ */
 function getPool(taskUtil) {
 	if (!pool) {
 		log.verbose(`Creating workerpool with up to ${maxWorkers} workers (available CPU cores: ${osCpus})`);
 		const workerPath = fileURLToPath(new URL("./minifierWorker.js", import.meta.url));
 		pool = workerpool.pool(workerPath, {
 			workerType: "auto",
-			maxWorkers
+			maxWorkers,
 		});
 		taskUtil.registerCleanupTask((force) => {
 			const attemptPoolTermination = async () => {
@@ -60,10 +64,19 @@ function getPool(taskUtil) {
 	return pool;
 }
 
+/**
+ *
+ * @param options
+ * @param taskUtil
+ */
 async function minifyInWorker(options, taskUtil) {
 	return getPool(taskUtil).exec("execMinification", [options]);
 }
 
+/**
+ *
+ * @param resource
+ */
 async function extractAndRemoveSourceMappingUrl(resource) {
 	const resourceContent = await resource.getString();
 	const resourcePath = resource.getPath();
@@ -83,6 +96,13 @@ async function extractAndRemoveSourceMappingUrl(resource) {
 	return null;
 }
 
+/**
+ *
+ * @param root0
+ * @param root0.sourceMappingUrl
+ * @param root0.resourcePath
+ * @param root0.readFile
+ */
 async function getSourceMapFromUrl({sourceMappingUrl, resourcePath, readFile}) {
 	// =======================================================================
 	// This code is almost identical to code located in lbt/bundle/Builder.js
@@ -104,10 +124,10 @@ async function getSourceMapFromUrl({sourceMappingUrl, resourcePath, readFile}) {
 		}
 	} else if (httpPattern.test(sourceMappingUrl)) {
 		log.warn(`Source map reference in resource ${resourcePath} is an absolute URL. ` +
-			`Currently, only relative URLs are supported.`);
+		`Currently, only relative URLs are supported.`);
 	} else if (posixPath.isAbsolute(sourceMappingUrl)) {
 		log.warn(`Source map reference in resource ${resourcePath} is an absolute path. ` +
-			`Currently, only relative paths are supported.`);
+		`Currently, only relative paths are supported.`);
 	} else {
 		const sourceMapPath = posixPath.join(posixPath.dirname(resourcePath), sourceMappingUrl);
 
@@ -122,47 +142,42 @@ async function getSourceMapFromUrl({sourceMappingUrl, resourcePath, readFile}) {
 }
 
 /**
- * @public
  * @module @ui5/builder/processors/minifier
  */
 
 /**
  * Result set
  *
- * @public
- * @typedef {object} MinifierResult
- * @property {@ui5/fs/Resource} resource Minified resource
- * @property {@ui5/fs/Resource} dbgResource Debug (non-minified) variant
- * @property {@ui5/fs/Resource} sourceMap Source Map
+ * resource Minified resource
+ *
+ * dbgResource Debug (non-minified) variant
+ *
+ * sourceMap Source Map
  */
 
 /**
  * Minifies the supplied resources.
  *
- * @public
- * @function default
- * @static
- *
- * @param {object} parameters Parameters
- * @param {@ui5/fs/Resource[]} parameters.resources List of resources to be processed
- * @param {fs|module:@ui5/fs/fsInterface} parameters.fs Node fs or custom
+ * @param parameters Parameters
+ * @param parameters.resources List of resources to be processed
+ * @param parameters.fs Node fs or custom
  *    [fs interface]{@link module:@ui5/fs/fsInterface}. Required when setting "readSourceMappingUrl" to true
- * @param {@ui5/builder/tasks/TaskUtil|object} [parameters.taskUtil] TaskUtil instance.
+ * @param [parameters.taskUtil] TaskUtil instance.
  *    Required when using the <code>useWorkers</code> option
- * @param {object} [parameters.options] Options
- * @param {boolean} [parameters.options.readSourceMappingUrl=false]
+ * @param [parameters.options] Options
+ * @param [parameters.options.readSourceMappingUrl]
  *   Whether to make use of any existing source maps referenced in the resources to be minified. Use this option to
  *   preserve references to the original source files, such as TypeScript files, in the generated source map.<br>
  *   If a resource has been modified by a previous task, any existing source map will be ignored regardless of this
  *    setting. This is to ensure that no inconsistent source maps are used. Check the verbose log for details.
- * @param {boolean} [parameters.options.addSourceMappingUrl=true]
+ * @param [parameters.options.addSourceMappingUrl]
  *   Whether to add a sourceMappingURL reference to the end of the minified resource
- * @param {boolean} [parameters.options.useWorkers=false]
+ * @param [parameters.options.useWorkers]
  *  Whether to offload the minification task onto separate CPU threads. This often speeds up the build process
- * @returns {Promise<module:@ui5/builder/processors/minifier~MinifierResult[]>}
+ * @returns
  *   Promise resolving with object of resource, dbgResource and sourceMap
  */
-export default async function({ resources, fs, taskUtil, options: { readSourceMappingUrl = false, addSourceMappingUrl = true, useWorkers = false } = {} }: object) {
+export default async function ({resources, fs, taskUtil, options: {readSourceMappingUrl = false, addSourceMappingUrl = true, useWorkers = false} = {}}: object) {
 	let minify;
 	if (readSourceMappingUrl && !fs) {
 		throw new Error(`Option 'readSourceMappingUrl' requires parameter 'fs' to be provided`);
@@ -187,7 +202,7 @@ export default async function({ resources, fs, taskUtil, options: { readSourceMa
 		const filename = posixPath.basename(resource.getPath());
 
 		const sourceMapOptions = {
-			filename
+			filename,
 		};
 		if (addSourceMappingUrl) {
 			sourceMapOptions.url = filename + ".map";
@@ -217,7 +232,7 @@ export default async function({ resources, fs, taskUtil, options: { readSourceMa
 				const sourceMapContent = await getSourceMapFromUrl({
 					sourceMappingUrl,
 					resourcePath,
-					readFile: promisify(fs.readFile)
+					readFile: promisify(fs.readFile),
 				});
 
 				if (sourceMapContent) {
@@ -252,7 +267,7 @@ export default async function({ resources, fs, taskUtil, options: { readSourceMa
 					// Then create a new resource
 					dbgSourceMapResource = new Resource({
 						string: JSON.stringify(sourceMapJson),
-						path: dbgPath + ".map"
+						path: dbgPath + ".map",
 					});
 					// And reference the resource in the debug resource
 					dbgResource.setString(code + `//# sourceMappingURL=${dbgFilename}.map\n`);
@@ -272,16 +287,17 @@ export default async function({ resources, fs, taskUtil, options: { readSourceMa
 			filename,
 			dbgFilename,
 			code,
-			sourceMapOptions
+			sourceMapOptions,
 		}, taskUtil);
 		resource.setString(result.code);
 		const sourceMapResource = new Resource({
 			path: resource.getPath() + ".map",
-			string: result.map
+			string: result.map,
 		});
 		return {resource, dbgResource, sourceMapResource, dbgSourceMapResource};
 	}));
 }
 
 export const __localFunctions__ = (process.env.NODE_ENV === "test") ?
-	{getSourceMapFromUrl} : undefined;
+		{getSourceMapFromUrl} :
+	undefined;

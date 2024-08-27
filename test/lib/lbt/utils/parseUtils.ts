@@ -3,10 +3,10 @@ import {Syntax as EspreeSyntax, VisitorKeys as EspreeVisitorKeys} from "espree";
 import {parseJS, Syntax, VisitorKeys} from "../../../../lib/lbt/utils/parseUtils.js";
 
 test("invalid options", (t) => {
-	t.throws(function() {
+	t.throws(function () {
 		parseJS("var x;", {foobar: true});
 	}, {
-		message: /Allowed parser options are/
+		message: /Allowed parser options are/,
 	});
 });
 

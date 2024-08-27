@@ -6,12 +6,12 @@ test.beforeEach(async (t) => {
 	t.context.log = {
 		warn: sinon.stub(),
 		verbose: sinon.stub(),
-		error: sinon.stub()
+		error: sinon.stub(),
 	};
 
 	t.context.workspace = {
 		byGlob: sinon.stub().resolves([]),
-		write: sinon.stub().resolves()
+		write: sinon.stub().resolves(),
 	};
 
 	t.context.dependencies = {};
@@ -23,8 +23,8 @@ test.beforeEach(async (t) => {
 	t.context.generateLibraryPreload = await esmock("../../../../lib/tasks/bundlers/generateLibraryPreload.js", {
 		"../../../../lib/processors/bundlers/moduleBundler.js": t.context.moduleBundlerStub,
 		"@ui5/logger": {
-			getLogger: sinon.stub().withArgs("builder:tasks:bundlers:generateLibraryPreload").returns(t.context.log)
-		}
+			getLogger: sinon.stub().withArgs("builder:tasks:bundlers:generateLibraryPreload").returns(t.context.log),
+		},
 	});
 });
 
@@ -35,24 +35,24 @@ test.afterEach.always(() => {
 test.serial("generateLibraryPreload", async (t) => {
 	const {
 		generateLibraryPreload, moduleBundlerStub,
-		workspace, dependencies, firstByGlob
+		workspace, dependencies, firstByGlob,
 	} = t.context;
 
 	const resources = [
-		{getPath: sinon.stub().returns("/resources/my/lib/.library")}
+		{getPath: sinon.stub().returns("/resources/my/lib/.library")},
 	];
 	firstByGlob.resolves(resources);
 
 	workspace.byGlob.resolves([
-		{getPath: sinon.stub().returns("/resources/my/lib/.library")}
+		{getPath: sinon.stub().returns("/resources/my/lib/.library")},
 	]);
 
 	await generateLibraryPreload({
 		workspace,
 		dependencies,
 		options: {
-			projectName: "Test Library"
-		}
+			projectName: "Test Library",
+		},
 	});
 
 	t.is(moduleBundlerStub.callCount, 3, "moduleBundler should have been called 3 times");
@@ -77,15 +77,15 @@ test.serial("generateLibraryPreload", async (t) => {
 						resolveConditional: false,
 						renderer: true,
 						declareRawModules: false,
-					}
-				]
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: true,
-				ignoreMissingModules: true
-			}
+				ignoreMissingModules: true,
+			},
 		},
-		resources
+		resources,
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(1).args, [{
 		options: {
@@ -100,24 +100,24 @@ test.serial("generateLibraryPreload", async (t) => {
 							"!my/lib/**/*-preload.designtime.js",
 							"!my/lib/designtime/**/*.properties",
 							"!my/lib/designtime/**/*.svg",
-							"!my/lib/designtime/**/*.xml"
+							"!my/lib/designtime/**/*.xml",
 						],
 						mode: "preload",
 						renderer: false,
 						resolve: false,
 						resolveConditional: false,
 						sort: true,
-						declareRawModules: false
-					}
-				]
+						declareRawModules: false,
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: true,
 				ignoreMissingModules: true,
-				skipIfEmpty: true
-			}
+				skipIfEmpty: true,
+			},
 		},
-		resources
+		resources,
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(2).args, [{
 		options: {
@@ -128,7 +128,7 @@ test.serial("generateLibraryPreload", async (t) => {
 					{
 						filters: [
 							"my/lib/**/*.support.js",
-							"!my/lib/**/*-preload.support.js"
+							"!my/lib/**/*-preload.support.js",
 						],
 						mode: "preload",
 						renderer: false,
@@ -136,16 +136,16 @@ test.serial("generateLibraryPreload", async (t) => {
 						resolveConditional: false,
 						declareRawModules: false,
 						sort: true,
-					}
-				]
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: false,
 				ignoreMissingModules: true,
-				skipIfEmpty: true
-			}
+				skipIfEmpty: true,
+			},
 		},
-		resources
+		resources,
 	}]);
 
 	t.is(workspace.byGlob.callCount, 2,
@@ -159,17 +159,17 @@ test.serial("generateLibraryPreload", async (t) => {
 test.serial("generateLibraryPreload for sap.ui.core (w/o ui5loader.js)", async (t) => {
 	const {
 		generateLibraryPreload, moduleBundlerStub,
-		workspace, dependencies, firstByGlob
+		workspace, dependencies, firstByGlob,
 	} = t.context;
 
 	const resources = [
 		{getPath: sinon.stub().returns("/resources/sap/ui/core/.library")},
-		{getPath: sinon.stub().returns("/resources/sap-ui-core.js")}
+		{getPath: sinon.stub().returns("/resources/sap-ui-core.js")},
 	];
 	firstByGlob.resolves(resources);
 
 	workspace.byGlob.resolves([
-		{getPath: sinon.stub().returns("/resources/sap/ui/core/.library")}
+		{getPath: sinon.stub().returns("/resources/sap/ui/core/.library")},
 	]);
 
 	await generateLibraryPreload({
@@ -178,8 +178,8 @@ test.serial("generateLibraryPreload for sap.ui.core (w/o ui5loader.js)", async (
 		options: {
 			projectName: "sap.ui.core",
 			// Should be ignored for hardcoded sap.ui.core bundle configuration
-			excludes: ["sap/ui/core/**"]
-		}
+			excludes: ["sap/ui/core/**"],
+		},
 	});
 
 	t.is(moduleBundlerStub.callCount, 7, "moduleBundler should have been called 7 times");
@@ -191,7 +191,7 @@ test.serial("generateLibraryPreload for sap.ui.core (w/o ui5loader.js)", async (
 				sections: [
 					{
 						filters: [
-							"jquery.sap.global.js"
+							"jquery.sap.global.js",
 						],
 						mode: "raw",
 						resolve: true,
@@ -199,12 +199,12 @@ test.serial("generateLibraryPreload for sap.ui.core (w/o ui5loader.js)", async (
 						resolveConditional: false,
 						renderer: false,
 						declareRawModules: false,
-						declareModules: false
+						declareModules: false,
 					},
 					{
 						mode: "preload",
 						filters: [
-							"sap/ui/core/Core.js"
+							"sap/ui/core/Core.js",
 						],
 						resolve: true,
 						sort: true,
@@ -215,23 +215,23 @@ test.serial("generateLibraryPreload for sap.ui.core (w/o ui5loader.js)", async (
 					{
 						mode: "require",
 						filters: [
-							"sap/ui/core/Core.js"
+							"sap/ui/core/Core.js",
 						],
 						resolve: false,
 						sort: true,
 						resolveConditional: false,
 						renderer: false,
 						declareRawModules: false,
-					}
-				]
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: true,
 				decorateBootstrapModule: true,
-				addTryCatchRestartWrapper: true
-			}
+				addTryCatchRestartWrapper: true,
+			},
 		},
-		resources
+		resources,
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(1).args, [{
 		options: {
@@ -241,7 +241,7 @@ test.serial("generateLibraryPreload for sap.ui.core (w/o ui5loader.js)", async (
 				sections: [
 					{
 						filters: [
-							"jquery.sap.global.js"
+							"jquery.sap.global.js",
 						],
 						mode: "raw",
 						resolve: true,
@@ -254,23 +254,23 @@ test.serial("generateLibraryPreload for sap.ui.core (w/o ui5loader.js)", async (
 					{
 						mode: "require",
 						filters: [
-							"sap/ui/core/Core.js"
+							"sap/ui/core/Core.js",
 						],
 						declareRawModules: false,
 						renderer: false,
 						resolve: false,
 						resolveConditional: false,
-						sort: true
-					}
-				]
+						sort: true,
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: false,
 				decorateBootstrapModule: false,
-				addTryCatchRestartWrapper: false
-			}
+				addTryCatchRestartWrapper: false,
+			},
 		},
-		resources
+		resources,
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(2).args, [{
 		options: {
@@ -286,7 +286,7 @@ test.serial("generateLibraryPreload for sap.ui.core (w/o ui5loader.js)", async (
 							"jquery-ui-position.js",
 							"sap/ui/thirdparty/jquery.js",
 							"sap/ui/thirdparty/jquery/*",
-							"sap/ui/thirdparty/jqueryui/*"
+							"sap/ui/thirdparty/jqueryui/*",
 						],
 						declareRawModules: false,
 						renderer: false,
@@ -296,7 +296,7 @@ test.serial("generateLibraryPreload for sap.ui.core (w/o ui5loader.js)", async (
 					},
 					{
 						filters: [
-							"jquery.sap.global.js"
+							"jquery.sap.global.js",
 						],
 						mode: "raw",
 						resolve: true,
@@ -309,7 +309,7 @@ test.serial("generateLibraryPreload for sap.ui.core (w/o ui5loader.js)", async (
 					{
 						mode: "preload",
 						filters: [
-							"sap/ui/core/Core.js"
+							"sap/ui/core/Core.js",
 						],
 						resolve: true,
 						resolveConditional: false,
@@ -320,23 +320,23 @@ test.serial("generateLibraryPreload for sap.ui.core (w/o ui5loader.js)", async (
 					{
 						mode: "require",
 						filters: [
-							"sap/ui/core/Core.js"
+							"sap/ui/core/Core.js",
 						],
 						declareRawModules: false,
 						renderer: false,
 						resolve: false,
 						resolveConditional: false,
 						sort: true,
-					}
-				]
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: true,
 				decorateBootstrapModule: true,
-				addTryCatchRestartWrapper: true
-			}
+				addTryCatchRestartWrapper: true,
+			},
 		},
-		resources
+		resources,
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(3).args, [{
 		options: {
@@ -352,7 +352,7 @@ test.serial("generateLibraryPreload for sap.ui.core (w/o ui5loader.js)", async (
 							"jquery-ui-position.js",
 							"sap/ui/thirdparty/jquery.js",
 							"sap/ui/thirdparty/jquery/*",
-							"sap/ui/thirdparty/jqueryui/*"
+							"sap/ui/thirdparty/jqueryui/*",
 						],
 						declareRawModules: false,
 						renderer: false,
@@ -362,7 +362,7 @@ test.serial("generateLibraryPreload for sap.ui.core (w/o ui5loader.js)", async (
 					},
 					{
 						filters: [
-							"jquery.sap.global.js"
+							"jquery.sap.global.js",
 						],
 						mode: "raw",
 						resolve: true,
@@ -375,23 +375,23 @@ test.serial("generateLibraryPreload for sap.ui.core (w/o ui5loader.js)", async (
 					{
 						mode: "require",
 						filters: [
-							"sap/ui/core/Core.js"
+							"sap/ui/core/Core.js",
 						],
 						declareRawModules: false,
 						renderer: false,
 						resolve: false,
 						resolveConditional: false,
 						sort: true,
-					}
-				]
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: false,
 				decorateBootstrapModule: false,
-				addTryCatchRestartWrapper: false
-			}
+				addTryCatchRestartWrapper: false,
+			},
 		},
-		resources
+		resources,
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(4).args, [{
 		options: {
@@ -448,15 +448,15 @@ test.serial("generateLibraryPreload for sap.ui.core (w/o ui5loader.js)", async (
 						resolveConditional: false,
 						sort: true,
 						declareRawModules: false,
-					}
-				]
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: true,
-				ignoreMissingModules: true
-			}
+				ignoreMissingModules: true,
+			},
 		},
-		resources
+		resources,
 	}]);
 
 	t.is(workspace.byGlob.callCount, 2,
@@ -476,13 +476,13 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js)", async (t
 	const resources = [
 		{getPath: sinon.stub().returns("/resources/sap/ui/core/.library")},
 		{getPath: sinon.stub().returns("/resources/ui5loader.js")},
-		{getPath: sinon.stub().returns("/resources/sap-ui-core.js")}
+		{getPath: sinon.stub().returns("/resources/sap-ui-core.js")},
 	];
 	firstByGlob.resolves(resources);
 	secondByGlob.resolves(resources);
 
 	workspace.byGlob.resolves([
-		{getPath: sinon.stub().returns("/resources/sap/ui/core/.library")}
+		{getPath: sinon.stub().returns("/resources/sap/ui/core/.library")},
 	]);
 
 	const coreProject = {
@@ -491,10 +491,10 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js)", async (t
 				toString: () => "0.1",
 				gte: sinon.stub().withArgs("4.0").returns(false),
 				lte: sinon.stub().withArgs("2.0").returns(true),
-				lt: sinon.stub().withArgs("4.0").returns(true)
+				lt: sinon.stub().withArgs("4.0").returns(true),
 			};
 		},
-		getVersion: () => "1.120.0"
+		getVersion: () => "1.120.0",
 	};
 	const taskUtil = {
 		getTag: sinon.stub().returns(false),
@@ -502,11 +502,11 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js)", async (t
 		STANDARD_TAGS: {
 			HasDebugVariant: "<HasDebugVariant>",
 			IsDebugVariant: "<IsDebugVariant>",
-			OmitFromBuildResult: "<OmitFromBuildResult>"
+			OmitFromBuildResult: "<OmitFromBuildResult>",
 		},
 		resourceFactory: {
-			createFilterReader: () => workspace
-		}
+			createFilterReader: () => workspace,
+		},
 	};
 	await generateLibraryPreload({
 		workspace,
@@ -515,8 +515,8 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js)", async (t
 		options: {
 			projectName: "sap.ui.core",
 			// Should be ignored for hardcoded sap.ui.core bundle configuration
-			excludes: ["sap/ui/core/**"]
-		}
+			excludes: ["sap/ui/core/**"],
+		},
 	});
 
 	t.is(workspace.byGlob.callCount, 3,
@@ -547,7 +547,7 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js)", async (t
 				sections: [
 					{
 						filters: [
-							"ui5loader-autoconfig.js"
+							"ui5loader-autoconfig.js",
 						],
 						mode: "raw",
 						resolve: true,
@@ -560,7 +560,7 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js)", async (t
 					{
 						mode: "preload",
 						filters: [
-							"sap/ui/core/Core.js"
+							"sap/ui/core/Core.js",
 						],
 						resolve: true,
 						sort: true,
@@ -571,25 +571,25 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js)", async (t
 					{
 						mode: "require",
 						filters: [
-							"sap/ui/core/Core.js"
+							"sap/ui/core/Core.js",
 						],
 						resolve: false,
 						sort: true,
 						resolveConditional: false,
 						renderer: false,
 						declareRawModules: false,
-						async: false
-					}
-				]
+						async: false,
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: true,
 				decorateBootstrapModule: true,
-				addTryCatchRestartWrapper: true
+				addTryCatchRestartWrapper: true,
 			},
-			targetUi5CoreVersion: "1.120.0"
+			targetUi5CoreVersion: "1.120.0",
 		},
-		resources
+		resources,
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(1).args, [{
 		options: {
@@ -599,7 +599,7 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js)", async (t
 				sections: [
 					{
 						filters: [
-							"ui5loader-autoconfig.js"
+							"ui5loader-autoconfig.js",
 						],
 						mode: "raw",
 						declareRawModules: false,
@@ -612,26 +612,26 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js)", async (t
 					{
 						mode: "require",
 						filters: [
-							"sap/ui/core/Core.js"
+							"sap/ui/core/Core.js",
 						],
 						declareRawModules: false,
 						renderer: false,
 						resolve: false,
 						resolveConditional: false,
 						sort: true,
-						async: false
-					}
-				]
+						async: false,
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: false,
 				decorateBootstrapModule: false,
-				addTryCatchRestartWrapper: false
+				addTryCatchRestartWrapper: false,
 			},
 			moduleNameMapping: {},
-			targetUi5CoreVersion: "1.120.0"
+			targetUi5CoreVersion: "1.120.0",
 		},
-		resources
+		resources,
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(2).args, [{
 		options: {
@@ -647,7 +647,7 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js)", async (t
 							"jquery-ui-position.js",
 							"sap/ui/thirdparty/jquery.js",
 							"sap/ui/thirdparty/jquery/*",
-							"sap/ui/thirdparty/jqueryui/*"
+							"sap/ui/thirdparty/jqueryui/*",
 						],
 						declareRawModules: false,
 						renderer: false,
@@ -657,7 +657,7 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js)", async (t
 					},
 					{
 						filters: [
-							"ui5loader-autoconfig.js"
+							"ui5loader-autoconfig.js",
 						],
 						mode: "raw",
 						resolve: true,
@@ -670,7 +670,7 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js)", async (t
 					{
 						mode: "preload",
 						filters: [
-							"sap/ui/core/Core.js"
+							"sap/ui/core/Core.js",
 						],
 						resolve: true,
 						declareRawModules: false,
@@ -681,25 +681,25 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js)", async (t
 					{
 						mode: "require",
 						filters: [
-							"sap/ui/core/Core.js"
+							"sap/ui/core/Core.js",
 						],
 						renderer: false,
 						declareRawModules: false,
 						resolve: false,
 						resolveConditional: false,
 						sort: true,
-						async: false
-					}
-				]
+						async: false,
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: true,
 				decorateBootstrapModule: true,
-				addTryCatchRestartWrapper: true
+				addTryCatchRestartWrapper: true,
 			},
-			targetUi5CoreVersion: "1.120.0"
+			targetUi5CoreVersion: "1.120.0",
 		},
-		resources
+		resources,
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(3).args, [{
 		options: {
@@ -715,7 +715,7 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js)", async (t
 							"jquery-ui-position.js",
 							"sap/ui/thirdparty/jquery.js",
 							"sap/ui/thirdparty/jquery/*",
-							"sap/ui/thirdparty/jqueryui/*"
+							"sap/ui/thirdparty/jqueryui/*",
 						],
 						declareRawModules: false,
 						renderer: false,
@@ -725,7 +725,7 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js)", async (t
 					},
 					{
 						filters: [
-							"ui5loader-autoconfig.js"
+							"ui5loader-autoconfig.js",
 						],
 						mode: "raw",
 						declareModules: false,
@@ -738,26 +738,26 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js)", async (t
 					{
 						mode: "require",
 						filters: [
-							"sap/ui/core/Core.js"
+							"sap/ui/core/Core.js",
 						],
 						declareRawModules: false,
 						renderer: false,
 						resolve: false,
 						resolveConditional: false,
 						sort: true,
-						async: false
-					}
-				]
+						async: false,
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: false,
 				decorateBootstrapModule: false,
-				addTryCatchRestartWrapper: false
+				addTryCatchRestartWrapper: false,
 			},
 			moduleNameMapping: {},
-			targetUi5CoreVersion: "1.120.0"
+			targetUi5CoreVersion: "1.120.0",
 		},
-		resources
+		resources,
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(4).args, [{
 		options: {
@@ -775,7 +775,7 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js)", async (t
 						renderer: false,
 						resolve: true,
 						resolveConditional: false,
-						sort: true
+						sort: true,
 					},
 					{
 						filters: [
@@ -814,16 +814,16 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js)", async (t
 						resolveConditional: false,
 						sort: true,
 						declareRawModules: false,
-					}
-				]
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: true,
-				ignoreMissingModules: true
+				ignoreMissingModules: true,
 			},
-			targetUi5CoreVersion: "1.120.0"
+			targetUi5CoreVersion: "1.120.0",
 		},
-		resources
+		resources,
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(5).args, [{
 		options: {
@@ -838,25 +838,25 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js)", async (t
 							"!sap/ui/core/**/*-preload.designtime.js",
 							"!sap/ui/core/designtime/**/*.properties",
 							"!sap/ui/core/designtime/**/*.svg",
-							"!sap/ui/core/designtime/**/*.xml"
+							"!sap/ui/core/designtime/**/*.xml",
 						],
 						mode: "preload",
 						renderer: false,
 						resolve: false,
 						resolveConditional: false,
 						declareRawModules: false,
-						sort: true
-					}
-				]
+						sort: true,
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: true,
 				ignoreMissingModules: true,
-				skipIfEmpty: true
+				skipIfEmpty: true,
 			},
-			targetUi5CoreVersion: "1.120.0"
+			targetUi5CoreVersion: "1.120.0",
 		},
-		resources
+		resources,
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(6).args, [{
 		options: {
@@ -867,25 +867,25 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js)", async (t
 					{
 						filters: [
 							"sap/ui/core/**/*.support.js",
-							"!sap/ui/core/**/*-preload.support.js"
+							"!sap/ui/core/**/*-preload.support.js",
 						],
 						mode: "preload",
 						renderer: false,
 						resolve: false,
 						resolveConditional: false,
 						declareRawModules: false,
-						sort: true
-					}
-				]
+						sort: true,
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: false,
 				ignoreMissingModules: true,
-				skipIfEmpty: true
+				skipIfEmpty: true,
 			},
-			targetUi5CoreVersion: "1.120.0"
+			targetUi5CoreVersion: "1.120.0",
 		},
-		resources
+		resources,
 	}]);
 });
 
@@ -898,13 +898,13 @@ test.serial("generateLibraryPreload for sap.ui.core with old specVersion defined
 	const resources = [
 		{getPath: sinon.stub().returns("/resources/sap/ui/core/.library")},
 		{getPath: sinon.stub().returns("/resources/ui5loader.js")},
-		{getPath: sinon.stub().returns("/resources/sap-ui-core.js")}
+		{getPath: sinon.stub().returns("/resources/sap-ui-core.js")},
 	];
 	firstByGlob.resolves(resources);
 	secondByGlob.resolves(resources);
 
 	workspace.byGlob.resolves([
-		{getPath: sinon.stub().returns("/resources/sap/ui/core/.library")}
+		{getPath: sinon.stub().returns("/resources/sap/ui/core/.library")},
 	]);
 
 	const coreProject = {
@@ -916,7 +916,7 @@ test.serial("generateLibraryPreload for sap.ui.core with old specVersion defined
 				lt: sinon.stub().withArgs("4.0").returns(true),
 			};
 		},
-		getVersion: () => "1.120.0"
+		getVersion: () => "1.120.0",
 	};
 
 	const taskUtil = {
@@ -925,11 +925,11 @@ test.serial("generateLibraryPreload for sap.ui.core with old specVersion defined
 		STANDARD_TAGS: {
 			HasDebugVariant: "<HasDebugVariant>",
 			IsDebugVariant: "<IsDebugVariant>",
-			OmitFromBuildResult: "<OmitFromBuildResult>"
+			OmitFromBuildResult: "<OmitFromBuildResult>",
 		},
 		resourceFactory: {
-			createFilterReader: () => workspace
-		}
+			createFilterReader: () => workspace,
+		},
 	};
 	taskUtil.getTag
 		.withArgs(sinon.match.any, taskUtil.STANDARD_TAGS.HasDebugVariant)
@@ -941,8 +941,8 @@ test.serial("generateLibraryPreload for sap.ui.core with old specVersion defined
 		options: {
 			projectName: "sap.ui.core",
 			// Should be ignored for hardcoded sap.ui.core bundle configuration
-			excludes: ["sap/ui/core/**"]
-		}
+			excludes: ["sap/ui/core/**"],
+		},
 	});
 
 	t.is(workspace.byGlob.callCount, 3,
@@ -963,7 +963,7 @@ test.serial("generateLibraryPreload for sap.ui.core with old specVersion defined
 				sections: [
 					{
 						filters: [
-							"ui5loader-autoconfig.js"
+							"ui5loader-autoconfig.js",
 						],
 						mode: "raw",
 						declareModules: false,
@@ -976,7 +976,7 @@ test.serial("generateLibraryPreload for sap.ui.core with old specVersion defined
 					{
 						mode: "preload",
 						filters: [
-							"sap/ui/core/Core.js"
+							"sap/ui/core/Core.js",
 						],
 						resolve: true,
 						sort: true,
@@ -987,25 +987,25 @@ test.serial("generateLibraryPreload for sap.ui.core with old specVersion defined
 					{
 						mode: "require",
 						filters: [
-							"sap/ui/core/Core.js"
+							"sap/ui/core/Core.js",
 						],
 						resolve: false,
 						sort: true,
 						resolveConditional: false,
 						renderer: false,
 						declareRawModules: false,
-						async: false
-					}
-				]
+						async: false,
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: true,
 				decorateBootstrapModule: true,
-				addTryCatchRestartWrapper: true
+				addTryCatchRestartWrapper: true,
 			},
-			targetUi5CoreVersion: "1.120.0"
+			targetUi5CoreVersion: "1.120.0",
 		},
-		resources
+		resources,
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(1).args, [{
 		options: {
@@ -1015,7 +1015,7 @@ test.serial("generateLibraryPreload for sap.ui.core with old specVersion defined
 				sections: [
 					{
 						filters: [
-							"ui5loader-autoconfig.js"
+							"ui5loader-autoconfig.js",
 						],
 						mode: "raw",
 						resolve: true,
@@ -1028,26 +1028,26 @@ test.serial("generateLibraryPreload for sap.ui.core with old specVersion defined
 					{
 						mode: "require",
 						filters: [
-							"sap/ui/core/Core.js"
+							"sap/ui/core/Core.js",
 						],
 						declareRawModules: false,
 						renderer: false,
 						resolve: false,
 						resolveConditional: false,
 						sort: true,
-						async: false
-					}
-				]
+						async: false,
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: false,
 				decorateBootstrapModule: false,
-				addTryCatchRestartWrapper: false
+				addTryCatchRestartWrapper: false,
 			},
 			moduleNameMapping: {},
-			targetUi5CoreVersion: "1.120.0"
+			targetUi5CoreVersion: "1.120.0",
 		},
-		resources
+		resources,
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(2).args, [{
 		options: {
@@ -1063,7 +1063,7 @@ test.serial("generateLibraryPreload for sap.ui.core with old specVersion defined
 							"jquery-ui-position.js",
 							"sap/ui/thirdparty/jquery.js",
 							"sap/ui/thirdparty/jquery/*",
-							"sap/ui/thirdparty/jqueryui/*"
+							"sap/ui/thirdparty/jqueryui/*",
 						],
 						declareRawModules: false,
 						renderer: false,
@@ -1073,7 +1073,7 @@ test.serial("generateLibraryPreload for sap.ui.core with old specVersion defined
 					},
 					{
 						filters: [
-							"ui5loader-autoconfig.js"
+							"ui5loader-autoconfig.js",
 						],
 						mode: "raw",
 						resolve: true,
@@ -1086,7 +1086,7 @@ test.serial("generateLibraryPreload for sap.ui.core with old specVersion defined
 					{
 						mode: "preload",
 						filters: [
-							"sap/ui/core/Core.js"
+							"sap/ui/core/Core.js",
 						],
 						resolve: true,
 						declareRawModules: false,
@@ -1097,25 +1097,25 @@ test.serial("generateLibraryPreload for sap.ui.core with old specVersion defined
 					{
 						mode: "require",
 						filters: [
-							"sap/ui/core/Core.js"
+							"sap/ui/core/Core.js",
 						],
 						declareRawModules: false,
 						renderer: false,
 						resolve: false,
 						resolveConditional: false,
 						sort: true,
-						async: false
-					}
-				]
+						async: false,
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: true,
 				decorateBootstrapModule: true,
-				addTryCatchRestartWrapper: true
+				addTryCatchRestartWrapper: true,
 			},
-			targetUi5CoreVersion: "1.120.0"
+			targetUi5CoreVersion: "1.120.0",
 		},
-		resources
+		resources,
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(3).args, [{
 		options: {
@@ -1131,7 +1131,7 @@ test.serial("generateLibraryPreload for sap.ui.core with old specVersion defined
 							"jquery-ui-position.js",
 							"sap/ui/thirdparty/jquery.js",
 							"sap/ui/thirdparty/jquery/*",
-							"sap/ui/thirdparty/jqueryui/*"
+							"sap/ui/thirdparty/jqueryui/*",
 						],
 						declareRawModules: false,
 						renderer: false,
@@ -1141,7 +1141,7 @@ test.serial("generateLibraryPreload for sap.ui.core with old specVersion defined
 					},
 					{
 						filters: [
-							"ui5loader-autoconfig.js"
+							"ui5loader-autoconfig.js",
 						],
 						mode: "raw",
 						resolve: true,
@@ -1154,26 +1154,26 @@ test.serial("generateLibraryPreload for sap.ui.core with old specVersion defined
 					{
 						mode: "require",
 						filters: [
-							"sap/ui/core/Core.js"
+							"sap/ui/core/Core.js",
 						],
 						declareRawModules: false,
 						renderer: false,
 						resolve: false,
 						resolveConditional: false,
 						sort: true,
-						async: false
-					}
-				]
+						async: false,
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: false,
 				decorateBootstrapModule: false,
-				addTryCatchRestartWrapper: false
+				addTryCatchRestartWrapper: false,
 			},
 			moduleNameMapping: {},
-			targetUi5CoreVersion: "1.120.0"
+			targetUi5CoreVersion: "1.120.0",
 		},
-		resources
+		resources,
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(4).args, [{
 		options: {
@@ -1229,17 +1229,17 @@ test.serial("generateLibraryPreload for sap.ui.core with old specVersion defined
 						resolve: false,
 						resolveConditional: false,
 						declareRawModules: false,
-						sort: true
-					}
-				]
+						sort: true,
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: true,
-				ignoreMissingModules: true
+				ignoreMissingModules: true,
 			},
-			targetUi5CoreVersion: "1.120.0"
+			targetUi5CoreVersion: "1.120.0",
 		},
-		resources
+		resources,
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(5).args, [{
 		options: {
@@ -1254,25 +1254,25 @@ test.serial("generateLibraryPreload for sap.ui.core with old specVersion defined
 							"!sap/ui/core/**/*-preload.designtime.js",
 							"!sap/ui/core/designtime/**/*.properties",
 							"!sap/ui/core/designtime/**/*.svg",
-							"!sap/ui/core/designtime/**/*.xml"
+							"!sap/ui/core/designtime/**/*.xml",
 						],
 						mode: "preload",
 						renderer: false,
 						resolve: false,
 						resolveConditional: false,
 						sort: true,
-						declareRawModules: false
-					}
-				]
+						declareRawModules: false,
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: true,
 				ignoreMissingModules: true,
-				skipIfEmpty: true
+				skipIfEmpty: true,
 			},
-			targetUi5CoreVersion: "1.120.0"
+			targetUi5CoreVersion: "1.120.0",
 		},
-		resources
+		resources,
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(6).args, [{
 		options: {
@@ -1283,42 +1283,42 @@ test.serial("generateLibraryPreload for sap.ui.core with old specVersion defined
 					{
 						filters: [
 							"sap/ui/core/**/*.support.js",
-							"!sap/ui/core/**/*-preload.support.js"
+							"!sap/ui/core/**/*-preload.support.js",
 						],
 						mode: "preload",
 						renderer: false,
 						resolve: false,
 						resolveConditional: false,
 						declareRawModules: false,
-						sort: true
-					}
-				]
+						sort: true,
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: false,
 				ignoreMissingModules: true,
-				skipIfEmpty: true
+				skipIfEmpty: true,
 			},
-			targetUi5CoreVersion: "1.120.0"
+			targetUi5CoreVersion: "1.120.0",
 		},
-		resources
+		resources,
 	}]);
 });
 
 test.serial("generateLibraryPreload for sap.ui.core with own bundle configuration (w/o ui5loader.js)", async (t) => {
 	const {
 		generateLibraryPreload, moduleBundlerStub,
-		workspace, dependencies, firstByGlob
+		workspace, dependencies, firstByGlob,
 	} = t.context;
 
 	const resources = [
 		{getPath: sinon.stub().returns("/resources/sap/ui/core/.library")},
-		{getPath: sinon.stub().returns("/resources/sap-ui-core.js")}
+		{getPath: sinon.stub().returns("/resources/sap-ui-core.js")},
 	];
 	firstByGlob.resolves(resources);
 
 	workspace.byGlob.resolves([
-		{getPath: sinon.stub().returns("/resources/sap/ui/core/.library")}
+		{getPath: sinon.stub().returns("/resources/sap/ui/core/.library")},
 	]);
 
 	const coreProject = {
@@ -1331,7 +1331,7 @@ test.serial("generateLibraryPreload for sap.ui.core with own bundle configuratio
 				lt: sinon.stub().withArgs("4.0").returns(false),
 			};
 		},
-		getVersion: () => "1.120.0"
+		getVersion: () => "1.120.0",
 	};
 	const taskUtil = {
 		getTag: sinon.stub().returns(false),
@@ -1339,19 +1339,19 @@ test.serial("generateLibraryPreload for sap.ui.core with own bundle configuratio
 		STANDARD_TAGS: {
 			HasDebugVariant: "<HasDebugVariant>",
 			IsDebugVariant: "<IsDebugVariant>",
-			OmitFromBuildResult: "<OmitFromBuildResult>"
+			OmitFromBuildResult: "<OmitFromBuildResult>",
 		},
 		resourceFactory: {
-			createFilterReader: () => workspace
-		}
+			createFilterReader: () => workspace,
+		},
 	};
 	await generateLibraryPreload({
 		workspace,
 		dependencies,
 		taskUtil,
 		options: {
-			projectName: "sap.ui.core"
-		}
+			projectName: "sap.ui.core",
+		},
 	});
 
 	t.is(moduleBundlerStub.callCount, 3, "moduleBundler should have been called 3 times");
@@ -1410,16 +1410,16 @@ test.serial("generateLibraryPreload for sap.ui.core with own bundle configuratio
 						resolveConditional: false,
 						renderer: true,
 						declareRawModules: false,
-					}
-				]
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: true,
-				ignoreMissingModules: true
+				ignoreMissingModules: true,
 			},
-			targetUi5CoreVersion: "1.120.0"
+			targetUi5CoreVersion: "1.120.0",
 		},
-		resources
+		resources,
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(1).args, [{
 		options: {
@@ -1434,25 +1434,25 @@ test.serial("generateLibraryPreload for sap.ui.core with own bundle configuratio
 							"!sap/ui/core/**/*-preload.designtime.js",
 							"!sap/ui/core/designtime/**/*.properties",
 							"!sap/ui/core/designtime/**/*.svg",
-							"!sap/ui/core/designtime/**/*.xml"
+							"!sap/ui/core/designtime/**/*.xml",
 						],
 						mode: "preload",
 						renderer: false,
 						resolve: false,
 						resolveConditional: false,
 						declareRawModules: false,
-						sort: true
-					}
-				]
+						sort: true,
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: true,
 				ignoreMissingModules: true,
-				skipIfEmpty: true
+				skipIfEmpty: true,
 			},
-			targetUi5CoreVersion: "1.120.0"
+			targetUi5CoreVersion: "1.120.0",
 		},
-		resources
+		resources,
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(2).args, [{
 		options: {
@@ -1463,25 +1463,25 @@ test.serial("generateLibraryPreload for sap.ui.core with own bundle configuratio
 					{
 						filters: [
 							"sap/ui/core/**/*.support.js",
-							"!sap/ui/core/**/*-preload.support.js"
+							"!sap/ui/core/**/*-preload.support.js",
 						],
 						mode: "preload",
 						declareRawModules: false,
 						renderer: false,
 						resolve: false,
 						resolveConditional: false,
-						sort: true
-					}
-				]
+						sort: true,
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: false,
 				ignoreMissingModules: true,
-				skipIfEmpty: true
+				skipIfEmpty: true,
 			},
-			targetUi5CoreVersion: "1.120.0"
+			targetUi5CoreVersion: "1.120.0",
 		},
-		resources
+		resources,
 	}]);
 
 	t.is(workspace.byGlob.callCount, 2,
@@ -1495,18 +1495,18 @@ test.serial("generateLibraryPreload for sap.ui.core with own bundle configuratio
 test.serial("generateLibraryPreload for sap.ui.core with own bundle configuration (/w ui5loader.js)", async (t) => {
 	const {
 		generateLibraryPreload, moduleBundlerStub,
-		workspace, dependencies, firstByGlob
+		workspace, dependencies, firstByGlob,
 	} = t.context;
 
 	const resources = [
 		{getPath: sinon.stub().returns("/resources/sap/ui/core/.library")},
 		{getPath: sinon.stub().returns("/resources/ui5loader.js")},
-		{getPath: sinon.stub().returns("/resources/sap-ui-core.js")}
+		{getPath: sinon.stub().returns("/resources/sap-ui-core.js")},
 	];
 	firstByGlob.resolves(resources);
 
 	workspace.byGlob.resolves([
-		{getPath: sinon.stub().returns("/resources/sap/ui/core/.library")}
+		{getPath: sinon.stub().returns("/resources/sap/ui/core/.library")},
 	]);
 
 	const coreProject = {
@@ -1519,7 +1519,7 @@ test.serial("generateLibraryPreload for sap.ui.core with own bundle configuratio
 				lt: sinon.stub().withArgs("4.0").returns(false),
 			};
 		},
-		getVersion: () => "1.120.0"
+		getVersion: () => "1.120.0",
 	};
 	const taskUtil = {
 		getTag: sinon.stub().returns(false),
@@ -1527,11 +1527,11 @@ test.serial("generateLibraryPreload for sap.ui.core with own bundle configuratio
 		STANDARD_TAGS: {
 			HasDebugVariant: "<HasDebugVariant>",
 			IsDebugVariant: "<IsDebugVariant>",
-			OmitFromBuildResult: "<OmitFromBuildResult>"
+			OmitFromBuildResult: "<OmitFromBuildResult>",
 		},
 		resourceFactory: {
-			createFilterReader: () => workspace
-		}
+			createFilterReader: () => workspace,
+		},
 	};
 	taskUtil.getTag
 		.withArgs(resources[0], taskUtil.STANDARD_TAGS.HasDebugVariant)
@@ -1541,8 +1541,8 @@ test.serial("generateLibraryPreload for sap.ui.core with own bundle configuratio
 		dependencies,
 		taskUtil,
 		options: {
-			projectName: "sap.ui.core"
-		}
+			projectName: "sap.ui.core",
+		},
 	});
 
 	t.is(moduleBundlerStub.callCount, 3, "moduleBundler should have been called 3 times");
@@ -1601,16 +1601,16 @@ test.serial("generateLibraryPreload for sap.ui.core with own bundle configuratio
 						resolveConditional: false,
 						renderer: true,
 						declareRawModules: false,
-					}
-				]
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: true,
-				ignoreMissingModules: true
+				ignoreMissingModules: true,
 			},
-			targetUi5CoreVersion: "1.120.0"
+			targetUi5CoreVersion: "1.120.0",
 		},
-		resources
+		resources,
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(1).args, [{
 		options: {
@@ -1625,25 +1625,25 @@ test.serial("generateLibraryPreload for sap.ui.core with own bundle configuratio
 							"!sap/ui/core/**/*-preload.designtime.js",
 							"!sap/ui/core/designtime/**/*.properties",
 							"!sap/ui/core/designtime/**/*.svg",
-							"!sap/ui/core/designtime/**/*.xml"
+							"!sap/ui/core/designtime/**/*.xml",
 						],
 						mode: "preload",
 						renderer: false,
 						resolve: false,
 						resolveConditional: false,
 						sort: true,
-						declareRawModules: false
-					}
-				]
+						declareRawModules: false,
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: true,
 				ignoreMissingModules: true,
-				skipIfEmpty: true
+				skipIfEmpty: true,
 			},
-			targetUi5CoreVersion: "1.120.0"
+			targetUi5CoreVersion: "1.120.0",
 		},
-		resources
+		resources,
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(2).args, [{
 		options: {
@@ -1654,25 +1654,25 @@ test.serial("generateLibraryPreload for sap.ui.core with own bundle configuratio
 					{
 						filters: [
 							"sap/ui/core/**/*.support.js",
-							"!sap/ui/core/**/*-preload.support.js"
+							"!sap/ui/core/**/*-preload.support.js",
 						],
 						mode: "preload",
 						declareRawModules: false,
 						renderer: false,
 						resolve: false,
 						resolveConditional: false,
-						sort: true
-					}
-				]
+						sort: true,
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: false,
 				ignoreMissingModules: true,
-				skipIfEmpty: true
+				skipIfEmpty: true,
 			},
-			targetUi5CoreVersion: "1.120.0"
+			targetUi5CoreVersion: "1.120.0",
 		},
-		resources
+		resources,
 	}]);
 
 	t.is(workspace.byGlob.callCount, 2,
@@ -1686,16 +1686,16 @@ test.serial("generateLibraryPreload for sap.ui.core with own bundle configuratio
 test.serial("Error: Failed to resolve non-debug name", async (t) => {
 	const {
 		generateLibraryPreload,
-		workspace, dependencies
+		workspace, dependencies,
 	} = t.context;
 	const resources = [
-		{getPath: sinon.stub().returns("/resources/resource-tagged-as-debug-variant.js")}
+		{getPath: sinon.stub().returns("/resources/resource-tagged-as-debug-variant.js")},
 	];
 	t.context.workspace.byGlob.onFirstCall().resolves(resources);
 	t.context.workspace.byGlob.onSecondCall().resolves(resources);
 
 	workspace.byGlob.resolves([
-		{getPath: sinon.stub().returns("/resources/sap/ui/core/.library")}
+		{getPath: sinon.stub().returns("/resources/sap/ui/core/.library")},
 	]);
 
 	const coreProject = {
@@ -1704,10 +1704,10 @@ test.serial("Error: Failed to resolve non-debug name", async (t) => {
 				toString: () => "0.1",
 				gte: sinon.stub().withArgs("4.0").returns(false),
 				lte: sinon.stub().withArgs("2.0").returns(true),
-				lt: sinon.stub().withArgs("4.0").returns(false)
+				lt: sinon.stub().withArgs("4.0").returns(false),
 			};
 		},
-		getVersion: () => "1.120.0"
+		getVersion: () => "1.120.0",
 	};
 	const taskUtil = {
 		getTag: sinon.stub().returns(false),
@@ -1715,11 +1715,11 @@ test.serial("Error: Failed to resolve non-debug name", async (t) => {
 		STANDARD_TAGS: {
 			HasDebugVariant: "<HasDebugVariant>",
 			IsDebugVariant: "<IsDebugVariant>",
-			OmitFromBuildResult: "<OmitFromBuildResult>"
+			OmitFromBuildResult: "<OmitFromBuildResult>",
 		},
 		resourceFactory: {
-			createFilterReader: () => workspace
-		}
+			createFilterReader: () => workspace,
+		},
 	};
 	taskUtil.getTag
 		.withArgs(resources[0], taskUtil.STANDARD_TAGS.IsDebugVariant)
@@ -1732,26 +1732,26 @@ test.serial("Error: Failed to resolve non-debug name", async (t) => {
 		options: {
 			projectName: "sap.ui.core",
 			// Should be ignored for hardcoded sap.ui.core bundle configuration
-			excludes: ["sap/ui/core/**"]
-		}
+			excludes: ["sap/ui/core/**"],
+		},
 	}), {
-		message: "Failed to resolve non-debug name for /resources/resource-tagged-as-debug-variant.js"
+		message: "Failed to resolve non-debug name for /resources/resource-tagged-as-debug-variant.js",
 	});
 });
 
 test.serial("generateLibraryPreload with excludes", async (t) => {
 	const {
 		generateLibraryPreload, moduleBundlerStub,
-		workspace, dependencies, firstByGlob
+		workspace, dependencies, firstByGlob,
 	} = t.context;
 
 	const resources = [
-		{getPath: sinon.stub().returns("/resources/my/lib/.library")}
+		{getPath: sinon.stub().returns("/resources/my/lib/.library")},
 	];
 	firstByGlob.resolves(resources);
 
 	workspace.byGlob.resolves([
-		{getPath: sinon.stub().returns("/resources/my/lib/.library")}
+		{getPath: sinon.stub().returns("/resources/my/lib/.library")},
 	]);
 
 	await generateLibraryPreload({
@@ -1761,9 +1761,9 @@ test.serial("generateLibraryPreload with excludes", async (t) => {
 			projectName: "Test Library",
 			excludes: [
 				"my/lib/thirdparty/",
-				"!my/lib/thirdparty/NotExcluded.js"
-			]
-		}
+				"!my/lib/thirdparty/NotExcluded.js",
+			],
+		},
 	});
 
 	t.is(moduleBundlerStub.callCount, 3, "moduleBundler should have been called 3 times");
@@ -1784,23 +1784,23 @@ test.serial("generateLibraryPreload with excludes", async (t) => {
 
 							// via excludes option
 							"!my/lib/thirdparty/",
-							"+my/lib/thirdparty/NotExcluded.js"
+							"+my/lib/thirdparty/NotExcluded.js",
 						],
 						mode: "preload",
 						renderer: true,
 						resolve: false,
 						resolveConditional: false,
 						declareRawModules: false,
-						sort: true
-					}
-				]
+						sort: true,
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: true,
-				ignoreMissingModules: true
-			}
+				ignoreMissingModules: true,
+			},
 		},
-		resources
+		resources,
 	}]);
 
 	t.is(workspace.byGlob.callCount, 2,
@@ -1814,16 +1814,16 @@ test.serial("generateLibraryPreload with excludes", async (t) => {
 test.serial("generateLibraryPreload with invalid excludes", async (t) => {
 	const {
 		generateLibraryPreload, moduleBundlerStub,
-		workspace, dependencies, firstByGlob, log
+		workspace, dependencies, firstByGlob, log,
 	} = t.context;
 
 	const resources = [
-		{getPath: sinon.stub().returns("/resources/my/lib/.library")}
+		{getPath: sinon.stub().returns("/resources/my/lib/.library")},
 	];
 	firstByGlob.resolves(resources);
 
 	workspace.byGlob.resolves([
-		{getPath: sinon.stub().returns("/resources/my/lib/.library")}
+		{getPath: sinon.stub().returns("/resources/my/lib/.library")},
 	]);
 
 	await generateLibraryPreload({
@@ -1833,9 +1833,9 @@ test.serial("generateLibraryPreload with invalid excludes", async (t) => {
 			projectName: "Test Library",
 			excludes: [
 				"!**/foo/",
-				"!my/other/lib/"
-			]
-		}
+				"!my/other/lib/",
+			],
+		},
 	});
 
 	t.is(moduleBundlerStub.callCount, 3, "moduleBundler should have been called 3 times");
@@ -1852,7 +1852,7 @@ test.serial("generateLibraryPreload with invalid excludes", async (t) => {
 							"!my/lib/**/*-preload.js",
 							"!my/lib/designtime/",
 							"!my/lib/**/*.designtime.js",
-							"!my/lib/**/*.support.js"
+							"!my/lib/**/*.support.js",
 						],
 						mode: "preload",
 						resolve: false,
@@ -1860,25 +1860,25 @@ test.serial("generateLibraryPreload with invalid excludes", async (t) => {
 						resolveConditional: false,
 						renderer: true,
 						declareRawModules: false,
-					}
-				]
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: true,
-				ignoreMissingModules: true
-			}
+				ignoreMissingModules: true,
+			},
 		},
-		resources
+		resources,
 	}]);
 
 	t.is(log.warn.callCount, 2, "log.warn should be called twice");
 	t.deepEqual(log.warn.getCall(0).args, [
 		"Configured preload exclude contains invalid re-include: !**/foo/. " +
-		"Re-includes must start with the library's namespace my/lib"
+		"Re-includes must start with the library's namespace my/lib",
 	]);
 	t.deepEqual(log.warn.getCall(1).args, [
 		"Configured preload exclude contains invalid re-include: !my/other/lib/. " +
-		"Re-includes must start with the library's namespace my/lib"
+		"Re-includes must start with the library's namespace my/lib",
 	]);
 
 	t.is(log.verbose.callCount, 0, "log.verbose should not be called");
@@ -1894,13 +1894,13 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js), UI5 Versi
 	const resources = [
 		{getPath: sinon.stub().returns("/resources/sap/ui/core/.library")},
 		{getPath: sinon.stub().returns("/resources/ui5loader.js")},
-		{getPath: sinon.stub().returns("/resources/sap-ui-core.js")}
+		{getPath: sinon.stub().returns("/resources/sap-ui-core.js")},
 	];
 	firstByGlob.resolves(resources);
 	secondByGlob.resolves(resources);
 
 	workspace.byGlob.resolves([
-		{getPath: sinon.stub().returns("/resources/sap/ui/core/.library")}
+		{getPath: sinon.stub().returns("/resources/sap/ui/core/.library")},
 	]);
 
 	const coreProject = {
@@ -1909,10 +1909,10 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js), UI5 Versi
 				gte: sinon.stub().withArgs("4.0").returns(false),
 				toString: () => "4.0",
 				lte: sinon.stub().withArgs("2.0").returns(true),
-				lt: sinon.stub().withArgs("4.0").returns(false)
+				lt: sinon.stub().withArgs("4.0").returns(false),
 			};
 		},
-		getVersion: () => "2.0.0"
+		getVersion: () => "2.0.0",
 	};
 	const taskUtil = {
 		getTag: sinon.stub().returns(false),
@@ -1920,11 +1920,11 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js), UI5 Versi
 		STANDARD_TAGS: {
 			HasDebugVariant: "<HasDebugVariant>",
 			IsDebugVariant: "<IsDebugVariant>",
-			OmitFromBuildResult: "<OmitFromBuildResult>"
+			OmitFromBuildResult: "<OmitFromBuildResult>",
 		},
 		resourceFactory: {
-			createFilterReader: () => workspace
-		}
+			createFilterReader: () => workspace,
+		},
 	};
 	await generateLibraryPreload({
 		workspace,
@@ -1933,8 +1933,8 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js), UI5 Versi
 		options: {
 			projectName: "sap.ui.core",
 			// Should be ignored for hardcoded sap.ui.core bundle configuration
-			excludes: ["sap/ui/core/**"]
-		}
+			excludes: ["sap/ui/core/**"],
+		},
 	});
 
 	t.is(workspace.byGlob.callCount, 3,
@@ -1965,7 +1965,7 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js), UI5 Versi
 				sections: [
 					{
 						filters: [
-							"ui5loader-autoconfig.js"
+							"ui5loader-autoconfig.js",
 						],
 						mode: "raw",
 						resolve: true,
@@ -1973,40 +1973,40 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js), UI5 Versi
 						declareModules: false,
 						declareRawModules: false,
 						renderer: false,
-						resolveConditional: false
+						resolveConditional: false,
 					},
 					{
 						mode: "preload",
 						filters: [
-							"sap/ui/core/Core.js"
+							"sap/ui/core/Core.js",
 						],
 						resolve: true,
 						declareRawModules: false,
 						renderer: false,
 						resolveConditional: false,
-						sort: true
+						sort: true,
 					},
 					{
 						mode: "require",
 						filters: [
-							"sap/ui/core/Core.js"
+							"sap/ui/core/Core.js",
 						],
 						declareRawModules: false,
 						renderer: false,
 						resolve: false,
 						resolveConditional: false,
-						sort: true
-					}
-				]
+						sort: true,
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: true,
 				decorateBootstrapModule: true,
-				addTryCatchRestartWrapper: true
+				addTryCatchRestartWrapper: true,
 			},
-			targetUi5CoreVersion: "2.0.0"
+			targetUi5CoreVersion: "2.0.0",
 		},
-		resources
+		resources,
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(1).args, [{
 		options: {
@@ -2016,7 +2016,7 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js), UI5 Versi
 				sections: [
 					{
 						filters: [
-							"ui5loader-autoconfig.js"
+							"ui5loader-autoconfig.js",
 						],
 						mode: "raw",
 						resolve: true,
@@ -2029,25 +2029,25 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js), UI5 Versi
 					{
 						mode: "require",
 						filters: [
-							"sap/ui/core/Core.js"
+							"sap/ui/core/Core.js",
 						],
 						declareRawModules: false,
 						renderer: false,
 						resolve: false,
 						resolveConditional: false,
 						sort: true,
-					}
-				]
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: false,
 				decorateBootstrapModule: false,
-				addTryCatchRestartWrapper: false
+				addTryCatchRestartWrapper: false,
 			},
 			moduleNameMapping: {},
-			targetUi5CoreVersion: "2.0.0"
+			targetUi5CoreVersion: "2.0.0",
 		},
-		resources
+		resources,
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(2).args, [{
 		options: {
@@ -2063,7 +2063,7 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js), UI5 Versi
 							"jquery-ui-position.js",
 							"sap/ui/thirdparty/jquery.js",
 							"sap/ui/thirdparty/jquery/*",
-							"sap/ui/thirdparty/jqueryui/*"
+							"sap/ui/thirdparty/jqueryui/*",
 						],
 						resolve: false,
 						sort: true,
@@ -2073,7 +2073,7 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js), UI5 Versi
 					},
 					{
 						filters: [
-							"ui5loader-autoconfig.js"
+							"ui5loader-autoconfig.js",
 						],
 						mode: "raw",
 						resolve: true,
@@ -2086,7 +2086,7 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js), UI5 Versi
 					{
 						mode: "preload",
 						filters: [
-							"sap/ui/core/Core.js"
+							"sap/ui/core/Core.js",
 						],
 						resolve: true,
 						sort: true,
@@ -2097,24 +2097,24 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js), UI5 Versi
 					{
 						mode: "require",
 						filters: [
-							"sap/ui/core/Core.js"
+							"sap/ui/core/Core.js",
 						],
 						resolve: false,
 						sort: true,
 						resolveConditional: false,
 						renderer: false,
 						declareRawModules: false,
-					}
-				]
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: true,
 				decorateBootstrapModule: true,
-				addTryCatchRestartWrapper: true
+				addTryCatchRestartWrapper: true,
 			},
-			targetUi5CoreVersion: "2.0.0"
+			targetUi5CoreVersion: "2.0.0",
 		},
-		resources
+		resources,
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(3).args, [{
 		options: {
@@ -2130,7 +2130,7 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js), UI5 Versi
 							"jquery-ui-position.js",
 							"sap/ui/thirdparty/jquery.js",
 							"sap/ui/thirdparty/jquery/*",
-							"sap/ui/thirdparty/jqueryui/*"
+							"sap/ui/thirdparty/jqueryui/*",
 						],
 						declareRawModules: false,
 						renderer: false,
@@ -2140,7 +2140,7 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js), UI5 Versi
 					},
 					{
 						filters: [
-							"ui5loader-autoconfig.js"
+							"ui5loader-autoconfig.js",
 						],
 						mode: "raw",
 						resolve: true,
@@ -2153,25 +2153,25 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js), UI5 Versi
 					{
 						mode: "require",
 						filters: [
-							"sap/ui/core/Core.js"
+							"sap/ui/core/Core.js",
 						],
 						resolve: false,
 						sort: true,
 						resolveConditional: false,
 						renderer: false,
 						declareRawModules: false,
-					}
-				]
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: false,
 				decorateBootstrapModule: false,
-				addTryCatchRestartWrapper: false
+				addTryCatchRestartWrapper: false,
 			},
 			moduleNameMapping: {},
-			targetUi5CoreVersion: "2.0.0"
+			targetUi5CoreVersion: "2.0.0",
 		},
-		resources
+		resources,
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(4).args, [{
 		options: {
@@ -2228,16 +2228,16 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js), UI5 Versi
 						resolveConditional: false,
 						renderer: true,
 						declareRawModules: false,
-					}
-				]
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: true,
-				ignoreMissingModules: true
+				ignoreMissingModules: true,
 			},
-			targetUi5CoreVersion: "2.0.0"
+			targetUi5CoreVersion: "2.0.0",
 		},
-		resources
+		resources,
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(5).args, [{
 		options: {
@@ -2252,7 +2252,7 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js), UI5 Versi
 							"!sap/ui/core/**/*-preload.designtime.js",
 							"!sap/ui/core/designtime/**/*.properties",
 							"!sap/ui/core/designtime/**/*.svg",
-							"!sap/ui/core/designtime/**/*.xml"
+							"!sap/ui/core/designtime/**/*.xml",
 						],
 						mode: "preload",
 						resolve: false,
@@ -2260,17 +2260,17 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js), UI5 Versi
 						resolveConditional: false,
 						renderer: false,
 						declareRawModules: false,
-					}
-				]
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: true,
 				ignoreMissingModules: true,
-				skipIfEmpty: true
+				skipIfEmpty: true,
 			},
-			targetUi5CoreVersion: "2.0.0"
+			targetUi5CoreVersion: "2.0.0",
 		},
-		resources
+		resources,
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(6).args, [{
 		options: {
@@ -2281,7 +2281,7 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js), UI5 Versi
 					{
 						filters: [
 							"sap/ui/core/**/*.support.js",
-							"!sap/ui/core/**/*-preload.support.js"
+							"!sap/ui/core/**/*-preload.support.js",
 						],
 						mode: "preload",
 						resolve: false,
@@ -2289,16 +2289,16 @@ test.serial("generateLibraryPreload for sap.ui.core (/w ui5loader.js), UI5 Versi
 						resolveConditional: false,
 						renderer: false,
 						declareRawModules: false,
-					}
-				]
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: false,
 				ignoreMissingModules: true,
-				skipIfEmpty: true
+				skipIfEmpty: true,
 			},
-			targetUi5CoreVersion: "2.0.0"
+			targetUi5CoreVersion: "2.0.0",
 		},
-		resources
+		resources,
 	}]);
 });

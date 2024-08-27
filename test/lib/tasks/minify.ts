@@ -6,23 +6,23 @@ test.beforeEach(async (t) => {
 	const sinon = t.context.sinon = sinonGlobal.createSandbox();
 	t.context.workspace = {
 		byGlob: sinon.stub().resolves(["resource A", "resource B"]),
-		write: sinon.stub().resolves()
+		write: sinon.stub().resolves(),
 	};
 	t.context.taskUtil = {
 		setTag: sinon.stub(),
 		STANDARD_TAGS: {
 			HasDebugVariant: "has debug variant",
 			IsDebugVariant: "is debug variant",
-			OmitFromBuildResult: "omit from build result"
+			OmitFromBuildResult: "omit from build result",
 		},
-		registerCleanupTask: sinon.stub()
+		registerCleanupTask: sinon.stub(),
 	};
 
 	t.context.fsInterfaceStub = sinon.stub().returns("fs interface");
 	t.context.minifierStub = sinon.stub();
 	t.context.minify = await esmock("../../../lib/tasks/minify.js", {
 		"@ui5/fs/fsInterface": t.context.fsInterfaceStub,
-		"../../../lib/processors/minifier.js": t.context.minifierStub
+		"../../../lib/processors/minifier.js": t.context.minifierStub,
 	});
 });
 test.afterEach.always(async (t) => {
@@ -43,7 +43,7 @@ test("minify: Default params", async (t) => {
 		resource: "resource A",
 		dbgResource: "dbgResource A",
 		sourceMapResource: "sourceMapResource A",
-		dbgSourceMapResource: "dbgSourceMapResource A" // optional
+		dbgSourceMapResource: "dbgSourceMapResource A", // optional
 	}, {
 		resource: "resource B",
 		dbgResource: "dbgResource B",
@@ -53,8 +53,8 @@ test("minify: Default params", async (t) => {
 		workspace,
 		taskUtil,
 		options: {
-			pattern: "**"
-		}
+			pattern: "**",
+		},
 	});
 
 	t.is(minifierStub.callCount, 1, "minifier got called once");
@@ -65,7 +65,7 @@ test("minify: Default params", async (t) => {
 	t.deepEqual(minifierCallArgs.options, {
 		addSourceMappingUrl: true,
 		readSourceMappingUrl: true,
-		useWorkers: true
+		useWorkers: true,
 	}, "minifier got called with expected options");
 
 	t.is(taskUtil.setTag.callCount, 7, "taskUtil#setTag got called 12 times");
@@ -91,7 +91,7 @@ test("minify: Default params", async (t) => {
 	t.is(workspace.write.callCount, 7, "workspace#write got called seven times");
 	[
 		"resource A", "dbgResource A", "sourceMapResource A", "dbgSourceMapResource A",
-		"resource B", "dbgResource B", "sourceMapResource B"
+		"resource B", "dbgResource B", "sourceMapResource B",
 	].forEach((resName, idx) => {
 		t.is(workspace.write.getCall(idx).firstArg, resName, "workspace#write got called for expected resource");
 	});
@@ -103,7 +103,7 @@ test("minify: omitSourceMapResources: true, useInputSourceMaps: false", async (t
 		resource: "resource A",
 		dbgResource: "dbgResource A",
 		sourceMapResource: "sourceMapResource A",
-		dbgSourceMapResource: "dbgSourceMapResource A" // optional
+		dbgSourceMapResource: "dbgSourceMapResource A", // optional
 	}, {
 		resource: "resource B",
 		dbgResource: "dbgResource B",
@@ -115,8 +115,8 @@ test("minify: omitSourceMapResources: true, useInputSourceMaps: false", async (t
 		options: {
 			pattern: "**",
 			omitSourceMapResources: true,
-			useInputSourceMaps: false
-		}
+			useInputSourceMaps: false,
+		},
 	});
 
 	t.is(minifierStub.callCount, 1, "minifier got called once");
@@ -127,7 +127,7 @@ test("minify: omitSourceMapResources: true, useInputSourceMaps: false", async (t
 	t.deepEqual(minifierCallArgs.options, {
 		addSourceMappingUrl: false,
 		readSourceMappingUrl: false,
-		useWorkers: true
+		useWorkers: true,
 	}, "minifier got called with expected options");
 
 	t.is(taskUtil.setTag.callCount, 10, "taskUtil#setTag got called 12 times");
@@ -165,7 +165,7 @@ test("minify: omitSourceMapResources: true, useInputSourceMaps: false", async (t
 	t.is(workspace.write.callCount, 7, "workspace#write got called seven times");
 	[
 		"resource A", "dbgResource A", "sourceMapResource A", "dbgSourceMapResource A",
-		"resource B", "dbgResource B", "sourceMapResource B"
+		"resource B", "dbgResource B", "sourceMapResource B",
 	].forEach((resName, idx) => {
 		t.is(workspace.write.getCall(idx).firstArg, resName, "workspace#write got called for expected resource");
 	});
@@ -177,7 +177,7 @@ test("minify: No taskUtil", async (t) => {
 		resource: "resource A",
 		dbgResource: "dbgResource A",
 		sourceMapResource: "sourceMapResource A",
-		dbgSourceMapResource: "dbgSourceMapResource A" // optional
+		dbgSourceMapResource: "dbgSourceMapResource A", // optional
 	}, {
 		resource: "resource B",
 		dbgResource: "dbgResource B",
@@ -186,8 +186,8 @@ test("minify: No taskUtil", async (t) => {
 	await minify({
 		workspace,
 		options: {
-			pattern: "**"
-		}
+			pattern: "**",
+		},
 	});
 
 	t.is(minifierStub.callCount, 1, "minifier got called once");
@@ -198,13 +198,13 @@ test("minify: No taskUtil", async (t) => {
 	t.deepEqual(minifierCallArgs.options, {
 		addSourceMappingUrl: true,
 		readSourceMappingUrl: true,
-		useWorkers: false
+		useWorkers: false,
 	}, "minifier got called with expected options");
 
 	t.is(workspace.write.callCount, 7, "workspace#write got called seven times");
 	[
 		"resource A", "dbgResource A", "sourceMapResource A", "dbgSourceMapResource A",
-		"resource B", "dbgResource B", "sourceMapResource B"
+		"resource B", "dbgResource B", "sourceMapResource B",
 	].forEach((resName, idx) => {
 		t.is(workspace.write.getCall(idx).firstArg, resName, "workspace#write got called for expected resource");
 	});

@@ -20,13 +20,13 @@ test.serial("integration: build library.d with library preload", async (t) => {
 	const includedTasks = ["generateLibraryPreload"];
 
 	const graph = await graphFromObject({
-		dependencyTree: libraryDTree
+		dependencyTree: libraryDTree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await t.notThrowsAsync(graph.build({
 		destPath,
 		excludedTasks,
-		includedTasks
+		includedTasks,
 	}));
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -44,26 +44,26 @@ test.serial("integration: build library.d with library preload", async (t) => {
 });
 
 const libraryDTree = {
-	"id": "library.d",
-	"version": "1.0.0",
-	"path": libraryDPath,
-	"dependencies": [],
-	"configuration": {
-		"specVersion": "2.0",
-		"type": "library",
-		"metadata": {
-			"name": "library.d",
-			"copyright": "Some fancy copyright"
+	id: "library.d",
+	version: "1.0.0",
+	path: libraryDPath,
+	dependencies: [],
+	configuration: {
+		specVersion: "2.0",
+		type: "library",
+		metadata: {
+			name: "library.d",
+			copyright: "Some fancy copyright",
 		},
-		"resources": {
-			"configuration": {
-				"paths": {
-					"src": "main/src",
-					"test": "main/test"
-				}
-			}
-		}
-	}
+		resources: {
+			configuration: {
+				paths: {
+					src: "main/src",
+					test: "main/test",
+				},
+			},
+		},
+	},
 };
 
 test.serial("integration: build library.d-minified with library preload", async (t) => {
@@ -73,13 +73,13 @@ test.serial("integration: build library.d-minified with library preload", async 
 	const includedTasks = ["generateLibraryPreload"];
 
 	const graph = await graphFromObject({
-		dependencyTree: libraryDMinifiedTree
+		dependencyTree: libraryDMinifiedTree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await t.notThrowsAsync(graph.build({
 		destPath,
 		excludedTasks,
-		includedTasks
+		includedTasks,
 	}));
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -97,26 +97,26 @@ test.serial("integration: build library.d-minified with library preload", async 
 });
 
 const libraryDMinifiedTree = {
-	"id": "library.d",
-	"version": "1.0.0",
-	"path": libraryDMinifiedPath,
-	"dependencies": [],
-	"configuration": {
-		"specVersion": "2.0",
-		"type": "library",
-		"metadata": {
-			"name": "library.d",
-			"copyright": "Some fancy copyright"
+	id: "library.d",
+	version: "1.0.0",
+	path: libraryDMinifiedPath,
+	dependencies: [],
+	configuration: {
+		specVersion: "2.0",
+		type: "library",
+		metadata: {
+			name: "library.d",
+			copyright: "Some fancy copyright",
 		},
-		"resources": {
-			"configuration": {
-				"paths": {
-					"src": "main/src",
-					"test": "main/test"
-				}
-			}
-		}
-	}
+		resources: {
+			configuration: {
+				paths: {
+					src: "main/src",
+					test: "main/test",
+				},
+			},
+		},
+	},
 };
 
 test.serial("integration: build sap.ui.core with library preload", async (t) => {
@@ -126,13 +126,13 @@ test.serial("integration: build sap.ui.core with library preload", async (t) => 
 	const includedTasks = ["minify", "generateLibraryPreload"];
 
 	const graph = await graphFromObject({
-		dependencyTree: sapUiCoreTree
+		dependencyTree: sapUiCoreTree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await t.notThrowsAsync(graph.build({
 		destPath,
 		excludedTasks,
-		includedTasks
+		includedTasks,
 	}));
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -149,58 +149,57 @@ test.serial("integration: build sap.ui.core with library preload", async (t) => 
 });
 
 const sapUiCoreTree = {
-	"id": "sap.ui.core",
-	"version": "1.0.0",
-	"path": sapUiCorePath,
-	"dependencies": [],
-	"configuration": {
-		"specVersion": "2.0",
-		"type": "library",
-		"metadata": {
-			"name": "sap.ui.core",
-			"copyright": "Some fancy copyright"
+	id: "sap.ui.core",
+	version: "1.0.0",
+	path: sapUiCorePath,
+	dependencies: [],
+	configuration: {
+		specVersion: "2.0",
+		type: "library",
+		metadata: {
+			name: "sap.ui.core",
+			copyright: "Some fancy copyright",
 		},
-		"resources": {
-			"configuration": {
-				"paths": {
-					"src": "main/src",
-					"test": "main/test"
-				}
-			}
-		}
-	}
+		resources: {
+			configuration: {
+				paths: {
+					src: "main/src",
+					test: "main/test",
+				},
+			},
+		},
+	},
 };
-
 
 test.serial("integration: generateLibraryPreload", async (t) => {
 	const reader = createAdapter({
-		virBasePath: "/"
+		virBasePath: "/",
 	});
 	await reader.write(createResource({
 		path: "/resources/my/test/lib/library.js",
-		string: ""
+		string: "",
 	}));
 
 	const writer = createAdapter({
-		virBasePath: "/"
+		virBasePath: "/",
 	});
 	const duplexCollection = new DuplexCollection({reader, writer});
 	const dependencies = createAdapter({
-		virBasePath: "/"
+		virBasePath: "/",
 	});
 
 	await generateLibraryPreload({
 		workspace: duplexCollection,
 		dependencies: dependencies,
 		options: {
-			projectName: "my.test.lib"
-		}
+			projectName: "my.test.lib",
+		},
 	});
 
 	const writtenResources = await writer.byGlob(["**/**"]);
 	t.deepEqual(writtenResources.map((r) => r.getPath()).sort(), [
 		"/resources/my/test/lib/library-preload.js",
-		"/resources/my/test/lib/library-preload.js.map"
+		"/resources/my/test/lib/library-preload.js.map",
 	], "Expected preload files should be created");
 
 	const libraryPreload = await writer.byPath("/resources/my/test/lib/library-preload.js");
@@ -220,47 +219,47 @@ test.serial("integration: generateLibraryPreload", async (t) => {
 
 test.serial("integration: generateLibraryPreload with designtime and support files", async (t) => {
 	const reader = createAdapter({
-		virBasePath: "/"
+		virBasePath: "/",
 	});
 	await reader.write(createResource({
 		path: "/resources/my/test/lib/library.js",
-		string: ""
+		string: "",
 	}));
 
 	// designtime
 	await reader.write(createResource({
 		path: "/resources/my/test/lib/designtime/foo.js",
-		string: ""
+		string: "",
 	}));
 	await reader.write(createResource({
 		path: "/resources/my/test/lib/some.designtime.js",
-		string: ""
+		string: "",
 	}));
 
 	// support
 	await reader.write(createResource({
 		path: "/resources/my/test/lib/some.support.js",
-		string: ""
+		string: "",
 	}));
 	await reader.write(createResource({
 		path: "/resources/my/test/lib/support/foo.support.js",
-		string: ""
+		string: "",
 	}));
 
 	const writer = createAdapter({
-		virBasePath: "/"
+		virBasePath: "/",
 	});
 	const duplexCollection = new DuplexCollection({reader, writer});
 	const dependencies = createAdapter({
-		virBasePath: "/"
+		virBasePath: "/",
 	});
 
 	await generateLibraryPreload({
 		workspace: duplexCollection,
 		dependencies: dependencies,
 		options: {
-			projectName: "my.test.lib"
-		}
+			projectName: "my.test.lib",
+		},
 	});
 
 	const writtenResources = await writer.byGlob(["**/**"]);
@@ -329,13 +328,13 @@ test.serial("integration: build library.n without enabled string bundling", asyn
 	const includedTasks = ["generateLibraryPreload"];
 
 	const graph = await graphFromObject({
-		dependencyTree: libraryNTree
+		dependencyTree: libraryNTree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await t.notThrowsAsync(graph.build({
 		destPath,
 		excludedTasks,
-		includedTasks
+		includedTasks,
 	}));
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -353,18 +352,18 @@ test.serial("integration: build library.n without enabled string bundling", asyn
 });
 
 const libraryNTree = {
-	"id": "library.n",
-	"version": "1.0.0",
-	"path": libraryNPath,
-	"dependencies": [],
-	"configuration": {
-		"specVersion": "4.0",
-		"type": "library",
-		"metadata": {
-			"name": "library.n",
-			"copyright": "Some fancy copyright"
-		}
-	}
+	id: "library.n",
+	version: "1.0.0",
+	path: libraryNPath,
+	dependencies: [],
+	configuration: {
+		specVersion: "4.0",
+		type: "library",
+		metadata: {
+			name: "library.n",
+			copyright: "Some fancy copyright",
+		},
+	},
 };
 
 test.serial("integration: build library.n with enabled string bundling", async (t) => {
@@ -374,13 +373,13 @@ test.serial("integration: build library.n with enabled string bundling", async (
 	const includedTasks = ["generateLibraryPreload"];
 
 	const graph = await graphFromObject({
-		dependencyTree: libraryNTreeLegacy
+		dependencyTree: libraryNTreeLegacy,
 	});
 	graph.setTaskRepository(taskRepository);
 	await t.notThrowsAsync(graph.build({
 		destPath,
 		excludedTasks,
-		includedTasks
+		includedTasks,
 	}));
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -398,16 +397,16 @@ test.serial("integration: build library.n with enabled string bundling", async (
 });
 
 const libraryNTreeLegacy = {
-	"id": "library.n",
-	"version": "1.0.0",
-	"path": libraryNPath,
-	"dependencies": [],
-	"configuration": {
-		"specVersion": "3.1",
-		"type": "library",
-		"metadata": {
-			"name": "library.n",
-			"copyright": "Some fancy copyright"
-		}
-	}
+	id: "library.n",
+	version: "1.0.0",
+	path: libraryNPath,
+	dependencies: [],
+	configuration: {
+		specVersion: "3.1",
+		type: "library",
+		metadata: {
+			name: "library.n",
+			copyright: "Some fancy copyright",
+		},
+	},
 };

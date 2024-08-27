@@ -6,20 +6,16 @@ import {Buffer} from "node:buffer";
 /**
  * Task to build library themes.
  *
- * @private
- * @function default
- * @static
- *
- * @param {object} parameters Parameters
- * @param {MessagePort} parameters.fsInterfacePort
- * @param {object[]} parameters.themeResources Input array of Uint8Array transferable objects
+ * @param parameters Parameters
+ * @param parameters.fsInterfacePort
+ * @param parameters.themeResources Input array of Uint8Array transferable objects
  * 	that are the less sources to build upon. By nature those are @ui5/fs/Resource.
- * @param {object} parameters.options Less compiler options
- * @returns {Promise<object[]>} Resulting array of Uint8Array transferable objects
+ * @param parameters.options Less compiler options
+ * @returns Resulting array of Uint8Array transferable objects
  */
-export default async function execThemeBuild({ fsInterfacePort, themeResources = [], options = {} }: {
-    fsInterfacePort: MessagePort;
-    themeResources: object[];
+export default async function execThemeBuild({fsInterfacePort, themeResources = [], options = {}}: {
+	fsInterfacePort: MessagePort;
+	themeResources: object[];
 }) {
 	const fsThemeResources = deserializeResources(themeResources);
 	const fsReader = new FsWorkerThreadInterface(fsInterfacePort);
@@ -27,7 +23,7 @@ export default async function execThemeBuild({ fsInterfacePort, themeResources =
 	const result = await themeBuilder({
 		resources: fsThemeResources,
 		fs: fsReader,
-		options
+		options,
 	});
 
 	return serializeResources(result);
@@ -36,14 +32,14 @@ export default async function execThemeBuild({ fsInterfacePort, themeResources =
 /**
  * Casts @ui5/fs/Resource-s into an Uint8Array transferable object
  *
- * @param {@ui5/fs/Resource[]} resourceCollection
- * @returns {Promise<object[]>}
+ * @param resourceCollection
+ * @returns
  */
 export async function serializeResources(resourceCollection) {
 	return Promise.all(
 		resourceCollection.map(async (res) => ({
 			buffer: await res.getBuffer(),
-			path: res.getPath()
+			path: res.getPath(),
 		}))
 	);
 }
@@ -51,8 +47,8 @@ export async function serializeResources(resourceCollection) {
 /**
  * Casts Uint8Array into @ui5/fs/Resource-s transferable object
  *
- * @param {Promise<object[]>} resources
- * @returns {@ui5/fs/Resource[]}
+ * @param resources
+ * @returns
  */
 export function deserializeResources(resources: Promise<object[]>) {
 	return resources.map((res) => {
@@ -77,7 +73,7 @@ export class FsMainThreadInterface {
 	/**
 	 * Constructor
 	 *
-	 * @param {@ui5/fs/fsInterface} fsInterfaceReader Reader for the Resources
+	 * @param fsInterfaceReader Reader for the Resources
 	 */
 	constructor(fsInterfaceReader) {
 		if (!fsInterfaceReader) {
@@ -90,7 +86,7 @@ export class FsMainThreadInterface {
 	/**
 	 * Adds MessagePort and starts listening for requests on it.
 	 *
-	 * @param {MessagePort} comPort port1 from a {code}MessageChannel{/code}
+	 * @param comPort port1 from a {code}MessageChannel{/code}
 	 */
 	startCommunication(comPort: MessagePort) {
 		if (!comPort) {
@@ -105,7 +101,7 @@ export class FsMainThreadInterface {
 	/**
 	 * Ends MessagePort communication.
 	 *
-	 * @param {MessagePort} comPort port1 to remove from handling.
+	 * @param comPort port1 to remove from handling.
 	 */
 	endCommunication(comPort: MessagePort) {
 		comPort.close();
@@ -124,25 +120,25 @@ export class FsMainThreadInterface {
 	/**
 	 * Handles messages from the MessagePort
 	 *
-	 * @param {object} e data to construct the request
-	 * @param {string} e.action Action to perform. Corresponds to the names of
+	 * @param e data to construct the request
+	 * @param e.action Action to perform. Corresponds to the names of
 	 * 	the public methods of "@ui5/fs/fsInterface"
-	 * @param {string} e.fsPath Path of the Resource
-	 * @param {object} e.options Options for "readFile" action
-	 * @param {MessagePort} comPort The communication channel
+	 * @param e.fsPath Path of the Resource
+	 * @param e.options Options for "readFile" action
+	 * @param comPort The communication channel
 	 */
 	#onMessage(e: {
-    action: string;
-    fsPath: string;
-    options: object;
-}, comPort: MessagePort) {
+		action: string;
+		fsPath: string;
+		options: object;
+	}, comPort: MessagePort) {
 		switch (e.action) {
-		case "readFile":
-			this.#doRequest(comPort, {action: "readFile", fsPath: e.fsPath, options: e.options});
-			break;
-		case "stat":
-			this.#doRequest(comPort, {action: "stat", fsPath: e.fsPath});
-			break;
+			case "readFile":
+				this.#doRequest(comPort, {action: "readFile", fsPath: e.fsPath, options: e.options});
+				break;
+			case "stat":
+				this.#doRequest(comPort, {action: "stat", fsPath: e.fsPath});
+				break;
 		}
 	}
 
@@ -150,19 +146,19 @@ export class FsMainThreadInterface {
 	 * Requests a Resource from the "@ui5/fs/fsInterface" and sends it to the worker threads
 	 * via postMessage.
 	 *
-	 * @param {MessagePort} comPort The communication channel
-	 * @param {object} parameters
-	 * @param {string} parameters.action Action to perform. Corresponds to the names of
+	 * @param comPort The communication channel
+	 * @param parameters
+	 * @param parameters.action Action to perform. Corresponds to the names of
 	 * 	the public methods of "@ui5/fs/fsInterface" and triggers this method of the
 	 *	"@ui5/fs/fsInterface" instance.
-	 * @param {string} parameters.fsPath Path of the Resource
-	 * @param {object} parameters.options Options for "readFile" action
+	 * @param parameters.fsPath Path of the Resource
+	 * @param parameters.options Options for "readFile" action
 	 */
-	async #doRequest(comPort: MessagePort, { action, fsPath, options }: {
-    action: string;
-    fsPath: string;
-    options: object;
-}) {
+	async #doRequest(comPort: MessagePort, {action, fsPath, options}: {
+		action: string;
+		fsPath: string;
+		options: object;
+	}) {
 		const cacheKey = `${fsPath}-${action}`;
 		if (!this.#cache[cacheKey]) {
 			this.#cache[cacheKey] = new Promise((res) => {
@@ -201,7 +197,7 @@ export class FsWorkerThreadInterface {
 	/**
 	 * Constructor
 	 *
-	 * @param {MessagePort} comPort Communication port
+	 * @param comPort Communication port
 	 */
 	constructor(comPort: MessagePort) {
 		if (!comPort) {
@@ -216,19 +212,19 @@ export class FsWorkerThreadInterface {
 	/**
 	 * Handles messages from MessagePort
 	 *
-	 * @param {object} e
-	 * @param {string} e.action Action to perform. Corresponds to the names of
+	 * @param e
+	 * @param e.action Action to perform. Corresponds to the names of
 	 * 	the public methods of "@ui5/fs/fsInterface"
-	 * @param {string} e.fsPath Path of the Resource
-	 * @param {*} e.result Response from the "action".
-	 * @param {object} e.error Error from the "action".
+	 * @param e.fsPath Path of the Resource
+	 * @param e.result Response from the "action".
+	 * @param e.error Error from the "action".
 	 */
 	#onMessage(e: {
-    action: string;
-    fsPath: string;
-    result: any;
-    error: object;
-}) {
+		action: string;
+		fsPath: string;
+		result: any;
+		error: object;
+	}) {
 		const cbObject = this.#callbacks.find((cb) => cb.action === e.action && cb.fsPath === e.fsPath);
 
 		if (cbObject) {
@@ -251,18 +247,18 @@ export class FsWorkerThreadInterface {
 	/**
 	 * Makes a request via the MessagePort
 	 *
-	 * @param {object} parameters
-	 * @param {string} parameters.action Action to perform. Corresponds to the names of
+	 * @param parameters
+	 * @param parameters.action Action to perform. Corresponds to the names of
 	 * 	the public methods.
-	 * @param {string} parameters.fsPath Path of the Resource
-	 * @param {object} parameters.options Options for "readFile" action
-	 * @param {Function} callback Callback to call when the "action" is executed and ready.
+	 * @param parameters.fsPath Path of the Resource
+	 * @param parameters.options Options for "readFile" action
+	 * @param callback Callback to call when the "action" is executed and ready.
 	 */
-	#doRequest({ action, fsPath, options }: {
-    action: string;
-    fsPath: string;
-    options: object;
-}, callback: Function) {
+	#doRequest({action, fsPath, options}: {
+		action: string;
+		fsPath: string;
+		options: object;
+	}, callback: Function) {
 		const cacheKey = `${fsPath}-${action}`;
 
 		if (this.#cache[cacheKey]) {
@@ -289,6 +285,6 @@ if (!workerpool.isMainThread) {
 	// Script got loaded through workerpool
 	// => Create a worker and register public functions
 	workerpool.worker({
-		execThemeBuild
+		execThemeBuild,
 	});
 }

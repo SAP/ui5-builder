@@ -11,10 +11,10 @@ const SOURCE_MAPPING_URL = "//" + "# sourceMappingURL";
 
 function createWorkspace() {
 	const reader = resourceFactory.createAdapter({
-		virBasePath: "/"
+		virBasePath: "/",
 	});
 	const writer = resourceFactory.createAdapter({
-		virBasePath: "/"
+		virBasePath: "/",
 	});
 	const workspace = new DuplexCollection({reader: reader, writer: writer});
 	return {reader, writer, workspace};
@@ -34,9 +34,9 @@ test.serial("integration: minify omitSourceMapResources=true", async (t) => {
 		STANDARD_TAGS: {
 			HasDebugVariant: "1️⃣",
 			IsDebugVariant: "2️⃣",
-			OmitFromBuildResult: "3️⃣"
+			OmitFromBuildResult: "3️⃣",
 		},
-		registerCleanupTask: t.context.sinon.stub()
+		registerCleanupTask: t.context.sinon.stub(),
 	};
 	const {reader, writer, workspace} = createWorkspace();
 	const content = `
@@ -47,7 +47,7 @@ function test(paramA) {
 test();`;
 	const testResource = resourceFactory.createResource({
 		path: "/test.js",
-		string: content
+		string: content,
 	});
 	await reader.write(testResource);
 
@@ -56,8 +56,8 @@ test();`;
 		taskUtil,
 		options: {
 			pattern: "/test.js",
-			omitSourceMapResources: true
-		}
+			omitSourceMapResources: true,
+		},
 	});
 
 	const expected = `function test(t){var o=t;console.log(o)}test();`;
@@ -112,9 +112,9 @@ test.serial("integration: minify omitSourceMapResources=false", async (t) => {
 		STANDARD_TAGS: {
 			HasDebugVariant: "1️⃣",
 			IsDebugVariant: "2️⃣",
-			OmitFromBuildResult: "3️⃣"
+			OmitFromBuildResult: "3️⃣",
 		},
-		registerCleanupTask: t.context.sinon.stub()
+		registerCleanupTask: t.context.sinon.stub(),
 	};
 	const {reader, writer, workspace} = createWorkspace();
 	const content = `
@@ -125,7 +125,7 @@ function test(paramA) {
 test();`;
 	const testResource = resourceFactory.createResource({
 		path: "/test.js",
-		string: content
+		string: content,
 	});
 	await reader.write(testResource);
 
@@ -133,8 +133,8 @@ test();`;
 		workspace,
 		taskUtil,
 		options: {
-			pattern: "/test.js"
-		}
+			pattern: "/test.js",
+		},
 	});
 
 	const expected = `function test(t){var o=t;console.log(o)}test();
@@ -190,7 +190,7 @@ function test(paramA) {
 test();`;
 	const testResource = resourceFactory.createResource({
 		path: "/test.js",
-		string: content
+		string: content,
 	});
 	await reader.write(testResource);
 
@@ -198,8 +198,8 @@ test();`;
 		workspace,
 		options: {
 			pattern: "/test.js",
-			omitSourceMapResources: true
-		}
+			omitSourceMapResources: true,
+		},
 	});
 
 	const expected = `function test(t){var o=t;console.log(o)}test();`;
@@ -237,7 +237,7 @@ function test(paramA) {
 test();`;
 	const testResource = resourceFactory.createResource({
 		path: "/test.js",
-		string: content
+		string: content,
 	});
 	await reader.write(testResource);
 
@@ -245,8 +245,8 @@ test();`;
 		workspace,
 		options: {
 			pattern: "/test.js",
-			omitSourceMapResources: false
-		}
+			omitSourceMapResources: false,
+		},
 	});
 
 	const expected = `function test(t){var o=t;console.log(o)}test();

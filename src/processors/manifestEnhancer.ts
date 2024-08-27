@@ -7,6 +7,10 @@ const log = getLogger("builder:processors:manifestEnhancer");
 
 const APP_DESCRIPTOR_V22 = new Version("1.21.0");
 
+/**
+ *
+ * @param url
+ */
 function isAbsoluteUrl(url) {
 	if (url.startsWith("/")) {
 		return true;
@@ -24,10 +28,10 @@ function isAbsoluteUrl(url) {
 /**
  * Returns a bundle URL from the given bundle name, relative to the given namespace.
  *
- * @param {string} bundleName Bundle name (e.g. "sap.ui.demo.app.i18n.i18n") to be resolved to a relative URL
- * @param {string} sapAppId Project namespace from sap.app/id (e.g. "sap.ui.demo.app")
+ * @param bundleName Bundle name (e.g. "sap.ui.demo.app.i18n.i18n") to be resolved to a relative URL
+ * @param sapAppId Project namespace from sap.app/id (e.g. "sap.ui.demo.app")
  *                          to which a bundleName should be resolved to
- * @returns {string} Relative bundle URL (e.g. "i18n/i18n.properties")
+ * @returns Relative bundle URL (e.g. "i18n/i18n.properties")
  */
 function getRelativeBundleUrlFromName(bundleName: string, sapAppId: string) {
 	const bundleUrl = "/resources/" + bundleName.replace(/\./g, "/") + ".properties";
@@ -36,6 +40,10 @@ function getRelativeBundleUrlFromName(bundleName: string, sapAppId: string) {
 
 // Copied from sap/base/util/LoaderExtensions.resolveUI5Url
 // Adjusted to not resolve the URL, but create an absolute path prefixed with /resources
+/**
+ *
+ * @param sUrl
+ */
 function resolveUI5Url(sUrl) {
 	// check for ui5 scheme
 	if (sUrl.startsWith("ui5:")) {
@@ -60,10 +68,10 @@ function resolveUI5Url(sUrl) {
 /**
  * Normalizes a bundle URL relative to the project namespace.
  *
- * @param {string} bundleUrl Relative bundle URL to be normalized
- * @param {string} sapAppId Project namespace from sap.app/id (e.g. "sap.ui.demo.app")
+ * @param bundleUrl Relative bundle URL to be normalized
+ * @param sapAppId Project namespace from sap.app/id (e.g. "sap.ui.demo.app")
  *                          to which the URL is relative to
- * @returns {string} Normalized relative bundle URL (e.g. "i18n/i18n.properties")
+ * @returns Normalized relative bundle URL (e.g. "i18n/i18n.properties")
  */
 function normalizeBundleUrl(bundleUrl: string, sapAppId: string) {
 	// Create absolute path with namespace from sap.app/id
@@ -77,10 +85,10 @@ function normalizeBundleUrl(bundleUrl: string, sapAppId: string) {
 /**
  * Returns the bundle URL from the given bundle configuration.
  *
- * @param {object} bundleConfig Bundle configuration
- * @param {string} sapAppId Project namespace from sap.app/id (e.g. "sap.ui.demo.app")
+ * @param bundleConfig Bundle configuration
+ * @param sapAppId Project namespace from sap.app/id (e.g. "sap.ui.demo.app")
  *                          to which a bundleName should be resolved to
- * @param {string} [defaultBundleUrl] Default bundle url in case bundleConfig is not defined
+ * @param [defaultBundleUrl] Default bundle url in case bundleConfig is not defined
  */
 function getBundleUrlFromConfig(bundleConfig: object, sapAppId: string, defaultBundleUrl?: string) {
 	if (!bundleConfig) {
@@ -94,6 +102,12 @@ function getBundleUrlFromConfig(bundleConfig: object, sapAppId: string, defaultB
 }
 
 // Same as above, but does only accept objects, not strings or defaults
+/**
+ *
+ * @param bundleConfig
+ * @param sapAppId
+ * @param fallbackBundleUrl
+ */
 function getBundleUrlFromConfigObject(bundleConfig, sapAppId, fallbackBundleUrl) {
 	if (typeof bundleConfig === "object") {
 		if (bundleConfig.bundleName) {
@@ -106,6 +120,10 @@ function getBundleUrlFromConfigObject(bundleConfig, sapAppId, fallbackBundleUrl)
 }
 
 // See runtime logic in sap/ui/core/Lib#_normalizeI18nSettings
+/**
+ *
+ * @param vI18n
+ */
 function getBundleUrlFromSapUi5LibraryI18n(vI18n) {
 	if (vI18n == null || vI18n === true) {
 		return "messagebundle.properties";
@@ -120,9 +138,9 @@ function getBundleUrlFromSapUi5LibraryI18n(vI18n) {
 
 class ManifestEnhancer {
 	/**
-	 * @param {string} manifest manifest.json content
-	 * @param {string} filePath manifest.json file path
-	 * @param {fs} fs Node fs or custom [fs interface]{@link module:@ui5/fs/fsInterface}
+	 * @param manifest manifest.json content
+	 * @param filePath manifest.json file path
+	 * @param fs Node fs or custom [fs interface]{@link module:@ui5/fs/fsInterface}
 	 */
 	constructor(manifest: string, filePath: string, fs: fs) {
 		this.fsReadDir = promisify(fs.readdir);
@@ -249,7 +267,7 @@ class ManifestEnhancer {
 			if (supportedLocales.length > 0) {
 				if (!sapAppI18n || typeof sapAppI18n === "string") {
 					sapAppI18n = sapApp.i18n = {
-						bundleUrl: i18nBundleUrl
+						bundleUrl: i18nBundleUrl,
 					};
 				}
 				sapAppI18n.supportedLocales = supportedLocales;
@@ -261,7 +279,7 @@ class ManifestEnhancer {
 	/**
 	 *	Processes the terminologies and enhanceWith bundles of a bundle configuration.
 	 *
-	 * @param {object} bundleConfig
+	 * @param bundleConfig
 	 */
 	async processTerminologiesAndEnhanceWith(bundleConfig: object) {
 		const bundleConfigs = [];
@@ -286,12 +304,12 @@ class ManifestEnhancer {
 		await Promise.all(
 			bundleConfigs.map(({config, fallbackLocale}) => this.processBundleConfig({
 				bundleConfig: config,
-				fallbackLocale
+				fallbackLocale,
 			}))
 		);
 		await Promise.all(
 			terminologyBundleConfigs.map((bundleConfig) => this.processBundleConfig({
-				bundleConfig, isTerminologyBundle: true
+				bundleConfig, isTerminologyBundle: true,
 			}))
 		);
 	}
@@ -342,7 +360,7 @@ class ManifestEnhancer {
 					this.manifest["sap.ui5"] ??= {};
 					this.manifest["sap.ui5"].library ??= {};
 					sapUi5LibraryI18n = this.manifest["sap.ui5"].library.i18n = {
-						bundleUrl: i18nBundleUrl
+						bundleUrl: i18nBundleUrl,
 					};
 				}
 				sapUi5LibraryI18n.supportedLocales = supportedLocales;
@@ -378,7 +396,7 @@ class ManifestEnhancer {
 		} else {
 			await Promise.all([
 				this.processSapAppI18n(),
-				this.processSapUi5Models()
+				this.processSapUi5Models(),
 			]);
 		}
 
@@ -395,17 +413,13 @@ class ManifestEnhancer {
 /**
  * Enriches the content of the manifest.json file.
  *
- * @public
- * @function default
- * @static
- *
- * @param {object} parameters Parameters
- * @param {@ui5/fs/Resource[]} parameters.resources List of manifest.json resources to be processed
- * @param {fs|module:@ui5/fs/fsInterface} parameters.fs Node fs or custom
+ * @param parameters Parameters
+ * @param parameters.resources List of manifest.json resources to be processed
+ * @param parameters.fs Node fs or custom
  *    [fs interface]{@link module:@ui5/fs/fsInterface}.
- * @returns {Promise<Array<@ui5/fs/Resource|undefined>>} Promise resolving with an array of modified resources
+ * @returns Promise resolving with an array of modified resources
  */
-export default async function({ resources, fs }: object) {
+export default async function ({resources, fs}: object) {
 	const res = await Promise.all(
 		resources.map(async (resource) => {
 			const manifest = await resource.getString();
@@ -422,4 +436,5 @@ export default async function({ resources, fs }: object) {
 }
 
 export const __internals__ = (process.env.NODE_ENV === "test") ?
-	{ManifestEnhancer, getRelativeBundleUrlFromName, normalizeBundleUrl, resolveUI5Url} : undefined;
+		{ManifestEnhancer, getRelativeBundleUrlFromName, normalizeBundleUrl, resolveUI5Url} :
+	undefined;

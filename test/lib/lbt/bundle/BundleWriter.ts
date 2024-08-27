@@ -153,7 +153,7 @@ test("startSegment / endSegment", (t) => {
 	t.deepEqual(w.segments, [{
 		module: {test: 1},
 		startIndex: 0,
-		endIndex: 3
+		endIndex: 3,
 	}]);
 
 	const module2 = {test: 2};
@@ -166,7 +166,7 @@ test("startSegment / endSegment", (t) => {
 	t.deepEqual(w.segments, [{
 		module: {test: 1},
 		startIndex: 0,
-		endIndex: 3
+		endIndex: 3,
 	}]);
 
 	w.write("bar!");
@@ -177,7 +177,7 @@ test("startSegment / endSegment", (t) => {
 	t.deepEqual(w.segments, [{
 		module: {test: 1},
 		startIndex: 0,
-		endIndex: 3
+		endIndex: 3,
 	}]);
 
 	const targetSize2 = w.endSegment();
@@ -188,11 +188,11 @@ test("startSegment / endSegment", (t) => {
 	t.deepEqual(w.segments, [{
 		module: {test: 1},
 		startIndex: 0,
-		endIndex: 3
+		endIndex: 3,
 	}, {
 		module: {test: 2},
 		startIndex: 3,
-		endIndex: 7
+		endIndex: 7,
 	}]);
 });
 
@@ -203,7 +203,7 @@ test("startSegment (Error handling)", (t) => {
 	t.throws(() => {
 		w.startSegment({});
 	}, {
-		message: "trying to start a segment while another segment is still open"
+		message: "trying to start a segment while another segment is still open",
 	});
 });
 
@@ -213,6 +213,6 @@ test("endSegment (Error handling)", (t) => {
 	t.throws(() => {
 		w.endSegment({});
 	}, {
-		message: "trying to end a segment while no segment is open"
+		message: "trying to end a segment while no segment is open",
 	});
 });

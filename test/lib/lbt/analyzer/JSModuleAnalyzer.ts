@@ -15,30 +15,30 @@ const EXPECTED_DECLARE_DEPENDENCIES = [
 	"block/requireSync/var.js", "block/requireSync/assign.js", "nested/scope/require/void.js",
 	"nested/scope/require/var.js", "nested/scope/require/assign.js", "nested/scope/requireSync/var.js",
 	"nested/scope/requireSync/assign.js", "nested/scope2/require/void.js", "nested/scope2/require/var.js",
-	"nested/scope2/require/assign.js", "nested/scope2/requireSync/var.js", "nested/scope2/requireSync/assign.js"
+	"nested/scope2/require/assign.js", "nested/scope2/requireSync/var.js", "nested/scope2/requireSync/assign.js",
 ];
 
 const EXPECTED_DEFINE_DEPENDENCIES_NO_LEGACY = [
 	"ui5loader-autoconfig.js",
-	"define/arg1.js", "define/arg2.js"
+	"define/arg1.js", "define/arg2.js",
 ];
 
 const EXPECTED_DEFINE_DEPENDENCIES_WITH_LEGACY = [
 	"jquery.sap.global.js",
 	"define/arg1.js", "define/arg2.js",
-	"require/arg1.js"
+	"require/arg1.js",
 ];
 
 const NO_DEPENDENCIES = [];
 
 function analyze(file, name) {
-	if ( arguments.length === 1 ) {
+	if (arguments.length === 1) {
 		name = file;
 	}
-	return new Promise( (resolve, reject) => {
+	return new Promise((resolve, reject) => {
 		file = path.join(import.meta.dirname, "..", "..", "..", "fixtures", "lbt", file);
 		fs.readFile(file, (err, buffer) => {
-			if ( err ) {
+			if (err) {
 				reject(err);
 			}
 			try {
@@ -79,25 +79,25 @@ async function analyzeModule(
 	rawModule
 ) {
 	//
-	return analyze(file, name).then( (info) => {
+	return analyze(file, name).then((info) => {
 		t.is(info.name, name, "module name should match");
 		let deps = info.dependencies;
-		if ( ignoreImplicitDependencies ) {
+		if (ignoreImplicitDependencies) {
 			deps = deps.filter((dep) => !info.isImplicitDependency(dep));
 		}
-		if ( expectedDependencies != null ) {
+		if (expectedDependencies != null) {
 			assertModuleNamesEqual(t,
 				deps,
 				expectedDependencies,
 				"module dependencies should match");
 		}
-		if ( expectedConditionalDependencies != null ) {
+		if (expectedConditionalDependencies != null) {
 			assertModuleNamesEqual(t,
 				getConditionalDependencies(info),
 				expectedConditionalDependencies,
 				"conditional module dependencies should match");
 		}
-		if ( expectedSubmodules != null ) {
+		if (expectedSubmodules != null) {
 			assertModuleNamesEqual(t,
 				info.subModules,
 				expectedSubmodules,
@@ -126,7 +126,7 @@ test("Check for consistency between VisitorKeys and EnrichedVisitorKeys", (t) =>
 	// from failing when new VisitorKeys are available via espree.
 
 	if (ecmaVersion > 2022) {
-		Object.keys(VisitorKeys).forEach( (type) => {
+		Object.keys(VisitorKeys).forEach((type) => {
 			// Ignore deprecated keys:
 			// - ExperimentalSpreadProperty => SpreadElement
 			// - ExperimentalRestProperty => RestElement
@@ -166,7 +166,7 @@ test("DefineWithLegacyCalls", analyzeModule,
 	"modules/define_with_legacy_calls.js", "modules/define_with_legacy_calls.js",
 	EXPECTED_DEFINE_DEPENDENCIES_WITH_LEGACY);
 
-test("OldStyleModuleWithoutDeclare", async function(t) {
+test("OldStyleModuleWithoutDeclare", async function (t) {
 	await analyze("modules/no_declare_but_requires.js", null).then((info) => {
 		t.is(info.name, null, "module name should be null");
 		t.true(info.rawModule, "raw module");
@@ -261,7 +261,6 @@ test("AMDSingleUnnamedModule", async (t) => {
 	);
 });
 
-
 test("AMDMultipleModulesWithConflictBetweenNamedAndUnnamed", async (t) => {
 	try {
 		await analyze("modules/amd_multiple_modules_with_conflict_between_named_and_unnamed.js");
@@ -330,7 +329,7 @@ test("OldStyleBundle", async (t) => {
 			"jquery.sap.mobile.js",
 			"jquery.sap.properties.js",
 			"jquery.sap.resources.js",
-			"jquery.sap.sjax.js"
+			"jquery.sap.sjax.js",
 		],
 		[],
 		[
@@ -348,7 +347,7 @@ test("OldStyleBundle", async (t) => {
 			"sap/ui/base/Event.js",
 			"sap/ui/base/ManagedObject.js",
 			"sap/ui/core/Core.js",
-			"sap/ui/thirdparty/jquery-mobile-custom.js"
+			"sap/ui/thirdparty/jquery-mobile-custom.js",
 		],
 		/* ignoreImplicitDependencies: */ true
 	);
@@ -392,7 +391,7 @@ test("OldStyleBundleV2", async (t) => {
 			"jquery.sap.mobile.js",
 			"jquery.sap.properties.js",
 			"jquery.sap.resources.js",
-			"jquery.sap.sjax.js"
+			"jquery.sap.sjax.js",
 		],
 		[],
 		[
@@ -410,7 +409,7 @@ test("OldStyleBundleV2", async (t) => {
 			"sap/ui/base/Event.js",
 			"sap/ui/base/ManagedObject.js",
 			"sap/ui/core/Core.js",
-			"sap/ui/thirdparty/jquery-mobile-custom.js"
+			"sap/ui/thirdparty/jquery-mobile-custom.js",
 		],
 		/* ignoreImplicitDependencies: */ true
 	);
@@ -472,7 +471,7 @@ test("EvoBundle", async (t) => {
 			"sap/ui/performance/trace/initTraces.js",
 			"sap/base/util/isEmptyObject.js",
 			"sap/base/util/each.js",
-			"sap/ui/events/jquery/EventSimulation.js"
+			"sap/ui/events/jquery/EventSimulation.js",
 		],
 		[],
 		[
@@ -493,7 +492,7 @@ test("EvoBundle", async (t) => {
 			"sap/ui/thirdparty/jqueryui/jquery-ui-position.js",
 			"sap/ui/Device.js",
 			"sap/ui/thirdparty/jquery.js",
-			"sap/ui/thirdparty/jquery-mobile-custom.js"
+			"sap/ui/thirdparty/jquery-mobile-custom.js",
 		],
 		/* ignoreImplicitDependencies: */ true
 	);
@@ -509,7 +508,7 @@ test("Bundle", async (t) => {
 		"sap/m/messagebundle.properties",
 		"todo/manifest.json",
 		"todo/model/todoitems.json",
-		"todo/view/App.view.xml"
+		"todo/view/App.view.xml",
 	];
 	t.deepEqual(info.subModules, expected, "module dependencies should match");
 	t.truthy(info.dependencies.every((dep) => !info.isConditionalDependency(dep)),
@@ -544,12 +543,12 @@ test("ES6 Syntax", async (t) => {
 		"static/module6.js",
 		"static/module7.js",
 		"static/module8.js",
-		"ui5loader-autoconfig.js"
+		"ui5loader-autoconfig.js",
 	];
 	const actual = info.dependencies.sort();
 	t.deepEqual(actual, expected, "module dependencies should match");
 	expected.forEach((dep) => {
-		t.is(info.isConditionalDependency(dep), /^conditional\//.test(dep),
+		t.is(info.isConditionalDependency(dep), dep.startsWith("conditional/"),
 			`only dependencies to 'conditional/*' modules should be conditional (${dep})`);
 		t.is(info.isImplicitDependency(dep), !/^(?:conditional|static)\//.test(dep),
 			`all dependencies other than 'conditional/*' and 'static/*' should be implicit (${dep})`);
@@ -566,12 +565,12 @@ test("ES6 Syntax (with dynamic dependencies)", async (t) => {
 		"modules/es6-syntax-dynamic-dependencies.js");
 	const expected = [
 		"static/module1.js",
-		"ui5loader-autoconfig.js"
+		"ui5loader-autoconfig.js",
 	];
 	const actual = info.dependencies.sort();
 	t.deepEqual(actual, expected, "module dependencies should match");
 	expected.forEach((dep) => {
-		t.is(info.isConditionalDependency(dep), /^conditional\//.test(dep),
+		t.is(info.isConditionalDependency(dep), dep.startsWith("conditional/"),
 			`only dependencies to 'conditional/*' modules should be conditional (${dep})`);
 		t.is(info.isImplicitDependency(dep), !/^(?:conditional|static)\//.test(dep),
 			`all dependencies other than 'conditional/*' and 'static/*' should be implicit (${dep})`);
@@ -586,12 +585,12 @@ test("ES6 Async Module", async (t) => {
 	const info = await analyze("modules/es6-async-module.js", "modules/es6-async-module.js");
 	const expected = [
 		"static/module1.js",
-		"ui5loader-autoconfig.js"
+		"ui5loader-autoconfig.js",
 	];
 	const actual = info.dependencies.sort();
 	t.deepEqual(actual, expected, "module dependencies should match");
 	expected.forEach((dep) => {
-		t.is(info.isConditionalDependency(dep), /^conditional\//.test(dep),
+		t.is(info.isConditionalDependency(dep), dep.startsWith("conditional/"),
 			`only dependencies to 'conditional/*' modules should be conditional (${dep})`);
 		t.is(info.isImplicitDependency(dep), !/^(?:conditional|static)\//.test(dep),
 			`all dependencies other than 'conditional/*' and 'static/*' should be implicit (${dep})`);
@@ -608,12 +607,12 @@ test("ES6 Template Literal", async (t) => {
 		"static/module1.js",
 		"static/module2.js",
 		"static/module3.js",
-		"ui5loader-autoconfig.js"
+		"ui5loader-autoconfig.js",
 	];
 	const actual = info.dependencies.sort();
 	t.deepEqual(actual, expected, "module dependencies should match");
 	expected.forEach((dep) => {
-		t.is(info.isConditionalDependency(dep), /^conditional\//.test(dep),
+		t.is(info.isConditionalDependency(dep), dep.startsWith("conditional/"),
 			`only dependencies to 'conditional/*' modules should be conditional (${dep})`);
 		t.is(info.isImplicitDependency(dep), !/^(?:conditional|static)\//.test(dep),
 			`all dependencies other than 'conditional/*' and 'static/*' should be implicit (${dep})`);
@@ -631,12 +630,12 @@ test("ES6 Template Literal with Expression", async (t) => {
 		"static/module1.js",
 		"static/module2.js",
 		"static/module3.js",
-		"ui5loader-autoconfig.js"
+		"ui5loader-autoconfig.js",
 	];
 	const actual = info.dependencies.sort();
 	t.deepEqual(actual, expected, "module dependencies should match");
 	expected.forEach((dep) => {
-		t.is(info.isConditionalDependency(dep), /^conditional\//.test(dep),
+		t.is(info.isConditionalDependency(dep), dep.startsWith("conditional/"),
 			`only dependencies to 'conditional/*' modules should be conditional (${dep})`);
 		t.is(info.isImplicitDependency(dep), !/^(?:conditional|static)\//.test(dep),
 			`all dependencies other than 'conditional/*' and 'static/*' should be implicit (${dep})`);
@@ -654,12 +653,12 @@ test("ES6 Template Literal in sap.ui.predefine", async (t) => {
 		"static/module1.js",
 		"static/module2.js",
 		"static/module3.js",
-		"ui5loader-autoconfig.js"
+		"ui5loader-autoconfig.js",
 	];
 	const actual = info.dependencies.sort();
 	t.deepEqual(actual, expected, "module dependencies should match");
 	expected.forEach((dep) => {
-		t.is(info.isConditionalDependency(dep), /^conditional\//.test(dep),
+		t.is(info.isConditionalDependency(dep), dep.startsWith("conditional/"),
 			`only dependencies to 'conditional/*' modules should be conditional (${dep})`);
 		t.is(info.isImplicitDependency(dep), !/^(?:conditional|static)\//.test(dep),
 			`all dependencies other than 'conditional/*' and 'static/*' should be implicit (${dep})`);
@@ -691,7 +690,7 @@ test("ChainExpression", (t) => {
 	const actual = info.dependencies.sort();
 	t.deepEqual(actual, expected, "module dependencies should match");
 	expected.forEach((dep) => {
-		t.is(info.isConditionalDependency(dep), /^conditional\//.test(dep),
+		t.is(info.isConditionalDependency(dep), dep.startsWith("conditional/"),
 			`only dependencies to 'conditional/*' modules should be conditional (${dep})`);
 		t.is(info.isImplicitDependency(dep), !/^(?:conditional|static)\//.test(dep),
 			`all dependencies other than 'conditional/*' and 'static/*' should be implicit (${dep})`);
@@ -732,7 +731,7 @@ test("LogicalExpression", (t) => {
 	const actual = info.dependencies.sort();
 	t.deepEqual(actual, expected, "module dependencies should match");
 	expected.forEach((dep) => {
-		t.is(info.isConditionalDependency(dep), /^conditional\//.test(dep),
+		t.is(info.isConditionalDependency(dep), dep.startsWith("conditional/"),
 			`only dependencies to 'conditional/*' modules should be conditional (${dep})`);
 		t.is(info.isImplicitDependency(dep), !/^(?:conditional|static)\//.test(dep),
 			`all dependencies other than 'conditional/*' and 'static/*' should be implicit (${dep})`);
@@ -796,7 +795,7 @@ test("ES2022: PrivateIdentifier, PropertyDefinition, StaticBlock", (t) => {
 	const actual = info.dependencies.sort();
 	t.deepEqual(actual, expected, "module dependencies should match");
 	expected.forEach((dep) => {
-		t.is(info.isConditionalDependency(dep), /^conditional\//.test(dep),
+		t.is(info.isConditionalDependency(dep), dep.startsWith("conditional/"),
 			`only dependencies to 'conditional/*' modules should be conditional (${dep})`);
 		t.is(info.isImplicitDependency(dep), !/^(?:conditional|static)\//.test(dep),
 			`all dependencies other than 'conditional/*' and 'static/*' should be implicit (${dep})`);
@@ -821,12 +820,12 @@ test("Conditional import (declare/require)", async (t) => {
 	const expected = [
 		"conditional/module1.js",
 		"conditional/module2.js",
-		"jquery.sap.global.js"
+		"jquery.sap.global.js",
 	];
 	const actual = info.dependencies.sort();
 	t.deepEqual(actual, expected, "module dependencies should match");
 	expected.forEach((dep) => {
-		t.is(info.isConditionalDependency(dep), /^conditional\//.test(dep),
+		t.is(info.isConditionalDependency(dep), dep.startsWith("conditional/"),
 			`only dependencies to 'conditional/*' modules should be conditional (${dep})`);
 		t.is(info.isImplicitDependency(dep), !/^(?:conditional|static)\//.test(dep),
 			`all dependencies other than 'conditional/*' and 'static/*' should be implicit (${dep})`);
@@ -842,12 +841,12 @@ test("Dynamic import (declare/require/conditional)", async (t) => {
 		"modules/declare_dynamic_require_conditional.js");
 	const expected = [
 		"conditional/module1.js",
-		"jquery.sap.global.js"
+		"jquery.sap.global.js",
 	];
 	const actual = info.dependencies.sort();
 	t.deepEqual(actual, expected, "module dependencies should match");
 	expected.forEach((dep) => {
-		t.is(info.isConditionalDependency(dep), /^conditional\//.test(dep),
+		t.is(info.isConditionalDependency(dep), dep.startsWith("conditional/"),
 			`only dependencies to 'conditional/*' modules should be conditional (${dep})`);
 		t.is(info.isImplicitDependency(dep), !/^(?:conditional|static)\//.test(dep),
 			`all dependencies other than 'conditional/*' and 'static/*' should be implicit (${dep})`);
@@ -1113,6 +1112,6 @@ test("@ui5-bundle comment: Multiple comments (Not in first line)", (t) => {
 //@ui5-bundle test/bundle2.js
 `;
 	t.throws(() => analyzeString(content, "modules/ui5-bundle-comments.js"), {
-		message: "Conflicting main modules found (unnamed + named)"
+		message: "Conflicting main modules found (unnamed + named)",
 	});
 });

@@ -8,13 +8,12 @@ import {getNonDebugName} from "../../../lbt/utils/ModuleName.js";
  * the module name from the resource path, which would contain "-dbg" in this case. That would be
  * incorrect since debug-variants should still keep the original module name.
  *
- * @private
- * @param {object} parameters Parameters
- * @param {@ui5/fs/Resource[]} parameters.resources List of resources
- * @param {@ui5/project/build/helpers/TaskUtil|object} parameters.taskUtil TaskUtil
- * @returns {object} Module name mapping
+ * @param parameters Parameters
+ * @param parameters.resources List of resources
+ * @param parameters.taskUtil TaskUtil
+ * @returns Module name mapping
  */
-export default function({ resources, taskUtil }: object) {
+export default function ({resources, taskUtil}: object) {
 	const moduleNameMapping = Object.create(null);
 	for (let i = resources.length - 1; i >= 0; i--) {
 		const resource = resources[i];

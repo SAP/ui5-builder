@@ -9,8 +9,8 @@ test.beforeEach(async (t) => {
 	t.context.LibraryFileAnalyzerGetDependencyInfosStub = sinon.stub().returns({});
 	t.context.ResourcePool = await esmock("../../../../lib/lbt/resources/ResourcePool.js", {
 		"../../../../lib/lbt/resources/LibraryFileAnalyzer.js": {
-			getDependencyInfos: t.context.LibraryFileAnalyzerGetDependencyInfosStub
-		}
+			getDependencyInfos: t.context.LibraryFileAnalyzerGetDependencyInfosStub,
+		},
 	});
 });
 
@@ -87,7 +87,7 @@ test("getIgnoreMissingModules", (t) => {
 	t.is(resourcePool.getIgnoreMissingModules(), false, "returned expected value");
 
 	resourcePool = new ResourcePool({
-		ignoreMissingModules: true
+		ignoreMissingModules: true,
 	});
 	t.is(resourcePool.getIgnoreMissingModules(), true, "returned expected value");
 });
@@ -142,17 +142,16 @@ test("getModuleInfo: determineDependencyInfo for raw js resources", async (t) =>
 	const inputJsResource = {name: "a.js", buffer: async () => code};
 	resourcePool.addResource(inputJsResource);
 
-
 	const infoA = new ModuleInfo("a.js");
 	infoA.requiresTopLevelScope = false;
 
 	LibraryFileAnalyzerGetDependencyInfosStub.returns({
-		"a.js": infoA
+		"a.js": infoA,
 	});
 
 	const library = {
 		name: "a.library",
-		buffer: async () => ""
+		buffer: async () => "",
 	};
 	await resourcePool.addResource(library);
 
@@ -171,8 +170,8 @@ test("getModuleInfo: determineDependencyInfo for library.js resource", async (t)
 		name: "testlib/library.js", buffer: async () => code,
 		resource: {
 			getName: () => "testlib/library.js",
-			getBuffer: async () => code
-		}
+			getBuffer: async () => code,
+		},
 	};
 	resourcePool.addResource(libraryJsResource);
 
@@ -183,7 +182,7 @@ test("getModuleInfo: determineDependencyInfo for library.js resource", async (t)
 	t.deepEqual(jsResource.dependencies, [
 		"sap/ui/core/Lib.js",
 		"ui5loader-autoconfig.js",
-		"testlib/manifest.json"
+		"testlib/manifest.json",
 	]);
 });
 
@@ -198,15 +197,15 @@ test("getModuleInfo: determineDependencyInfo for library.js resource (no manifes
 		name: "testlib/library.js", buffer: async () => code,
 		resource: {
 			getName: () => "testlib/library.js",
-			getBuffer: async () => code
-		}
+			getBuffer: async () => code,
+		},
 	};
 	resourcePool.addResource(libraryJsResource);
 
 	const jsResource = await resourcePool.getModuleInfo("testlib/library.js");
 	t.deepEqual(jsResource.dependencies, [
 		"sap/ui/core/Lib.js",
-		"ui5loader-autoconfig.js"
+		"ui5loader-autoconfig.js",
 	]);
 });
 
@@ -260,7 +259,6 @@ test("getModuleInfo: determineDependencyInfo for xml control and fragment", asyn
 	const inputXmlFragmentResource = {name: "a.fragment.xml", buffer: () => xmlFragment};
 	resourcePool.addResource(inputXmlFragmentResource);
 
-
 	const xmlControlResource = await resourcePool.getModuleInfo("a.control.xml");
 	t.is(await resourcePool._dependencyInfos.get(inputXmlControlResource.name), xmlControlResource,
 		"info has been added to _dependencyInfos map");
@@ -306,7 +304,6 @@ test("getModuleInfo: determineDependencyInfo for xml view", async (t) => {
 	t.deepEqual(xmlViewResource.subModules, []);
 });
 
-
 test("addResource twice", (t) => {
 	const {ResourcePool} = t.context;
 
@@ -337,24 +334,24 @@ test.serial("addResource: library and eval raw module info", async (t) => {
 
 	LibraryFileAnalyzerGetDependencyInfosStub.returns({
 		"moduleA.js": infoA,
-		"moduleB.js": infoB
+		"moduleB.js": infoB,
 	});
 
 	const library = {
 		name: "a.library",
 
 		// LibraryFileAnalyzer.getDependencyInfos() is stubbed! Therefore this content is irrelevant.
-		buffer: async () => ""
+		buffer: async () => "",
 	};
 	await resourcePool.addResource(library);
 	const moduleA = {
 		name: "moduleA.js",
-		buffer: async () => "var foo,bar,some;"
+		buffer: async () => "var foo,bar,some;",
 	};
 	await resourcePool.addResource(moduleA);
 	const moduleB = {
 		name: "moduleB.js",
-		buffer: async () => "var foo,bar,some; jQuery.sap.require(\"moduleC\");"
+		buffer: async () => "var foo,bar,some; jQuery.sap.require(\"moduleC\");",
 	};
 	await resourcePool.addResource(moduleB);
 
@@ -381,4 +378,3 @@ test.serial("addResource: library and eval raw module info", async (t) => {
 	t.deepEqual(actualResourceB.info.exposedGlobals, ["foo", "bar", "some"],
 		"global names should be known from analsyis step");
 });
-

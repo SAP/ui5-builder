@@ -6,16 +6,15 @@ import nonAsciiEscaper from "../../processors/nonAsciiEscaper.js";
  * Input encoding is read from project configuration.
  * In case the resource belongs to no project (e.g. bundler is used standalone) the default is "UTF-8".
  *
- * @private
- * @param {Resource} resource the resource for which the content will be escaped
- * @returns {Promise<string>} resolves with the escaped string content of the given Resource
+ * @param resource the resource for which the content will be escaped
+ * @returns resolves with the escaped string content of the given Resource
  */
-export default async function(resource: Resource) {
+export default async function (resource: Resource) {
 	const project = resource.getProject();
-	let propertiesFileSourceEncoding = project && project.getPropertiesFileSourceEncoding();
+	let propertiesFileSourceEncoding = project?.getPropertiesFileSourceEncoding();
 
 	if (!propertiesFileSourceEncoding) {
-		if (project && project.getSpecVersion().lte("1.1")) {
+		if (project?.getSpecVersion().lte("1.1")) {
 			// default encoding to "ISO-8859-1" for old specVersions
 			propertiesFileSourceEncoding = "ISO-8859-1";
 		} else {
@@ -27,8 +26,8 @@ export default async function(resource: Resource) {
 	await nonAsciiEscaper({
 		resources: [resource.resource],
 		options: {
-			encoding
-		}
+			encoding,
+		},
 	});
 
 	const fileContent = await resource.buffer();

@@ -25,27 +25,27 @@ test("createModuleNameMapping", (t) => {
 		return true;
 	});
 	const resources = [{
-		getPath: () => "/resources/Module.js"
+		getPath: () => "/resources/Module.js",
 	}, {
-		getPath: () => "/resources/Module-dbg.js"
+		getPath: () => "/resources/Module-dbg.js",
 	}, {
-		getPath: () => "/resources/Module-dbg.js.map"
+		getPath: () => "/resources/Module-dbg.js.map",
 	}, {
-		getPath: () => "/resources/Module-dbg-dbg.js"
+		getPath: () => "/resources/Module-dbg-dbg.js",
 	}, {
-		getPath: () => "/resources/Module-dbg-dbg.js.map"
+		getPath: () => "/resources/Module-dbg-dbg.js.map",
 	}, {
-		getPath: () => "/resources/Module.xml"
+		getPath: () => "/resources/Module.xml",
 	}, {
-		getPath: () => "/resources/Module.css"
+		getPath: () => "/resources/Module.css",
 	}];
 	const res = createModuleNameMapping({
 		resources,
-		taskUtil
+		taskUtil,
 	});
 
 	t.deepEqual(res, {
 		"/resources/Module-dbg-dbg.js": "Module-dbg.js",
-		"/resources/Module-dbg.js": "Module.js"
+		"/resources/Module-dbg.js": "Module.js",
 	}, "Expected module name mapping");
 });

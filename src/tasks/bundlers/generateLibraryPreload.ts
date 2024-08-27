@@ -5,6 +5,11 @@ import {applyDefaultsToBundleDefinition} from "./utils/applyDefaultsToBundleDefi
 import {negateFilters} from "../../lbt/resources/ResourceFilterList.js";
 import createModuleNameMapping from "./utils/createModuleNameMapping.js";
 
+/**
+ *
+ * @param namespace
+ * @param excludes
+ */
 function getDefaultLibraryPreloadFilters(namespace, excludes) {
 	const filters = [
 		`${namespace}/`,
@@ -12,7 +17,7 @@ function getDefaultLibraryPreloadFilters(namespace, excludes) {
 		`!${namespace}/**/*-preload.js`, // exclude all bundles
 		`!${namespace}/designtime/`,
 		`!${namespace}/**/*.designtime.js`,
-		`!${namespace}/**/*.support.js`
+		`!${namespace}/**/*.support.js`,
 	];
 
 	if (Array.isArray(excludes)) {
@@ -32,6 +37,11 @@ function getDefaultLibraryPreloadFilters(namespace, excludes) {
 	return filters;
 }
 
+/**
+ *
+ * @param namespace
+ * @param excludes
+ */
 function getBundleDefinition(namespace, excludes) {
 	// Note: This configuration is only used when no bundle definition in ui5.yaml exists (see "skipBundles" parameter)
 
@@ -47,9 +57,9 @@ function getBundleDefinition(namespace, excludes) {
 					mode: "provided",
 					filters: [
 						"ui5loader-autoconfig.js",
-						"sap/ui/core/Core.js"
+						"sap/ui/core/Core.js",
 					],
-					resolve: true
+					resolve: true,
 				},
 				{
 					mode: "preload",
@@ -82,14 +92,14 @@ function getBundleDefinition(namespace, excludes) {
 						"!sap-ui-*.js",
 						"!sap/ui/core/support/",
 						"!sap/ui/core/plugin/DeclarativeSupport.js",
-						"!sap/ui/core/plugin/LessSupport.js"
+						"!sap/ui/core/plugin/LessSupport.js",
 
 					],
 					resolve: false,
 					resolveConditional: false,
-					renderer: true
-				}
-			]
+					renderer: true,
+				},
+			],
 		};
 	}
 	return {
@@ -100,12 +110,16 @@ function getBundleDefinition(namespace, excludes) {
 				filters: getDefaultLibraryPreloadFilters(namespace, excludes),
 				resolve: false,
 				resolveConditional: false,
-				renderer: true
-			}
-		]
+				renderer: true,
+			},
+		],
 	};
 }
 
+/**
+ *
+ * @param namespace
+ */
 function getDesigntimeBundleDefinition(namespace) {
 	return {
 		name: `${namespace}/designtime/library-preload.designtime.js`,
@@ -118,16 +132,20 @@ function getDesigntimeBundleDefinition(namespace) {
 					`!${namespace}/**/*-preload.designtime.js`,
 					`!${namespace}/designtime/**/*.properties`,
 					`!${namespace}/designtime/**/*.svg`,
-					`!${namespace}/designtime/**/*.xml`
+					`!${namespace}/designtime/**/*.xml`,
 				],
 				resolve: false,
 				resolveConditional: false,
-				renderer: false
-			}
-		]
+				renderer: false,
+			},
+		],
 	};
 }
 
+/**
+ *
+ * @param namespace
+ */
 function getSupportFilesBundleDefinition(namespace) {
 	return {
 		name: `${namespace}/library-preload.support.js`,
@@ -136,16 +154,20 @@ function getSupportFilesBundleDefinition(namespace) {
 				mode: "preload",
 				filters: [
 					`${namespace}/**/*.support.js`,
-					`!${namespace}/**/*-preload.support.js`
+					`!${namespace}/**/*-preload.support.js`,
 				],
 				resolve: false,
 				resolveConditional: false,
-				renderer: false
-			}
-		]
+				renderer: false,
+			},
+		],
 	};
 }
 
+/**
+ *
+ * @param config
+ */
 function getModuleBundlerOptions(config) {
 	const moduleBundlerOptions = {};
 
@@ -158,14 +180,14 @@ function getModuleBundlerOptions(config) {
 			"jquery-ui-position.js",
 			"sap/ui/thirdparty/jquery.js",
 			"sap/ui/thirdparty/jquery/*",
-			"sap/ui/thirdparty/jqueryui/*"
-		]
+			"sap/ui/thirdparty/jqueryui/*",
+		],
 	};
 
 	moduleBundlerOptions.bundleOptions = {
 		optimize: config.preload,
 		decorateBootstrapModule: config.preload,
-		addTryCatchRestartWrapper: config.preload
+		addTryCatchRestartWrapper: config.preload,
 	};
 
 	moduleBundlerOptions.bundleDefinition = getSapUiCoreBunDef(config.name, config.filters, config.preload);
@@ -181,10 +203,16 @@ function getModuleBundlerOptions(config) {
 	return moduleBundlerOptions;
 }
 
+/**
+ *
+ * @param name
+ * @param filters
+ * @param preload
+ */
 function getSapUiCoreBunDef(name, filters, preload) {
 	const bundleDefinition = {
 		name,
-		sections: []
+		sections: [],
 	};
 
 	// add raw section
@@ -194,7 +222,7 @@ function getSapUiCoreBunDef(name, filters, preload) {
 		filters,
 		resolve: true, // dependencies for raw modules are taken from shims in .library files
 		sort: true, // topological sort on raw modules is mandatory
-		declareModules: false
+		declareModules: false,
 	});
 
 	if (preload) {
@@ -202,9 +230,9 @@ function getSapUiCoreBunDef(name, filters, preload) {
 		bundleDefinition.sections.push({
 			mode: "preload",
 			filters: [
-				"sap/ui/core/Core.js"
+				"sap/ui/core/Core.js",
 			],
-			resolve: true
+			resolve: true,
 		});
 	}
 
@@ -212,48 +240,43 @@ function getSapUiCoreBunDef(name, filters, preload) {
 	bundleDefinition.sections.push({
 		mode: "require",
 		filters: [
-			"sap/ui/core/Core.js"
-		]
+			"sap/ui/core/Core.js",
+		],
 	});
 
 	return bundleDefinition;
 }
 
 /**
- * @public
  * @module @ui5/builder/tasks/bundlers/generateLibraryPreload
  */
 
 /**
  * Task for library bundling.
  *
- * @public
- * @function default
- * @static
- *
- * @param {object} parameters Parameters
- * @param {@ui5/fs/DuplexCollection} parameters.workspace DuplexCollection to read and write files
- * @param {@ui5/project/build/helpers/TaskUtil} [parameters.taskUtil] TaskUtil
- * @param {object} parameters.options Options
- * @param {string} parameters.options.projectName Project name
- * @param {string[]} [parameters.options.skipBundles] Names of bundles that should not be created
- * @param {string[]} [parameters.options.excludes=[]] List of modules declared as glob patterns (resource name patterns)
+ * @param parameters Parameters
+ * @param parameters.workspace DuplexCollection to read and write files
+ * @param [parameters.taskUtil] TaskUtil
+ * @param parameters.options Options
+ * @param parameters.options.projectName Project name
+ * @param [parameters.options.skipBundles] Names of bundles that should not be created
+ * @param [parameters.options.excludes] List of modules declared as glob patterns (resource name patterns)
  * that should be excluded from the library-preload.js bundle.
  * A pattern ending with a slash '/' will, similarly to the use of a single '*' or double '**' asterisk,
  * denote an arbitrary number of characters or folder names.
  * Re-includes should be marked with a leading exclamation mark '!'. The order of filters is relevant; a later
  * inclusion overrides an earlier exclusion, and vice versa.
- * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
+ * @returns Promise resolving with <code>undefined</code> once data has been written
  */
-export default async function({ workspace, taskUtil, options: { skipBundles = [], excludes = [], projectName } }: object) {
+export default async function ({workspace, taskUtil, options: {skipBundles = [], excludes = [], projectName}}: object) {
 	let nonDbgWorkspace = workspace;
 	if (taskUtil) {
 		nonDbgWorkspace = taskUtil.resourceFactory.createFilterReader({
 			reader: workspace,
-			callback: function(resource) {
+			callback: function (resource) {
 				// Remove any debug variants
 				return !taskUtil.getTag(resource, taskUtil.STANDARD_TAGS.IsDebugVariant);
-			}
+			},
 		});
 	}
 	const coreVersion = taskUtil?.getProject("sap.ui.core")?.getVersion();
@@ -294,17 +317,17 @@ export default async function({ workspace, taskUtil, options: { skipBundles = []
 				if (taskUtil) {
 					const unoptimizedWorkspace = taskUtil.resourceFactory.createFilterReader({
 						reader: workspace,
-						callback: function(resource) {
+						callback: function (resource) {
 							// Remove any non-debug variants
 							return !taskUtil.getTag(resource, taskUtil.STANDARD_TAGS.HasDebugVariant);
-						}
+						},
 					});
 					unoptimizedResources =
 						await unoptimizedWorkspace.byGlob("/**/*.{js,json,xml,html,properties,library,js.map}");
 
 					unoptimizedModuleNameMapping = createModuleNameMapping({
 						resources: unoptimizedResources,
-						taskUtil
+						taskUtil,
 					});
 				}
 
@@ -317,27 +340,27 @@ export default async function({ workspace, taskUtil, options: { skipBundles = []
 				p = Promise.all([
 					execModuleBundlerIfNeeded({
 						options: getModuleBundlerOptions({name: "sap-ui-core.js", filters, preload: true}),
-						resources
+						resources,
 					}),
 					execModuleBundlerIfNeeded({
 						options: getModuleBundlerOptions({
 							name: "sap-ui-core-dbg.js", filters, preload: false,
-							moduleNameMapping: unoptimizedModuleNameMapping
+							moduleNameMapping: unoptimizedModuleNameMapping,
 						}),
-						resources: unoptimizedResources
+						resources: unoptimizedResources,
 					}),
 					execModuleBundlerIfNeeded({
 						options: getModuleBundlerOptions({
-							name: "sap-ui-core-nojQuery.js", filters, preload: true, provided: true
+							name: "sap-ui-core-nojQuery.js", filters, preload: true, provided: true,
 						}),
-						resources
+						resources,
 					}),
 					execModuleBundlerIfNeeded({
 						options: getModuleBundlerOptions({
 							name: "sap-ui-core-nojQuery-dbg.js", filters, preload: false, provided: true,
-							moduleNameMapping: unoptimizedModuleNameMapping
+							moduleNameMapping: unoptimizedModuleNameMapping,
 						}),
-						resources: unoptimizedResources
+						resources: unoptimizedResources,
 					}),
 				]).then((results) => {
 					const bundles = Array.prototype.concat.apply([], results).filter(Boolean);
@@ -388,7 +411,7 @@ export default async function({ workspace, taskUtil, options: { skipBundles = []
 					const libraryNamespacePattern = /^\/resources\/(.*)\/(?:\.library|library\.js)$/;
 					const libraryIndicatorPath = libraryIndicatorResource.getPath();
 					const libraryNamespaceMatch = libraryIndicatorPath.match(libraryNamespacePattern);
-					if (libraryNamespaceMatch && libraryNamespaceMatch[1]) {
+					if (libraryNamespaceMatch?.[1]) {
 						const libraryNamespace = libraryNamespaceMatch[1];
 						const results = await Promise.all([
 							execModuleBundlerIfNeeded({
@@ -396,10 +419,10 @@ export default async function({ workspace, taskUtil, options: { skipBundles = []
 									bundleDefinition: getBundleDefinition(libraryNamespace, excludes),
 									bundleOptions: {
 										optimize: true,
-										ignoreMissingModules: true
-									}
+										ignoreMissingModules: true,
+									},
 								},
-								resources
+								resources,
 							}),
 							execModuleBundlerIfNeeded({
 								options: {
@@ -407,10 +430,10 @@ export default async function({ workspace, taskUtil, options: { skipBundles = []
 									bundleOptions: {
 										optimize: true,
 										ignoreMissingModules: true,
-										skipIfEmpty: true
-									}
+										skipIfEmpty: true,
+									},
 								},
-								resources
+								resources,
 							}),
 							execModuleBundlerIfNeeded({
 								options: {
@@ -418,13 +441,13 @@ export default async function({ workspace, taskUtil, options: { skipBundles = []
 									bundleOptions: {
 										optimize: false,
 										ignoreMissingModules: true,
-										skipIfEmpty: true
-									}
+										skipIfEmpty: true,
+									},
 									// Note: Although the bundle uses optimize=false, there is
 									// no moduleNameMapping needed, as support files are excluded from minification.
 								},
-								resources
-							})
+								resources,
+							}),
 						]);
 						const bundles = Array.prototype.concat.apply([], results).filter(Boolean);
 						return Promise.all(bundles.map(({bundle, sourceMap} = {}) => {

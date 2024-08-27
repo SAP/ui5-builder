@@ -6,7 +6,7 @@ test.beforeEach(async (t) => {
 	const sinon = t.context.sinon = sinonGlobal.createSandbox();
 
 	t.context.log = {
-		info: sinon.stub()
+		info: sinon.stub(),
 	};
 
 	t.context.ReaderCollectionPrioritizedStubClass = sinon.stub();
@@ -19,9 +19,9 @@ test.beforeEach(async (t) => {
 			"@ui5/fs/ReaderCollectionPrioritized": t.context.ReaderCollectionPrioritizedStubClass,
 			"@ui5/fs/fsInterface": t.context.fsInterfaceStub,
 			"@ui5/logger": {
-				getLogger: sinon.stub().returns(t.context.log)
+				getLogger: sinon.stub().returns(t.context.log),
 			},
-			"../../../../lib/processors/jsdoc/sdkTransformer.js": t.context.sdkTransformerStub
+			"../../../../lib/processors/jsdoc/sdkTransformer.js": t.context.sdkTransformerStub,
 		});
 });
 
@@ -32,37 +32,37 @@ test.afterEach.always((t) => {
 test.serial("executeJsdocSdkTransformation", async (t) => {
 	const {
 		sinon, executeJsdocSdkTransformation, ReaderCollectionPrioritizedStubClass,
-		fsInterfaceStub, sdkTransformerStub
+		fsInterfaceStub, sdkTransformerStub,
 	} = t.context;
 
 	const writeStub = sinon.stub().resolves();
 	const byGlobWorkspaceStub = sinon.stub()
 		.onFirstCall().resolves([{
-			getPath: () => "workspace/api.json"
+			getPath: () => "workspace/api.json",
 		}])
 		.onSecondCall().resolves([{
-			getPath: () => "workspace/.library"
+			getPath: () => "workspace/.library",
 		}]);
 	const workspace = {
 		write: writeStub,
-		byGlob: byGlobWorkspaceStub
+		byGlob: byGlobWorkspaceStub,
 	};
 	const byGlobDependenciesStub = sinon.stub().resolves()
 		.resolves([{
-			getPath: () => "depA/api.json"
+			getPath: () => "depA/api.json",
 		}, {
-			getPath: () => "depB/api.json"
+			getPath: () => "depB/api.json",
 		}]);
 	const dependencies = {
-		byGlob: byGlobDependenciesStub
+		byGlob: byGlobDependenciesStub,
 	};
 	await executeJsdocSdkTransformation({
 		workspace,
 		dependencies,
 		options: {
 			projectName: "some.project",
-			dotLibraryPattern: "some .library pattern"
-		}
+			dotLibraryPattern: "some .library pattern",
+		},
 	});
 	t.is(byGlobWorkspaceStub.callCount, 2, "workspace.byGlob got called twice");
 	t.is(byGlobWorkspaceStub.getCall(0).args[0], "/test-resources/**/designtime/api.json",
@@ -74,12 +74,11 @@ test.serial("executeJsdocSdkTransformation", async (t) => {
 	t.is(byGlobDependenciesStub.getCall(0).args[0], "/test-resources/**/designtime/api.json",
 		"dependencies.byGlob got called with correct arguments");
 
-
 	t.is(ReaderCollectionPrioritizedStubClass.callCount, 1);
 	t.true(ReaderCollectionPrioritizedStubClass.calledWithNew());
 	t.deepEqual(ReaderCollectionPrioritizedStubClass.getCall(0).args, [{
 		name: "executeJsdocSdkTransformation - custom workspace + dependencies FS: some.project",
-		readers: [workspace, dependencies]
+		readers: [workspace, dependencies],
 	}], "ReaderCollectionPrioritized got called with the correct arguments");
 
 	t.is(fsInterfaceStub.callCount, 1, "fsInterface got called once");
@@ -92,10 +91,10 @@ test.serial("executeJsdocSdkTransformation", async (t) => {
 		dotLibraryPath: "workspace/.library",
 		dependencyApiJsonPaths: [
 			"depA/api.json",
-			"depB/api.json"
+			"depB/api.json",
 		],
 		targetApiJsonPath: "workspace/apiref/api.json",
-		fs: "custom fs"
+		fs: "custom fs",
 	}, "sdkTransformer got called with correct arguments");
 
 	t.is(writeStub.callCount, 2, "Write got called twice");
@@ -106,7 +105,7 @@ test.serial("executeJsdocSdkTransformation", async (t) => {
 test("executeJsdocSdkTransformation with missing parameters", async (t) => {
 	const {executeJsdocSdkTransformation} = t.context;
 	await t.throwsAsync(executeJsdocSdkTransformation(), {
-		instanceOf: TypeError
+		instanceOf: TypeError,
 	}, "TypeError thrown");
 });
 
@@ -116,19 +115,19 @@ test.serial("executeJsdocSdkTransformation with missing project api.json (skips 
 	const byGlobWorkspaceStub = sinon.stub()
 		.onFirstCall().resolves([])
 		.onSecondCall().resolves([{
-			getPath: () => "workspace/.library"
+			getPath: () => "workspace/.library",
 		}]);
 	const workspace = {
-		byGlob: byGlobWorkspaceStub
+		byGlob: byGlobWorkspaceStub,
 	};
 	const byGlobDependenciesStub = sinon.stub().resolves()
 		.resolves([{
-			getPath: () => "depA/api.json"
+			getPath: () => "depA/api.json",
 		}, {
-			getPath: () => "depB/api.json"
+			getPath: () => "depB/api.json",
 		}]);
 	const dependencies = {
-		byGlob: byGlobDependenciesStub
+		byGlob: byGlobDependenciesStub,
 	};
 
 	await executeJsdocSdkTransformation({
@@ -136,8 +135,8 @@ test.serial("executeJsdocSdkTransformation with missing project api.json (skips 
 		dependencies,
 		options: {
 			projectName: "some.project",
-			dotLibraryPattern: "some .library pattern"
-		}
+			dotLibraryPattern: "some .library pattern",
+		},
 	});
 
 	t.is(log.info.callCount, 1, "One message has been logged");
@@ -150,24 +149,24 @@ test("executeJsdocSdkTransformation too many project api.json resources", async 
 	const {sinon, executeJsdocSdkTransformation} = t.context;
 	const byGlobWorkspaceStub = sinon.stub()
 		.onFirstCall().resolves([{
-			getPath: () => "workspace/a/api.json"
+			getPath: () => "workspace/a/api.json",
 		}, {
-			getPath: () => "workspace/b/api.json"
+			getPath: () => "workspace/b/api.json",
 		}])
 		.onSecondCall().resolves([{
-			getPath: () => "workspace/a/.library"
+			getPath: () => "workspace/a/.library",
 		}]);
 	const workspace = {
-		byGlob: byGlobWorkspaceStub
+		byGlob: byGlobWorkspaceStub,
 	};
 	const byGlobDependenciesStub = sinon.stub().resolves()
 		.resolves([{
-			getPath: () => "depA/api.json"
+			getPath: () => "depA/api.json",
 		}, {
-			getPath: () => "depB/api.json"
+			getPath: () => "depB/api.json",
 		}]);
 	const dependencies = {
-		byGlob: byGlobDependenciesStub
+		byGlob: byGlobDependenciesStub,
 	};
 
 	const error = await t.throwsAsync(executeJsdocSdkTransformation({
@@ -175,8 +174,8 @@ test("executeJsdocSdkTransformation too many project api.json resources", async 
 		dependencies,
 		options: {
 			projectName: "some.project",
-			dotLibraryPattern: "some .library pattern"
-		}
+			dotLibraryPattern: "some .library pattern",
+		},
 	}));
 	t.is(error.message,
 		"[executeJsdocSdkTransformation]: Found more than one api.json resources for project some.project.",
@@ -187,20 +186,20 @@ test("executeJsdocSdkTransformation missing project .library", async (t) => {
 	const {sinon, executeJsdocSdkTransformation} = t.context;
 	const byGlobWorkspaceStub = sinon.stub()
 		.onFirstCall().resolves([{
-			getPath: () => "workspace/api.json"
+			getPath: () => "workspace/api.json",
 		}])
 		.onSecondCall().resolves([]);
 	const workspace = {
-		byGlob: byGlobWorkspaceStub
+		byGlob: byGlobWorkspaceStub,
 	};
 	const byGlobDependenciesStub = sinon.stub().resolves()
 		.resolves([{
-			getPath: () => "depA/api.json"
+			getPath: () => "depA/api.json",
 		}, {
-			getPath: () => "depB/api.json"
+			getPath: () => "depB/api.json",
 		}]);
 	const dependencies = {
-		byGlob: byGlobDependenciesStub
+		byGlob: byGlobDependenciesStub,
 	};
 
 	const error = await t.throwsAsync(executeJsdocSdkTransformation({
@@ -208,8 +207,8 @@ test("executeJsdocSdkTransformation missing project .library", async (t) => {
 		dependencies,
 		options: {
 			projectName: "some.project",
-			dotLibraryPattern: "some .library pattern"
-		}
+			dotLibraryPattern: "some .library pattern",
+		},
 	}));
 	t.is(error.message,
 		"[executeJsdocSdkTransformation]: Failed to locate .library resource for project some.project.",
@@ -220,24 +219,24 @@ test("executeJsdocSdkTransformation too many project .library resources", async 
 	const {sinon, executeJsdocSdkTransformation} = t.context;
 	const byGlobWorkspaceStub = sinon.stub()
 		.onFirstCall().resolves([{
-			getPath: () => "workspace/a/api.json"
+			getPath: () => "workspace/a/api.json",
 		}])
 		.onSecondCall().resolves([{
-			getPath: () => "workspace/a/.library"
+			getPath: () => "workspace/a/.library",
 		}, {
-			getPath: () => "workspace/b/.library"
+			getPath: () => "workspace/b/.library",
 		}]);
 	const workspace = {
-		byGlob: byGlobWorkspaceStub
+		byGlob: byGlobWorkspaceStub,
 	};
 	const byGlobDependenciesStub = sinon.stub().resolves()
 		.resolves([{
-			getPath: () => "depA/api.json"
+			getPath: () => "depA/api.json",
 		}, {
-			getPath: () => "depB/api.json"
+			getPath: () => "depB/api.json",
 		}]);
 	const dependencies = {
-		byGlob: byGlobDependenciesStub
+		byGlob: byGlobDependenciesStub,
 	};
 
 	const error = await t.throwsAsync(executeJsdocSdkTransformation({
@@ -245,8 +244,8 @@ test("executeJsdocSdkTransformation too many project .library resources", async 
 		dependencies,
 		options: {
 			projectName: "some.project",
-			dotLibraryPattern: "some .library pattern"
-		}
+			dotLibraryPattern: "some .library pattern",
+		},
 	}));
 	t.is(error.message,
 		"[executeJsdocSdkTransformation]: Found more than one .library resources for project some.project.",

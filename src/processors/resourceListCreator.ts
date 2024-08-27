@@ -1,11 +1,9 @@
-
 import {getLogger} from "@ui5/logger";
 const log = getLogger("builder:processors:resourceListCreator");
 import ResourceCollector from "../lbt/resources/ResourceCollector.js";
 import LocatorResourcePool from "../lbt/resources/LocatorResourcePool.js";
 import ResourceInfo from "../lbt/resources/ResourceInfo.js";
 import Resource from "@ui5/fs/Resource";
-
 
 /**
  * List of resource patterns that describe all debug resources.
@@ -20,7 +18,7 @@ const DEFAULT_DEBUG_RESOURCES_FILTER = [
 	"**/*-dbg.view.js",
 	"**/*-dbg.fragment.js",
 	"**/*-dbg.css",
-	"**/*.js.map"
+	"**/*.js.map",
 ];
 
 /**
@@ -37,7 +35,7 @@ const DEFAULT_BUNDLE_RESOURCES_FILTER = [
 	"**/designtime/library-preload.designtime.js",
 	"**/library-preload.support.js",
 	"**/library-all.js",
-	"**/library-all-dbg.js"
+	"**/library-all-dbg.js",
 ];
 
 /**
@@ -54,7 +52,7 @@ const DEFAULT_DESIGNTIME_RESOURCES_FILTER = [
 	"**/themes/*/*.less",
 	"**/library.templates.xml",
 	"**/library.dependencies.xml",
-	"**/library.dependencies.json"
+	"**/library.dependencies.json",
 ];
 
 /**
@@ -63,7 +61,7 @@ const DEFAULT_DESIGNTIME_RESOURCES_FILTER = [
  * @since 1.53.0
  */
 const DEFAULT_SUPPORT_RESOURCES_FILTER = [
-	"**/*.support.js"
+	"**/*.support.js",
 ];
 
 /**
@@ -71,9 +69,9 @@ const DEFAULT_SUPPORT_RESOURCES_FILTER = [
  *
  * Retrieves the string content of the overall result and returns it.
  *
- * @param {ResourceInfoList} list resources list
- * @param {string} prefix
- * @returns {string} new content with resources.json entry
+ * @param list resources list
+ * @param prefix
+ * @returns new content with resources.json entry
  */
 function makeResourcesJSON(list: ResourceInfoList, prefix: string) {
 	// having the file size entry part of the file is a bit like the chicken egg scenario
@@ -113,26 +111,25 @@ function makeResourcesJSON(list: ResourceInfoList, prefix: string) {
 /**
  * Creates resources.json files
  *
- * @private
- * @param {object} parameters Parameters
- * @param {@ui5/fs/Resource[]} parameters.resources List of resources
- * @param {@ui5/fs/Resource[]} [parameters.dependencyResources=[]] List of dependency resources
- * @param {object} [parameters.options] Options
- * @returns {Promise<@ui5/fs/Resource[]>} Promise resolving with the resources.json resources
+ * @param parameters Parameters
+ * @param parameters.resources List of resources
+ * @param [parameters.dependencyResources] List of dependency resources
+ * @param [parameters.options] Options
+ * @returns Promise resolving with the resources.json resources
  */
-export default async function({ resources, dependencyResources = [], options }: object) {
+export default async function ({resources, dependencyResources = [], options}: object) {
 	options = Object.assign({
 		failOnOrphans: false,
 		externalResources: undefined,
 		debugResources: DEFAULT_DEBUG_RESOURCES_FILTER,
 		mergedResources: DEFAULT_BUNDLE_RESOURCES_FILTER,
 		designtimeResources: DEFAULT_DESIGNTIME_RESOURCES_FILTER,
-		supportResources: DEFAULT_SUPPORT_RESOURCES_FILTER
+		supportResources: DEFAULT_SUPPORT_RESOURCES_FILTER,
 	}, options);
 
 	const pool = new LocatorResourcePool();
-	await pool.prepare( resources );
-	await pool.prepare( dependencyResources );
+	await pool.prepare(resources);
+	await pool.prepare(dependencyResources);
 
 	const collector = new ResourceCollector(pool);
 	const visitPromises = resources.map((resource) => collector.visitResource(resource));
@@ -141,7 +138,7 @@ export default async function({ resources, dependencyResources = [], options }: 
 	log.verbose(`	Found ${collector.resources.size} resources`);
 
 	// determine additional information for the found resources
-	if ( options && options.externalResources ) {
+	if (options?.externalResources) {
 		collector.setExternalResources(options.externalResources);
 	}
 
@@ -149,7 +146,7 @@ export default async function({ resources, dependencyResources = [], options }: 
 		debugResources: options.debugResources,
 		mergedResources: options.mergedResources,
 		designtimeResources: options.designtimeResources,
-		supportResources: options.supportResources
+		supportResources: options.supportResources,
 	});
 
 	// group resources by components and create ResourceInfoLists
@@ -165,7 +162,7 @@ export default async function({ resources, dependencyResources = [], options }: 
 
 		resourceLists.push(new Resource({
 			path: `/resources/${prefix}resources.json`,
-			string: contentString
+			string: contentString,
 		}));
 	}
 	for (const [prefix, list] of collector.themePackages.entries()) {
@@ -175,11 +172,11 @@ export default async function({ resources, dependencyResources = [], options }: 
 
 		resourceLists.push(new Resource({
 			path: `/resources/${prefix}resources.json`,
-			string: contentString
+			string: contentString,
 		}));
 	}
 	const unassigned = collector.resources;
-	if ( unassigned.size > 0 && options.failOnOrphans ) {
+	if (unassigned.size > 0 && options.failOnOrphans) {
 		log.error(`resources.json generation failed because of unassigned resources: ${[...unassigned].join(", ")}`);
 		throw new Error(
 			`resources.json generation failed with error: There are ${unassigned.size} ` +

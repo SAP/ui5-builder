@@ -7,17 +7,13 @@ import fsInterface from "@ui5/fs/fsInterface";
  * Adds missing information based on the available project resources,
  * for example the locales supported by the present i18n resources.
  *
- * @public
- * @function default
- * @static
- *
- * @param {object} parameters Parameters
- * @param {@ui5/fs/DuplexCollection} parameters.workspace DuplexCollection to read and write files
- * @param {object} parameters.options Options
- * @param {string} parameters.options.projectNamespace Namespace of the application
- * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
+ * @param parameters Parameters
+ * @param parameters.workspace DuplexCollection to read and write files
+ * @param parameters.options Options
+ * @param parameters.options.projectNamespace Namespace of the application
+ * @returns Promise resolving with <code>undefined</code> once data has been written
  */
-export default async function({ workspace, options }: object) {
+export default async function ({workspace, options}: object) {
 	const {projectNamespace} = options;
 
 	// Note: all "manifest.json" files in the given namespace

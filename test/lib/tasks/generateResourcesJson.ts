@@ -8,24 +8,24 @@ function createWorkspace() {
 		virBasePath: "/",
 		project: {
 			metadata: {
-				name: "test.lib"
+				name: "test.lib",
 			},
 			version: "2.0.0",
 			dependencies: [
 				{
 					metadata: {
-						name: "sap.ui.core"
+						name: "sap.ui.core",
 					},
-					version: "1.0.0"
-				}
-			]
-		}
+					version: "1.0.0",
+				},
+			],
+		},
 	});
 }
 
 function createDependencies() {
 	return {
-		byGlob: sinon.stub().resolves([])
+		byGlob: sinon.stub().resolves([]),
 	};
 }
 
@@ -34,7 +34,7 @@ test.beforeEach(async (t) => {
 	t.context.resourceListCreatorStub.returns(Promise.resolve([]));
 
 	t.context.generateResourcesJson = await esmock("../../../lib/tasks/generateResourcesJson.js", {
-		"../../../lib/processors/resourceListCreator": t.context.resourceListCreatorStub
+		"../../../lib/processors/resourceListCreator": t.context.resourceListCreatorStub,
 	});
 });
 
@@ -48,11 +48,11 @@ test.serial("Missing 'dependencies' parameter", async (t) => {
 	await t.throwsAsync(generateResourcesJson({
 		workspace: createWorkspace(),
 		options: {
-			projectName: "sap.ui.core"
-		}
+			projectName: "sap.ui.core",
+		},
 	}), {
 		// Not passing dependencies should result into a TypeError
-		name: "TypeError"
+		name: "TypeError",
 	});
 });
 
@@ -63,8 +63,8 @@ test.serial("empty resources (sap.ui.core)", async (t) => {
 		workspace: createWorkspace(),
 		dependencies: createDependencies(),
 		options: {
-			projectName: "sap.ui.core"
-		}
+			projectName: "sap.ui.core",
+		},
 	});
 	t.is(result, undefined, "no resources returned");
 	t.is(resourceListCreatorStub.callCount, 1);
@@ -74,9 +74,9 @@ test.serial("empty resources (sap.ui.core)", async (t) => {
 			"sap/ui/core": [
 				"*",
 				"sap/base/",
-				"sap/ui/"
-			]
-		}
+				"sap/ui/",
+			],
+		},
 	};
 	t.deepEqual(resourceListCreatorStub.getCall(0).args[0].options, expectedOptions, "options match");
 });
@@ -88,8 +88,8 @@ test.serial("empty resources (my.lib)", async (t) => {
 		workspace: createWorkspace(),
 		dependencies: createDependencies(),
 		options: {
-			projectName: "my.lib"
-		}
+			projectName: "my.lib",
+		},
 	});
 	t.is(result, undefined, "no resources returned");
 	t.is(t.context.resourceListCreatorStub.callCount, 1);
@@ -101,17 +101,17 @@ test.serial("empty resources (my.lib)", async (t) => {
 test.serial("empty resources (my.lib with dependencies)", async (t) => {
 	const {generateResourcesJson} = t.context;
 
-	const dependencyResources = [{"dependency": "resources"}];
+	const dependencyResources = [{dependency: "resources"}];
 	const dependencies = {
-		byGlob: sinon.stub().resolves(dependencyResources)
+		byGlob: sinon.stub().resolves(dependencyResources),
 	};
 
 	const result = await generateResourcesJson({
 		workspace: createWorkspace(),
 		dependencies,
 		options: {
-			projectName: "my.lib"
-		}
+			projectName: "my.lib",
+		},
 	});
 	t.is(result, undefined, "no resources returned");
 	t.is(t.context.resourceListCreatorStub.callCount, 1);
@@ -139,14 +139,14 @@ test.serial("Resources omitted from build result should be ignored", async (t) =
 	const dependencyResource1 = {};
 	const dependencyResource2 = {};
 	const dependencies = {
-		byGlob: sinon.stub().resolves([dependencyResource1, dependencyResource2])
+		byGlob: sinon.stub().resolves([dependencyResource1, dependencyResource2]),
 	};
 
 	const taskUtil = {
 		getTag: sinon.stub(),
 		STANDARD_TAGS: {
-			OmitFromBuildResult: "TEST-OmitFromBuildResult-TEST"
-		}
+			OmitFromBuildResult: "TEST-OmitFromBuildResult-TEST",
+		},
 	};
 
 	// resources
@@ -165,8 +165,8 @@ test.serial("Resources omitted from build result should be ignored", async (t) =
 		dependencies,
 		taskUtil,
 		options: {
-			projectName: "my.lib"
-		}
+			projectName: "my.lib",
+		},
 	});
 
 	t.is(taskUtil.getTag.callCount, 5);

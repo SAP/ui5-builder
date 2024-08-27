@@ -13,7 +13,7 @@ test.beforeEach(async (t) => {
 	t.context.generateApiIndex = await esmock("../../../../lib/tasks/jsdoc/generateApiIndex.js", {
 		"@ui5/fs/ReaderCollectionPrioritized": t.context.ReaderCollectionPrioritizedStubClass,
 		"@ui5/fs/fsInterface": t.context.fsInterfaceStub,
-		"../../../../lib/processors/jsdoc/apiIndexGenerator": t.context.apiIndexGeneratorStub
+		"../../../../lib/processors/jsdoc/apiIndexGenerator": t.context.apiIndexGeneratorStub,
 	});
 });
 
@@ -24,27 +24,27 @@ test.afterEach.always((t) => {
 test.serial("generateApiIndex", async (t) => {
 	const {
 		sinon, generateApiIndex, apiIndexGeneratorStub,
-		ReaderCollectionPrioritizedStubClass, fsInterfaceStub
+		ReaderCollectionPrioritizedStubClass, fsInterfaceStub,
 	} = t.context;
 
 	const writeStub = sinon.stub().resolves();
 	const workspace = {
-		write: writeStub
+		write: writeStub,
 	};
 	const dependencies = {};
 	await generateApiIndex({
 		workspace,
 		dependencies,
 		options: {
-			projectName: "some.project"
-		}
+			projectName: "some.project",
+		},
 	});
 
 	t.is(ReaderCollectionPrioritizedStubClass.callCount, 1);
 	t.true(ReaderCollectionPrioritizedStubClass.calledWithNew());
 	t.deepEqual(ReaderCollectionPrioritizedStubClass.getCall(0).args, [{
 		name: "generateApiIndex - workspace + dependencies: some.project",
-		readers: [workspace, dependencies]
+		readers: [workspace, dependencies],
 	}], "ReaderCollectionPrioritized got called with the correct arguments");
 
 	t.is(fsInterfaceStub.callCount, 1, "fsInterface got called once");
@@ -59,7 +59,7 @@ test.serial("generateApiIndex", async (t) => {
 		targetApiIndexDeprecatedPath: "/docs/api/api-index-deprecated.json",
 		targetApiIndexExperimentalPath: "/docs/api/api-index-experimental.json",
 		targetApiIndexSincePath: "/docs/api/api-index-since.json",
-		fs: "custom fs"
+		fs: "custom fs",
 	}, "apiIndexGenerator got called with correct arguments");
 
 	t.is(writeStub.callCount, 2, "Write got called twice");
@@ -70,6 +70,6 @@ test.serial("generateApiIndex", async (t) => {
 test("generateApiIndex with missing parameters", async (t) => {
 	const {generateApiIndex} = t.context;
 	await t.throwsAsync(generateApiIndex(), {
-		instanceOf: TypeError
+		instanceOf: TypeError,
 	}, "TypeError thrown");
 });

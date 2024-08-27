@@ -6,7 +6,7 @@
  */
 class ResourceInfo {
 	/**
-	 * @param {string} name name of the resource
+	 * @param name name of the resource
 	 */
 	constructor(name: string) {
 		this.name = name;
@@ -27,7 +27,6 @@ class ResourceInfo {
 		this._format = null;
 		this._size = -1;
 	}
-
 
 	get module() {
 		return this._module;
@@ -56,8 +55,8 @@ class ResourceInfo {
 	/**
 	 * Copies the properties of the given ResourceInfo into this
 	 *
-	 * @param {string} prefix
-	 * @param {ResourceInfo} orig
+	 * @param prefix
+	 * @param orig
 	 */
 	copyFrom(prefix: string, orig: ResourceInfo) {
 		this.i18nName = orig.i18nName;
@@ -67,46 +66,46 @@ class ResourceInfo {
 		this.merged = orig.merged;
 		this.designtime = orig.designtime;
 		this.support = orig.support;
-		if ( this.module == null ) {
+		if (this.module == null) {
 			this.module = orig.module;
 		}
-		if ( orig.required != null ) {
-			if ( this.required == null ) {
+		if (orig.required != null) {
+			if (this.required == null) {
 				this.required = new Set();
 			}
 			orig.required.forEach(this.required.add, this.required);
 		}
-		if ( orig.condRequired != null ) {
-			if ( this.condRequired == null ) {
+		if (orig.condRequired != null) {
+			if (this.condRequired == null) {
 				this.condRequired = new Set();
 			}
 			orig.condRequired.forEach(this.condRequired.add, this.condRequired);
 		}
-		if ( orig.dynRequired ) {
+		if (orig.dynRequired) {
 			this.dynRequired = orig.dynRequired;
 		}
-		if ( orig.included != null ) {
-			if ( this.included == null ) {
+		if (orig.included != null) {
+			if (this.included == null) {
 				this.included = new Set();
 			}
 			orig.included.forEach(this.included.add, this.included);
 		}
-		if ( this.included != null && this.included.size > 0 ) {
+		if (this.included != null && this.included.size > 0) {
 			this.merged = true;
 		}
 		if (orig.size >= 0) {
 			this.size = orig.size;
 		}
-		if ( orig.requiresTopLevelScope ) {
+		if (orig.requiresTopLevelScope) {
 			this.requiresTopLevelScope = orig.requiresTopLevelScope;
 		}
-		if ( orig.exposedGlobalNames != null ) {
-			if ( this.exposedGlobalNames == null ) {
+		if (orig.exposedGlobalNames != null) {
+			if (this.exposedGlobalNames == null) {
 				this.exposedGlobalNames = new Set();
 			}
 			orig.exposedGlobalNames.forEach(this.exposedGlobalNames.add, this.exposedGlobalNames);
 		}
-		if ( orig.format != null ) {
+		if (orig.format != null) {
 			this.format = orig.format;
 		}
 	}
@@ -114,62 +113,62 @@ class ResourceInfo {
 	/**
 	 * called from JSON.stringify()
 	 *
-	 * @returns {{name: *}}
+	 * @returns
 	 */
 	toJSON() {
 		const result = {
-			name: this.name
+			name: this.name,
 		};
-		if ( this._module != null ) {
+		if (this._module != null) {
 			result.module = this.module;
 		}
-		if ( this.size >= 0 ) {
+		if (this.size >= 0) {
 			result.size = this.size;
 		}
-		if ( this.requiresTopLevelScope ) {
+		if (this.requiresTopLevelScope) {
 			result.requiresTopLevelScope = this.requiresTopLevelScope;
 		}
-		if ( this.exposedGlobalNames != null && this.exposedGlobalNames.size > 0 ) {
+		if (this.exposedGlobalNames != null && this.exposedGlobalNames.size > 0) {
 			result.exposedGlobalNames = [...this.exposedGlobalNames];
 		}
-		if ( this.format ) {
+		if (this.format) {
 			result.format = this.format;
 		}
 
 		//
 
-		if ( this.isDebug ) {
+		if (this.isDebug) {
 			result.isDebug = this.isDebug;
 		}
-		if ( this.merged ) {
+		if (this.merged) {
 			result.merged = this.merged;
 		}
-		if ( this.designtime ) {
+		if (this.designtime) {
 			result.designtime = this.designtime;
 		}
-		if ( this.support ) {
+		if (this.support) {
 			result.support = this.support;
 		}
-		if ( this.i18nLocale != null ) {
+		if (this.i18nLocale != null) {
 			result.locale = this.i18nLocale;
 			result.raw = this.i18nName;
 		}
-		if ( this.theme != null ) {
+		if (this.theme != null) {
 			result.theme = this.theme;
 		}
 
 		//
 
-		if ( this.required != null && this.required.size > 0 ) {
+		if (this.required != null && this.required.size > 0) {
 			result.required = [...this.required].sort();
 		}
-		if ( this.condRequired != null && this.condRequired.size > 0 ) {
+		if (this.condRequired != null && this.condRequired.size > 0) {
 			result.condRequired = [...this.condRequired].sort();
 		}
-		if ( this.dynRequired ) {
+		if (this.dynRequired) {
 			result.dynRequired = this.dynRequired;
 		}
-		if ( this.included != null && this.included.size > 0 ) {
+		if (this.included != null && this.included.size > 0) {
 			result.included = [...this.included];
 		}
 

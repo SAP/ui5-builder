@@ -137,7 +137,6 @@ test("integration: XMLComposite code with SpreadElement", (t) => {
 		});
 	});`;
 
-
 	const ast = parseJS(code);
 
 	const analyzer = new XMLCompositeAnalyzer();
@@ -161,7 +160,7 @@ test("analyze: not an XMLComposite module", (t) => {
 	const ast = parseJS(code);
 
 	const moduleInfo = {
-		addDependency: function() {}
+		addDependency: function () {},
 	};
 	const stubAddDependency = t.context.sinon.spy(moduleInfo, "addDependency");
 
@@ -186,7 +185,7 @@ test("analyze: XMLComposite VariableDeclaration code", (t) => {
 	const ast = parseJS(code);
 
 	const moduleInfo = {
-		addDependency: function() {}
+		addDependency: function () {},
 	};
 	const stubAddDependency = t.context.sinon.spy(moduleInfo, "addDependency");
 
@@ -199,12 +198,10 @@ test("analyze: XMLComposite VariableDeclaration code", (t) => {
 	t.is(stubCheckForXMLCClassDefinition.getCall(0).args[0], "XMLComposite",
 		"_checkForXMLCClassDefinition should be called with the name");
 
-
 	t.true(stubAddDependency.calledOnce, "addDependency was called once");
 	t.is(stubAddDependency.getCall(0).args[0], "cow.control.xml",
 		"addDependency should be called with the dependency name");
 });
-
 
 test("analyze: XMLComposite Expression code", (t) => {
 	const code = `sap.ui.define([
@@ -217,7 +214,7 @@ test("analyze: XMLComposite Expression code", (t) => {
 	const ast = parseJS(code);
 
 	const moduleInfo = {
-		addDependency: function() {}
+		addDependency: function () {},
 	};
 	const stubAddDependency = t.context.sinon.spy(moduleInfo, "addDependency");
 
@@ -229,7 +226,6 @@ test("analyze: XMLComposite Expression code", (t) => {
 	t.true(stubCheckForXMLCClassDefinition.calledOnce, "_checkForXMLCClassDefinition was called once");
 	t.is(stubCheckForXMLCClassDefinition.getCall(0).args[0], "XMLComposite",
 		"_checkForXMLCClassDefinition should be called with the name");
-
 
 	t.true(stubAddDependency.calledOnce, "addDependency was called once");
 	t.is(stubAddDependency.getCall(0).args[0], "cow.control.xml",

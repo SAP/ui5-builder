@@ -18,7 +18,7 @@ function createMockPool(dependencyMapping) {
 				info.addDependency(dep);
 			});
 			return info;
-		}
+		},
 	};
 }
 
@@ -30,9 +30,9 @@ function getNamesFromSet(node) {
  * Dominator Tree is currently not being used therefore the tests are simplistic
  */
 test("basic dominator tree test", async (t) => {
-	const pool = createMockPool({"myroot": "mydep"});
+	const pool = createMockPool({myroot: "mydep"});
 	const roots = [{
-		name: "myroot"
+		name: "myroot",
 	}];
 	const graph = await dependencyGraph(pool, roots);
 	const result = dominatorTree(graph);

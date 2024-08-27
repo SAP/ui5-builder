@@ -12,7 +12,7 @@ test.serial("apiIndexGenerator", async (t) => {
 		"/some/path/api-index.json": "resource content A",
 		"/some/path/api-index-deprecated.json": "resource content B",
 		"/some/path/api-index-experimental.json": "resource content C",
-		"/some/path/api-index-since.json": "resource content D"
+		"/some/path/api-index-since.json": "resource content D",
 	});
 
 	const createResourceStub = sinon.stub()
@@ -24,8 +24,8 @@ test.serial("apiIndexGenerator", async (t) => {
 	const apiIndexGenerator = await esmock("../../../../lib/processors/jsdoc/apiIndexGenerator.js", {
 		"../../../../lib/processors/jsdoc/lib/createIndexFiles.js": createApiIndexStub,
 		"@ui5/fs/resourceFactory": {
-			createResource: createResourceStub
-		}
+			createResource: createResourceStub,
+		},
 	});
 
 	const res = await apiIndexGenerator({
@@ -35,7 +35,7 @@ test.serial("apiIndexGenerator", async (t) => {
 		targetApiIndexDeprecatedPath: "/some/path/api-index-deprecated.json",
 		targetApiIndexExperimentalPath: "/some/path/api-index-experimental.json",
 		targetApiIndexSincePath: "/some/path/api-index-since.json",
-		fs: "custom fs"
+		fs: "custom fs",
 	});
 
 	t.is(res.length, 4, "Returned one resource");
@@ -59,25 +59,25 @@ test.serial("apiIndexGenerator", async (t) => {
 		"createIndexFiles called with correct argument #6");
 	t.deepEqual(createApiIndexStub.getCall(0).args[6], {
 		fs: "custom fs",
-		returnOutputFiles: true
+		returnOutputFiles: true,
 	}, "createIndexFiles called with correct argument #7");
 
 	t.is(createResourceStub.callCount, 4, "createResource called once");
 	t.deepEqual(createResourceStub.getCall(0).args[0], {
 		path: "/some/path/api-index.json",
-		string: "resource content A"
+		string: "resource content A",
 	}, "createResource called with correct arguments for resource 1");
 	t.deepEqual(createResourceStub.getCall(1).args[0], {
 		path: "/some/path/api-index-deprecated.json",
-		string: "resource content B"
+		string: "resource content B",
 	}, "createResource called with correct arguments for resource 2");
 	t.deepEqual(createResourceStub.getCall(2).args[0], {
 		path: "/some/path/api-index-experimental.json",
-		string: "resource content C"
+		string: "resource content C",
 	}, "createResource called with correct arguments for resource 3");
 	t.deepEqual(createResourceStub.getCall(3).args[0], {
 		path: "/some/path/api-index-since.json",
-		string: "resource content D"
+		string: "resource content D",
 	}, "createResource called with correct arguments for resource 4");
 });
 

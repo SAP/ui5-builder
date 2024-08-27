@@ -2,30 +2,25 @@ import minifier from "../processors/minifier.js";
 import fsInterface from "@ui5/fs/fsInterface";
 
 /**
- * @public
  * @module @ui5/builder/tasks/minify
  */
 
 /**
  * Task to minify resources.
  *
- * @public
- * @function default
- * @static
- *
- * @param {object} parameters Parameters
- * @param {@ui5/fs/DuplexCollection} parameters.workspace DuplexCollection to read and write files
- * @param {@ui5/project/build/helpers/TaskUtil|object} [parameters.taskUtil] TaskUtil
- * @param {object} parameters.options Options
- * @param {string} parameters.options.pattern Pattern to locate the files to be processed
- * @param {boolean} [parameters.options.omitSourceMapResources=false] Whether source map resources shall
+ * @param parameters Parameters
+ * @param parameters.workspace DuplexCollection to read and write files
+ * @param [parameters.taskUtil] TaskUtil
+ * @param parameters.options Options
+ * @param parameters.options.pattern Pattern to locate the files to be processed
+ * @param [parameters.options.omitSourceMapResources] Whether source map resources shall
  * 		be tagged as "OmitFromBuildResult" and no sourceMappingURL shall be added to the minified resource
- * @param {boolean} [parameters.options.useInputSourceMaps=true] Whether to make use of any existing source
+ * @param [parameters.options.useInputSourceMaps] Whether to make use of any existing source
  * 		maps referenced in the resources to be minified. Use this option to preserve reference to the original
  * 		source files, such as TypeScript files, in the generated source map.
- * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
+ * @returns Promise resolving with <code>undefined</code> once data has been written
  */
-export default async function({ workspace, taskUtil, options: { pattern, omitSourceMapResources = false, useInputSourceMaps = true } }: object) {
+export default async function ({workspace, taskUtil, options: {pattern, omitSourceMapResources = false, useInputSourceMaps = true}}: object) {
 	const resources = await workspace.byGlob(pattern);
 	const processedResources = await minifier({
 		resources,
@@ -35,11 +30,11 @@ export default async function({ workspace, taskUtil, options: { pattern, omitSou
 			addSourceMappingUrl: !omitSourceMapResources,
 			readSourceMappingUrl: !!useInputSourceMaps,
 			useWorkers: !!taskUtil,
-		}
+		},
 	});
 
 	return Promise.all(processedResources.map(async ({
-		resource, dbgResource, sourceMapResource, dbgSourceMapResource
+		resource, dbgResource, sourceMapResource, dbgSourceMapResource,
 	}) => {
 		if (taskUtil) {
 			taskUtil.setTag(resource, taskUtil.STANDARD_TAGS.HasDebugVariant);
@@ -59,7 +54,7 @@ export default async function({ workspace, taskUtil, options: { pattern, omitSou
 			workspace.write(resource),
 			workspace.write(dbgResource),
 			workspace.write(sourceMapResource),
-			dbgSourceMapResource && workspace.write(dbgSourceMapResource)
+			dbgSourceMapResource && workspace.write(dbgSourceMapResource),
 		]);
 	}));
 }

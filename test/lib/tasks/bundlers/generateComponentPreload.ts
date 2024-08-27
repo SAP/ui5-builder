@@ -6,12 +6,12 @@ test.beforeEach(async (t) => {
 	t.context.log = {
 		warn: sinon.stub(),
 		verbose: sinon.stub(),
-		error: sinon.stub()
+		error: sinon.stub(),
 	};
 
 	t.context.workspace = {
 		byGlob: sinon.stub().resolves([]),
-		write: sinon.stub().resolves()
+		write: sinon.stub().resolves(),
 	};
 
 	t.context.dependencies = {};
@@ -22,8 +22,8 @@ test.beforeEach(async (t) => {
 	t.context.generateComponentPreload = await esmock("../../../../lib/tasks/bundlers/generateComponentPreload.js", {
 		"../../../../lib/processors/bundlers/moduleBundler": t.context.moduleBundlerStub,
 		"@ui5/logger": {
-			getLogger: sinon.stub().withArgs("builder:tasks:bundlers:generateComponentPreload").returns(t.context.log)
-		}
+			getLogger: sinon.stub().withArgs("builder:tasks:bundlers:generateComponentPreload").returns(t.context.log),
+		},
 	});
 });
 
@@ -34,20 +34,20 @@ test.afterEach.always(() => {
 test.serial("generateComponentPreload - one namespace", async (t) => {
 	const {
 		generateComponentPreload, moduleBundlerStub,
-		workspace, dependencies, byGlob
+		workspace, dependencies, byGlob,
 	} = t.context;
 
 	const resources = [
-		{"fake": "resource"}
+		{fake: "resource"},
 	];
 	byGlob.resolves(resources);
 
 	moduleBundlerStub.resolves([
 		{
 			name: "my/app/Component-preload.js",
-			bundle: {"fake": "bundle"},
-			sourceMap: {"fake": "sourceMap"}
-		}
+			bundle: {fake: "bundle"},
+			sourceMap: {fake: "sourceMap"},
+		},
 	]);
 
 	await generateComponentPreload({
@@ -55,8 +55,8 @@ test.serial("generateComponentPreload - one namespace", async (t) => {
 		dependencies,
 		options: {
 			projectName: "Test Application",
-			namespaces: ["my/app"]
-		}
+			namespaces: ["my/app"],
+		},
 	});
 
 	t.is(moduleBundlerStub.callCount, 1, "moduleBundler should have been called once");
@@ -73,7 +73,7 @@ test.serial("generateComponentPreload - one namespace", async (t) => {
 					".view.html",
 					".view.json",
 					".view.xml",
-					".properties"
+					".properties",
 				],
 				name: "my/app/Component-preload.js",
 				sections: [
@@ -90,16 +90,16 @@ test.serial("generateComponentPreload - one namespace", async (t) => {
 						resolve: false,
 						resolveConditional: false,
 						declareRawModules: false,
-						sort: true
-					}
-				]
+						sort: true,
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: true,
-				ignoreMissingModules: true
-			}
+				ignoreMissingModules: true,
+			},
 		},
-		resources
+		resources,
 	}]);
 
 	t.is(byGlob.callCount, 1,
@@ -123,29 +123,29 @@ test.serial("generateComponentPreload - one namespace", async (t) => {
 test.serial("generateComponentPreload - one namespace, with taskUtil and specVersion < 4", async (t) => {
 	const {
 		generateComponentPreload, moduleBundlerStub,
-		workspace, dependencies, byGlob
+		workspace, dependencies, byGlob,
 	} = t.context;
 
 	const resources = [
-		{"fake": "resource"}
+		{fake: "resource"},
 	];
 	byGlob.resolves(resources);
 
 	moduleBundlerStub.resolves([
 		{
 			name: "my/app/Component-preload.js",
-			bundle: {"fake": "bundle"},
-			sourceMap: {"fake": "sourceMap"}
-		}
+			bundle: {fake: "bundle"},
+			sourceMap: {fake: "sourceMap"},
+		},
 	]);
 
 	const project = {
 		getVersion: () => "1.120.0",
 		getSpecVersion() {
 			return {
-				lt: sinon.stub().withArgs("4.0").returns(true)
+				lt: sinon.stub().withArgs("4.0").returns(true),
 			};
-		}
+		},
 	};
 
 	const taskUtil = {
@@ -155,11 +155,11 @@ test.serial("generateComponentPreload - one namespace, with taskUtil and specVer
 		clearTag: sinon.stub().returns(),
 		STANDARD_TAGS: {
 			IsBundle: "<IsBundle>",
-			OmitFromBuildResult: "<OmitFromBuildResult>"
+			OmitFromBuildResult: "<OmitFromBuildResult>",
 		},
 		resourceFactory: {
-			createFilterReader: () => workspace
-		}
+			createFilterReader: () => workspace,
+		},
 	};
 
 	await generateComponentPreload({
@@ -168,8 +168,8 @@ test.serial("generateComponentPreload - one namespace, with taskUtil and specVer
 		taskUtil,
 		options: {
 			projectName: "Test Application",
-			namespaces: ["my/app"]
-		}
+			namespaces: ["my/app"],
+		},
 	});
 
 	t.is(moduleBundlerStub.callCount, 1, "moduleBundler should have been called once");
@@ -186,7 +186,7 @@ test.serial("generateComponentPreload - one namespace, with taskUtil and specVer
 					".view.html",
 					".view.json",
 					".view.xml",
-					".properties"
+					".properties",
 				],
 				name: "my/app/Component-preload.js",
 				sections: [
@@ -203,17 +203,17 @@ test.serial("generateComponentPreload - one namespace, with taskUtil and specVer
 						resolve: false,
 						resolveConditional: false,
 						declareRawModules: false,
-						sort: true
-					}
-				]
+						sort: true,
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: true,
-				ignoreMissingModules: true
+				ignoreMissingModules: true,
 			},
-			targetUi5CoreVersion: "1.120.0"
+			targetUi5CoreVersion: "1.120.0",
 		},
-		resources
+		resources,
 	}]);
 
 	t.is(byGlob.callCount, 1,
@@ -237,29 +237,29 @@ test.serial("generateComponentPreload - one namespace, with taskUtil and specVer
 test.serial("generateComponentPreload - one namespace, with taskUtil and specVersion >= 4", async (t) => {
 	const {
 		generateComponentPreload, moduleBundlerStub,
-		workspace, dependencies, byGlob
+		workspace, dependencies, byGlob,
 	} = t.context;
 
 	const resources = [
-		{"fake": "resource"}
+		{fake: "resource"},
 	];
 	byGlob.resolves(resources);
 
 	moduleBundlerStub.resolves([
 		{
 			name: "my/app/Component-preload.js",
-			bundle: {"fake": "bundle"},
-			sourceMap: {"fake": "sourceMap"}
-		}
+			bundle: {fake: "bundle"},
+			sourceMap: {fake: "sourceMap"},
+		},
 	]);
 
 	const project = {
 		getVersion: () => "1.120.0",
 		getSpecVersion() {
 			return {
-				lt: sinon.stub().withArgs("4.0").returns(false)
+				lt: sinon.stub().withArgs("4.0").returns(false),
 			};
-		}
+		},
 	};
 
 	const taskUtil = {
@@ -269,11 +269,11 @@ test.serial("generateComponentPreload - one namespace, with taskUtil and specVer
 		clearTag: sinon.stub().returns(),
 		STANDARD_TAGS: {
 			IsBundle: "<IsBundle>",
-			OmitFromBuildResult: "<OmitFromBuildResult>"
+			OmitFromBuildResult: "<OmitFromBuildResult>",
 		},
 		resourceFactory: {
-			createFilterReader: () => workspace
-		}
+			createFilterReader: () => workspace,
+		},
 	};
 
 	await generateComponentPreload({
@@ -282,8 +282,8 @@ test.serial("generateComponentPreload - one namespace, with taskUtil and specVer
 		taskUtil,
 		options: {
 			projectName: "Test Application",
-			namespaces: ["my/app"]
-		}
+			namespaces: ["my/app"],
+		},
 	});
 
 	t.is(moduleBundlerStub.callCount, 1, "moduleBundler should have been called once");
@@ -300,7 +300,7 @@ test.serial("generateComponentPreload - one namespace, with taskUtil and specVer
 					".view.html",
 					".view.json",
 					".view.xml",
-					".properties"
+					".properties",
 				],
 				name: "my/app/Component-preload.js",
 				sections: [
@@ -317,17 +317,17 @@ test.serial("generateComponentPreload - one namespace, with taskUtil and specVer
 						resolve: false,
 						resolveConditional: false,
 						declareRawModules: false,
-						sort: true
-					}
-				]
+						sort: true,
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: true,
-				ignoreMissingModules: true
+				ignoreMissingModules: true,
 			},
-			targetUi5CoreVersion: "1.120.0"
+			targetUi5CoreVersion: "1.120.0",
 		},
-		resources
+		resources,
 	}]);
 
 	t.is(byGlob.callCount, 1,
@@ -348,24 +348,23 @@ test.serial("generateComponentPreload - one namespace, with taskUtil and specVer
 		"workspace.write should have been called with exact resource returned by moduleBundler");
 });
 
-
 test.serial("generateComponentPreload - one namespace - excludes", async (t) => {
 	const {
 		generateComponentPreload, moduleBundlerStub,
-		workspace, dependencies, byGlob
+		workspace, dependencies, byGlob,
 	} = t.context;
 
 	const resources = [
-		{"fake": "resource"}
+		{fake: "resource"},
 	];
 	byGlob.resolves(resources);
 
 	moduleBundlerStub.resolves([
 		{
 			name: "my/app/Component-preload.js",
-			bundle: {"fake": "bundle"},
-			sourceMap: {"fake": "sourceMap"}
-		}
+			bundle: {fake: "bundle"},
+			sourceMap: {fake: "sourceMap"},
+		},
 	]);
 
 	await generateComponentPreload({
@@ -376,9 +375,9 @@ test.serial("generateComponentPreload - one namespace - excludes", async (t) => 
 			namespaces: ["my/app"],
 			excludes: [
 				"my/app/thirdparty/",
-				"!my/app/thirdparty/NotExcluded.js"
-			]
-		}
+				"!my/app/thirdparty/NotExcluded.js",
+			],
+		},
 	});
 
 	t.is(moduleBundlerStub.callCount, 1, "moduleBundler should have been called once");
@@ -395,7 +394,7 @@ test.serial("generateComponentPreload - one namespace - excludes", async (t) => 
 					".view.html",
 					".view.json",
 					".view.xml",
-					".properties"
+					".properties",
 				],
 				name: "my/app/Component-preload.js",
 				sections: [
@@ -407,23 +406,23 @@ test.serial("generateComponentPreload - one namespace - excludes", async (t) => 
 							"my/app/changes/flexibility-bundle.json",
 							"!my/app/test/",
 							"!my/app/thirdparty/",
-							"+my/app/thirdparty/NotExcluded.js"
+							"+my/app/thirdparty/NotExcluded.js",
 						],
 						mode: "preload",
 						renderer: false,
 						resolve: false,
 						resolveConditional: false,
 						declareRawModules: false,
-						sort: true
-					}
-				]
+						sort: true,
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: true,
-				ignoreMissingModules: true
-			}
+				ignoreMissingModules: true,
+			},
 		},
-		resources
+		resources,
 	}]);
 
 	t.is(byGlob.callCount, 1,
@@ -447,29 +446,29 @@ test.serial("generateComponentPreload - one namespace - excludes", async (t) => 
 test.serial("generateComponentPreload - one namespace - excludes w/o namespace", async (t) => {
 	const {
 		generateComponentPreload, moduleBundlerStub,
-		workspace, dependencies, byGlob
+		workspace, dependencies, byGlob,
 	} = t.context;
 
 	const resources = [
-		{"fake": "resource"}
+		{fake: "resource"},
 	];
 	byGlob.resolves(resources);
 
 	moduleBundlerStub.resolves([
 		{
 			name: "my/app/Component-preload.js",
-			bundle: {"fake": "bundle"},
-			sourceMap: {"fake": "sourceMap"}
-		}
+			bundle: {fake: "bundle"},
+			sourceMap: {fake: "sourceMap"},
+		},
 	]);
 
 	const project = {
 		getVersion: () => "1.120.0",
 		getSpecVersion() {
 			return {
-				lt: sinon.stub().withArgs("4.0").returns(false)
+				lt: sinon.stub().withArgs("4.0").returns(false),
 			};
-		}
+		},
 	};
 
 	const taskUtil = {
@@ -479,11 +478,11 @@ test.serial("generateComponentPreload - one namespace - excludes w/o namespace",
 		clearTag: sinon.stub().returns(),
 		STANDARD_TAGS: {
 			IsBundle: "<IsBundle>",
-			OmitFromBuildResult: "<OmitFromBuildResult>"
+			OmitFromBuildResult: "<OmitFromBuildResult>",
 		},
 		resourceFactory: {
-			createFilterReader: () => workspace
-		}
+			createFilterReader: () => workspace,
+		},
 	};
 	await generateComponentPreload({
 		workspace,
@@ -494,9 +493,9 @@ test.serial("generateComponentPreload - one namespace - excludes w/o namespace",
 			namespaces: ["my/app"],
 			excludes: [
 				"thirdparty/",
-				"!thirdparty/NotExcluded.js"
-			]
-		}
+				"!thirdparty/NotExcluded.js",
+			],
+		},
 	});
 
 	t.is(moduleBundlerStub.callCount, 1, "moduleBundler should have been called once");
@@ -513,7 +512,7 @@ test.serial("generateComponentPreload - one namespace - excludes w/o namespace",
 					".view.html",
 					".view.json",
 					".view.xml",
-					".properties"
+					".properties",
 				],
 				name: "my/app/Component-preload.js",
 				sections: [
@@ -531,17 +530,17 @@ test.serial("generateComponentPreload - one namespace - excludes w/o namespace",
 						resolve: false,
 						resolveConditional: false,
 						declareRawModules: false,
-						sort: true
-					}
-				]
+						sort: true,
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: true,
-				ignoreMissingModules: true
+				ignoreMissingModules: true,
 			},
-			targetUi5CoreVersion: "1.120.0"
+			targetUi5CoreVersion: "1.120.0",
 		},
-		resources
+		resources,
 	}]);
 
 	t.is(byGlob.callCount, 1,
@@ -564,7 +563,7 @@ test.serial("generateComponentPreload - one namespace - excludes w/o namespace",
 	t.is(taskUtil.getTag.callCount, 0, "TaskUtil#getTag never got called");
 
 	t.is(taskUtil.setTag.callCount, 1, "TaskUtil#setTag got called once");
-	t.deepEqual(taskUtil.setTag.getCall(0).args[0], {"fake": "bundle"},
+	t.deepEqual(taskUtil.setTag.getCall(0).args[0], {fake: "bundle"},
 		"TaskUtil#setTag got called with expected resource");
 	t.is(taskUtil.setTag.getCall(0).args[1], "<IsBundle>",
 		"TaskUtil#setTag got called with expected tag");
@@ -572,7 +571,7 @@ test.serial("generateComponentPreload - one namespace - excludes w/o namespace",
 		"TaskUtil#setTag got called with expected tag value");
 
 	t.is(taskUtil.clearTag.callCount, 1, "TaskUtil#clearTag got called once");
-	t.deepEqual(taskUtil.clearTag.getCall(0).args[0], {"fake": "sourceMap"},
+	t.deepEqual(taskUtil.clearTag.getCall(0).args[0], {fake: "sourceMap"},
 		"TaskUtil#clearTag got called with expected resource");
 	t.is(taskUtil.clearTag.getCall(0).args[1], "<OmitFromBuildResult>",
 		"TaskUtil#clearTag got called with expected tag");
@@ -581,27 +580,27 @@ test.serial("generateComponentPreload - one namespace - excludes w/o namespace",
 test.serial("generateComponentPreload - multiple namespaces - excludes", async (t) => {
 	const {
 		generateComponentPreload, moduleBundlerStub,
-		workspace, dependencies, byGlob
+		workspace, dependencies, byGlob,
 	} = t.context;
 
 	const resources = [
-		{"fake": "resource"}
+		{fake: "resource"},
 	];
 	byGlob.resolves(resources);
 
 	moduleBundlerStub.onFirstCall().resolves([
 		{
 			name: "my/app1/Component-preload.js",
-			bundle: {"fake": "bundle1"},
-			sourceMap: {"fake": "sourceMap1"}
-		}
+			bundle: {fake: "bundle1"},
+			sourceMap: {fake: "sourceMap1"},
+		},
 	]);
 	moduleBundlerStub.onSecondCall().resolves([
 		{
 			name: "my/app2/Component-preload.js",
-			bundle: {"fake": "bundle2"},
-			sourceMap: {"fake": "sourceMap2"}
-		}
+			bundle: {fake: "bundle2"},
+			sourceMap: {fake: "sourceMap2"},
+		},
 	]);
 
 	await generateComponentPreload({
@@ -611,15 +610,15 @@ test.serial("generateComponentPreload - multiple namespaces - excludes", async (
 			projectName: "Test Application",
 			namespaces: [
 				"my/app1",
-				"my/app2"
+				"my/app2",
 			],
 			excludes: [
 				"my/app1/thirdparty1/",
 				"!my/app1/thirdparty1/NotExcluded.js",
 				"my/app2/thirdparty2/",
-				"!my/app2/thirdparty2/NotExcluded.js"
-			]
-		}
+				"!my/app2/thirdparty2/NotExcluded.js",
+			],
+		},
 	});
 
 	t.is(moduleBundlerStub.callCount, 2, "moduleBundler should have been called twice");
@@ -636,7 +635,7 @@ test.serial("generateComponentPreload - multiple namespaces - excludes", async (
 					".view.html",
 					".view.json",
 					".view.xml",
-					".properties"
+					".properties",
 				],
 				name: "my/app1/Component-preload.js",
 				sections: [
@@ -656,16 +655,16 @@ test.serial("generateComponentPreload - multiple namespaces - excludes", async (
 						resolve: false,
 						resolveConditional: false,
 						declareRawModules: false,
-						sort: true
-					}
-				]
+						sort: true,
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: true,
-				ignoreMissingModules: true
-			}
+				ignoreMissingModules: true,
+			},
 		},
-		resources
+		resources,
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(1).args, [{
 		options: {
@@ -680,7 +679,7 @@ test.serial("generateComponentPreload - multiple namespaces - excludes", async (
 					".view.html",
 					".view.json",
 					".view.xml",
-					".properties"
+					".properties",
 				],
 				name: "my/app2/Component-preload.js",
 				sections: [
@@ -693,23 +692,23 @@ test.serial("generateComponentPreload - multiple namespaces - excludes", async (
 							"!my/app2/test/",
 							"!my/app1/thirdparty1/",
 							"!my/app2/thirdparty2/",
-							"+my/app2/thirdparty2/NotExcluded.js"
+							"+my/app2/thirdparty2/NotExcluded.js",
 						],
 						mode: "preload",
 						renderer: false,
 						resolve: false,
 						resolveConditional: false,
 						declareRawModules: false,
-						sort: true
-					}
-				]
+						sort: true,
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: true,
-				ignoreMissingModules: true
-			}
+				ignoreMissingModules: true,
+			},
 		},
-		resources
+		resources,
 	}]);
 
 	t.is(byGlob.callCount, 1,
@@ -746,11 +745,11 @@ test.serial("generateComponentPreload - one namespace - invalid exclude", async 
 	const {
 		generateComponentPreload,
 		workspace, dependencies, byGlob,
-		log
+		log,
 	} = t.context;
 
 	const resources = [
-		{"fake": "resource"}
+		{fake: "resource"},
 	];
 	byGlob.resolves(resources);
 
@@ -761,20 +760,20 @@ test.serial("generateComponentPreload - one namespace - invalid exclude", async 
 			projectName: "Test Application",
 			namespaces: ["my/app"],
 			excludes: [
-				"!**/" // re-include outside of namespace is not allowed
-			]
-		}
+				"!**/", // re-include outside of namespace is not allowed
+			],
+		},
 	});
 
 	t.is(log.warn.callCount, 1, "log.warn should be called once");
 	t.deepEqual(log.warn.getCall(0).args, [
 		"Configured preload exclude contains invalid re-include: !**/. " +
-		"Re-includes must start with a component namespace (my/app)"
+		"Re-includes must start with a component namespace (my/app)",
 	]);
 
 	t.is(log.verbose.callCount, 1, "log.verbose should be called once");
 	t.deepEqual(log.verbose.getCall(0).args, [
-		"Generating my/app/Component-preload.js..."
+		"Generating my/app/Component-preload.js...",
 	]);
 
 	t.is(log.error.callCount, 0, "log.error should not be called");
@@ -784,11 +783,11 @@ test.serial("generateComponentPreload - nested namespaces - excludes", async (t)
 	const {
 		generateComponentPreload, moduleBundlerStub,
 		workspace, dependencies, byGlob,
-		log
+		log,
 	} = t.context;
 
 	const resources = [
-		{"fake": "resource"}
+		{fake: "resource"},
 	];
 	byGlob.resolves(resources);
 
@@ -808,9 +807,9 @@ test.serial("generateComponentPreload - nested namespaces - excludes", async (t)
 				"!my/project/component2/*.html",
 
 				// Invalid, should cause a warning
-				"!invalid/namespace/"
-			]
-		}
+				"!invalid/namespace/",
+			],
+		},
 	});
 
 	t.is(moduleBundlerStub.callCount, 3, "moduleBundler should have been called 3 times");
@@ -827,7 +826,7 @@ test.serial("generateComponentPreload - nested namespaces - excludes", async (t)
 					".view.html",
 					".view.json",
 					".view.xml",
-					".properties"
+					".properties",
 				],
 				name: "my/project/component1/Component-preload.js",
 				sections: [
@@ -840,7 +839,7 @@ test.serial("generateComponentPreload - nested namespaces - excludes", async (t)
 							"!my/project/component1/test/",
 
 							// via excludes config
-							"!my/project/component1/foo/"
+							"!my/project/component1/foo/",
 						],
 						mode: "preload",
 						renderer: false,
@@ -848,15 +847,15 @@ test.serial("generateComponentPreload - nested namespaces - excludes", async (t)
 						resolveConditional: false,
 						declareRawModules: false,
 						sort: true,
-					}
-				]
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: true,
-				ignoreMissingModules: true
-			}
+				ignoreMissingModules: true,
+			},
 		},
-		resources
+		resources,
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(1).args, [{
 		options: {
@@ -871,7 +870,7 @@ test.serial("generateComponentPreload - nested namespaces - excludes", async (t)
 					".view.html",
 					".view.json",
 					".view.xml",
-					".properties"
+					".properties",
 				],
 				name: "my/project/Component-preload.js",
 				sections: [
@@ -899,16 +898,16 @@ test.serial("generateComponentPreload - nested namespaces - excludes", async (t)
 						resolve: false,
 						resolveConditional: false,
 						declareRawModules: false,
-						sort: true
-					}
-				]
+						sort: true,
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: true,
-				ignoreMissingModules: true
-			}
+				ignoreMissingModules: true,
+			},
 		},
-		resources
+		resources,
 	}]);
 	t.deepEqual(moduleBundlerStub.getCall(2).args, [{
 		options: {
@@ -923,7 +922,7 @@ test.serial("generateComponentPreload - nested namespaces - excludes", async (t)
 					".view.html",
 					".view.json",
 					".view.xml",
-					".properties"
+					".properties",
 				],
 				name: "my/project/component2/Component-preload.js",
 				sections: [
@@ -937,41 +936,41 @@ test.serial("generateComponentPreload - nested namespaces - excludes", async (t)
 
 							// via excludes config
 							"!my/project/component1/foo/",
-							"+my/project/component2/*.html"
+							"+my/project/component2/*.html",
 						],
 						mode: "preload",
 						renderer: false,
 						resolve: false,
 						resolveConditional: false,
 						declareRawModules: false,
-						sort: true
-					}
-				]
+						sort: true,
+					},
+				],
 			},
 			bundleOptions: {
 				optimize: true,
-				ignoreMissingModules: true
-			}
+				ignoreMissingModules: true,
+			},
 		},
-		resources
+		resources,
 	}]);
 
 	t.is(log.warn.callCount, 1, "log.warn should be called once");
 	t.deepEqual(log.warn.getCall(0).args, [
 		"Configured preload exclude contains invalid re-include: !invalid/namespace/. " +
 		"Re-includes must start with a component namespace " +
-		"(my/project/component1 or my/project or my/project/component2)"
+		"(my/project/component1 or my/project or my/project/component2)",
 	]);
 
 	t.is(log.verbose.callCount, 3, "log.verbose should be called once");
 	t.deepEqual(log.verbose.getCall(0).args, [
-		"Generating my/project/component1/Component-preload.js..."
+		"Generating my/project/component1/Component-preload.js...",
 	]);
 	t.deepEqual(log.verbose.getCall(1).args, [
-		"Generating my/project/Component-preload.js..."
+		"Generating my/project/Component-preload.js...",
 	]);
 	t.deepEqual(log.verbose.getCall(2).args, [
-		"Generating my/project/component2/Component-preload.js..."
+		"Generating my/project/component2/Component-preload.js...",
 	]);
 	t.is(log.error.callCount, 0, "log.error should not be called");
 });

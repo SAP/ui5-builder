@@ -1,4 +1,3 @@
-
 import posixPath from "node:path/posix";
 import semver from "semver";
 const {SemVer: Version} = semver;
@@ -14,7 +13,7 @@ import analyzeLibraryJS from "../lbt/analyzer/analyzeLibraryJS.js";
 const parser = new xml2js.Parser({
 	// explicitChildren: true,
 	preserveChildrenOrder: true,
-	xmlns: true
+	xmlns: true,
 });
 
 // const APP_DESCRIPTOR_V3 = new Version("1.2.0");
@@ -30,31 +29,59 @@ const XMLNS_OWNERSHIP = "http://www.sap.com/ui5/buildext/ownership";
 const XMLNS_MANIFEST = "http://www.sap.com/ui5/buildext/manifest";
 const XMLNS_THIRDPARTY = "http://www.sap.com/ui5/buildext/thirdparty";
 
+/**
+ *
+ * @param node
+ * @param attr
+ */
 function getAttribute(node, attr) {
-	return (node.$ && node.$[attr] && node.$[attr].value) || null;
+	return (node.$?.[attr]?.value) || null;
 }
 
+/**
+ *
+ * @param node
+ * @param attr
+ */
 function getBooleanAttribute(node, attr) {
 	return getAttribute(node, attr) === "true";
 }
 
+/**
+ *
+ * @param node
+ * @param tagName
+ * @param namespaceURI
+ */
 function findChild(node, tagName, namespaceURI) {
-	if ( node &&
-			Array.isArray(node[tagName]) &&
-			node[tagName].length > 0 &&
-			(namespaceURI == null || (node[tagName][0].$ns && node[tagName][0].$ns.uri === namespaceURI)) ) {
+	if (node &&
+		Array.isArray(node[tagName]) &&
+		node[tagName].length > 0 &&
+		(namespaceURI == null || (node[tagName][0].$ns && node[tagName][0].$ns.uri === namespaceURI))) {
 		return node[tagName][0];
 	}
 }
 
+/**
+ *
+ * @param node
+ * @param tagName
+ * @param namespaceURI
+ */
 function findChildren(node, tagName, namespaceURI) {
-	const children = node && node[tagName];
-	if ( Array.isArray(children) ) {
+	const children = node?.[tagName];
+	if (Array.isArray(children)) {
 		return children.filter((child) => (namespaceURI == null || (child.$ns && child.$ns.uri === namespaceURI)));
 	}
 	return [];
 }
 
+/**
+ *
+ * @param node
+ * @param tagName
+ * @param defaultValue
+ */
 function getChildTextContent(node, tagName, defaultValue) {
 	const child = findChild(node, tagName);
 	return child ? (child._ || "") : defaultValue;
@@ -112,9 +139,9 @@ class Library {
 
 	static async from(resource) {
 		const content = await resource.getString();
-		return new Promise( (resolve, reject) => {
+		return new Promise((resolve, reject) => {
 			parser.parseString(content, (err, xml) => {
-				if ( err ) {
+				if (err) {
 					reject(err);
 					return;
 				}
@@ -124,12 +151,11 @@ class Library {
 	}
 }
 
-
 class LibraryBundle {
 	/**
 	 *
-	 * @param {string} prefix
-	 * @param {@ui5/fs/Resource[]} resources
+	 * @param prefix
+	 * @param resources
 	 */
 	constructor(prefix: string, resources) {
 		this.prefix = prefix;
@@ -138,8 +164,8 @@ class LibraryBundle {
 
 	/**
 	 *
-	 * @param {string} name
-	 * @returns {@ui5/fs/Resource}
+	 * @param name
+	 * @returns
 	 */
 	findResource(name: string) {
 		return this.resources.find((res) => res.getPath() === this.prefix + name);
@@ -147,8 +173,8 @@ class LibraryBundle {
 
 	/**
 	 *
-	 * @param {RegExp} pattern
-	 * @returns {@ui5/fs/Resource[]}
+	 * @param pattern
+	 * @returns
 	 */
 	getResources(pattern: RegExp) {
 		return this.resources.filter((res) => pattern == null || pattern.test(res.getPath()));
@@ -157,6 +183,15 @@ class LibraryBundle {
 
 /*
  * Creates the library manifest.json file for a UILibrary.
+ */
+/**
+ *
+ * @param libraryResource
+ * @param libBundle
+ * @param descriptorVersion
+ * @param _include3rdParty
+ * @param omitMinVersions
+ * @param getProjectVersion
  */
 async function createManifest(
 	libraryResource, libBundle, descriptorVersion, _include3rdParty, omitMinVersions, getProjectVersion
@@ -179,58 +214,79 @@ async function createManifest(
 	const manifestAppData = library.getAppData("manifest", XMLNS_MANIFEST);
 	const sapFioriAppData = findChild(manifestAppData, "sap.fiori");
 
+	/**
+	 *
+	 * @param candidateVersion
+	 */
 	function sectionVersion(candidateVersion) {
 		// _version property for nested sections became optional with AppDescriptor V5
-		if ( descriptorVersion.compare(APP_DESCRIPTOR_V5) < 0 ) {
+		if (descriptorVersion.compare(APP_DESCRIPTOR_V5) < 0) {
 			return candidateVersion.toString();
 		}
 		// return undefined
 	}
 
+	/**
+	 *
+	 */
 	function createSapApp() {
+		/**
+		 *
+		 * @param componentPath
+		 */
 		function hasManifest(componentPath) {
 			const manifestPath = componentPath + "/manifest.json";
 
 			const manifestResource = libBundle.findResource(manifestPath.substring(libraryPathPrefix.length));
-			if ( manifestResource == null ) {
+			if (manifestResource == null) {
 				log.verbose("  Component has no accompanying manifest.json, don't list it as 'embedded'");
 				return false;
 			}
 			return true;
 		}
 
+		/**
+		 *
+		 */
 		function findEmbeddedComponents() {
 			const result = [];
 			const components = libBundle.getResources(/^\/(?:[^/]+\/)*Component\.js$/);
 			for (const comp of components) {
 				const componentPath = posixPath.dirname(comp.getPath());
 				log.verbose(`Checking component at ${componentPath}`);
-				if ( componentPath.startsWith(libraryPathPrefix) && hasManifest(componentPath) ) {
-					result.push( componentPath.substring(libraryPathPrefix.length) );
-				} else if ( libraryPathPrefix === "/resources/sap/apf/" ) {
+				if (componentPath.startsWith(libraryPathPrefix) && hasManifest(componentPath)) {
+					result.push(componentPath.substring(libraryPathPrefix.length));
+				} else if (libraryPathPrefix === "/resources/sap/apf/") {
 					log.verbose(`Package ${componentPath} contains both '*.library' and 'Component.js'. ` +
-						`This is a known issue but can't be solved due to backward compatibility.`);
+					`This is a known issue but can't be solved due to backward compatibility.`);
 				} else if (
 					libraryPathPrefix === (componentPath + "/") &&
 					libraryPathPrefix !== "/resources/sap/ui/core/"
 				) {
 					log.error(`Package ${componentPath} contains both '*.library' and 'Component.js'. ` +
-						`This is not supported by manifests, therefore the component won't be ` +
-						`listed in the library's manifest.`);
+					`This is not supported by manifests, therefore the component won't be ` +
+					`listed in the library's manifest.`);
 				}
 			}
 			return result.sort();
 		}
 
+		/**
+		 *
+		 * @param version
+		 */
 		function isValid(version) {
 			return version && version !== "@version@" && version !== "${version}";
 		}
 
+		/**
+		 *
+		 */
 		function getLibraryTitle() {
-			if ( library.getTitle() ) {
+			if (library.getTitle()) {
 				return library.getTitle();
 			}
-			if ( library.getDocumentation() ) {
+			if (library.getDocumentation()) {
 				let desc = library.getDocumentation();
 				// remove all tags
 				let prevDesc;
@@ -245,34 +301,46 @@ async function createManifest(
 			return library.getName();
 		}
 
+		/**
+		 *
+		 */
 		function getDefaultACH() {
 			const ownership = library.getAppData("ownership", XMLNS_OWNERSHIP);
 			for (const comp of findChildren(ownership, "component")) {
-				if ( comp._ ) {
+				if (comp._) {
 					return comp._;
 				}
 			}
 		}
 
+		/**
+		 *
+		 */
 		function offline() {
 			let result = sapFioriAppData == null ? true : false;
 			const offlineElement = findChild(manifestAppData, "offline");
-			if ( offlineElement ) {
+			if (offlineElement) {
 				result = offlineElement._ === "true";
 			}
 			return result;
 		}
 
+		/**
+		 *
+		 */
 		function sourceTemplate() {
 			const sourceTemplateElement = findChild(manifestAppData, "sourceTemplate");
-			if ( sourceTemplateElement ) {
+			if (sourceTemplateElement) {
 				return {
-					"id": getChildTextContent(sourceTemplateElement, "id"),
-					"version": getChildTextContent(sourceTemplateElement, "version")
+					id: getChildTextContent(sourceTemplateElement, "id"),
+					version: getChildTextContent(sourceTemplateElement, "version"),
 				};
 			}
 		}
 
+		/**
+		 *
+		 */
 		function openSourceComponents() {
 			const embeddedOSComponents = new Set();
 			const osComponents = [];
@@ -282,25 +350,25 @@ async function createManifest(
 				osComponents.push({
 					name: name,
 					packagedWithMySelf,
-					version: packagedWithMySelf ? getAttribute(osCompElem, "version") : undefined
+					version: packagedWithMySelf ? getAttribute(osCompElem, "version") : undefined,
 				});
-				if ( packagedWithMySelf ) {
+				if (packagedWithMySelf) {
 					embeddedOSComponents.add(name);
 				}
 			}
 
-			if ( _include3rdParty ) {
+			if (_include3rdParty) {
 				// also merge all thirdparty libs, but only with the name - version info is not available
 				// only merge in if no lib with the same name has been declared already
 				const thirdpartyAppData = library.getAppData("thirdparty", XMLNS_THIRDPARTY);
 				for (const thirdPartyElem of findChildren(thirdpartyAppData, "lib")) {
 					const osCompName = getAttribute(thirdPartyElem, "name");
-					if ( !embeddedOSComponents.has(osCompName) ) {
+					if (!embeddedOSComponents.has(osCompName)) {
 						embeddedOSComponents.add(osCompName);
 						osComponents.push({
 							name: osCompName,
 							packagedWithMySelf: true,
-							version: getAttribute(thirdPartyElem, "version") || "0.0.0"
+							version: getAttribute(thirdPartyElem, "version") || "0.0.0",
 						});
 					}
 				}
@@ -321,7 +389,7 @@ async function createManifest(
 			embeds: findEmbeddedComponents(),
 			i18n,
 			applicationVersion: {
-				version: isValid(library.getVersion()) ? library.getVersion() : getProjectVersion(library.getName())
+				version: isValid(library.getVersion()) ? library.getVersion() : getProjectVersion(library.getName()),
 			},
 			title: getLibraryTitle(),
 			description: library.getDocumentation(),
@@ -329,7 +397,7 @@ async function createManifest(
 			resources: "resources.json",
 			offline: offline(),
 			sourceTemplate: sourceTemplate(),
-			openSourceComponents: openSourceComponents()
+			openSourceComponents: openSourceComponents(),
 		};
 
 		log.verbose(`  sap.app/id taken from .library: '${sapApp.id}'`);
@@ -340,10 +408,16 @@ async function createManifest(
 		return sapApp;
 	}
 
+	/**
+	 *
+	 */
 	function createSapUi() {
+		/**
+		 *
+		 */
 		function deviceTypes() {
 			const deviceTypesElement = findChild(manifestAppData, "deviceTypes");
-			if ( deviceTypesElement ) {
+			if (deviceTypesElement) {
 				return {
 					desktop: getBooleanAttribute(deviceTypesElement, "desktop"),
 					tablet: getBooleanAttribute(deviceTypesElement, "tablet"),
@@ -352,26 +426,29 @@ async function createManifest(
 			}
 		}
 
+		/**
+		 *
+		 */
 		function collectThemes() {
 			const themes = Object.create(null);
 
 			// find theme resources and determine theme names from their paths
 			libBundle.getResources(/(?:[^/]+\/)*themes\//).forEach((res) => {
-				if ( !res.getPath().startsWith(libraryPathPrefix + "themes/") ) {
+				if (!res.getPath().startsWith(libraryPathPrefix + "themes/")) {
 					// only consider themes within direct "themes" sub-directory
 					return;
 				}
 				const match = /\/themes\/([^/]+)\//.exec(res.getPath());
-				if ( match ) {
+				if (match) {
 					themes[match[1]] = true;
 				}
 			});
 
 			// merge with supportedTheme info from .library file
 			const elems = findChildren(manifestAppData, "supportedTheme");
-			if ( elems ) {
+			if (elems) {
 				elems.forEach((elem) => {
-					if ( elem._ ) {
+					if (elem._) {
 						themes[elem._];
 					}
 				});
@@ -383,7 +460,7 @@ async function createManifest(
 			_version: sectionVersion(APP_DESCRIPTOR_V3_OTHER_SECTIONS),
 			technology: "UI5",
 			deviceTypes: deviceTypes(),
-			supportedThemes: collectThemes()
+			supportedThemes: collectThemes(),
 		};
 
 		log.verbose(`  sap.ui/supportedThemes determined from resources: '${sapUi.supportedThemes.join(", ")}'`);
@@ -391,22 +468,31 @@ async function createManifest(
 		return sapUi;
 	}
 
+	/**
+	 *
+	 */
 	function createSapUI5() {
+		/**
+		 *
+		 */
 		function getUI5Version() {
 			return normalizeVersion(getProjectVersion("sap.ui.core"));
 		}
 
+		/**
+		 *
+		 */
 		function dependencies() {
 			const dependencies = {
 				minUI5Version: omitMinVersions ? "" : getUI5Version(),
 				libs: {
-				}
+				},
 			};
-			if ( library.getDependencies() != null ) {
+			if (library.getDependencies() != null) {
 				for (const dep of library.getDependencies()) {
 					dependencies.libs[dep.getLibraryName()] = {
 						minVersion: omitMinVersions ? "" : getProjectVersion(dep.getLibraryName()),
-						lazy: dep.isLazy() || undefined // suppress default (false)
+						lazy: dep.isLazy() || undefined, // suppress default (false)
 					};
 				}
 			}
@@ -414,20 +500,26 @@ async function createManifest(
 			return dependencies;
 		}
 
+		/**
+		 *
+		 */
 		function contentDensities() {
 			const contentDensitiesElement = findChild(manifestAppData, "contentDensities");
-			if ( contentDensitiesElement != null ) {
+			if (contentDensitiesElement != null) {
 				const contentDensities = {
 					cozy: getBooleanAttribute(contentDensitiesElement, "cozy"),
-					compact: getBooleanAttribute(contentDensitiesElement, "compact")
+					compact: getBooleanAttribute(contentDensitiesElement, "compact"),
 				};
 				log.verbose(`  sap.ui5/contentDensities property taken from .library appData:`, contentDensities);
 				return contentDensities;
 			}
 		}
 
+		/**
+		 *
+		 */
 		function createLibraryMetadata() {
-			if ( descriptorVersion.compare(APP_DESCRIPTOR_V10) < 0 ) {
+			if (descriptorVersion.compare(APP_DESCRIPTOR_V10) < 0) {
 				log.verbose(`  Target descriptor version ${descriptorVersion}: skipping sap.ui5/library information`);
 			}
 
@@ -439,17 +531,20 @@ async function createManifest(
 			// i18n:
 			// - from .library/appData/manifest/sap.ui5/library/i18n
 			// - from library resources (if "messagebundle.properties" exists)
+			/**
+			 *
+			 */
 			function i18n() {
 				let i18n = getChildTextContent(libraryAppData, "i18n");
-				if ( typeof i18n === "string") {
-					if ( i18n === "false" ) {
+				if (typeof i18n === "string") {
+					if (i18n === "false") {
 						return false;
-					} else if ( i18n === "true" ) {
+					} else if (i18n === "true") {
 						i18n = "messagebundle.properties";
 					}
 					// log.verbose("  sap.ui5/library/i18n property taken from .library appData: '%s'", library.i18n);
 				} else {
-					if ( libBundle.findResource("messagebundle.properties") != null ) {
+					if (libBundle.findResource("messagebundle.properties") != null) {
 						// log.verbose("  sap.ui5/library/i18n property determined from resources: '%s'", library.i18n);
 						i18n = "messagebundle.properties";
 					} else {
@@ -463,15 +558,18 @@ async function createManifest(
 			// css:
 			// - from .library/appData/manifest/sap.ui5/library/css
 			// - from library.js/initLibrary/noLibraryCSS
+			/**
+			 *
+			 */
 			function css() {
 				const cssElement = findChild(libraryAppData, "css");
-				if ( cssElement != null ) {
+				if (cssElement != null) {
 					const css = cssElement._;
-					if ( css === "false" ) {
+					if (css === "false") {
 						log.verbose(`  sap.ui5/library/css property taken from .library appData: 'false'`);
 						return false;
 					}
-				} else if ( libraryJSInfo.noLibraryCSS ) {
+				} else if (libraryJSInfo.noLibraryCSS) {
 					log.verbose(`  sap.ui5/library/css property extracted from library.js: 'false'`);
 					return false;
 				}
@@ -479,14 +577,17 @@ async function createManifest(
 
 			// content
 			// - from library.js/initLibrary/ (types|elements|controls|interfaces)
+			/**
+			 *
+			 */
 			function content() {
 				const libraryJS = libraryJSInfo;
-				if ( libraryJS.controls || libraryJS.elements || libraryJS.interfaces || libraryJS.types ) {
+				if (libraryJS.controls || libraryJS.elements || libraryJS.interfaces || libraryJS.types) {
 					return {
 						controls: libraryJS.controls,
 						elements: libraryJS.elements,
 						types: libraryJS.types,
-						interfaces: libraryJS.interfaces
+						interfaces: libraryJS.interfaces,
 					};
 				}
 			}
@@ -494,7 +595,7 @@ async function createManifest(
 			return {
 				i18n: i18n(),
 				css: css(),
-				content: content()
+				content: content(),
 			};
 		}
 
@@ -502,7 +603,7 @@ async function createManifest(
 			_version: sectionVersion(APP_DESCRIPTOR_V3_OTHER_SECTIONS),
 			dependencies: dependencies(),
 			contentDensities: contentDensities(),
-			library: createLibraryMetadata()
+			library: createLibraryMetadata(),
 		};
 
 		return sapUI5;
@@ -513,9 +614,9 @@ async function createManifest(
 	 * - either using bundleUrl and supportedLocales
 	 * - or the i18n String
 	 *
-	 * @param {string} i18n bundle url, e.g. "messagebundle.properties"
-	 * @param {Map<string, Set<string>>} i18nToSupportedLocales cache to determine the supportedLocales only once
-	 * @returns {{bundleUrl: string, supportedLocales: string[]}|null|string} json structure with bundleUrl and
+	 * @param i18n bundle url, e.g. "messagebundle.properties"
+	 * @param i18nToSupportedLocales cache to determine the supportedLocales only once
+	 * @returns json structure with bundleUrl and
 	 *   supportedLocales or the i18n String if not a ".properties" file.
 	 *   <code>null</code> if given i18n String is <code>null</code>
 	 */
@@ -564,12 +665,18 @@ async function createManifest(
 		return {
 			bundleUrl: i18n,
 			supportedLocales: supportedLocalesArray,
-			fallbackLocale: supportedLocalesArray.length === 1 ? supportedLocalesArray[0] : undefined
+			fallbackLocale: supportedLocalesArray.length === 1 ? supportedLocalesArray[0] : undefined,
 		};
 	}
 
+	/**
+	 *
+	 */
 	function createSapFiori() {
 		// collect registrationIds if present
+		/**
+		 *
+		 */
 		function registrationIds() {
 			const ids = [];
 			for (const regid of findChildren(sapFioriAppData, "registrationId")) {
@@ -578,37 +685,47 @@ async function createManifest(
 			return ids.length > 0 ? ids : undefined;
 		}
 
-		if ( sapFioriAppData != null ) {
+		if (sapFioriAppData != null) {
 			return {
 				_version: sectionVersion(APP_DESCRIPTOR_V3_OTHER_SECTIONS),
 				registrationIds: registrationIds(),
-				archeType: getChildTextContent(sapFioriAppData, "archeType", "reuseComponent")
+				archeType: getChildTextContent(sapFioriAppData, "archeType", "reuseComponent"),
 			};
 		}
 	}
 
+	/**
+	 *
+	 */
 	function createSapPlatformABAP() {
 		const sapPlatformABAPElement = findChild(manifestAppData, "sap.platform.abap");
-		if ( sapPlatformABAPElement ) {
+		if (sapPlatformABAPElement) {
 			return {
 				_version: sectionVersion(APP_DESCRIPTOR_V3_OTHER_SECTIONS),
-				uri: getChildTextContent(sapPlatformABAPElement, "uri")
+				uri: getChildTextContent(sapPlatformABAPElement, "uri"),
 			};
 		}
 	}
 
+	/**
+	 *
+	 */
 	function createSapPlatformHCP() {
 		const sapPlatformHCPElement = findChild(manifestAppData, "sap.platform.hcp");
-		if ( sapPlatformHCPElement ) {
+		if (sapPlatformHCPElement) {
 			return {
 				_version: sectionVersion(APP_DESCRIPTOR_V3_OTHER_SECTIONS),
-				uri: getChildTextContent(sapPlatformHCPElement, "uri")
+				uri: getChildTextContent(sapPlatformHCPElement, "uri"),
 			};
 		}
 	}
 
+	/**
+	 *
+	 * @param version
+	 */
 	function normalizeVersion(version) {
-		if ( version == null ) {
+		if (version == null) {
 			return version;
 		}
 		const v = new Version(version);
@@ -622,17 +739,25 @@ async function createManifest(
 		"sap.ui5": createSapUI5(),
 		"sap.fiori": createSapFiori(),
 		"sap.platform.abap": createSapPlatformABAP(),
-		"sap.platform.hcp": createSapPlatformHCP()
+		"sap.platform.hcp": createSapPlatformHCP(),
 	};
 }
 
-export default function({libraryResource, resources, getProjectVersion, options}) {
+/**
+ *
+ * @param root0
+ * @param root0.libraryResource
+ * @param root0.resources
+ * @param root0.getProjectVersion
+ * @param root0.options
+ */
+export default function ({libraryResource, resources, getProjectVersion, options}) {
 	// merge options with defaults
 	options = Object.assign({
 		descriptorVersion: APP_DESCRIPTOR_V22.toString(),
 		include3rdParty: true,
 		prettyPrint: true,
-		omitMinVersions: false
+		omitMinVersions: false,
 	}, options);
 
 	const resourcePathPrefix = libraryResource.getPath().slice(0, -".library".length);
@@ -640,7 +765,7 @@ export default function({libraryResource, resources, getProjectVersion, options}
 
 	// check whether a manifest exists already
 	const manifestResource = libBundle.findResource("manifest.json");
-	if ( manifestResource != null ) {
+	if (manifestResource != null) {
 		log.verbose(`Library manifest already exists at '${manifestResource.getPath()}', skipping generation`);
 		return Promise.resolve(null); // a fulfillment of null indicates that no manifest has been created
 	}
@@ -650,7 +775,7 @@ export default function({libraryResource, resources, getProjectVersion, options}
 		.then((manifest) => {
 			return new Resource({
 				path: resourcePathPrefix + "manifest.json",
-				string: JSON.stringify(manifest, null, options.prettyPrint ? "  " : undefined)
+				string: JSON.stringify(manifest, null, options.prettyPrint ? "  " : undefined),
 			});
 		});
 }

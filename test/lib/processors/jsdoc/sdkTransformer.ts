@@ -13,8 +13,8 @@ test.beforeEach(async (t) => {
 	t.context.sdkTransformer = await esmock("../../../../lib/processors/jsdoc/sdkTransformer.js", {
 		"../../../../lib/processors/jsdoc/lib/transformApiJson.js": t.context.transformApiJsonStub,
 		"@ui5/fs/resourceFactory": {
-			createResource: t.context.createResourceStub
-		}
+			createResource: t.context.createResourceStub,
+		},
 	});
 });
 
@@ -31,9 +31,9 @@ test.serial("sdkTransformer", async (t) => {
 		targetApiJsonPath: "/some/other/path/api.json",
 		dependencyApiJsonPaths: [
 			"/some/path/x/api.json",
-			"/some/path/y/api.json"
+			"/some/path/y/api.json",
 		],
-		fs: "custom fs"
+		fs: "custom fs",
 	});
 
 	t.is(res.length, 1, "Returned one resource");
@@ -48,19 +48,19 @@ test.serial("sdkTransformer", async (t) => {
 		"transform-apijson-for-sdk called with correct argument #3");
 	t.deepEqual(transformApiJsonStub.getCall(0).args[3], [
 		"/some/path/x/api.json",
-		"/some/path/y/api.json"
+		"/some/path/y/api.json",
 	], "transform-apijson-for-sdk called with correct argument #4");
 	t.is(transformApiJsonStub.getCall(0).args[4], "",
 		"transform-apijson-for-sdk called with correct argument #5");
 	t.deepEqual(transformApiJsonStub.getCall(0).args[5], {
 		fs: "custom fs",
-		returnOutputFiles: true
+		returnOutputFiles: true,
 	}, "transform-apijson-for-sdk called with correct argument #6");
 
 	t.is(createResourceStub.callCount, 1, "createResource called once");
 	t.deepEqual(createResourceStub.getCall(0).args[0], {
 		path: "/some/other/path/api.json",
-		string: "api.json content"
+		string: "api.json content",
 	}, "createResource called with correct arguments");
 });
 

@@ -6,14 +6,14 @@ test.beforeEach(async (t) => {
 	const sinon = t.context.sinon = sinonGlobal.createSandbox();
 
 	t.context.log = {
-		warn: sinon.stub()
+		warn: sinon.stub(),
 	};
 
 	t.context.bootstrapHtmlTransformerStub = sinon.stub();
 
 	t.context.transformBootstrapHtml = await esmock("../../../lib/tasks/transformBootstrapHtml.js", {
 		"@ui5/logger": {
-			getLogger: sinon.stub().withArgs("builder:tasks:transformBootstrapHtml").returns(t.context.log)
+			getLogger: sinon.stub().withArgs("builder:tasks:transformBootstrapHtml").returns(t.context.log),
 		},
 		"../../../lib/processors/bootstrapHtmlTransformer": t.context.bootstrapHtmlTransformerStub,
 	});
@@ -39,7 +39,7 @@ test.serial("Transforms index.html resource", async (t) => {
 		write: (actualResource) => {
 			t.deepEqual(actualResource, resource,
 				"Expected resource is written back to workspace");
-		}
+		},
 	};
 
 	t.context.bootstrapHtmlTransformerStub.returns([resource]);
@@ -48,8 +48,8 @@ test.serial("Transforms index.html resource", async (t) => {
 		workspace,
 		options: {
 			projectName: "sap.ui.demo.app",
-			projectNamespace: "sap/ui/demo/app"
-		}
+			projectNamespace: "sap/ui/demo/app",
+		},
 	});
 
 	t.is(t.context.bootstrapHtmlTransformerStub.callCount, 1,
@@ -58,8 +58,8 @@ test.serial("Transforms index.html resource", async (t) => {
 	t.true(t.context.bootstrapHtmlTransformerStub.calledWithExactly({
 		resources: [resource],
 		options: {
-			src: "resources/sap-ui-custom.js"
-		}
+			src: "resources/sap-ui-custom.js",
+		},
 	}), "Processor should be called with expected arguments");
 
 	t.true(log.warn.notCalled, "No warnings should be logged");
@@ -81,7 +81,7 @@ test.serial("Transforms index.html resource without namespace", async (t) => {
 		write: (actualResource) => {
 			t.deepEqual(actualResource, resource,
 				"Expected resource is written back to workspace");
-		}
+		},
 	};
 
 	t.context.bootstrapHtmlTransformerStub.returns([resource]);
@@ -89,8 +89,8 @@ test.serial("Transforms index.html resource without namespace", async (t) => {
 	await transformBootstrapHtml({
 		workspace,
 		options: {
-			projectName: "sap.ui.demo.app"
-		}
+			projectName: "sap.ui.demo.app",
+		},
 	});
 
 	t.is(t.context.bootstrapHtmlTransformerStub.callCount, 1,
@@ -99,8 +99,8 @@ test.serial("Transforms index.html resource without namespace", async (t) => {
 	t.true(t.context.bootstrapHtmlTransformerStub.calledWithExactly({
 		resources: [resource],
 		options: {
-			src: "resources/sap-ui-custom.js"
-		}
+			src: "resources/sap-ui-custom.js",
+		},
 	}), "Processor should be called with expected arguments");
 
 	t.true(log.warn.notCalled, "No warnings should be logged");
@@ -119,15 +119,15 @@ test.serial("No index.html resource exists", async (t) => {
 		},
 		write: () => {
 			t.fail("No resources should be written to workspace");
-		}
+		},
 	};
 
 	await transformBootstrapHtml({
 		workspace,
 		options: {
 			projectName: "sap.ui.demo.app",
-			projectNamespace: "sap/ui/demo/app"
-		}
+			projectNamespace: "sap/ui/demo/app",
+		},
 	});
 
 	t.true(t.context.bootstrapHtmlTransformerStub.notCalled,

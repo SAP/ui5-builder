@@ -21,14 +21,14 @@ test.serial("integration: build application.b standalone", async (t) => {
 	const includedTasks = ["minify", "generateStandaloneAppBundle"];
 
 	const graph = await graphFromObject({
-		dependencyTree: applicationBTree
+		dependencyTree: applicationBTree,
 	});
 
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
 		excludedTasks,
-		includedTasks
+		includedTasks,
 	});
 	const expectedFiles = await findFiles(expectedPath);
 
@@ -44,136 +44,136 @@ test.serial("integration: build application.b standalone", async (t) => {
 });
 
 const applicationBTree = {
-	"id": "application.b",
-	"version": "1.0.0",
-	"path": applicationBPath,
-	"dependencies": [
+	id: "application.b",
+	version: "1.0.0",
+	path: applicationBPath,
+	dependencies: [
 		{
-			"id": "sap.ui.core",
-			"version": "1.0.0",
-			"path": sapUiCorePath,
-			"dependencies": [],
-			"configuration": {
-				"specVersion": "2.0",
-				"type": "library",
-				"metadata": {
-					"name": "sap.ui.core",
-					"copyright": "Some fancy copyright"
+			id: "sap.ui.core",
+			version: "1.0.0",
+			path: sapUiCorePath,
+			dependencies: [],
+			configuration: {
+				specVersion: "2.0",
+				type: "library",
+				metadata: {
+					name: "sap.ui.core",
+					copyright: "Some fancy copyright",
 				},
-				"resources": {
-					"configuration": {
-						"paths": {
-							"src": "main/src",
-							"test": "main/test"
-						}
-					}
-				}
+				resources: {
+					configuration: {
+						paths: {
+							src: "main/src",
+							test: "main/test",
+						},
+					},
+				},
 			},
 		},
 		{
-			"id": "library.d",
-			"version": "1.0.0",
-			"path": path.join(applicationBPath, "..", "library.d"),
-			"dependencies": [],
-			"configuration": {
-				"specVersion": "2.0",
-				"type": "library",
-				"metadata": {
-					"name": "library.d",
-					"copyright": "Some fancy copyright"
+			id: "library.d",
+			version: "1.0.0",
+			path: path.join(applicationBPath, "..", "library.d"),
+			dependencies: [],
+			configuration: {
+				specVersion: "2.0",
+				type: "library",
+				metadata: {
+					name: "library.d",
+					copyright: "Some fancy copyright",
 				},
-				"resources": {
-					"configuration": {
-						"paths": {
-							"src": "main/src",
-							"test": "main/test"
-						}
-					}
-				}
+				resources: {
+					configuration: {
+						paths: {
+							src: "main/src",
+							test: "main/test",
+						},
+					},
+				},
 			},
 		},
 		{
-			"id": "library.a",
-			"version": "1.0.0",
-			"path": path.join(applicationBPath, "..", "collection", "library.a"),
-			"dependencies": [],
-			"configuration": {
-				"specVersion": "2.0",
-				"type": "library",
-				"metadata": {
-					"name": "library.a",
-					"copyright": "${copyright}"
+			id: "library.a",
+			version: "1.0.0",
+			path: path.join(applicationBPath, "..", "collection", "library.a"),
+			dependencies: [],
+			configuration: {
+				specVersion: "2.0",
+				type: "library",
+				metadata: {
+					name: "library.a",
+					copyright: "${copyright}",
 				},
-				"resources": {
-					"configuration": {
-						"paths": {
-							"src": "src",
-							"test": "test"
-						}
-					}
-				}
+				resources: {
+					configuration: {
+						paths: {
+							src: "src",
+							test: "test",
+						},
+					},
+				},
 			},
 		},
 		{
-			"id": "library.b",
-			"version": "1.0.0",
-			"path": path.join(applicationBPath, "..", "collection", "library.b"),
-			"dependencies": [],
-			"configuration": {
-				"specVersion": "2.0",
-				"type": "library",
-				"metadata": {
-					"name": "library.b",
-					"copyright": "${copyright}"
+			id: "library.b",
+			version: "1.0.0",
+			path: path.join(applicationBPath, "..", "collection", "library.b"),
+			dependencies: [],
+			configuration: {
+				specVersion: "2.0",
+				type: "library",
+				metadata: {
+					name: "library.b",
+					copyright: "${copyright}",
 				},
-				"resources": {
-					"configuration": {
-						"paths": {
-							"src": "src",
-							"test": "test"
-						}
-					}
-				}
-			}
+				resources: {
+					configuration: {
+						paths: {
+							src: "src",
+							test: "test",
+						},
+					},
+				},
+			},
 		},
 		{
-			"id": "library.c",
-			"version": "1.0.0",
-			"path": path.join(applicationBPath, "..", "collection", "library.c"),
-			"dependencies": [],
-			"configuration": {
-				"specVersion": "2.0",
-				"type": "library",
-				"metadata": {
-					"name": "library.c",
-					"copyright": "${copyright}"
+			id: "library.c",
+			version: "1.0.0",
+			path: path.join(applicationBPath, "..", "collection", "library.c"),
+			dependencies: [],
+			configuration: {
+				specVersion: "2.0",
+				type: "library",
+				metadata: {
+					name: "library.c",
+					copyright: "${copyright}",
 				},
-				"resources": {
-					"configuration": {
-						"paths": {
-							"src": "src",
-							"test": "test"
-						}
-					}
-				}
+				resources: {
+					configuration: {
+						paths: {
+							src: "src",
+							test: "test",
+						},
+					},
+				},
 			},
-		}
+		},
 	],
-	"configuration": {
-		"builder": {},
-		"specVersion": "2.0",
-		"type": "application",
-		"metadata": {
-			"name": "application.b"
+	configuration: {
+		builder: {},
+		specVersion: "2.0",
+		type: "application",
+		metadata: {
+			name: "application.b",
 		},
-		"resources": {
-			"configuration": {
-				"paths": {
-					"webapp": "webapp"
+		resources: {
+			configuration: {
+				paths: {
+					webapp: "webapp",
 				},
-				"propertiesFileSourceEncoding": "ISO-8859-1"
-			}
-		}
+				propertiesFileSourceEncoding: "ISO-8859-1",
+			},
+		},
 	},
 };
 
@@ -184,14 +184,14 @@ test("integration: build application.n standalone without enabled string bundlin
 	const includedTasks = ["minify", "generateStandaloneAppBundle"];
 
 	const graph = await graphFromObject({
-		dependencyTree: applicationNTree
+		dependencyTree: applicationNTree,
 	});
 
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
 		excludedTasks,
-		includedTasks
+		includedTasks,
 	});
 	const expectedFiles = await findFiles(expectedPath);
 
@@ -207,17 +207,17 @@ test("integration: build application.n standalone without enabled string bundlin
 });
 
 const applicationNTree = {
-	"id": "application.n",
-	"version": "1.0.0",
-	"path": applicationNPath,
-	"dependencies": [],
-	"configuration": {
-		"specVersion": "4.0",
-		"type": "application",
-		"metadata": {
-			"name": "application.n"
-		}
-	}
+	id: "application.n",
+	version: "1.0.0",
+	path: applicationNPath,
+	dependencies: [],
+	configuration: {
+		specVersion: "4.0",
+		type: "application",
+		metadata: {
+			name: "application.n",
+		},
+	},
 };
 
 test("integration: build application.n standalone with enabled string bundling", async (t) => {
@@ -227,14 +227,14 @@ test("integration: build application.n standalone with enabled string bundling",
 	const includedTasks = ["minify", "generateStandaloneAppBundle"];
 
 	const graph = await graphFromObject({
-		dependencyTree: applicationNTreeLegacy
+		dependencyTree: applicationNTreeLegacy,
 	});
 
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
 		excludedTasks,
-		includedTasks
+		includedTasks,
 	});
 	const expectedFiles = await findFiles(expectedPath);
 
@@ -250,15 +250,15 @@ test("integration: build application.n standalone with enabled string bundling",
 });
 
 const applicationNTreeLegacy = {
-	"id": "application.n",
-	"version": "1.0.0",
-	"path": applicationNPath,
-	"dependencies": [],
-	"configuration": {
-		"specVersion": "3.1",
-		"type": "application",
-		"metadata": {
-			"name": "application.n"
-		}
-	}
+	id: "application.n",
+	version: "1.0.0",
+	path: applicationNPath,
+	dependencies: [],
+	configuration: {
+		specVersion: "3.1",
+		type: "application",
+		metadata: {
+			name: "application.n",
+		},
+	},
 };

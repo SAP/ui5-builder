@@ -15,9 +15,9 @@ async function setupSapUiDefineCallWithStubbedLogger({context}) {
 	context.SapUiDefineCallWithStubbedLogger = await esmock("../../../../lib/lbt/calls/SapUiDefine.js", {
 		"@ui5/logger": {
 			getLogger: {
-				warn: context.warningLogSpy
-			}
-		}
+				warn: context.warningLogSpy,
+			},
+		},
 	});
 }
 
@@ -157,4 +157,3 @@ test("Export as Global: true", (t) => {
 	const call = new SapUiDefineCall(ast, "FileSystemName");
 	t.is(call.exportAsGlobal, true);
 });
-

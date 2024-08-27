@@ -28,23 +28,23 @@ const createProjectMetadata = (names: string[], version?: string, type?: string)
 		getName: () => key,
 		getNamespace: () => names.join("/"),
 		getVersion: () => version || "3.0.0-" + key,
-		getType: () => type || "library"
+		getType: () => type || "library",
 	};
 };
 
 function createWorkspace() {
 	return resourceFactory.createAdapter({
 		virBasePath: "/",
-		project: createProjectMetadata(["test", "lib"], "2.0.0")
+		project: createProjectMetadata(["test", "lib"], "2.0.0"),
 	});
 }
 
 function createDependencies(oOptions = {
 	virBasePath: "/resources/",
-	fsBasePath: path.join(__dirname, "..", "..", "fixtures", "sap.ui.core-evo", "main", "src")
+	fsBasePath: path.join(__dirname, "..", "..", "fixtures", "sap.ui.core-evo", "main", "src"),
 }) {
 	oOptions = Object.assign({
-		project: createProjectMetadata(["test", "lib3"], "3.0.0")
+		project: createProjectMetadata(["test", "lib3"], "3.0.0"),
 	}, oOptions);
 	return resourceFactory.createAdapter(oOptions);
 }
@@ -55,12 +55,12 @@ async function createOptions(t, options) {
 	await Promise.all(resources.map((resource) => workspace.write(resource)));
 	const oOptions = {
 		workspace,
-		dependencies
+		dependencies,
 	};
 	oOptions.options = options || {
 		projectName: "Test Lib",
 		pattern: "/**/*.js",
-		rootProject: createProjectMetadata(["myname"], "1.33.7")
+		rootProject: createProjectMetadata(["myname"], "1.33.7"),
 	};
 	return oOptions;
 }
@@ -106,15 +106,15 @@ test.beforeEach(async (t) => {
 		warn: t.context.warnLogStub,
 		info: t.context.infoLogStub,
 		silly: t.context.sillyLogStub,
-		isLevelEnabled: () => true
+		isLevelEnabled: () => true,
 	};
 
 	t.context.generateVersionInfo = await esmock("../../../lib/tasks/generateVersionInfo.js", {
 
 	}, {
 		"@ui5/logger": {
-			getLogger: sinon.stub().withArgs("builder:processors:versionInfoGenerator").returns(t.context.log)
-		}
+			getLogger: sinon.stub().withArgs("builder:processors:versionInfoGenerator").returns(t.context.log),
+		},
 	});
 });
 
@@ -142,19 +142,19 @@ test.serial("integration: Library without i18n bundle file", async (t) => {
 
 			</library>
 		`,
-		project: t.context.workspace._project
+		project: t.context.workspace._project,
 	}));
 
 	const oOptions = await createOptions(t);
 	await assertCreatedVersionInfo(t, {
-		"libraries": [{
-			"name": "test.lib3",
-			"scmRevision": "",
-			"version": "3.0.0"
+		libraries: [{
+			name: "test.lib3",
+			scmRevision: "",
+			version: "3.0.0",
 		}],
-		"name": "myname",
-		"scmRevision": "",
-		"version": "1.33.7",
+		name: "myname",
+		scmRevision: "",
+		version: "1.33.7",
 	}, oOptions);
 
 	t.is(t.context.verboseLogStub.callCount, 1);
@@ -175,36 +175,36 @@ test.serial("integration: Library without i18n bundle file", async (t) => {
 const createManifestResource = async (dependencies, resourceFactory, names: string[], deps: object[], embeds?: string[], embeddedBy?: string) => {
 	const content = {
 		"sap.app": {
-			"id": names.join("."),
-			"embeds": []
+			id: names.join("."),
+			embeds: [],
 		},
 		"sap.ui5": {
-			"dependencies": {
-				"minUI5Version": "1.84",
-				"libs": {}
-			}
-		}
+			dependencies: {
+				minUI5Version: "1.84",
+				libs: {},
+			},
+		},
 	};
 
 	const libs = {};
 	deps.forEach((dep) => {
 		libs[dep.name] = {
-			"minVersion": "1.84.0"
+			minVersion: "1.84.0",
 		};
 		if (dep.lazy) {
 			libs[dep.name].lazy = true;
 		}
 	});
-	content["sap.ui5"]["dependencies"]["libs"] = libs;
+	content["sap.ui5"].dependencies.libs = libs;
 	if (embeds !== undefined) {
-		content["sap.app"]["embeds"] = embeds;
+		content["sap.app"].embeds = embeds;
 	}
 	if (embeddedBy !== undefined) {
-		content["sap.app"]["embeddedBy"] = embeddedBy;
+		content["sap.app"].embeddedBy = embeddedBy;
 	}
 	await dependencies.write(resourceFactory.createResource({
 		path: `/resources/${names.join("/")}/manifest.json`,
-		string: JSON.stringify(content, null, 2)
+		string: JSON.stringify(content, null, 2),
 	}));
 };
 
@@ -227,7 +227,7 @@ async function createDotLibrary(dependencies, resourceFactory, names: string[]) 
 
 				<documentation>Library ${names.slice(1).join(".").toUpperCase()}</documentation>
 			</library>
-		`
+		`,
 	}));
 }
 
@@ -245,10 +245,10 @@ const createResources = async (dependencies, resourceFactory, names: string[], d
 };
 
 function createDepWorkspace(names, oOptions = {
-	virBasePath: "/resources"
+	virBasePath: "/resources",
 }) {
 	oOptions = Object.assign({
-		project: createProjectMetadata(names)
+		project: createProjectMetadata(names),
 	}, oOptions);
 	return resourceFactory.createAdapter(oOptions);
 }
@@ -286,49 +286,49 @@ test.serial("integration: sibling eager to lazy", async (t) => {
 		options: {
 			projectName: "Test Lib",
 			pattern: "/resources/**/.library",
-			rootProject: createProjectMetadata(["myname"], "1.33.7")
+			rootProject: createProjectMetadata(["myname"], "1.33.7"),
 		},
 		workspace,
 		dependencies: resourceFactory.createReaderCollection({
 			name: "dependencies",
-			readers: [dependenciesA, dependenciesB, dependenciesC]
-		})
+			readers: [dependenciesA, dependenciesB, dependenciesC],
+		}),
 	};
 	await assertCreatedVersionInfo(t, {
-		"name": "myname",
-		"scmRevision": "",
-		"version": "1.33.7",
-		"libraries": [{
-			"name": "lib.a",
-			"scmRevision": "",
-			"version": "3.0.0-lib.a",
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
+		name: "myname",
+		scmRevision: "",
+		version: "1.33.7",
+		libraries: [{
+			name: "lib.a",
+			scmRevision: "",
+			version: "3.0.0-lib.a",
+			manifestHints: {
+				dependencies: {
+					libs: {
 						"lib.b": {},
-						"lib.c": {}
-					}
-				}
+						"lib.c": {},
+					},
+				},
 			},
 		},
 		{
-			"name": "lib.b",
-			"scmRevision": "",
-			"version": "3.0.0-lib.b",
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
+			name: "lib.b",
+			scmRevision: "",
+			version: "3.0.0-lib.b",
+			manifestHints: {
+				dependencies: {
+					libs: {
 						"lib.c": {
-							"lazy": true
-						}
-					}
-				}
+							lazy: true,
+						},
+					},
+				},
 			},
 		},
 		{
-			"name": "lib.c",
-			"scmRevision": "",
-			"version": "3.0.0-lib.c",
+			name: "lib.c",
+			scmRevision: "",
+			version: "3.0.0-lib.c",
 		}],
 	}, oOptions);
 });
@@ -367,47 +367,47 @@ test.serial("integration: sibling lazy to eager", async (t) => {
 		options: {
 			projectName: "Test Lib",
 			pattern: "/resources/**/.library",
-			rootProject: createProjectMetadata(["myname"], "1.33.7")
+			rootProject: createProjectMetadata(["myname"], "1.33.7"),
 		},
 		workspace,
 		dependencies: resourceFactory.createReaderCollection({
 			name: "dependencies",
-			readers: [dependenciesA, dependenciesB, dependenciesC]
-		})
+			readers: [dependenciesA, dependenciesB, dependenciesC],
+		}),
 	};
 	await assertCreatedVersionInfo(t, {
-		"name": "myname",
-		"scmRevision": "",
-		"version": "1.33.7",
-		"libraries": [{
-			"name": "lib.a",
-			"scmRevision": "",
-			"version": "3.0.0-lib.a",
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
+		name: "myname",
+		scmRevision: "",
+		version: "1.33.7",
+		libraries: [{
+			name: "lib.a",
+			scmRevision: "",
+			version: "3.0.0-lib.a",
+			manifestHints: {
+				dependencies: {
+					libs: {
 						"lib.b": {},
-						"lib.c": {}
-					}
-				}
+						"lib.c": {},
+					},
+				},
 			},
 		},
 		{
-			"name": "lib.b",
-			"scmRevision": "",
-			"version": "3.0.0-lib.b",
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
-						"lib.c": {}
-					}
-				}
+			name: "lib.b",
+			scmRevision: "",
+			version: "3.0.0-lib.b",
+			manifestHints: {
+				dependencies: {
+					libs: {
+						"lib.c": {},
+					},
+				},
 			},
 		},
 		{
-			"name": "lib.c",
-			"scmRevision": "",
-			"version": "3.0.0-lib.c",
+			name: "lib.c",
+			scmRevision: "",
+			version: "3.0.0-lib.c",
 		}],
 	}, oOptions);
 });
@@ -447,51 +447,51 @@ test.serial("integration: children eager to lazy", async (t) => {
 		options: {
 			projectName: "Test Lib",
 			pattern: "/resources/**/.library",
-			rootProject: createProjectMetadata(["myname"], "1.33.7")
+			rootProject: createProjectMetadata(["myname"], "1.33.7"),
 		},
 		workspace,
 		dependencies: resourceFactory.createReaderCollection({
 			name: "dependencies",
-			readers: [dependenciesA, dependenciesB, dependenciesC]
-		})
+			readers: [dependenciesA, dependenciesB, dependenciesC],
+		}),
 	};
 	await assertCreatedVersionInfo(t, {
-		"name": "myname",
-		"scmRevision": "",
-		"version": "1.33.7",
-		"libraries": [{
-			"name": "lib.a",
-			"scmRevision": "",
-			"version": "3.0.0-lib.a",
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
+		name: "myname",
+		scmRevision: "",
+		version: "1.33.7",
+		libraries: [{
+			name: "lib.a",
+			scmRevision: "",
+			version: "3.0.0-lib.a",
+			manifestHints: {
+				dependencies: {
+					libs: {
 						"lib.b": {},
 						"lib.c": {
-							"lazy": true
-						}
-					}
-				}
+							lazy: true,
+						},
+					},
+				},
 			},
 		},
 		{
-			"name": "lib.b",
-			"scmRevision": "",
-			"version": "3.0.0-lib.b",
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
+			name: "lib.b",
+			scmRevision: "",
+			version: "3.0.0-lib.b",
+			manifestHints: {
+				dependencies: {
+					libs: {
 						"lib.c": {
-							"lazy": true
-						}
-					}
-				}
+							lazy: true,
+						},
+					},
+				},
 			},
 		},
 		{
-			"name": "lib.c",
-			"scmRevision": "",
-			"version": "3.0.0-lib.c",
+			name: "lib.c",
+			scmRevision: "",
+			version: "3.0.0-lib.c",
 		}],
 	}, oOptions);
 });
@@ -531,51 +531,51 @@ test.serial("integration: children lazy to eager", async (t) => {
 		options: {
 			projectName: "Test Lib",
 			pattern: "/resources/**/.library",
-			rootProject: createProjectMetadata(["myname"], "1.33.7")
+			rootProject: createProjectMetadata(["myname"], "1.33.7"),
 		},
 		workspace,
 		dependencies: resourceFactory.createReaderCollection({
 			name: "dependencies",
-			readers: [dependenciesA, dependenciesB, dependenciesC]
-		})
+			readers: [dependenciesA, dependenciesB, dependenciesC],
+		}),
 	};
 	await assertCreatedVersionInfo(t, {
-		"name": "myname",
-		"scmRevision": "",
-		"version": "1.33.7",
-		"libraries": [{
-			"name": "lib.a",
-			"scmRevision": "",
-			"version": "3.0.0-lib.a",
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
+		name: "myname",
+		scmRevision: "",
+		version: "1.33.7",
+		libraries: [{
+			name: "lib.a",
+			scmRevision: "",
+			version: "3.0.0-lib.a",
+			manifestHints: {
+				dependencies: {
+					libs: {
 						"lib.b": {
-							"lazy": true
+							lazy: true,
 						},
 						"lib.c": {
-							"lazy": true
-						}
-					}
-				}
+							lazy: true,
+						},
+					},
+				},
 			},
 		},
 		{
-			"name": "lib.b",
-			"scmRevision": "",
-			"version": "3.0.0-lib.b",
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
-						"lib.c": {}
-					}
-				}
+			name: "lib.b",
+			scmRevision: "",
+			version: "3.0.0-lib.b",
+			manifestHints: {
+				dependencies: {
+					libs: {
+						"lib.c": {},
+					},
+				},
 			},
 		},
 		{
-			"name": "lib.c",
-			"scmRevision": "",
-			"version": "3.0.0-lib.c",
+			name: "lib.c",
+			scmRevision: "",
+			version: "3.0.0-lib.c",
 		}],
 	}, oOptions);
 });
@@ -630,97 +630,97 @@ test.serial("integration: Library with dependencies and subcomponent complex sce
 		options: {
 			projectName: "Test Lib",
 			pattern: "/resources/**/.library",
-			rootProject: createProjectMetadata(["myname"], "1.33.7")
+			rootProject: createProjectMetadata(["myname"], "1.33.7"),
 		},
 		workspace,
 		dependencies: resourceFactory.createReaderCollection({
 			name: "dependencies",
-			readers: [dependenciesA, dependenciesB, dependenciesC, dependenciesD, dependenciesE]
-		})
+			readers: [dependenciesA, dependenciesB, dependenciesC, dependenciesD, dependenciesE],
+		}),
 	};
 	await assertCreatedVersionInfo(t, {
-		"name": "myname",
-		"scmRevision": "",
-		"version": "1.33.7",
-		"libraries": [{
-			"name": "lib.a",
-			"scmRevision": "",
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
+		name: "myname",
+		scmRevision: "",
+		version: "1.33.7",
+		libraries: [{
+			name: "lib.a",
+			scmRevision: "",
+			manifestHints: {
+				dependencies: {
+					libs: {
 						"lib.b": {},
 						"lib.c": {},
 						"lib.d": {},
-						"lib.e": {}
-					}
-				}
+						"lib.e": {},
+					},
+				},
 			},
-			"version": "3.0.0-lib.a",
+			version: "3.0.0-lib.a",
 		},
 		{
-			"name": "lib.b",
-			"scmRevision": "",
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
+			name: "lib.b",
+			scmRevision: "",
+			manifestHints: {
+				dependencies: {
+					libs: {
 						"lib.c": {
-							"lazy": true
+							lazy: true,
 						},
 						"lib.d": {
-							"lazy": true
+							lazy: true,
 						},
 						"lib.e": {
-							"lazy": true
-						}
-					}
-				}
+							lazy: true,
+						},
+					},
+				},
 			},
-			"version": "3.0.0-lib.b",
+			version: "3.0.0-lib.b",
 		},
 		{
-			"name": "lib.c",
-			"scmRevision": "",
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
+			name: "lib.c",
+			scmRevision: "",
+			manifestHints: {
+				dependencies: {
+					libs: {
 						"lib.d": {},
-						"lib.e": {}
-					}
-				}
+						"lib.e": {},
+					},
+				},
 			},
-			"version": "3.0.0-lib.c",
+			version: "3.0.0-lib.c",
 		},
 		{
-			"name": "lib.d",
-			"scmRevision": "",
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
-						"lib.e": {}
-					}
-				}
+			name: "lib.d",
+			scmRevision: "",
+			manifestHints: {
+				dependencies: {
+					libs: {
+						"lib.e": {},
+					},
+				},
 			},
-			"version": "3.0.0-lib.d",
+			version: "3.0.0-lib.d",
 		},
 		{
-			"name": "lib.e",
-			"scmRevision": "",
-			"version": "3.0.0-lib.e",
+			name: "lib.e",
+			scmRevision: "",
+			version: "3.0.0-lib.e",
 		}],
-		"components": {
+		components: {
 			"lib.a.sub.fold": {
-				"hasOwnPreload": true,
-				"library": "lib.a",
-				"manifestHints": {
-					"dependencies": {
-						"libs": {
+				hasOwnPreload: true,
+				library: "lib.a",
+				manifestHints: {
+					dependencies: {
+						libs: {
 							"lib.c": {},
 							"lib.d": {},
-							"lib.e": {}
-						}
-					}
-				}
-			}
+							"lib.e": {},
+						},
+					},
+				},
+			},
 		},
 	}, oOptions);
 });
@@ -775,97 +775,97 @@ test.serial("integration: Library with dependencies and subcomponent bigger scen
 		options: {
 			projectName: "Test Lib",
 			pattern: "/resources/**/.library",
-			rootProject: createProjectMetadata(["myname"], "1.33.7")
+			rootProject: createProjectMetadata(["myname"], "1.33.7"),
 		},
 		workspace,
 		dependencies: resourceFactory.createReaderCollection({
 			name: "dependencies",
-			readers: [dependenciesA, dependenciesB, dependenciesC, dependenciesD, dependenciesE]
-		})
+			readers: [dependenciesA, dependenciesB, dependenciesC, dependenciesD, dependenciesE],
+		}),
 	};
 	await assertCreatedVersionInfo(t, {
-		"name": "myname",
-		"scmRevision": "",
-		"version": "1.33.7",
-		"libraries": [{
-			"name": "lib.a",
-			"scmRevision": "",
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
+		name: "myname",
+		scmRevision: "",
+		version: "1.33.7",
+		libraries: [{
+			name: "lib.a",
+			scmRevision: "",
+			manifestHints: {
+				dependencies: {
+					libs: {
 						"lib.b": {},
 						"lib.c": {},
 						"lib.d": {},
-						"lib.e": {}
-					}
-				}
+						"lib.e": {},
+					},
+				},
 			},
-			"version": "3.0.0-lib.a",
+			version: "3.0.0-lib.a",
 		},
 		{
-			"name": "lib.b",
-			"scmRevision": "",
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
+			name: "lib.b",
+			scmRevision: "",
+			manifestHints: {
+				dependencies: {
+					libs: {
 						"lib.c": {
-							"lazy": true
+							lazy: true,
 						},
 						"lib.d": {
-							"lazy": true
+							lazy: true,
 						},
 						"lib.e": {
-							"lazy": true
-						}
-					}
-				}
+							lazy: true,
+						},
+					},
+				},
 			},
-			"version": "3.0.0-lib.b",
+			version: "3.0.0-lib.b",
 		},
 		{
-			"name": "lib.c",
-			"scmRevision": "",
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
+			name: "lib.c",
+			scmRevision: "",
+			manifestHints: {
+				dependencies: {
+					libs: {
 						"lib.d": {},
-						"lib.e": {}
-					}
-				}
+						"lib.e": {},
+					},
+				},
 			},
-			"version": "3.0.0-lib.c",
+			version: "3.0.0-lib.c",
 		},
 		{
-			"name": "lib.d",
-			"scmRevision": "",
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
-						"lib.e": {}
-					}
-				}
+			name: "lib.d",
+			scmRevision: "",
+			manifestHints: {
+				dependencies: {
+					libs: {
+						"lib.e": {},
+					},
+				},
 			},
-			"version": "3.0.0-lib.d",
+			version: "3.0.0-lib.d",
 		},
 		{
-			"name": "lib.e",
-			"scmRevision": "",
-			"version": "3.0.0-lib.e",
+			name: "lib.e",
+			scmRevision: "",
+			version: "3.0.0-lib.e",
 		}],
-		"components": {
+		components: {
 			"lib.a.sub.fold": {
-				"hasOwnPreload": true,
-				"library": "lib.a",
-				"manifestHints": {
-					"dependencies": {
-						"libs": {
+				hasOwnPreload: true,
+				library: "lib.a",
+				manifestHints: {
+					dependencies: {
+						libs: {
 							"lib.c": {},
 							"lib.d": {},
-							"lib.e": {}
-						}
-					}
-				}
-			}
+							"lib.e": {},
+						},
+					},
+				},
+			},
 		},
 	}, oOptions);
 });
@@ -889,24 +889,24 @@ test.serial("integration: Library without dependencies and embeds and embeddedBy
 		options: {
 			projectName: "Test Lib",
 			pattern: "/resources/**/.library",
-			rootProject: createProjectMetadata(["myname"], "1.33.7")
+			rootProject: createProjectMetadata(["myname"], "1.33.7"),
 		},
 		workspace,
-		dependencies
+		dependencies,
 	};
 	await assertCreatedVersionInfo(t, {
-		"name": "myname",
-		"scmRevision": "",
-		"version": "1.33.7",
-		"libraries": [{
-			"name": "lib.a",
-			"scmRevision": "",
-			"version": "3.0.0-lib.a",
+		name: "myname",
+		scmRevision: "",
+		version: "1.33.7",
+		libraries: [{
+			name: "lib.a",
+			scmRevision: "",
+			version: "3.0.0-lib.a",
 		}],
-		"components": {
+		components: {
 			"lib.a.sub.fold": {
-				"library": "lib.a"
-			}
+				library: "lib.a",
+			},
 		},
 	}, oOptions);
 });
@@ -931,25 +931,25 @@ test.serial("integration: Library without dependencies and embeddedBy undefined"
 		options: {
 			projectName: "Test Lib",
 			pattern: "/resources/**/.library",
-			rootProject: createProjectMetadata(["myname"], "1.33.7")
+			rootProject: createProjectMetadata(["myname"], "1.33.7"),
 		},
 		workspace,
-		dependencies
+		dependencies,
 	};
 	await assertCreatedVersionInfo(t, {
-		"name": "myname",
-		"scmRevision": "",
-		"version": "1.33.7",
-		"libraries": [{
-			"name": "lib.a",
-			"scmRevision": "",
-			"version": "3.0.0-lib.a",
+		name: "myname",
+		scmRevision: "",
+		version: "1.33.7",
+		libraries: [{
+			name: "lib.a",
+			scmRevision: "",
+			version: "3.0.0-lib.a",
 		}],
-		"components": {
+		components: {
 			"lib.a.sub.fold": {
-				"hasOwnPreload": true,
-				"library": "lib.a"
-			}
+				hasOwnPreload: true,
+				library: "lib.a",
+			},
 		},
 	}, oOptions);
 
@@ -978,25 +978,25 @@ test.serial("integration: Library without dependencies and embeddedBy not a stri
 		options: {
 			projectName: "Test Lib",
 			pattern: "/resources/**/.library",
-			rootProject: createProjectMetadata(["myname"], "1.33.7")
+			rootProject: createProjectMetadata(["myname"], "1.33.7"),
 		},
 		workspace,
-		dependencies
+		dependencies,
 	};
 	await assertCreatedVersionInfo(t, {
-		"name": "myname",
-		"scmRevision": "",
-		"version": "1.33.7",
-		"libraries": [{
-			"name": "lib.a",
-			"scmRevision": "",
-			"version": "3.0.0-lib.a",
+		name: "myname",
+		scmRevision: "",
+		version: "1.33.7",
+		libraries: [{
+			name: "lib.a",
+			scmRevision: "",
+			version: "3.0.0-lib.a",
 		}],
-		"components": {
+		components: {
 			"lib.a.sub.fold": {
-				"hasOwnPreload": true,
-				"library": "lib.a"
-			}
+				hasOwnPreload: true,
+				library: "lib.a",
+			},
 		},
 	}, oOptions);
 
@@ -1026,25 +1026,25 @@ test.serial("integration: Library without dependencies and embeddedBy empty stri
 		options: {
 			projectName: "Test Lib",
 			pattern: "/resources/**/.library",
-			rootProject: createProjectMetadata(["myname"], "1.33.7")
+			rootProject: createProjectMetadata(["myname"], "1.33.7"),
 		},
 		workspace,
-		dependencies
+		dependencies,
 	};
 	await assertCreatedVersionInfo(t, {
-		"name": "myname",
-		"scmRevision": "",
-		"version": "1.33.7",
-		"libraries": [{
-			"name": "lib.a",
-			"scmRevision": "",
-			"version": "3.0.0-lib.a",
+		name: "myname",
+		scmRevision: "",
+		version: "1.33.7",
+		libraries: [{
+			name: "lib.a",
+			scmRevision: "",
+			version: "3.0.0-lib.a",
 		}],
-		"components": {
+		components: {
 			"lib.a.sub.fold": {
-				"hasOwnPreload": true,
-				"library": "lib.a"
-			}
+				hasOwnPreload: true,
+				library: "lib.a",
+			},
 		},
 	}, oOptions);
 
@@ -1074,25 +1074,25 @@ test.serial("integration: Library without dependencies and embeddedBy path not c
 		options: {
 			projectName: "Test Lib",
 			pattern: "/resources/**/.library",
-			rootProject: createProjectMetadata(["myname"], "1.33.7")
+			rootProject: createProjectMetadata(["myname"], "1.33.7"),
 		},
 		workspace,
-		dependencies
+		dependencies,
 	};
 	await assertCreatedVersionInfo(t, {
-		"name": "myname",
-		"scmRevision": "",
-		"version": "1.33.7",
-		"libraries": [{
-			"name": "lib.a",
-			"scmRevision": "",
-			"version": "3.0.0-lib.a"
+		name: "myname",
+		scmRevision: "",
+		version: "1.33.7",
+		libraries: [{
+			name: "lib.a",
+			scmRevision: "",
+			version: "3.0.0-lib.a",
 		}],
-		"components": {
+		components: {
 			"lib.a.sub.fold": {
-				"hasOwnPreload": true,
-				"library": "lib.a"
-			}
+				hasOwnPreload: true,
+				library: "lib.a",
+			},
 		},
 	}, oOptions);
 
@@ -1113,31 +1113,30 @@ test.serial("integration: Library with manifest with invalid dependency", async 
 	// lib.a
 	await createResources(dependencies, resourceFactory, ["lib", "a"], [{name: "non.existing"}]);
 
-
 	const oOptions = {
 		options: {
 			projectName: "Test Lib",
 			pattern: "/resources/**/.library",
-			rootProject: createProjectMetadata(["myname"], "1.33.7")
+			rootProject: createProjectMetadata(["myname"], "1.33.7"),
 		},
 		workspace,
-		dependencies
+		dependencies,
 	};
 	await assertCreatedVersionInfo(t, {
-		"name": "myname",
-		"scmRevision": "",
-		"version": "1.33.7",
-		"libraries": [{
-			"name": "lib.a",
-			"scmRevision": "",
-			"version": "3.0.0-lib.a",
-			"manifestHints": {
-				"dependencies": {
-					"libs": {
+		name: "myname",
+		scmRevision: "",
+		version: "1.33.7",
+		libraries: [{
+			name: "lib.a",
+			scmRevision: "",
+			version: "3.0.0-lib.a",
+			manifestHints: {
+				dependencies: {
+					libs: {
 						"non.existing": {},
 					},
 				},
-			}
+			},
 		}],
 	}, oOptions);
 
@@ -1157,27 +1156,26 @@ test.serial("integration: Library of type 'module'", async (t) => {
 	// dependencies
 	const dependencies = createDepWorkspace(["module", "x"], {
 		virBasePath: "/",
-		project: createProjectMetadata(["module", "x"], "1.0.0", "module")
+		project: createProjectMetadata(["module", "x"], "1.0.0", "module"),
 	});
 
 	// lib.a
 	await createResources(dependencies, resourceFactory, ["module", "x"], [{name: "non.existing"}]);
 
-
 	const oOptions = {
 		options: {
 			projectName: "Test Lib",
 			pattern: "/resources/**/.library",
-			rootProject: createProjectMetadata(["myname"], "1.33.7")
+			rootProject: createProjectMetadata(["myname"], "1.33.7"),
 		},
 		workspace,
-		dependencies
+		dependencies,
 	};
 	await assertCreatedVersionInfo(t, {
-		"name": "myname",
-		"scmRevision": "",
-		"version": "1.33.7",
-		"libraries": [],
+		name: "myname",
+		scmRevision: "",
+		version: "1.33.7",
+		libraries: [],
 	}, oOptions);
 
 	t.is(infoLogStub.callCount, 0);

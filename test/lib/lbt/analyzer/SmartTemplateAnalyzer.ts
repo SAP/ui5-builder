@@ -30,9 +30,9 @@ test("analyze: without manifest", async (t) => {
 			return {
 				buffer: async () => {
 					throw new Error("Some error");
-				}
+				},
 			};
-		}
+		},
 	};
 
 	const moduleInfo = {};
@@ -59,34 +59,33 @@ test("_analyzeManifest: without manifest", async (t) => {
 	t.deepEqual(result, [], "resolves with empty array");
 });
 
-
 test("_analyzeManifest: with manifest with recursive pages (as array)", async (t) => {
 	const {sinon, SmartTemplateAnalyzer} = t.context;
 
 	const moduleInfo = {
-		addDependency: function() {}
+		addDependency: function () {},
 	};
 	const stubAddDependency = sinon.spy(moduleInfo, "addDependency");
 
 	const manifest = {
 		"sap.ui.generic.app": {
-			"pages": [{
-				"component": {
-					"name": "test.mycomp",
-					"settings": {
-						"templateName": "myTemplate"
-					}
-				},
-				"pages": [{
-					"component": {
-						"name": "test.mycomp2",
-						"settings": {
-							"templateName": "myTemplate"
-						}
+			pages: [{
+				component: {
+					name: "test.mycomp",
+					settings: {
+						templateName: "myTemplate",
 					},
-				}]
-			}]
-		}
+				},
+				pages: [{
+					component: {
+						name: "test.mycomp2",
+						settings: {
+							templateName: "myTemplate",
+						},
+					},
+				}],
+			}],
+		},
 	};
 
 	const analyzer = new SmartTemplateAnalyzer();
@@ -98,31 +97,31 @@ test("_analyzeManifest: with manifest with recursive pages (as array)", async (t
 	t.is(stubAnalyzeTemplateComponent.getCall(0).args[0], "test/mycomp/Component.js",
 		"_analyzeTemplateComponent should be called with the component");
 	t.deepEqual(stubAnalyzeTemplateComponent.getCall(0).args[1], {
-		"component": {
-			"name": "test.mycomp",
-			"settings": {
-				"templateName": "myTemplate"
-			}
-		},
-		"pages": [{
-			"component": {
-				"name": "test.mycomp2",
-				"settings": {
-					"templateName": "myTemplate"
-				}
+		component: {
+			name: "test.mycomp",
+			settings: {
+				templateName: "myTemplate",
 			},
-		}]
+		},
+		pages: [{
+			component: {
+				name: "test.mycomp2",
+				settings: {
+					templateName: "myTemplate",
+				},
+			},
+		}],
 	}, "_analyzeTemplateComponent should be called with the page");
 
 	t.is(stubAnalyzeTemplateComponent.getCall(1).args[0], "test/mycomp2/Component.js",
 		"_analyzeTemplateComponent should be called with the component");
 	t.deepEqual(stubAnalyzeTemplateComponent.getCall(1).args[1], {
-		"component": {
-			"name": "test.mycomp2",
-			"settings": {
-				"templateName": "myTemplate"
-			}
-		}
+		component: {
+			name: "test.mycomp2",
+			settings: {
+				templateName: "myTemplate",
+			},
+		},
 	}, "_analyzeTemplateComponent should be called with the page");
 
 	t.is(stubAddDependency.callCount, 2, "addDependency was called twice");
@@ -134,33 +133,33 @@ test("_analyzeManifest: with manifest with recursive pages (as object)", async (
 	const {sinon, SmartTemplateAnalyzer} = t.context;
 
 	const moduleInfo = {
-		addDependency: function() {}
+		addDependency: function () {},
 	};
 	const stubAddDependency = sinon.spy(moduleInfo, "addDependency");
 
 	const manifest = {
 		"sap.ui.generic.app": {
-			"pages": {
-				"MyPage1": {
-					"component": {
-						"name": "test.mycomp",
-						"settings": {
-							"templateName": "myTemplate"
-						}
+			pages: {
+				MyPage1: {
+					component: {
+						name: "test.mycomp",
+						settings: {
+							templateName: "myTemplate",
+						},
 					},
-					"pages": {
-						"MyPage2": {
-							"component": {
-								"name": "test.mycomp2",
-								"settings": {
-									"templateName": "myTemplate"
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+					pages: {
+						MyPage2: {
+							component: {
+								name: "test.mycomp2",
+								settings: {
+									templateName: "myTemplate",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	};
 
 	const analyzer = new SmartTemplateAnalyzer();
@@ -172,33 +171,33 @@ test("_analyzeManifest: with manifest with recursive pages (as object)", async (
 	t.is(stubAnalyzeTemplateComponent.getCall(0).args[0], "test/mycomp/Component.js",
 		"_analyzeTemplateComponent should be called with the component");
 	t.deepEqual(stubAnalyzeTemplateComponent.getCall(0).args[1], {
-		"component": {
-			"name": "test.mycomp",
-			"settings": {
-				"templateName": "myTemplate"
-			}
+		component: {
+			name: "test.mycomp",
+			settings: {
+				templateName: "myTemplate",
+			},
 		},
-		"pages": {
-			"MyPage2": {
-				"component": {
-					"name": "test.mycomp2",
-					"settings": {
-						"templateName": "myTemplate"
-					}
-				}
-			}
-		}
+		pages: {
+			MyPage2: {
+				component: {
+					name: "test.mycomp2",
+					settings: {
+						templateName: "myTemplate",
+					},
+				},
+			},
+		},
 	}, "_analyzeTemplateComponent should be called with the page");
 
 	t.is(stubAnalyzeTemplateComponent.getCall(1).args[0], "test/mycomp2/Component.js",
 		"_analyzeTemplateComponent should be called with the component");
 	t.deepEqual(stubAnalyzeTemplateComponent.getCall(1).args[1], {
-		"component": {
-			"name": "test.mycomp2",
-			"settings": {
-				"templateName": "myTemplate"
-			}
-		}
+		component: {
+			name: "test.mycomp2",
+			settings: {
+				templateName: "myTemplate",
+			},
+		},
 	}, "_analyzeTemplateComponent should be called with the page");
 
 	t.is(stubAddDependency.callCount, 2, "addDependency was called twice");
@@ -210,19 +209,19 @@ test.serial("_analyzeTemplateComponent: Manifest with TemplateAssembler code", a
 	const {sinon, SmartTemplateAnalyzer} = t.context;
 
 	const moduleInfo = {
-		addDependency: function() {}
+		addDependency: function () {},
 	};
 	const stubAddDependency = sinon.spy(moduleInfo, "addDependency");
 
 	const mockPool = {
 		async findResource() {
 			return {
-				buffer: async () => ""
+				buffer: async () => "",
 			};
 		},
 		getIgnoreMissingModules() {
 			return false;
-		}
+		},
 	};
 
 	const analyzer = new SmartTemplateAnalyzer(mockPool);
@@ -236,7 +235,6 @@ test.serial("_analyzeTemplateComponent: Manifest with TemplateAssembler code", a
 	t.is(stubAnalyzeAST.getCall(0).args[0], "pony",
 		"_analyzeManifest should be called with the module name");
 
-
 	t.true(stubAddDependency.calledOnce, "addDependency was called once");
 	t.is(stubAddDependency.getCall(0).args[0], "mytpl.view.xml",
 		"addDependency should be called with the dependency name");
@@ -246,19 +244,19 @@ test.serial("_analyzeTemplateComponent: no default template name", async (t) => 
 	const {sinon, SmartTemplateAnalyzer} = t.context;
 
 	const moduleInfo = {
-		addDependency: function() {}
+		addDependency: function () {},
 	};
 	const stubAddDependency = sinon.spy(moduleInfo, "addDependency");
 
 	const mockPool = {
 		async findResource() {
 			return {
-				buffer: async () => ""
+				buffer: async () => "",
 			};
 		},
 		getIgnoreMissingModules() {
 			return false;
-		}
+		},
 	};
 
 	const analyzer = new SmartTemplateAnalyzer(mockPool);
@@ -277,19 +275,19 @@ test.serial("_analyzeTemplateComponent: with template name from pageConfig", asy
 	const {sinon, SmartTemplateAnalyzer} = t.context;
 
 	const moduleInfo = {
-		addDependency: function() {}
+		addDependency: function () {},
 	};
 	const stubAddDependency = sinon.spy(moduleInfo, "addDependency");
 
 	const mockPool = {
 		async findResource() {
 			return {
-				buffer: async () => ""
+				buffer: async () => "",
 			};
 		},
 		getIgnoreMissingModules() {
 			return false;
-		}
+		},
 	};
 
 	const analyzer = new SmartTemplateAnalyzer(mockPool);
@@ -299,9 +297,9 @@ test.serial("_analyzeTemplateComponent: with template name from pageConfig", asy
 	await analyzer._analyzeTemplateComponent("pony", {
 		component: {
 			settings: {
-				templateName: "donkey"
-			}
-		}
+				templateName: "donkey",
+			},
+		},
 	}, moduleInfo);
 
 	t.true(stubAnalyzeAST.calledOnce, "_analyzeManifest was called once");
@@ -315,7 +313,7 @@ test.serial("_analyzeTemplateComponent: dependency not found", async (t) => {
 	const {sinon, SmartTemplateAnalyzer} = t.context;
 
 	const moduleInfo = {
-		addDependency: function() {}
+		addDependency: function () {},
 	};
 	const stubAddDependency = sinon.spy(moduleInfo, "addDependency");
 
@@ -325,7 +323,7 @@ test.serial("_analyzeTemplateComponent: dependency not found", async (t) => {
 		},
 		getIgnoreMissingModules() {
 			return false;
-		}
+		},
 	};
 
 	const analyzer = new SmartTemplateAnalyzer(mockPool);
@@ -335,9 +333,9 @@ test.serial("_analyzeTemplateComponent: dependency not found", async (t) => {
 	const error = await t.throwsAsync(analyzer._analyzeTemplateComponent("pony", {
 		component: {
 			settings: {
-				templateName: "donkey"
-			}
-		}
+				templateName: "donkey",
+			},
+		},
 	}, moduleInfo));
 
 	t.is(error.message, `resource not found in pool: 'pony'`);
@@ -351,7 +349,7 @@ test.serial("_analyzeTemplateComponent: dependency not found is ignored", async 
 	const {sinon, SmartTemplateAnalyzer} = t.context;
 
 	const moduleInfo = {
-		addDependency: function() {}
+		addDependency: function () {},
 	};
 	const stubAddDependency = sinon.spy(moduleInfo, "addDependency");
 
@@ -361,7 +359,7 @@ test.serial("_analyzeTemplateComponent: dependency not found is ignored", async 
 		},
 		getIgnoreMissingModules() {
 			return true; // Missing dependency error can be ignored
-		}
+		},
 	};
 
 	const analyzer = new SmartTemplateAnalyzer(mockPool);
@@ -371,9 +369,9 @@ test.serial("_analyzeTemplateComponent: dependency not found is ignored", async 
 	await analyzer._analyzeTemplateComponent("pony", {
 		component: {
 			settings: {
-				templateName: "donkey"
-			}
-		}
+				templateName: "donkey",
+			},
+		},
 	}, moduleInfo);
 
 	t.is(stubAnalyzeAST.callCount, 0, "_analyzeManifest was not called");
@@ -406,7 +404,6 @@ test("_analyzeAST: get template name from ast", (t) => {
 		"_analyzeTemplateClassDefinition").returns("donkey");
 
 	const result = analyzer._analyzeAST("pony", ast);
-
 
 	t.true(stubAnalyzeTemplateClassDefinition.calledOnce, "_analyzeTemplateClassDefinition was called once");
 
@@ -506,7 +503,6 @@ test("_analyzeAST: get template name from ast (ArrowFunction)", (t) => {
 		"_analyzeTemplateClassDefinition").returns("donkey");
 
 	const result = analyzer._analyzeAST("pony", ast);
-
 
 	t.true(stubAnalyzeTemplateClassDefinition.calledOnce, "_analyzeTemplateClassDefinition was called once");
 
@@ -667,7 +663,6 @@ test("_analyzeAST: get template name from ast (with SpreadElement)", (t) => {
 	t.is(templateName, "", "The TemplateName is correctly empty as SpreadElements are not supported");
 });
 
-
 test("_analyzeAST: no template name from ast", (t) => {
 	const {sinon, SmartTemplateAnalyzer} = t.context;
 	const code = `sap.ui.define(["a", "sap/suite/ui/generic/template/lib/TemplateAssembler"],
@@ -692,7 +687,6 @@ test("_analyzeAST: no template name from ast", (t) => {
 		"_analyzeTemplateClassDefinition").returns(false);
 
 	const result = analyzer._analyzeAST("pony", ast);
-
 
 	t.true(stubAnalyzeTemplateClassDefinition.calledOnce, "_analyzeTemplateClassDefinition was called once");
 
@@ -725,15 +719,15 @@ test("Analysis of Manifest and TemplateAssembler code", async (t) => {
 	const {SmartTemplateAnalyzer} = t.context;
 	const manifest = {
 		"sap.ui.generic.app": {
-			"pages": [{
-				"component": {
-					"name": "test.mycomp",
-					"settings": {
-						"templateName": "myTemplate"
-					}
+			pages: [{
+				component: {
+					name: "test.mycomp",
+					settings: {
+						templateName: "myTemplate",
+					},
 				},
-			}]
-		}
+			}],
+		},
 	};
 
 	const code = `sap.ui.define(["a", "sap/suite/ui/generic/template/lib/TemplateAssembler"],
@@ -753,9 +747,9 @@ test("Analysis of Manifest and TemplateAssembler code", async (t) => {
 	const mockPool = {
 		async findResource(name) {
 			return {
-				buffer: () => name.endsWith(".json") ? JSON.stringify(manifest): code
+				buffer: () => name.endsWith(".json") ? JSON.stringify(manifest) : code,
 			};
-		}
+		},
 	};
 
 	const moduleInfo = new ModuleInfo();

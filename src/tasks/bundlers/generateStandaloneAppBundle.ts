@@ -5,6 +5,10 @@ import moduleBundler from "../../processors/bundlers/moduleBundler.js";
 import {applyDefaultsToBundleDefinition} from "./utils/applyDefaultsToBundleDefinition.js";
 import createModuleNameMapping from "./utils/createModuleNameMapping.js";
 
+/**
+ *
+ * @param config
+ */
 function getBundleDefinition(config) {
 	const bundleDefinition = {
 		name: config.name,
@@ -17,9 +21,9 @@ function getBundleDefinition(config) {
 			".view.html",
 			".view.json",
 			".view.xml",
-			".properties"
+			".properties",
 		],
-		sections: []
+		sections: [],
 	};
 
 	// add raw section
@@ -29,7 +33,7 @@ function getBundleDefinition(config) {
 		filters: config.filters,
 		resolve: true, // dependencies for raw modules are taken from shims in .library files
 		sort: true, // topological sort on raw modules is mandatory
-		declareModules: false
+		declareModules: false,
 	});
 
 	// preload section is only relevant for sap-ui-custom.js
@@ -42,26 +46,25 @@ function getBundleDefinition(config) {
 				`${config.namespace || ""}/changes/changes-bundle.json`,
 				`${config.namespace || ""}/changes/flexibility-bundle.json`,
 				`!${config.namespace || ""}/test/`,
-				"sap/ui/core/Core.js"
+				"sap/ui/core/Core.js",
 			],
 			resolve: true,
 			resolveConditional: true,
-			renderer: true
+			renderer: true,
 		});
 	}
 
 	bundleDefinition.sections.push({
 		mode: "require",
 		filters: [
-			"sap/ui/core/Core.js"
-		]
+			"sap/ui/core/Core.js",
+		],
 	});
 
 	return bundleDefinition;
 }
 
 /**
- * @public
  * @module @ui5/builder/tasks/bundlers/generateStandaloneAppBundle
  */
 
@@ -69,32 +72,28 @@ function getBundleDefinition(config) {
 /**
  * Task for bundling standalone applications.
  *
- * @public
- * @function default
- * @static
- *
- * @param {object} parameters Parameters
- * @param {@ui5/fs/DuplexCollection} parameters.workspace DuplexCollection to read and write files
- * @param {@ui5/fs/AbstractReader} parameters.dependencies Reader or Collection to read dependency files
- * @param {@ui5/project/build/helpers/TaskUtil|object} [parameters.taskUtil] TaskUtil
- * @param {object} parameters.options Options
- * @param {string} parameters.options.projectName Project name
- * @param {string} [parameters.options.projectNamespace] Project namespace
- * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
+ * @param parameters Parameters
+ * @param parameters.workspace DuplexCollection to read and write files
+ * @param parameters.dependencies Reader or Collection to read dependency files
+ * @param [parameters.taskUtil] TaskUtil
+ * @param parameters.options Options
+ * @param parameters.options.projectName Project name
+ * @param [parameters.options.projectNamespace] Project namespace
+ * @returns Promise resolving with <code>undefined</code> once data has been written
  */
-export default async function({ workspace, dependencies, taskUtil, options }: object) {
+export default async function ({workspace, dependencies, taskUtil, options}: object) {
 	const {projectName} = options;
 	const namespace = options.projectNamespace;
 	const coreVersion = taskUtil?.getProject("sap.ui.core")?.getVersion();
 
 	if (!namespace) {
 		log.warn(`Namespace of project ${projectName} is not known. Self contained bundling is currently ` +
-			`unable to generate complete bundles for such projects.`);
+		`unable to generate complete bundles for such projects.`);
 	}
 
 	const combo = new ReaderCollectionPrioritized({
 		name: `generateStandaloneAppBundle - prioritize workspace over dependencies: ${projectName}`,
-		readers: [workspace, dependencies]
+		readers: [workspace, dependencies],
 	});
 
 	let resourceReader = combo;
@@ -102,9 +101,9 @@ export default async function({ workspace, dependencies, taskUtil, options }: ob
 		// Omit -dbg files
 		resourceReader = await taskUtil.resourceFactory.createFilterReader({
 			reader: combo,
-			callback: function(resource) {
+			callback: function (resource) {
 				return !taskUtil.getTag(resource, taskUtil.STANDARD_TAGS.IsDebugVariant);
-			}
+			},
 		});
 	}
 	const resources = await resourceReader.byGlob("/resources/**/*.{js,json,xml,html,properties,library,js.map}");
@@ -124,10 +123,10 @@ export default async function({ workspace, dependencies, taskUtil, options }: ob
 	if (taskUtil) {
 		const unoptimizedResourceReader = await taskUtil.resourceFactory.createFilterReader({
 			reader: combo,
-			callback: function(resource) {
+			callback: function (resource) {
 				// Remove any non-debug variants
 				return !taskUtil.getTag(resource, taskUtil.STANDARD_TAGS.HasDebugVariant);
-			}
+			},
 		});
 
 		unoptimizedResources = await unoptimizedResourceReader
@@ -135,7 +134,7 @@ export default async function({ workspace, dependencies, taskUtil, options }: ob
 
 		unoptimizedModuleNameMapping = createModuleNameMapping({
 			resources: unoptimizedResources,
-			taskUtil
+			taskUtil,
 		});
 	}
 
@@ -150,7 +149,7 @@ export default async function({ workspace, dependencies, taskUtil, options }: ob
 			}),
 			taskUtil
 		),
-		allowStringBundling
+		allowStringBundling,
 	};
 
 	const bundleDbgOptions = {
@@ -166,7 +165,7 @@ export default async function({ workspace, dependencies, taskUtil, options }: ob
 			optimize: false,
 		},
 		moduleNameMapping: unoptimizedModuleNameMapping,
-		allowStringBundling
+		allowStringBundling,
 	};
 
 	if (coreVersion) {
@@ -177,12 +176,12 @@ export default async function({ workspace, dependencies, taskUtil, options }: ob
 	await Promise.all([
 		moduleBundler({
 			resources,
-			options: bundleOptions
+			options: bundleOptions,
 		}),
 		moduleBundler({
 			resources: unoptimizedResources,
-			options: bundleDbgOptions
-		})
+			options: bundleDbgOptions,
+		}),
 	]).then((results) => {
 		const bundles = Array.prototype.concat.apply([], results);
 		return Promise.all(bundles.map(({bundle, sourceMap}) => {

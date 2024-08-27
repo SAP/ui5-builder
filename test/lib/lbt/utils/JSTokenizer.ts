@@ -1,7 +1,7 @@
 import test from "ava";
 import JSTokenizer from "../../../../lib/lbt/utils/JSTokenizer.js";
 
-test("valid expressions", function(t) {
+test("valid expressions", function (t) {
 	const list = [
 		"{}",
 		"{test:'123'}",
@@ -20,7 +20,7 @@ test("valid expressions", function(t) {
 		"{arr:[1,2,3,4]}",
 		"{arr:[1,'2',3,false]}",
 		"{test:'{test}'}",
-		"{test:'\\'\"\\\\'}"
+		"{test:'\\'\"\\\\'}",
 	];
 	for (let i = 0; i < list.length; i++) {
 		let evalResult;
@@ -29,7 +29,7 @@ test("valid expressions", function(t) {
 	}
 });
 
-test("invalid expressions", function(t) {
+test("invalid expressions", function (t) {
 	[
 		"{[}",
 		"{test:'123\"}",
@@ -42,9 +42,9 @@ test("invalid expressions", function(t) {
 		"{arr:[1,2,3,4,,]}",
 		"{arr:[1,'2,3,false]}",
 		"{test:'{test}',test}",
-		"{test:''\"\\'}"
-	].forEach(function(input) {
-		t.throws(function() {
+		"{test:''\"\\'}",
+	].forEach(function (input) {
+		t.throws(function () {
 			try {
 				JSTokenizer.parseJS(input);
 			} catch (e) {
@@ -56,7 +56,7 @@ test("invalid expressions", function(t) {
 	});
 });
 
-test("tokenizer with enhancements getCh, getIndex, init, setIndex", function(t) {
+test("tokenizer with enhancements getCh, getIndex, init, setIndex", function (t) {
 	const oTokenizer = new JSTokenizer();
 	const oTokenizer2 = new JSTokenizer();
 
@@ -76,7 +76,7 @@ test("tokenizer with enhancements getCh, getIndex, init, setIndex", function(t) 
 	t.is(oTokenizer.getIndex(), 7, "index after setIndex");
 	t.is(oTokenizer.getCh(), "}");
 
-	t.throws(function() {
+	t.throws(function () {
 		oTokenizer.setIndex(0);
 	}, {message: /Must not set index 0 before previous index 7/}, "setIndex must not go back in text");
 	oTokenizer.setIndex(42);

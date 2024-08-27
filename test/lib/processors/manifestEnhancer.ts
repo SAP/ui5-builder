@@ -10,18 +10,18 @@ test.beforeEach(async (t) => {
 	const loggerStub = {
 		warn: t.context.logWarnSpy,
 		verbose: t.context.logVerboseSpy,
-		error: t.context.logErrorSpy
+		error: t.context.logErrorSpy,
 	};
 	const manifestEnhancerImport = await esmock("../../../lib/processors/manifestEnhancer.js", {
 		"@ui5/logger": {
-			getLogger: sinon.stub().withArgs("builder:processors:manifestEnhancer").returns(loggerStub)
-		}
+			getLogger: sinon.stub().withArgs("builder:processors:manifestEnhancer").returns(loggerStub),
+		},
 	});
 	t.context.manifestEnhancer = manifestEnhancerImport.default;
 	t.context.__internals__ = manifestEnhancerImport.__internals__;
 
 	t.context.fs = {
-		readdir: sinon.stub().callsArgWith(1, null, [])
+		readdir: sinon.stub().callsArgWith(1, null, []),
 	};
 
 	t.context.createResource = (path, bNamespaced, input) => {
@@ -33,12 +33,12 @@ test.beforeEach(async (t) => {
 					getNamespace() {
 						const namespace = path.substring(0, path.lastIndexOf("/")).replace("/resources/", "");
 						return bNamespaced ? namespace : "";
-					}
+					},
 				};
 			},
 			getPath() {
 				return path;
-			}
+			},
 		};
 	};
 });
@@ -46,7 +46,6 @@ test.beforeEach(async (t) => {
 test.afterEach.always((t) => {
 	t.context.sinon.restore();
 });
-
 
 // #######################################################
 // Type: Application
@@ -58,16 +57,16 @@ test("Application: No replacement (No properties files)", async (t) => {
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
-		}
+			id: "sap.ui.demo.app",
+			type: "application",
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [], "Only enhanced resources are returned");
@@ -85,15 +84,15 @@ test("Application: Missing sap.app/id", async (t) => {
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"type": "application"
-		}
+			type: "application",
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [], "Only enhanced resources are returned");
@@ -108,27 +107,27 @@ test("Application: Missing sap.app/id", async (t) => {
 });
 
 test("Application: sap.app/i18n (without templates, default bundle): " +
-	"Adds supportedLocales based on available properties files",
+"Adds supportedLocales based on available properties files",
 async (t) => {
 	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
-		}
+			id: "sap.ui.demo.app",
+			type: "application",
+		},
 	}, null, 2);
 
 	const expected = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application",
-			"i18n": {
-				"bundleUrl": "i18n/i18n.properties",
-				"supportedLocales": ["de", "en"]
-			}
-		}
+			id: "sap.ui.demo.app",
+			type: "application",
+			i18n: {
+				bundleUrl: "i18n/i18n.properties",
+				supportedLocales: ["de", "en"],
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
@@ -138,7 +137,7 @@ async (t) => {
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
@@ -152,29 +151,29 @@ async (t) => {
 });
 
 test("Application: sap.app/i18n (with templates, default bundle): " +
-	"Adds supportedLocales based on available properties files",
+"Adds supportedLocales based on available properties files",
 async (t) => {
 	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application",
-			"title": "{{title}}"
-		}
+			id: "sap.ui.demo.app",
+			type: "application",
+			title: "{{title}}",
+		},
 	}, null, 2);
 
 	const expected = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application",
-			"title": "{{title}}",
-			"i18n": {
-				"bundleUrl": "i18n/i18n.properties",
-				"supportedLocales": ["de", "en"]
-			}
-		}
+			id: "sap.ui.demo.app",
+			type: "application",
+			title: "{{title}}",
+			i18n: {
+				bundleUrl: "i18n/i18n.properties",
+				supportedLocales: ["de", "en"],
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
@@ -184,7 +183,7 @@ async (t) => {
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
@@ -198,30 +197,30 @@ async (t) => {
 });
 
 test("Application: sap.app/i18n (with templates, custom bundle): " +
-	"Adds supportedLocales based on available properties files",
+"Adds supportedLocales based on available properties files",
 async (t) => {
 	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application",
-			"title": "{{title}}",
-			"i18n": "mybundle.properties"
-		}
+			id: "sap.ui.demo.app",
+			type: "application",
+			title: "{{title}}",
+			i18n: "mybundle.properties",
+		},
 	}, null, 2);
 
 	const expected = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application",
-			"title": "{{title}}",
-			"i18n": {
-				"bundleUrl": "mybundle.properties",
-				"supportedLocales": ["de", "en"]
-			}
-		}
+			id: "sap.ui.demo.app",
+			type: "application",
+			title: "{{title}}",
+			i18n: {
+				bundleUrl: "mybundle.properties",
+				supportedLocales: ["de", "en"],
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
@@ -231,7 +230,7 @@ async (t) => {
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
@@ -245,46 +244,46 @@ async (t) => {
 });
 
 test("Application: sap.ui5/models: " +
-	"Adds supportedLocales based on available properties files",
+"Adds supportedLocales based on available properties files",
 async (t) => {
 	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
+			id: "sap.ui.demo.app",
+			type: "application",
 		},
 		"sap.ui5": {
-			"models": {
-				"i18n": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"settings": {
-						"bundleName": "sap.ui.demo.app.i18nModel.i18n",
-						"fallbackLocale": "de"
-					}
-				}
-			}
-		}
+			models: {
+				i18n: {
+					type: "sap.ui.model.resource.ResourceModel",
+					settings: {
+						bundleName: "sap.ui.demo.app.i18nModel.i18n",
+						fallbackLocale: "de",
+					},
+				},
+			},
+		},
 	}, null, 2);
 
 	const expected = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
+			id: "sap.ui.demo.app",
+			type: "application",
 		},
 		"sap.ui5": {
-			"models": {
-				"i18n": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"settings": {
-						"bundleName": "sap.ui.demo.app.i18nModel.i18n",
-						"fallbackLocale": "de",
-						"supportedLocales": ["de", "en"]
-					}
-				}
-			}
-		}
+			models: {
+				i18n: {
+					type: "sap.ui.model.resource.ResourceModel",
+					settings: {
+						bundleName: "sap.ui.demo.app.i18nModel.i18n",
+						fallbackLocale: "de",
+						supportedLocales: ["de", "en"],
+					},
+				},
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
@@ -295,7 +294,7 @@ async (t) => {
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
@@ -309,44 +308,44 @@ async (t) => {
 });
 
 test("Application: sap.ui5/models: " +
-	"Adds supportedLocales based on available properties files (properties files on root level)",
+"Adds supportedLocales based on available properties files (properties files on root level)",
 async (t) => {
 	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
+			id: "sap.ui.demo.app",
+			type: "application",
 		},
 		"sap.ui5": {
-			"models": {
-				"i18n": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"settings": {
-						"bundleName": "sap.ui.demo.app.i18n"
-					}
-				}
-			}
-		}
+			models: {
+				i18n: {
+					type: "sap.ui.model.resource.ResourceModel",
+					settings: {
+						bundleName: "sap.ui.demo.app.i18n",
+					},
+				},
+			},
+		},
 	}, null, 2);
 
 	const expected = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
+			id: "sap.ui.demo.app",
+			type: "application",
 		},
 		"sap.ui5": {
-			"models": {
-				"i18n": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"settings": {
-						"bundleName": "sap.ui.demo.app.i18n",
-						"supportedLocales": ["de", "en"]
-					}
-				}
-			}
-		}
+			models: {
+				i18n: {
+					type: "sap.ui.model.resource.ResourceModel",
+					settings: {
+						bundleName: "sap.ui.demo.app.i18n",
+						supportedLocales: ["de", "en"],
+					},
+				},
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
@@ -356,7 +355,7 @@ async (t) => {
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
@@ -370,46 +369,46 @@ async (t) => {
 });
 
 test("Application: sap.ui5/models (bundleUrl): " +
-	"Adds supportedLocales based on available properties files",
+"Adds supportedLocales based on available properties files",
 async (t) => {
 	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
+			id: "sap.ui.demo.app",
+			type: "application",
 		},
 		"sap.ui5": {
-			"models": {
-				"i18n": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"settings": {
-						"bundleUrl": "i18nModel/i18n.properties",
-						"fallbackLocale": "de"
-					}
-				}
-			}
-		}
+			models: {
+				i18n: {
+					type: "sap.ui.model.resource.ResourceModel",
+					settings: {
+						bundleUrl: "i18nModel/i18n.properties",
+						fallbackLocale: "de",
+					},
+				},
+			},
+		},
 	}, null, 2);
 
 	const expected = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
+			id: "sap.ui.demo.app",
+			type: "application",
 		},
 		"sap.ui5": {
-			"models": {
-				"i18n": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"settings": {
-						"bundleUrl": "i18nModel/i18n.properties",
-						"fallbackLocale": "de",
-						"supportedLocales": ["de", "en"]
-					}
-				}
-			}
-		}
+			models: {
+				i18n: {
+					type: "sap.ui.model.resource.ResourceModel",
+					settings: {
+						bundleUrl: "i18nModel/i18n.properties",
+						fallbackLocale: "de",
+						supportedLocales: ["de", "en"],
+					},
+				},
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
@@ -419,7 +418,7 @@ async (t) => {
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
@@ -433,46 +432,46 @@ async (t) => {
 });
 
 test("Application: sap.ui5/models (bundleUrl with ui5 protocol): " +
-	"Adds supportedLocales based on available properties files",
+"Adds supportedLocales based on available properties files",
 async (t) => {
 	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
+			id: "sap.ui.demo.app",
+			type: "application",
 		},
 		"sap.ui5": {
-			"models": {
-				"i18n": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"settings": {
-						"bundleUrl": "ui5://sap/ui/demo/app/i18nModel/i18n.properties",
-						"fallbackLocale": "de"
-					}
-				}
-			}
-		}
+			models: {
+				i18n: {
+					type: "sap.ui.model.resource.ResourceModel",
+					settings: {
+						bundleUrl: "ui5://sap/ui/demo/app/i18nModel/i18n.properties",
+						fallbackLocale: "de",
+					},
+				},
+			},
+		},
 	}, null, 2);
 
 	const expected = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
+			id: "sap.ui.demo.app",
+			type: "application",
 		},
 		"sap.ui5": {
-			"models": {
-				"i18n": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"settings": {
-						"bundleUrl": "ui5://sap/ui/demo/app/i18nModel/i18n.properties",
-						"fallbackLocale": "de",
-						"supportedLocales": ["de", "en"]
-					}
-				}
-			}
-		}
+			models: {
+				i18n: {
+					type: "sap.ui.model.resource.ResourceModel",
+					settings: {
+						bundleUrl: "ui5://sap/ui/demo/app/i18nModel/i18n.properties",
+						fallbackLocale: "de",
+						supportedLocales: ["de", "en"],
+					},
+				},
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
@@ -482,7 +481,7 @@ async (t) => {
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
@@ -496,42 +495,42 @@ async (t) => {
 });
 
 test("Application: sap.ui5/models (uri): " +
-	"Adds supportedLocales with available properties files",
+"Adds supportedLocales with available properties files",
 async (t) => {
 	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
+			id: "sap.ui.demo.app",
+			type: "application",
 		},
 		"sap.ui5": {
-			"models": {
-				"i18n": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"uri": "i18nModel/i18n.properties"
-				}
-			}
-		}
+			models: {
+				i18n: {
+					type: "sap.ui.model.resource.ResourceModel",
+					uri: "i18nModel/i18n.properties",
+				},
+			},
+		},
 	}, null, 2);
 
 	const expected = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
+			id: "sap.ui.demo.app",
+			type: "application",
 		},
 		"sap.ui5": {
-			"models": {
-				"i18n": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"uri": "i18nModel/i18n.properties",
-					"settings": {
-						"supportedLocales": ["de", "en"]
-					}
-				}
-			}
-		}
+			models: {
+				i18n: {
+					type: "sap.ui.model.resource.ResourceModel",
+					uri: "i18nModel/i18n.properties",
+					settings: {
+						supportedLocales: ["de", "en"],
+					},
+				},
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
@@ -541,7 +540,7 @@ async (t) => {
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
@@ -555,143 +554,143 @@ async (t) => {
 });
 
 test("Application: sap.ui5/models (with terminologies and enhanceWith): " +
-	"Adds supportedLocales based on available properties files",
+"Adds supportedLocales based on available properties files",
 async (t) => {
 	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
+			id: "sap.ui.demo.app",
+			type: "application",
 		},
 		"sap.ui5": {
-			"models": {
-				"i18n": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"settings": {
-						"bundleUrl": "i18nModel/i18n.properties",
-						"terminologies": {
-							"oil": {
-								"bundleUrl": "i18n/terminologies.oil.i18n.properties",
+			models: {
+				i18n: {
+					type: "sap.ui.model.resource.ResourceModel",
+					settings: {
+						bundleUrl: "i18nModel/i18n.properties",
+						terminologies: {
+							oil: {
+								bundleUrl: "i18n/terminologies.oil.i18n.properties",
 							},
-							"retail": {
-								"bundleUrl": "i18n/terminologies.retail.i18n.properties",
-							}
+							retail: {
+								bundleUrl: "i18n/terminologies.retail.i18n.properties",
+							},
 						},
-						"enhanceWith": [
+						enhanceWith: [
 							{
-								"bundleUrl": "./enhancements/i18n/i18n.properties",
-								"bundleUrlRelativeTo": "manifest",
-								"terminologies": {
-									"oil": {
-										"bundleUrl": "./enhancements/i18n/terminologies.oil.i18n.properties",
+								bundleUrl: "./enhancements/i18n/i18n.properties",
+								bundleUrlRelativeTo: "manifest",
+								terminologies: {
+									oil: {
+										bundleUrl: "./enhancements/i18n/terminologies.oil.i18n.properties",
 									},
-									"retail": {
-										"bundleUrl": "./enhancements/i18n/terminologies.retail.i18n.properties",
-										"bundleUrlRelativeTo": "manifest"
-									}
-								}
+									retail: {
+										bundleUrl: "./enhancements/i18n/terminologies.retail.i18n.properties",
+										bundleUrlRelativeTo: "manifest",
+									},
+								},
 							},
 							{
-								"bundleUrl": "../some/path/to/i18n/i18n.properties",
-								"bundleUrlRelativeTo": "manifest",
-								"terminologies": {
-									"oil": {
-										"bundleUrl": "../some/path/to/terminologies.oil.i18n.properties",
+								bundleUrl: "../some/path/to/i18n/i18n.properties",
+								bundleUrlRelativeTo: "manifest",
+								terminologies: {
+									oil: {
+										bundleUrl: "../some/path/to/terminologies.oil.i18n.properties",
 									},
-									"retail": {
-										"bundleUrl": "../some/path/to/terminologies.retail.i18n.properties",
-										"bundleUrlRelativeTo": "manifest"
-									}
-								}
+									retail: {
+										bundleUrl: "../some/path/to/terminologies.retail.i18n.properties",
+										bundleUrlRelativeTo: "manifest",
+									},
+								},
 							},
 							{
-								"bundleName": "appvar2.i18n.i18n.properties",
-								"terminologies": {
-									"oil": {
-										"bundleName": "appvar2.i18n.terminologies.oil.i18n",
+								bundleName: "appvar2.i18n.i18n.properties",
+								terminologies: {
+									oil: {
+										bundleName: "appvar2.i18n.terminologies.oil.i18n",
 									},
-									"retail": {
-										"bundleName": "appvar2.i18n.terminologies.retail.i18n",
-									}
-								}
-							}
-						]
-					}
-				}
-			}
-		}
+									retail: {
+										bundleName: "appvar2.i18n.terminologies.retail.i18n",
+									},
+								},
+							},
+						],
+					},
+				},
+			},
+		},
 	}, null, 2);
 
 	const expected = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
+			id: "sap.ui.demo.app",
+			type: "application",
 		},
 		"sap.ui5": {
-			"models": {
-				"i18n": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"settings": {
-						"bundleUrl": "i18nModel/i18n.properties",
-						"terminologies": {
-							"oil": {
-								"bundleUrl": "i18n/terminologies.oil.i18n.properties",
-								"supportedLocales": ["", "de", "en", "fr"]
+			models: {
+				i18n: {
+					type: "sap.ui.model.resource.ResourceModel",
+					settings: {
+						bundleUrl: "i18nModel/i18n.properties",
+						terminologies: {
+							oil: {
+								bundleUrl: "i18n/terminologies.oil.i18n.properties",
+								supportedLocales: ["", "de", "en", "fr"],
 							},
-							"retail": {
-								"bundleUrl": "i18n/terminologies.retail.i18n.properties",
-								"supportedLocales": ["en"]
-							}
+							retail: {
+								bundleUrl: "i18n/terminologies.retail.i18n.properties",
+								supportedLocales: ["en"],
+							},
 						},
-						"enhanceWith": [
+						enhanceWith: [
 							{
-								"bundleUrl": "./enhancements/i18n/i18n.properties",
-								"bundleUrlRelativeTo": "manifest",
-								"terminologies": {
-									"oil": {
-										"bundleUrl": "./enhancements/i18n/terminologies.oil.i18n.properties",
-										"supportedLocales": ["", "en", "fr"]
+								bundleUrl: "./enhancements/i18n/i18n.properties",
+								bundleUrlRelativeTo: "manifest",
+								terminologies: {
+									oil: {
+										bundleUrl: "./enhancements/i18n/terminologies.oil.i18n.properties",
+										supportedLocales: ["", "en", "fr"],
 									},
-									"retail": {
-										"bundleUrl": "./enhancements/i18n/terminologies.retail.i18n.properties",
-										"bundleUrlRelativeTo": "manifest",
-										"supportedLocales": ["de", "en"]
-									}
+									retail: {
+										bundleUrl: "./enhancements/i18n/terminologies.retail.i18n.properties",
+										bundleUrlRelativeTo: "manifest",
+										supportedLocales: ["de", "en"],
+									},
 								},
-								"supportedLocales": ["de", "en", "es"]
+								supportedLocales: ["de", "en", "es"],
 							},
 							{
-								"bundleUrl": "../some/path/to/i18n/i18n.properties",
-								"bundleUrlRelativeTo": "manifest",
-								"terminologies": {
-									"oil": {
-										"bundleUrl": "../some/path/to/terminologies.oil.i18n.properties",
+								bundleUrl: "../some/path/to/i18n/i18n.properties",
+								bundleUrlRelativeTo: "manifest",
+								terminologies: {
+									oil: {
+										bundleUrl: "../some/path/to/terminologies.oil.i18n.properties",
 									},
-									"retail": {
-										"bundleUrl": "../some/path/to/terminologies.retail.i18n.properties",
-										"bundleUrlRelativeTo": "manifest"
-									}
-								}
+									retail: {
+										bundleUrl: "../some/path/to/terminologies.retail.i18n.properties",
+										bundleUrlRelativeTo: "manifest",
+									},
+								},
 							},
 							{
-								"bundleName": "appvar2.i18n.i18n.properties",
-								"terminologies": {
-									"oil": {
-										"bundleName": "appvar2.i18n.terminologies.oil.i18n",
+								bundleName: "appvar2.i18n.i18n.properties",
+								terminologies: {
+									oil: {
+										bundleName: "appvar2.i18n.terminologies.oil.i18n",
 									},
-									"retail": {
-										"bundleName": "appvar2.i18n.terminologies.retail.i18n",
-									}
-								}
-							}
+									retail: {
+										bundleName: "appvar2.i18n.terminologies.retail.i18n",
+									},
+								},
+							},
 						],
-						"supportedLocales": ["de", "en"]
-					}
-				}
-			}
-		}
+						supportedLocales: ["de", "en"],
+					},
+				},
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
@@ -699,7 +698,7 @@ async (t) => {
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
 		.callsArgWith(1, null, [
 			"i18n_de.properties",
-			"i18n_en.properties"
+			"i18n_en.properties",
 		]);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18n")
@@ -709,7 +708,7 @@ async (t) => {
 			"terminologies.oil.i18n_en.properties",
 			"terminologies.oil.i18n_fr.properties",
 
-			"terminologies.retail.i18n_en.properties"
+			"terminologies.retail.i18n_en.properties",
 		]);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/enhancements/i18n")
@@ -723,12 +722,12 @@ async (t) => {
 			"terminologies.oil.i18n_fr.properties",
 
 			"terminologies.retail.i18n_de.properties",
-			"terminologies.retail.i18n_en.properties"
+			"terminologies.retail.i18n_en.properties",
 		]);
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
@@ -765,27 +764,27 @@ async (t) => {
 });
 
 test("Application: sap.ui5/models: " +
-	"Do not replace supportedLocales when supportedLocales are already defined",
+"Do not replace supportedLocales when supportedLocales are already defined",
 async (t) => {
 	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
+			id: "sap.ui.demo.app",
+			type: "application",
 		},
 		"sap.ui5": {
-			"models": {
-				"i18n": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"settings": {
-						"bundleName": "sap.ui.demo.app.i18nModel.i18n",
-						"supportedLocales": ["en", "fr"],
-						"fallbackLocale": "fr"
-					}
-				}
-			}
-		}
+			models: {
+				i18n: {
+					type: "sap.ui.model.resource.ResourceModel",
+					settings: {
+						bundleName: "sap.ui.demo.app.i18nModel.i18n",
+						supportedLocales: ["en", "fr"],
+						fallbackLocale: "fr",
+					},
+				},
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
@@ -795,7 +794,7 @@ async (t) => {
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [], "Only enhanced resources are returned");
@@ -808,27 +807,27 @@ async (t) => {
 });
 
 test("Application: sap.ui5/models: " +
-	"Do not replace supportedLocales when supportedLocales are set to array with empty string",
+"Do not replace supportedLocales when supportedLocales are set to array with empty string",
 async (t) => {
 	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
+			id: "sap.ui.demo.app",
+			type: "application",
 		},
 		"sap.ui5": {
-			"models": {
-				"i18n": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"settings": {
-						"bundleName": "sap.ui.demo.app.i18nModel.i18n",
-						"supportedLocales": [""],
-						"fallbackLocale": ""
-					}
-				}
-			}
-		}
+			models: {
+				i18n: {
+					type: "sap.ui.model.resource.ResourceModel",
+					settings: {
+						bundleName: "sap.ui.demo.app.i18nModel.i18n",
+						supportedLocales: [""],
+						fallbackLocale: "",
+					},
+				},
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
@@ -838,7 +837,7 @@ async (t) => {
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [], "Only enhanced resources are returned");
@@ -851,22 +850,22 @@ async (t) => {
 });
 
 test("Application: sap.ui5/models: " +
-	"Do not replace supportedLocales when an invalid bundle config is defined (missing bundleUrl or bundleName)",
+"Do not replace supportedLocales when an invalid bundle config is defined (missing bundleUrl or bundleName)",
 async (t) => {
 	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
+			id: "sap.ui.demo.app",
+			type: "application",
 		},
 		"sap.ui5": {
-			"models": {
-				"i18n": {
-					"type": "sap.ui.model.resource.ResourceModel"
-				}
-			}
-		}
+			models: {
+				i18n: {
+					type: "sap.ui.model.resource.ResourceModel",
+				},
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
@@ -876,7 +875,7 @@ async (t) => {
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [], "Only enhanced resources are returned");
@@ -889,26 +888,26 @@ async (t) => {
 });
 
 test("Application: sap.ui5/models: " +
-	"Log error, no supportedLocales generation if fallbackLocale is not part of generation",
+"Log error, no supportedLocales generation if fallbackLocale is not part of generation",
 async (t) => {
 	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
+			id: "sap.ui.demo.app",
+			type: "application",
 		},
 		"sap.ui5": {
-			"models": {
-				"i18n": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"settings": {
-						"bundleName": "sap.ui.demo.app.i18nModel.i18n",
-						"fallbackLocale": "fr"
-					}
-				}
-			}
-		}
+			models: {
+				i18n: {
+					type: "sap.ui.model.resource.ResourceModel",
+					settings: {
+						bundleName: "sap.ui.demo.app.i18nModel.i18n",
+						fallbackLocale: "fr",
+					},
+				},
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
@@ -918,7 +917,7 @@ async (t) => {
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [], "Only enhanced resources are returned");
@@ -930,50 +929,50 @@ async (t) => {
 	t.is(t.context.logErrorSpy.callCount, 1, "1 error should be logged");
 	t.is(t.context.logErrorSpy.getCall(0).args[0],
 		"/resources/sap/ui/demo/app/manifest.json: Generated supported locales ('de', 'en') for " +
-		"bundle 'i18nModel/i18n.properties' not containing the defined fallback locale 'fr'. "+
+		"bundle 'i18nModel/i18n.properties' not containing the defined fallback locale 'fr'. " +
 		"Either provide a properties file for defined fallbackLocale or configure another available fallbackLocale",
 		"Error message should be correct");
 });
 
 test("Application: sap.ui5/models: " +
-	"Log warning, but generate locales if default fallbackLocale is not part of generation",
+"Log warning, but generate locales if default fallbackLocale is not part of generation",
 async (t) => {
 	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
+			id: "sap.ui.demo.app",
+			type: "application",
 		},
 		"sap.ui5": {
-			"models": {
-				"i18n": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"settings": {
-						"bundleName": "sap.ui.demo.app.i18nModel.i18n"
-					}
-				}
-			}
-		}
+			models: {
+				i18n: {
+					type: "sap.ui.model.resource.ResourceModel",
+					settings: {
+						bundleName: "sap.ui.demo.app.i18nModel.i18n",
+					},
+				},
+			},
+		},
 	}, null, 2);
 
 	const expected = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
+			id: "sap.ui.demo.app",
+			type: "application",
 		},
 		"sap.ui5": {
-			"models": {
-				"i18n": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"settings": {
-						"bundleName": "sap.ui.demo.app.i18nModel.i18n",
-						"supportedLocales": ["de", "fr"]
-					}
-				}
-			}
-		}
+			models: {
+				i18n: {
+					type: "sap.ui.model.resource.ResourceModel",
+					settings: {
+						bundleName: "sap.ui.demo.app.i18nModel.i18n",
+						supportedLocales: ["de", "fr"],
+					},
+				},
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
@@ -983,7 +982,7 @@ async (t) => {
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
@@ -1002,46 +1001,46 @@ async (t) => {
 });
 
 test("Application: sap.ui5/models: " +
-	"No warning when fallbackLocale is empty string and is part of supportedLocales",
+"No warning when fallbackLocale is empty string and is part of supportedLocales",
 async (t) => {
 	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
+			id: "sap.ui.demo.app",
+			type: "application",
 		},
 		"sap.ui5": {
-			"models": {
-				"i18n": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"settings": {
-						"bundleName": "sap.ui.demo.app.i18nModel.i18n",
-						"fallbackLocale": ""
-					}
-				}
-			}
-		}
+			models: {
+				i18n: {
+					type: "sap.ui.model.resource.ResourceModel",
+					settings: {
+						bundleName: "sap.ui.demo.app.i18nModel.i18n",
+						fallbackLocale: "",
+					},
+				},
+			},
+		},
 	}, null, 2);
 
 	const expected = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
+			id: "sap.ui.demo.app",
+			type: "application",
 		},
 		"sap.ui5": {
-			"models": {
-				"i18n": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"settings": {
-						"bundleName": "sap.ui.demo.app.i18nModel.i18n",
-						"fallbackLocale": "",
-						"supportedLocales": [""]
-					}
-				}
-			}
-		}
+			models: {
+				i18n: {
+					type: "sap.ui.model.resource.ResourceModel",
+					settings: {
+						bundleName: "sap.ui.demo.app.i18nModel.i18n",
+						fallbackLocale: "",
+						supportedLocales: [""],
+					},
+				},
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
@@ -1051,7 +1050,7 @@ async (t) => {
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
@@ -1065,26 +1064,26 @@ async (t) => {
 });
 
 test("Application: sap.ui5/models: " +
-	"Error when fallbackLocale is empty string and is not part of supportedLocales",
+"Error when fallbackLocale is empty string and is not part of supportedLocales",
 async (t) => {
 	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
+			id: "sap.ui.demo.app",
+			type: "application",
 		},
 		"sap.ui5": {
-			"models": {
-				"i18n": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"settings": {
-						"bundleName": "sap.ui.demo.app.i18nModel.i18n",
-						"fallbackLocale": ""
-					}
-				}
-			}
-		}
+			models: {
+				i18n: {
+					type: "sap.ui.model.resource.ResourceModel",
+					settings: {
+						bundleName: "sap.ui.demo.app.i18nModel.i18n",
+						fallbackLocale: "",
+					},
+				},
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
@@ -1094,7 +1093,7 @@ async (t) => {
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [], "Only enhanced resources are returned");
@@ -1114,26 +1113,26 @@ test("Application: sap.ui5/models: Log verbose if manifest version is not define
 	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
+			id: "sap.ui.demo.app",
+			type: "application",
 		},
 		"sap.ui5": {
-			"models": {
-				"i18n": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"settings": {
-						"bundleName": "sap.ui.demo.app.i18n.i18n"
-					}
-				}
-			}
-		}
+			models: {
+				i18n: {
+					type: "sap.ui.model.resource.ResourceModel",
+					settings: {
+						bundleName: "sap.ui.demo.app.i18n.i18n",
+					},
+				},
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [], "Only enhanced resources are returned");
@@ -1153,19 +1152,19 @@ test("Application: sap.ui5/models: Log verbose if manifest version is below 1.21
 	const input = JSON.stringify({
 		"_version": "1.20.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
+			id: "sap.ui.demo.app",
+			type: "application",
 		},
 		"sap.ui5": {
-			"models": {
-				"i18n": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"settings": {
-						"bundleName": "sap.ui.demo.app.i18n.i18n"
-					}
-				}
-			}
-		}
+			models: {
+				i18n: {
+					type: "sap.ui.model.resource.ResourceModel",
+					settings: {
+						bundleName: "sap.ui.demo.app.i18n.i18n",
+					},
+				},
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
@@ -1175,7 +1174,7 @@ test("Application: sap.ui5/models: Log verbose if manifest version is below 1.21
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [], "Only enhanced resources are returned");
@@ -1192,32 +1191,32 @@ test("Application: sap.ui5/models: Log verbose if manifest version is below 1.21
 });
 
 test("Application: sap.ui5/models: " +
-	"Do not generate supportedLocales when bundleUrl pointing to a location outside the current project",
+"Do not generate supportedLocales when bundleUrl pointing to a location outside the current project",
 async (t) => {
 	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
+			id: "sap.ui.demo.app",
+			type: "application",
 		},
 		"sap.ui5": {
-			"models": {
-				"i18n": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"settings": {
-						"bundleUrl": "../../myapp2/i18n/i18n.properties"
-					}
-				}
-			}
-		}
+			models: {
+				i18n: {
+					type: "sap.ui.model.resource.ResourceModel",
+					settings: {
+						bundleUrl: "../../myapp2/i18n/i18n.properties",
+					},
+				},
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [], "Only enhanced resources are returned");
@@ -1233,33 +1232,33 @@ async (t) => {
 });
 
 test("Application: sap.ui5/models: " +
-	"Do not generate supportedLocales when bundleUrl pointing to a location inside the current project",
+"Do not generate supportedLocales when bundleUrl pointing to a location inside the current project",
 async (t) => {
 	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
+			id: "sap.ui.demo.app",
+			type: "application",
 		},
 		"sap.ui5": {
-			"models": {
-				"i18n": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"settings": {
-						"bundleUrl": "../i18n/i18n.properties",
-						"fallbackLocale": "de"
-					}
-				}
-			}
-		}
+			models: {
+				i18n: {
+					type: "sap.ui.model.resource.ResourceModel",
+					settings: {
+						bundleUrl: "../i18n/i18n.properties",
+						fallbackLocale: "de",
+					},
+				},
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [], "Only enhanced resources are returned");
@@ -1275,60 +1274,60 @@ async (t) => {
 });
 
 test("Application: sap.ui5/models: " +
-	"Do not replace supportedLocales when bundle is not part of the namespace",
+"Do not replace supportedLocales when bundle is not part of the namespace",
 async (t) => {
 	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
+			id: "sap.ui.demo.app",
+			type: "application",
 		},
 		"sap.ui5": {
-			"models": {
-				"i18n": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"settings": {
-						"bundleName": "sap.ui.demo.app.i18nModel.i18n",
-						"fallbackLocale": "de"
-					}
+			models: {
+				i18n: {
+					type: "sap.ui.model.resource.ResourceModel",
+					settings: {
+						bundleName: "sap.ui.demo.app.i18nModel.i18n",
+						fallbackLocale: "de",
+					},
 				},
-				"i18n_reuse_lib": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"settings": {
-						"bundleName": "sap.ui.demo.lib.i18n.i18n",
-						"async": true
-					}
-				}
-			}
-		}
+				i18n_reuse_lib: {
+					type: "sap.ui.model.resource.ResourceModel",
+					settings: {
+						bundleName: "sap.ui.demo.lib.i18n.i18n",
+						async: true,
+					},
+				},
+			},
+		},
 	}, null, 2);
 
 	const expected = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
+			id: "sap.ui.demo.app",
+			type: "application",
 		},
 		"sap.ui5": {
-			"models": {
-				"i18n": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"settings": {
-						"bundleName": "sap.ui.demo.app.i18nModel.i18n",
-						"fallbackLocale": "de",
-						"supportedLocales": ["de", "en"]
-					}
+			models: {
+				i18n: {
+					type: "sap.ui.model.resource.ResourceModel",
+					settings: {
+						bundleName: "sap.ui.demo.app.i18nModel.i18n",
+						fallbackLocale: "de",
+						supportedLocales: ["de", "en"],
+					},
 				},
-				"i18n_reuse_lib": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"settings": {
-						"bundleName": "sap.ui.demo.lib.i18n.i18n",
-						"async": true
-					}
-				}
-			}
-		}
+				i18n_reuse_lib: {
+					type: "sap.ui.model.resource.ResourceModel",
+					settings: {
+						bundleName: "sap.ui.demo.lib.i18n.i18n",
+						async: true,
+					},
+				},
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
@@ -1338,7 +1337,7 @@ async (t) => {
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
@@ -1355,60 +1354,60 @@ async (t) => {
 });
 
 test("Application: sap.ui5/models: " +
-	"Do not generate supportedLocales when bundle is not part of the namespace (bundleUrl with ui5 protocol)",
+"Do not generate supportedLocales when bundle is not part of the namespace (bundleUrl with ui5 protocol)",
 async (t) => {
 	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
+			id: "sap.ui.demo.app",
+			type: "application",
 		},
 		"sap.ui5": {
-			"models": {
-				"i18n": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"settings": {
-						"bundleName": "sap.ui.demo.app.i18nModel.i18n",
-						"fallbackLocale": "de"
-					}
+			models: {
+				i18n: {
+					type: "sap.ui.model.resource.ResourceModel",
+					settings: {
+						bundleName: "sap.ui.demo.app.i18nModel.i18n",
+						fallbackLocale: "de",
+					},
 				},
-				"i18n_reuse_lib": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"settings": {
-						"bundleUrl": "ui5://sap/ui/demo/lib/i18n/i18n.properties",
-						"async": true
-					}
-				}
-			}
-		}
+				i18n_reuse_lib: {
+					type: "sap.ui.model.resource.ResourceModel",
+					settings: {
+						bundleUrl: "ui5://sap/ui/demo/lib/i18n/i18n.properties",
+						async: true,
+					},
+				},
+			},
+		},
 	}, null, 2);
 
 	const expected = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application"
+			id: "sap.ui.demo.app",
+			type: "application",
 		},
 		"sap.ui5": {
-			"models": {
-				"i18n": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"settings": {
-						"bundleName": "sap.ui.demo.app.i18nModel.i18n",
-						"fallbackLocale": "de",
-						"supportedLocales": ["de", "en"]
-					}
+			models: {
+				i18n: {
+					type: "sap.ui.model.resource.ResourceModel",
+					settings: {
+						bundleName: "sap.ui.demo.app.i18nModel.i18n",
+						fallbackLocale: "de",
+						supportedLocales: ["de", "en"],
+					},
 				},
-				"i18n_reuse_lib": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"settings": {
-						"bundleUrl": "ui5://sap/ui/demo/lib/i18n/i18n.properties",
-						"async": true
-					}
-				}
-			}
-		}
+				i18n_reuse_lib: {
+					type: "sap.ui.model.resource.ResourceModel",
+					settings: {
+						bundleUrl: "ui5://sap/ui/demo/lib/i18n/i18n.properties",
+						async: true,
+					},
+				},
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
@@ -1418,7 +1417,7 @@ async (t) => {
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
@@ -1435,129 +1434,129 @@ async (t) => {
 });
 
 test("Application: sap.app/i18n: " +
-	"Adds supportedLocales for terminologies and enhanceWith bundles",
+"Adds supportedLocales for terminologies and enhanceWith bundles",
 async (t) => {
 	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application",
-			"i18n": {
-				"bundleUrl": "i18n/i18n.properties",
-				"terminologies": {
-					"oil": {
-						"bundleUrl": "i18n/terminologies.oil.i18n.properties",
+			id: "sap.ui.demo.app",
+			type: "application",
+			i18n: {
+				bundleUrl: "i18n/i18n.properties",
+				terminologies: {
+					oil: {
+						bundleUrl: "i18n/terminologies.oil.i18n.properties",
 					},
-					"retail": {
-						"bundleUrl": "i18n/terminologies.retail.i18n.properties",
-					}
+					retail: {
+						bundleUrl: "i18n/terminologies.retail.i18n.properties",
+					},
 				},
-				"enhanceWith": [
+				enhanceWith: [
 					{
-						"bundleUrl": "./enhancements/i18n/i18n.properties",
-						"bundleUrlRelativeTo": "manifest",
-						"terminologies": {
-							"oil": {
-								"bundleUrl": "./enhancements/i18n/terminologies.oil.i18n.properties",
+						bundleUrl: "./enhancements/i18n/i18n.properties",
+						bundleUrlRelativeTo: "manifest",
+						terminologies: {
+							oil: {
+								bundleUrl: "./enhancements/i18n/terminologies.oil.i18n.properties",
 							},
-							"retail": {
-								"bundleUrl": "./enhancements/i18n/terminologies.retail.i18n.properties",
-								"bundleUrlRelativeTo": "manifest"
-							}
-						}
+							retail: {
+								bundleUrl: "./enhancements/i18n/terminologies.retail.i18n.properties",
+								bundleUrlRelativeTo: "manifest",
+							},
+						},
 					},
 					{
-						"bundleUrl": "../some/path/to/i18n/i18n.properties",
-						"bundleUrlRelativeTo": "manifest",
-						"terminologies": {
-							"oil": {
-								"bundleUrl": "../some/path/to/terminologies.oil.i18n.properties",
+						bundleUrl: "../some/path/to/i18n/i18n.properties",
+						bundleUrlRelativeTo: "manifest",
+						terminologies: {
+							oil: {
+								bundleUrl: "../some/path/to/terminologies.oil.i18n.properties",
 							},
-							"retail": {
-								"bundleUrl": "../some/path/to/terminologies.retail.i18n.properties",
-								"bundleUrlRelativeTo": "manifest"
-							}
-						}
+							retail: {
+								bundleUrl: "../some/path/to/terminologies.retail.i18n.properties",
+								bundleUrlRelativeTo: "manifest",
+							},
+						},
 					},
 					{
-						"bundleName": "appvar2.i18n.i18n.properties",
-						"terminologies": {
-							"oil": {
-								"bundleName": "appvar2.i18n.terminologies.oil.i18n",
+						bundleName: "appvar2.i18n.i18n.properties",
+						terminologies: {
+							oil: {
+								bundleName: "appvar2.i18n.terminologies.oil.i18n",
 							},
-							"retail": {
-								"bundleName": "appvar2.i18n.terminologies.retail.i18n",
-							}
-						}
-					}
-				]
-			}
-		}
+							retail: {
+								bundleName: "appvar2.i18n.terminologies.retail.i18n",
+							},
+						},
+					},
+				],
+			},
+		},
 	}, null, 2);
 
 	const expected = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application",
-			"i18n": {
-				"bundleUrl": "i18n/i18n.properties",
-				"terminologies": {
-					"oil": {
-						"bundleUrl": "i18n/terminologies.oil.i18n.properties",
-						"supportedLocales": ["", "de", "en", "fr"]
+			id: "sap.ui.demo.app",
+			type: "application",
+			i18n: {
+				bundleUrl: "i18n/i18n.properties",
+				terminologies: {
+					oil: {
+						bundleUrl: "i18n/terminologies.oil.i18n.properties",
+						supportedLocales: ["", "de", "en", "fr"],
 					},
-					"retail": {
-						"bundleUrl": "i18n/terminologies.retail.i18n.properties",
-						"supportedLocales": ["en"]
-					}
+					retail: {
+						bundleUrl: "i18n/terminologies.retail.i18n.properties",
+						supportedLocales: ["en"],
+					},
 				},
-				"enhanceWith": [
+				enhanceWith: [
 					{
-						"bundleUrl": "./enhancements/i18n/i18n.properties",
-						"bundleUrlRelativeTo": "manifest",
-						"terminologies": {
-							"oil": {
-								"bundleUrl": "./enhancements/i18n/terminologies.oil.i18n.properties",
-								"supportedLocales": ["", "en", "fr"]
+						bundleUrl: "./enhancements/i18n/i18n.properties",
+						bundleUrlRelativeTo: "manifest",
+						terminologies: {
+							oil: {
+								bundleUrl: "./enhancements/i18n/terminologies.oil.i18n.properties",
+								supportedLocales: ["", "en", "fr"],
 							},
-							"retail": {
-								"bundleUrl": "./enhancements/i18n/terminologies.retail.i18n.properties",
-								"bundleUrlRelativeTo": "manifest",
-								"supportedLocales": ["de", "en"]
-							}
+							retail: {
+								bundleUrl: "./enhancements/i18n/terminologies.retail.i18n.properties",
+								bundleUrlRelativeTo: "manifest",
+								supportedLocales: ["de", "en"],
+							},
 						},
-						"supportedLocales": ["de", "en", "es"]
+						supportedLocales: ["de", "en", "es"],
 					},
 					{
-						"bundleUrl": "../some/path/to/i18n/i18n.properties",
-						"bundleUrlRelativeTo": "manifest",
-						"terminologies": {
-							"oil": {
-								"bundleUrl": "../some/path/to/terminologies.oil.i18n.properties",
+						bundleUrl: "../some/path/to/i18n/i18n.properties",
+						bundleUrlRelativeTo: "manifest",
+						terminologies: {
+							oil: {
+								bundleUrl: "../some/path/to/terminologies.oil.i18n.properties",
 							},
-							"retail": {
-								"bundleUrl": "../some/path/to/terminologies.retail.i18n.properties",
-								"bundleUrlRelativeTo": "manifest"
-							}
-						}
+							retail: {
+								bundleUrl: "../some/path/to/terminologies.retail.i18n.properties",
+								bundleUrlRelativeTo: "manifest",
+							},
+						},
 					},
 					{
-						"bundleName": "appvar2.i18n.i18n.properties",
-						"terminologies": {
-							"oil": {
-								"bundleName": "appvar2.i18n.terminologies.oil.i18n",
+						bundleName: "appvar2.i18n.i18n.properties",
+						terminologies: {
+							oil: {
+								bundleName: "appvar2.i18n.terminologies.oil.i18n",
 							},
-							"retail": {
-								"bundleName": "appvar2.i18n.terminologies.retail.i18n",
-							}
-						}
-					}
+							retail: {
+								bundleName: "appvar2.i18n.terminologies.retail.i18n",
+							},
+						},
+					},
 				],
-				"supportedLocales": ["de", "en"]
-			}
-		}
+				supportedLocales: ["de", "en"],
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
@@ -1572,7 +1571,7 @@ async (t) => {
 			"terminologies.oil.i18n_en.properties",
 			"terminologies.oil.i18n_fr.properties",
 
-			"terminologies.retail.i18n_en.properties"
+			"terminologies.retail.i18n_en.properties",
 		]);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/app/enhancements/i18n")
@@ -1586,12 +1585,12 @@ async (t) => {
 			"terminologies.oil.i18n_fr.properties",
 
 			"terminologies.retail.i18n_de.properties",
-			"terminologies.retail.i18n_en.properties"
+			"terminologies.retail.i18n_en.properties",
 		]);
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
@@ -1634,63 +1633,63 @@ test("Application: supportedLocales are not added for bundles with absolute url"
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application",
-			"i18n": "/resources/sap/ui/demo/app/i18n/i18n.properties"
+			id: "sap.ui.demo.app",
+			type: "application",
+			i18n: "/resources/sap/ui/demo/app/i18n/i18n.properties",
 		},
 		"sap.ui5": {
-			"models": {
-				"i18n": {
-					"type": "sap.ui.model.resource.ResourceModel",
-					"settings": {
-						"bundleUrl": "https://example.com/i18nModel/i18n.properties",
-						"terminologies": {
-							"oil": {
-								"bundleUrl": "/i18n/terminologies.oil.i18n.properties",
+			models: {
+				i18n: {
+					type: "sap.ui.model.resource.ResourceModel",
+					settings: {
+						bundleUrl: "https://example.com/i18nModel/i18n.properties",
+						terminologies: {
+							oil: {
+								bundleUrl: "/i18n/terminologies.oil.i18n.properties",
 							},
-							"retail": {
-								"bundleUrl": "/i18n/terminologies.retail.i18n.properties",
-							}
+							retail: {
+								bundleUrl: "/i18n/terminologies.retail.i18n.properties",
+							},
 						},
-						"enhanceWith": [
+						enhanceWith: [
 							{
-								"bundleUrl": "/enhancements/i18n/i18n.properties",
-								"bundleUrlRelativeTo": "manifest",
-								"terminologies": {
-									"oil": {
-										"bundleUrl": "/enhancements/i18n/terminologies.oil.i18n.properties",
+								bundleUrl: "/enhancements/i18n/i18n.properties",
+								bundleUrlRelativeTo: "manifest",
+								terminologies: {
+									oil: {
+										bundleUrl: "/enhancements/i18n/terminologies.oil.i18n.properties",
 									},
-									"retail": {
-										"bundleUrl": "/enhancements/i18n/terminologies.retail.i18n.properties",
-										"bundleUrlRelativeTo": "manifest"
-									}
-								}
+									retail: {
+										bundleUrl: "/enhancements/i18n/terminologies.retail.i18n.properties",
+										bundleUrlRelativeTo: "manifest",
+									},
+								},
 							},
 							{
-								"bundleUrl": "/some/path/to/i18n/i18n.properties",
-								"bundleUrlRelativeTo": "manifest",
-								"terminologies": {
-									"oil": {
-										"bundleUrl": "/some/path/to/terminologies.oil.i18n.properties",
+								bundleUrl: "/some/path/to/i18n/i18n.properties",
+								bundleUrlRelativeTo: "manifest",
+								terminologies: {
+									oil: {
+										bundleUrl: "/some/path/to/terminologies.oil.i18n.properties",
 									},
-									"retail": {
-										"bundleUrl": "/some/path/to/terminologies.retail.i18n.properties",
-										"bundleUrlRelativeTo": "manifest"
-									}
-								}
-							}
-						]
-					}
-				}
-			}
-		}
+									retail: {
+										bundleUrl: "/some/path/to/terminologies.retail.i18n.properties",
+										bundleUrlRelativeTo: "manifest",
+									},
+								},
+							},
+						],
+					},
+				},
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [], "Resource is not changed, therefore not returned");
@@ -1725,9 +1724,9 @@ test("Library: No replacement at all", async (t) => {
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.lib",
-			"type": "library"
-		}
+			id: "sap.ui.demo.lib",
+			type: "library",
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input);
@@ -1737,7 +1736,7 @@ test("Library: No replacement at all", async (t) => {
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [], "Only enhanced resources are returned");
@@ -1754,19 +1753,19 @@ test("Library: Missing sap.app section", async (t) => {
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.ui5": {
-			"library": {
-				"i18n": {
-					"bundleUrl": "i18n.properties"
-				}
-			}
-		}
+			library: {
+				i18n: {
+					bundleUrl: "i18n.properties",
+				},
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input);
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [], "Only enhanced resources are returned");
@@ -1786,22 +1785,22 @@ test("Library: Missing sap.app/id", async (t) => {
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"type": "library"
+			type: "library",
 		},
 		"sap.ui5": {
-			"library": {
-				"i18n": {
-					"bundleUrl": "i18n.properties"
-				}
-			}
-		}
+			library: {
+				i18n: {
+					bundleUrl: "i18n.properties",
+				},
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input);
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [], "Only enhanced resources are returned");
@@ -1816,16 +1815,16 @@ test("Library: Missing sap.app/id", async (t) => {
 });
 
 test("Library: sap.app/i18n (with templates, no bundle defined): " +
-	"Does not add supportedLocales, as sap.app/i18n is not valid for libraries",
+"Does not add supportedLocales, as sap.app/i18n is not valid for libraries",
 async (t) => {
 	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.lib",
-			"type": "library",
-			"title": "{{title}}"
-		}
+			id: "sap.ui.demo.lib",
+			type: "library",
+			title: "{{title}}",
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input);
@@ -1835,7 +1834,7 @@ async (t) => {
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [], "Only enhanced resources are returned");
@@ -1848,16 +1847,16 @@ async (t) => {
 });
 
 test("Library: sap.app/i18n (with custom bundle): " +
-	"Does not add supportedLocales, as sap.app/i18n is not valid for libraries",
+"Does not add supportedLocales, as sap.app/i18n is not valid for libraries",
 async (t) => {
 	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.lib",
-			"type": "library",
-			"i18n": "mybundle.properties"
-		}
+			id: "sap.ui.demo.lib",
+			type: "library",
+			i18n: "mybundle.properties",
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input,
@@ -1868,7 +1867,7 @@ async (t) => {
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [], "Only enhanced resources are returned");
@@ -1885,34 +1884,34 @@ test("Library: sap.ui5/library: Adds supportedLocales based on available propert
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.lib",
-			"type": "library"
+			id: "sap.ui.demo.lib",
+			type: "library",
 		},
 		"sap.ui5": {
-			"library": {
-				"i18n": {
-					"bundleUrl": "i18nc/messagebundlec.properties",
-					"fallbackLocale": "de"
-				}
-			}
-		}
+			library: {
+				i18n: {
+					bundleUrl: "i18nc/messagebundlec.properties",
+					fallbackLocale: "de",
+				},
+			},
+		},
 	}, null, 2);
 
 	const expected = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.lib",
-			"type": "library"
+			id: "sap.ui.demo.lib",
+			type: "library",
 		},
 		"sap.ui5": {
-			"library": {
-				"i18n": {
-					"bundleUrl": "i18nc/messagebundlec.properties",
-					"fallbackLocale": "de",
-					"supportedLocales": ["de", "en"]
-				}
-			}
-		}
+			library: {
+				i18n: {
+					bundleUrl: "i18nc/messagebundlec.properties",
+					fallbackLocale: "de",
+					supportedLocales: ["de", "en"],
+				},
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input);
@@ -1922,7 +1921,7 @@ test("Library: sap.ui5/library: Adds supportedLocales based on available propert
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
@@ -1940,30 +1939,30 @@ test("Library: sap.ui5/library: Adds supportedLocales based on available propert
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.lib",
-			"type": "library"
+			id: "sap.ui.demo.lib",
+			type: "library",
 		},
 		"sap.ui5": {
-			"library": {
-				"i18n": "i18nc/messagebundlec.properties"
-			}
-		}
+			library: {
+				i18n: "i18nc/messagebundlec.properties",
+			},
+		},
 	}, null, 2);
 
 	const expected = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.lib",
-			"type": "library"
+			id: "sap.ui.demo.lib",
+			type: "library",
 		},
 		"sap.ui5": {
-			"library": {
-				"i18n": {
-					"bundleUrl": "i18nc/messagebundlec.properties",
-					"supportedLocales": ["de", "en"]
-				}
-			}
-		}
+			library: {
+				i18n: {
+					bundleUrl: "i18nc/messagebundlec.properties",
+					supportedLocales: ["de", "en"],
+				},
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input);
@@ -1973,7 +1972,7 @@ test("Library: sap.ui5/library: Adds supportedLocales based on available propert
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
@@ -1987,36 +1986,36 @@ test("Library: sap.ui5/library: Adds supportedLocales based on available propert
 });
 
 test("Library: sap.ui5/library: " +
-	"Adds supportedLocales based on available properties files (i18n=true)",
+"Adds supportedLocales based on available properties files (i18n=true)",
 async (t) => {
 	const {manifestEnhancer, fs, createResource} = t.context;
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.lib",
-			"type": "library"
+			id: "sap.ui.demo.lib",
+			type: "library",
 		},
 		"sap.ui5": {
-			"library": {
-				"i18n": true
-			}
-		}
+			library: {
+				i18n: true,
+			},
+		},
 	}, null, 2);
 
 	const expected = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.lib",
-			"type": "library"
+			id: "sap.ui.demo.lib",
+			type: "library",
 		},
 		"sap.ui5": {
-			"library": {
-				"i18n": {
-					"bundleUrl": "messagebundle.properties",
-					"supportedLocales": ["de", "en"]
-				}
-			}
-		}
+			library: {
+				i18n: {
+					bundleUrl: "messagebundle.properties",
+					supportedLocales: ["de", "en"],
+				},
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input);
@@ -2026,7 +2025,7 @@ async (t) => {
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
@@ -2044,14 +2043,14 @@ test("Library: sap.ui5/library: Do not generate supportedLocales with disabled i
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.lib",
-			"type": "library"
+			id: "sap.ui.demo.lib",
+			type: "library",
 		},
 		"sap.ui5": {
-			"library": {
-				"i18n": false
-			}
-		}
+			library: {
+				i18n: false,
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input);
@@ -2061,7 +2060,7 @@ test("Library: sap.ui5/library: Do not generate supportedLocales with disabled i
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [], "Only enhanced resources are returned");
@@ -2078,43 +2077,43 @@ test("Library: sap.ui5/library: Adds supportedLocales to terminologies", async (
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.lib",
-			"type": "library"
+			id: "sap.ui.demo.lib",
+			type: "library",
 		},
 		"sap.ui5": {
-			"library": {
-				"i18n": {
-					"bundleUrl": "i18nc/messagebundlec.properties",
-					"terminologies": {
-						"sports": {
-							"bundleUrl": "i18nc_sports/messagebundle.sports.properties"
-						}
-					}
-				}
-			}
-		}
+			library: {
+				i18n: {
+					bundleUrl: "i18nc/messagebundlec.properties",
+					terminologies: {
+						sports: {
+							bundleUrl: "i18nc_sports/messagebundle.sports.properties",
+						},
+					},
+				},
+			},
+		},
 	}, null, 2);
 
 	const expected = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.lib",
-			"type": "library"
+			id: "sap.ui.demo.lib",
+			type: "library",
 		},
 		"sap.ui5": {
-			"library": {
-				"i18n": {
-					"bundleUrl": "i18nc/messagebundlec.properties",
-					"terminologies": {
-						"sports": {
-							"bundleUrl": "i18nc_sports/messagebundle.sports.properties",
-							"supportedLocales": ["", "de", "en"]
-						}
+			library: {
+				i18n: {
+					bundleUrl: "i18nc/messagebundlec.properties",
+					terminologies: {
+						sports: {
+							bundleUrl: "i18nc_sports/messagebundle.sports.properties",
+							supportedLocales: ["", "de", "en"],
+						},
 					},
-					"supportedLocales": ["", "de", "en"],
-				}
-			}
-		}
+					supportedLocales: ["", "de", "en"],
+				},
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input);
@@ -2123,19 +2122,19 @@ test("Library: sap.ui5/library: Adds supportedLocales to terminologies", async (
 		.callsArgWith(1, null, [
 			"messagebundlec_de.properties",
 			"messagebundlec_en.properties",
-			"messagebundlec.properties"
+			"messagebundlec.properties",
 		]);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc_sports")
 		.callsArgWith(1, null, [
 			"messagebundle.sports_de.properties",
 			"messagebundle.sports_en.properties",
-			"messagebundle.sports.properties"
+			"messagebundle.sports.properties",
 		]);
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
@@ -2153,44 +2152,44 @@ test("Library: sap.ui5/library: Adds supportedLocales for terminologies not bund
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.lib",
-			"type": "library"
+			id: "sap.ui.demo.lib",
+			type: "library",
 		},
 		"sap.ui5": {
-			"library": {
-				"i18n": {
-					"bundleUrl": "i18nc/messagebundlec.properties",
-					"supportedLocales": ["pt"],
-					"terminologies": {
-						"sports": {
-							"bundleUrl": "i18nc_sports/messagebundle.sports.properties"
-						}
-					}
-				}
-			}
-		}
+			library: {
+				i18n: {
+					bundleUrl: "i18nc/messagebundlec.properties",
+					supportedLocales: ["pt"],
+					terminologies: {
+						sports: {
+							bundleUrl: "i18nc_sports/messagebundle.sports.properties",
+						},
+					},
+				},
+			},
+		},
 	}, null, 2);
 
 	const expected = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.lib",
-			"type": "library"
+			id: "sap.ui.demo.lib",
+			type: "library",
 		},
 		"sap.ui5": {
-			"library": {
-				"i18n": {
-					"bundleUrl": "i18nc/messagebundlec.properties",
-					"supportedLocales": ["pt"],
-					"terminologies": {
-						"sports": {
-							"bundleUrl": "i18nc_sports/messagebundle.sports.properties",
-							"supportedLocales": ["", "de", "en"]
-						}
-					}
-				}
-			}
-		}
+			library: {
+				i18n: {
+					bundleUrl: "i18nc/messagebundlec.properties",
+					supportedLocales: ["pt"],
+					terminologies: {
+						sports: {
+							bundleUrl: "i18nc_sports/messagebundle.sports.properties",
+							supportedLocales: ["", "de", "en"],
+						},
+					},
+				},
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input);
@@ -2199,19 +2198,19 @@ test("Library: sap.ui5/library: Adds supportedLocales for terminologies not bund
 		.callsArgWith(1, null, [
 			"messagebundlec_de.properties",
 			"messagebundlec_en.properties",
-			"messagebundlec.properties"
+			"messagebundlec.properties",
 		]);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc_sports")
 		.callsArgWith(1, null, [
 			"messagebundle.sports_de.properties",
 			"messagebundle.sports_en.properties",
-			"messagebundle.sports.properties"
+			"messagebundle.sports.properties",
 		]);
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
@@ -2229,44 +2228,44 @@ test("Library: sap.ui5/library: Adds supportedLocales (with deactivated terminol
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.lib",
-			"type": "library"
+			id: "sap.ui.demo.lib",
+			type: "library",
 		},
 		"sap.ui5": {
-			"library": {
-				"i18n": {
-					"bundleUrl": "i18nc/messagebundlec.properties",
-					"terminologies": {
-						"sports": {
-							"bundleUrl": "i18nc_sports/messagebundle.sports.properties",
-							"supportedLocales": ["pt"]
-						}
-					}
-				}
-			}
-		}
+			library: {
+				i18n: {
+					bundleUrl: "i18nc/messagebundlec.properties",
+					terminologies: {
+						sports: {
+							bundleUrl: "i18nc_sports/messagebundle.sports.properties",
+							supportedLocales: ["pt"],
+						},
+					},
+				},
+			},
+		},
 	}, null, 2);
 
 	const expected = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.lib",
-			"type": "library"
+			id: "sap.ui.demo.lib",
+			type: "library",
 		},
 		"sap.ui5": {
-			"library": {
-				"i18n": {
-					"bundleUrl": "i18nc/messagebundlec.properties",
-					"terminologies": {
-						"sports": {
-							"bundleUrl": "i18nc_sports/messagebundle.sports.properties",
-							"supportedLocales": ["pt"]
-						}
+			library: {
+				i18n: {
+					bundleUrl: "i18nc/messagebundlec.properties",
+					terminologies: {
+						sports: {
+							bundleUrl: "i18nc_sports/messagebundle.sports.properties",
+							supportedLocales: ["pt"],
+						},
 					},
-					"supportedLocales": ["", "de", "en"],
-				}
-			}
-		}
+					supportedLocales: ["", "de", "en"],
+				},
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input);
@@ -2275,19 +2274,19 @@ test("Library: sap.ui5/library: Adds supportedLocales (with deactivated terminol
 		.callsArgWith(1, null, [
 			"messagebundlec_de.properties",
 			"messagebundlec_en.properties",
-			"messagebundlec.properties"
+			"messagebundlec.properties",
 		]);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc_sports")
 		.callsArgWith(1, null, [
 			"messagebundle.sports_de.properties",
 			"messagebundle.sports_en.properties",
-			"messagebundle.sports.properties"
+			"messagebundle.sports.properties",
 		]);
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
@@ -2305,50 +2304,50 @@ test("Library: sap.ui5/library: Adds supportedLocales (with enhanceWith)", async
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.lib",
-			"type": "library"
+			id: "sap.ui.demo.lib",
+			type: "library",
 		},
 		"sap.ui5": {
-			"library": {
-				"i18n": {
-					"bundleUrl": "i18nc/messagebundlec.properties",
-					"enhanceWith": [
+			library: {
+				i18n: {
+					bundleUrl: "i18nc/messagebundlec.properties",
+					enhanceWith: [
 						{
-							"bundleUrl": "myfolder1/messagebundlenc1.properties"
+							bundleUrl: "myfolder1/messagebundlenc1.properties",
 						},
 						{
-							"bundleUrl": "myfolder2/messagebundlenc2.properties"
-						}
-					]
-				}
-			}
-		}
+							bundleUrl: "myfolder2/messagebundlenc2.properties",
+						},
+					],
+				},
+			},
+		},
 	}, null, 2);
 
 	const expected = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.lib",
-			"type": "library"
+			id: "sap.ui.demo.lib",
+			type: "library",
 		},
 		"sap.ui5": {
-			"library": {
-				"i18n": {
-					"bundleUrl": "i18nc/messagebundlec.properties",
-					"enhanceWith": [
+			library: {
+				i18n: {
+					bundleUrl: "i18nc/messagebundlec.properties",
+					enhanceWith: [
 						{
-							"bundleUrl": "myfolder1/messagebundlenc1.properties",
-							"supportedLocales": ["", "de", "en"]
+							bundleUrl: "myfolder1/messagebundlenc1.properties",
+							supportedLocales: ["", "de", "en"],
 						},
 						{
-							"bundleUrl": "myfolder2/messagebundlenc2.properties",
-							"supportedLocales": ["", "de", "en"]
-						}
+							bundleUrl: "myfolder2/messagebundlenc2.properties",
+							supportedLocales: ["", "de", "en"],
+						},
 					],
-					"supportedLocales": ["", "de", "en"],
-				}
-			}
-		}
+					supportedLocales: ["", "de", "en"],
+				},
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input);
@@ -2357,26 +2356,26 @@ test("Library: sap.ui5/library: Adds supportedLocales (with enhanceWith)", async
 		.callsArgWith(1, null, [
 			"messagebundlec_de.properties",
 			"messagebundlec_en.properties",
-			"messagebundlec.properties"
+			"messagebundlec.properties",
 		]);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib/myfolder1")
 		.callsArgWith(1, null, [
 			"messagebundlenc1_de.properties",
 			"messagebundlenc1_en.properties",
-			"messagebundlenc1.properties"
+			"messagebundlenc1.properties",
 		]);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib/myfolder2")
 		.callsArgWith(1, null, [
 			"messagebundlenc2_de.properties",
 			"messagebundlenc2_en.properties",
-			"messagebundlenc2.properties"
+			"messagebundlenc2.properties",
 		]);
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
@@ -2394,83 +2393,83 @@ test("Library: sap.ui5/library: Adds supportedLocales (with enhanceWith and term
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.lib",
-			"type": "library"
+			id: "sap.ui.demo.lib",
+			type: "library",
 		},
 		"sap.ui5": {
-			"library": {
-				"i18n": {
-					"bundleUrl": "i18nc/messagebundlec.properties",
-					"terminologies": {
-						"sports": {
-							"bundleUrl": "i18nc_sports/messagebundle.sports.properties"
-						}
+			library: {
+				i18n: {
+					bundleUrl: "i18nc/messagebundlec.properties",
+					terminologies: {
+						sports: {
+							bundleUrl: "i18nc_sports/messagebundle.sports.properties",
+						},
 					},
-					"enhanceWith": [
+					enhanceWith: [
 						{
-							"bundleUrl": "myfolder1/messagebundlenc1.properties",
-							"terminologies": {
-								"sports": {
-									"bundleUrl": "i18nc_sports_soccer/messagebundle.soccer.properties"
-								}
-							}
+							bundleUrl: "myfolder1/messagebundlenc1.properties",
+							terminologies: {
+								sports: {
+									bundleUrl: "i18nc_sports_soccer/messagebundle.soccer.properties",
+								},
+							},
 						},
 						{
-							"bundleUrl": "myfolder2/messagebundlenc2.properties",
-							"terminologies": {
-								"sports": {
-									"bundleUrl": "i18nc_sports_soccer_el/messagebundle.elsoccer.properties"
-								}
-							}
-						}
-					]
-				}
-			}
-		}
+							bundleUrl: "myfolder2/messagebundlenc2.properties",
+							terminologies: {
+								sports: {
+									bundleUrl: "i18nc_sports_soccer_el/messagebundle.elsoccer.properties",
+								},
+							},
+						},
+					],
+				},
+			},
+		},
 	}, null, 2);
 
 	const expected = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.lib",
-			"type": "library"
+			id: "sap.ui.demo.lib",
+			type: "library",
 		},
 		"sap.ui5": {
-			"library": {
-				"i18n": {
-					"bundleUrl": "i18nc/messagebundlec.properties",
-					"terminologies": {
-						"sports": {
-							"bundleUrl": "i18nc_sports/messagebundle.sports.properties",
-							"supportedLocales": ["", "de", "en"]
-						}
+			library: {
+				i18n: {
+					bundleUrl: "i18nc/messagebundlec.properties",
+					terminologies: {
+						sports: {
+							bundleUrl: "i18nc_sports/messagebundle.sports.properties",
+							supportedLocales: ["", "de", "en"],
+						},
 					},
-					"enhanceWith": [
+					enhanceWith: [
 						{
-							"bundleUrl": "myfolder1/messagebundlenc1.properties",
-							"terminologies": {
-								"sports": {
-									"bundleUrl": "i18nc_sports_soccer/messagebundle.soccer.properties",
-									"supportedLocales": ["", "de", "en"]
-								}
+							bundleUrl: "myfolder1/messagebundlenc1.properties",
+							terminologies: {
+								sports: {
+									bundleUrl: "i18nc_sports_soccer/messagebundle.soccer.properties",
+									supportedLocales: ["", "de", "en"],
+								},
 							},
-							"supportedLocales": ["", "de", "en"]
+							supportedLocales: ["", "de", "en"],
 						},
 						{
-							"bundleUrl": "myfolder2/messagebundlenc2.properties",
-							"terminologies": {
-								"sports": {
-									"bundleUrl": "i18nc_sports_soccer_el/messagebundle.elsoccer.properties",
-									"supportedLocales": ["", "de", "en"]
-								}
+							bundleUrl: "myfolder2/messagebundlenc2.properties",
+							terminologies: {
+								sports: {
+									bundleUrl: "i18nc_sports_soccer_el/messagebundle.elsoccer.properties",
+									supportedLocales: ["", "de", "en"],
+								},
 							},
-							"supportedLocales": ["", "de", "en"]
-						}
+							supportedLocales: ["", "de", "en"],
+						},
 					],
-					"supportedLocales": ["", "de", "en"],
-				}
-			}
-		}
+					supportedLocales: ["", "de", "en"],
+				},
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input);
@@ -2479,47 +2478,47 @@ test("Library: sap.ui5/library: Adds supportedLocales (with enhanceWith and term
 		.callsArgWith(1, null, [
 			"messagebundlenc1_de.properties",
 			"messagebundlenc1_en.properties",
-			"messagebundlenc1.properties"
+			"messagebundlenc1.properties",
 		]);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib/myfolder2")
 		.callsArgWith(1, null, [
 			"messagebundlenc2_de.properties",
 			"messagebundlenc2_en.properties",
-			"messagebundlenc2.properties"
+			"messagebundlenc2.properties",
 		]);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc_sports")
 		.callsArgWith(1, null, [
 			"messagebundle.sports_de.properties",
 			"messagebundle.sports_en.properties",
-			"messagebundle.sports.properties"
+			"messagebundle.sports.properties",
 		]);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc_sports_soccer")
 		.callsArgWith(1, null, [
 			"messagebundle.soccer_de.properties",
 			"messagebundle.soccer_en.properties",
-			"messagebundle.soccer.properties"
+			"messagebundle.soccer.properties",
 		]);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc_sports_soccer_el")
 		.callsArgWith(1, null, [
 			"messagebundle.elsoccer_de.properties",
 			"messagebundle.elsoccer_en.properties",
-			"messagebundle.elsoccer.properties"
+			"messagebundle.elsoccer.properties",
 		]);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc")
 		.callsArgWith(1, null, [
 			"messagebundlec_de.properties",
 			"messagebundlec_en.properties",
-			"messagebundlec.properties"
+			"messagebundlec.properties",
 		]);
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
@@ -2537,77 +2536,77 @@ test("Library: sap.ui5/library: Ignores fallbackLocale for terminologies", async
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.lib",
-			"type": "library"
+			id: "sap.ui.demo.lib",
+			type: "library",
 		},
 		"sap.ui5": {
-			"library": {
-				"i18n": {
-					"bundleUrl": "i18nc/messagebundlec.properties",
-					"terminologies": {
-						"sports": {
-							"bundleUrl": "i18nc_sports/messagebundle.sports.properties",
+			library: {
+				i18n: {
+					bundleUrl: "i18nc/messagebundlec.properties",
+					terminologies: {
+						sports: {
+							bundleUrl: "i18nc_sports/messagebundle.sports.properties",
 							// Note: manifest.json schema does not allow "fallbackLocale" for terminologies
 							// UI5 runtime and tooling should ignore this property
-							"fallbackLocale": "es"
-						}
+							fallbackLocale: "es",
+						},
 					},
-					"enhanceWith": [
+					enhanceWith: [
 						{
-							"bundleUrl": "myfolder1/messagebundlenc1.properties",
-							"terminologies": {
-								"sports": {
-									"bundleUrl": "i18nc_sports_soccer/messagebundle.soccer.properties",
+							bundleUrl: "myfolder1/messagebundlenc1.properties",
+							terminologies: {
+								sports: {
+									bundleUrl: "i18nc_sports_soccer/messagebundle.soccer.properties",
 									// Note: manifest.json schema does not allow "fallbackLocale" for terminologies
 									// UI5 runtime and tooling should ignore this property
-									"fallbackLocale": "es"
-								}
-							}
-						}
-					]
-				}
-			}
-		}
+									fallbackLocale: "es",
+								},
+							},
+						},
+					],
+				},
+			},
+		},
 	}, null, 2);
 
 	const expected = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.lib",
-			"type": "library"
+			id: "sap.ui.demo.lib",
+			type: "library",
 		},
 		"sap.ui5": {
-			"library": {
-				"i18n": {
-					"bundleUrl": "i18nc/messagebundlec.properties",
-					"terminologies": {
-						"sports": {
-							"bundleUrl": "i18nc_sports/messagebundle.sports.properties",
+			library: {
+				i18n: {
+					bundleUrl: "i18nc/messagebundlec.properties",
+					terminologies: {
+						sports: {
+							bundleUrl: "i18nc_sports/messagebundle.sports.properties",
 							// Note: manifest.json schema does not allow "fallbackLocale" for terminologies
 							// UI5 runtime and tooling should ignore this property
-							"fallbackLocale": "es",
-							"supportedLocales": ["", "de", "en"]
-						}
+							fallbackLocale: "es",
+							supportedLocales: ["", "de", "en"],
+						},
 					},
-					"enhanceWith": [
+					enhanceWith: [
 						{
-							"bundleUrl": "myfolder1/messagebundlenc1.properties",
-							"terminologies": {
-								"sports": {
-									"bundleUrl": "i18nc_sports_soccer/messagebundle.soccer.properties",
+							bundleUrl: "myfolder1/messagebundlenc1.properties",
+							terminologies: {
+								sports: {
+									bundleUrl: "i18nc_sports_soccer/messagebundle.soccer.properties",
 									// Note: manifest.json schema does not allow "fallbackLocale" for terminologies
 									// UI5 runtime and tooling should ignore this property
-									"fallbackLocale": "es",
-									"supportedLocales": ["", "de", "en"]
-								}
+									fallbackLocale: "es",
+									supportedLocales: ["", "de", "en"],
+								},
 							},
-							"supportedLocales": ["", "de", "en"]
-						}
+							supportedLocales: ["", "de", "en"],
+						},
 					],
-					"supportedLocales": ["", "de", "en"],
-				}
-			}
-		}
+					supportedLocales: ["", "de", "en"],
+				},
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input);
@@ -2616,33 +2615,33 @@ test("Library: sap.ui5/library: Ignores fallbackLocale for terminologies", async
 		.callsArgWith(1, null, [
 			"messagebundlenc1_de.properties",
 			"messagebundlenc1_en.properties",
-			"messagebundlenc1.properties"
+			"messagebundlenc1.properties",
 		]);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc_sports")
 		.callsArgWith(1, null, [
 			"messagebundle.sports_de.properties",
 			"messagebundle.sports_en.properties",
-			"messagebundle.sports.properties"
+			"messagebundle.sports.properties",
 		]);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc_sports_soccer")
 		.callsArgWith(1, null, [
 			"messagebundle.soccer_de.properties",
 			"messagebundle.soccer_en.properties",
-			"messagebundle.soccer.properties"
+			"messagebundle.soccer.properties",
 		]);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc")
 		.callsArgWith(1, null, [
 			"messagebundlec_de.properties",
 			"messagebundlec_en.properties",
-			"messagebundlec.properties"
+			"messagebundlec.properties",
 		]);
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
@@ -2661,82 +2660,82 @@ test("Library: sap.ui5/library: " +
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.lib",
-			"type": "library"
+			id: "sap.ui.demo.lib",
+			type: "library",
 		},
 		"sap.ui5": {
-			"library": {
-				"i18n": {
-					"bundleUrl": "i18nc/messagebundlec.properties",
-					"terminologies": {
-						"sports": {
-							"bundleUrl": "i18nc_sports/messagebundle.sports.properties"
-						}
+			library: {
+				i18n: {
+					bundleUrl: "i18nc/messagebundlec.properties",
+					terminologies: {
+						sports: {
+							bundleUrl: "i18nc_sports/messagebundle.sports.properties",
+						},
 					},
-					"enhanceWith": [
+					enhanceWith: [
 						{
-							"bundleUrl": "myfolder1/messagebundlenc1.properties",
-							"terminologies": {
-								"sports": {
-									"bundleUrl": "i18nc_sports_soccer/messagebundle.soccer.properties"
-								}
-							}
+							bundleUrl: "myfolder1/messagebundlenc1.properties",
+							terminologies: {
+								sports: {
+									bundleUrl: "i18nc_sports_soccer/messagebundle.soccer.properties",
+								},
+							},
 						},
 						{
-							"bundleUrl": "myfolder2/messagebundlenc2.properties",
-							"terminologies": {
-								"sports": {
-									"bundleUrl": "i18nc_sports_soccer_el/messagebundle.elsoccer.properties"
-								}
-							}
-						}
+							bundleUrl: "myfolder2/messagebundlenc2.properties",
+							terminologies: {
+								sports: {
+									bundleUrl: "i18nc_sports_soccer_el/messagebundle.elsoccer.properties",
+								},
+							},
+						},
 					],
-					"supportedLocales": ["en"]
-				}
-			}
-		}
+					supportedLocales: ["en"],
+				},
+			},
+		},
 	}, null, 2);
 
 	const expected = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.lib",
-			"type": "library"
+			id: "sap.ui.demo.lib",
+			type: "library",
 		},
 		"sap.ui5": {
-			"library": {
-				"i18n": {
-					"bundleUrl": "i18nc/messagebundlec.properties",
-					"terminologies": {
-						"sports": {
-							"bundleUrl": "i18nc_sports/messagebundle.sports.properties",
-							"supportedLocales": ["", "de", "en"]
-						}
+			library: {
+				i18n: {
+					bundleUrl: "i18nc/messagebundlec.properties",
+					terminologies: {
+						sports: {
+							bundleUrl: "i18nc_sports/messagebundle.sports.properties",
+							supportedLocales: ["", "de", "en"],
+						},
 					},
-					"enhanceWith": [
+					enhanceWith: [
 						{
-							"bundleUrl": "myfolder1/messagebundlenc1.properties",
-							"terminologies": {
-								"sports": {
-									"bundleUrl": "i18nc_sports_soccer/messagebundle.soccer.properties",
-									"supportedLocales": ["", "de", "en"]
-								}
-							}
+							bundleUrl: "myfolder1/messagebundlenc1.properties",
+							terminologies: {
+								sports: {
+									bundleUrl: "i18nc_sports_soccer/messagebundle.soccer.properties",
+									supportedLocales: ["", "de", "en"],
+								},
+							},
 						},
 						{
-							"bundleUrl": "myfolder2/messagebundlenc2.properties",
-							"terminologies": {
-								"sports": {
-									"bundleUrl": "i18nc_sports_soccer_el/messagebundle.elsoccer.properties",
-									"supportedLocales": ["", "de", "en"]
-								}
-							}
-						}
+							bundleUrl: "myfolder2/messagebundlenc2.properties",
+							terminologies: {
+								sports: {
+									bundleUrl: "i18nc_sports_soccer_el/messagebundle.elsoccer.properties",
+									supportedLocales: ["", "de", "en"],
+								},
+							},
+						},
 					],
-					"supportedLocales": ["en"]
-				}
-			}
-		}
+					supportedLocales: ["en"],
+				},
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input);
@@ -2745,47 +2744,47 @@ test("Library: sap.ui5/library: " +
 		.callsArgWith(1, null, [
 			"messagebundlenc1_de.properties",
 			"messagebundlenc1_en.properties",
-			"messagebundlenc1.properties"
+			"messagebundlenc1.properties",
 		]);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib/myfolder2")
 		.callsArgWith(1, null, [
 			"messagebundlenc2_de.properties",
 			"messagebundlenc2_en.properties",
-			"messagebundlenc2.properties"
+			"messagebundlenc2.properties",
 		]);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc_sports")
 		.callsArgWith(1, null, [
 			"messagebundle.sports_de.properties",
 			"messagebundle.sports_en.properties",
-			"messagebundle.sports.properties"
+			"messagebundle.sports.properties",
 		]);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc_sports_soccer")
 		.callsArgWith(1, null, [
 			"messagebundle.soccer_de.properties",
 			"messagebundle.soccer_en.properties",
-			"messagebundle.soccer.properties"
+			"messagebundle.soccer.properties",
 		]);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc_sports_soccer_el")
 		.callsArgWith(1, null, [
 			"messagebundle.elsoccer_de.properties",
 			"messagebundle.elsoccer_en.properties",
-			"messagebundle.elsoccer.properties"
+			"messagebundle.elsoccer.properties",
 		]);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc")
 		.callsArgWith(1, null, [
 			"messagebundlec_de.properties",
 			"messagebundlec_en.properties",
-			"messagebundlec.properties"
+			"messagebundlec.properties",
 		]);
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
@@ -2811,84 +2810,84 @@ test("Library: sap.ui5/library: " +
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.lib",
-			"type": "library"
+			id: "sap.ui.demo.lib",
+			type: "library",
 		},
 		"sap.ui5": {
-			"library": {
-				"i18n": {
-					"bundleUrl": "i18nc/messagebundlec.properties",
-					"terminologies": {
-						"sports": {
-							"bundleUrl": "i18nc_sports/messagebundle.sports.properties"
-						}
+			library: {
+				i18n: {
+					bundleUrl: "i18nc/messagebundlec.properties",
+					terminologies: {
+						sports: {
+							bundleUrl: "i18nc_sports/messagebundle.sports.properties",
+						},
 					},
-					"enhanceWith": [
+					enhanceWith: [
 						{
-							"bundleUrl": "myfolder1/messagebundlenc1.properties",
-							"terminologies": {
-								"sports": {
-									"bundleUrl": "i18nc_sports_soccer/messagebundle.soccer.properties"
-								}
-							}
+							bundleUrl: "myfolder1/messagebundlenc1.properties",
+							terminologies: {
+								sports: {
+									bundleUrl: "i18nc_sports_soccer/messagebundle.soccer.properties",
+								},
+							},
 						},
 						{
-							"bundleUrl": "myfolder2/messagebundlenc2.properties",
-							"terminologies": {
-								"sports": {
-									"bundleUrl": "i18nc_sports_soccer_el/messagebundle.elsoccer.properties"
-								}
-							}
-						}
+							bundleUrl: "myfolder2/messagebundlenc2.properties",
+							terminologies: {
+								sports: {
+									bundleUrl: "i18nc_sports_soccer_el/messagebundle.elsoccer.properties",
+								},
+							},
+						},
 					],
-					"fallbackLocale": "es"
-				}
-			}
-		}
+					fallbackLocale: "es",
+				},
+			},
+		},
 	}, null, 2);
 
 	const expected = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.lib",
-			"type": "library"
+			id: "sap.ui.demo.lib",
+			type: "library",
 		},
 		"sap.ui5": {
-			"library": {
-				"i18n": {
-					"bundleUrl": "i18nc/messagebundlec.properties",
-					"terminologies": {
-						"sports": {
-							"bundleUrl": "i18nc_sports/messagebundle.sports.properties",
-							"supportedLocales": ["", "de", "en"]
-						}
+			library: {
+				i18n: {
+					bundleUrl: "i18nc/messagebundlec.properties",
+					terminologies: {
+						sports: {
+							bundleUrl: "i18nc_sports/messagebundle.sports.properties",
+							supportedLocales: ["", "de", "en"],
+						},
 					},
-					"enhanceWith": [
+					enhanceWith: [
 						{
-							"bundleUrl": "myfolder1/messagebundlenc1.properties",
-							"terminologies": {
-								"sports": {
-									"bundleUrl": "i18nc_sports_soccer/messagebundle.soccer.properties",
-									"supportedLocales": ["", "de", "en"]
-								}
+							bundleUrl: "myfolder1/messagebundlenc1.properties",
+							terminologies: {
+								sports: {
+									bundleUrl: "i18nc_sports_soccer/messagebundle.soccer.properties",
+									supportedLocales: ["", "de", "en"],
+								},
 							},
-							"supportedLocales": ["", "de", "en", "es"]
+							supportedLocales: ["", "de", "en", "es"],
 						},
 						{
-							"bundleUrl": "myfolder2/messagebundlenc2.properties",
-							"terminologies": {
-								"sports": {
-									"bundleUrl": "i18nc_sports_soccer_el/messagebundle.elsoccer.properties",
-									"supportedLocales": ["", "de", "en"]
-								}
-							}
-						}
+							bundleUrl: "myfolder2/messagebundlenc2.properties",
+							terminologies: {
+								sports: {
+									bundleUrl: "i18nc_sports_soccer_el/messagebundle.elsoccer.properties",
+									supportedLocales: ["", "de", "en"],
+								},
+							},
+						},
 					],
-					"fallbackLocale": "es",
-					"supportedLocales": ["", "de", "en", "es"]
-				}
-			}
-		}
+					fallbackLocale: "es",
+					supportedLocales: ["", "de", "en", "es"],
+				},
+			},
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/lib/manifest.json", true, input);
@@ -2898,35 +2897,35 @@ test("Library: sap.ui5/library: " +
 			"messagebundlenc1_de.properties",
 			"messagebundlenc1_en.properties",
 			"messagebundlenc1_es.properties",
-			"messagebundlenc1.properties"
+			"messagebundlenc1.properties",
 		]);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib/myfolder2")
 		.callsArgWith(1, null, [
 			"messagebundlenc2_de.properties",
 			"messagebundlenc2_en.properties",
-			"messagebundlenc2.properties"
+			"messagebundlenc2.properties",
 		]);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc_sports")
 		.callsArgWith(1, null, [
 			"messagebundle.sports_de.properties",
 			"messagebundle.sports_en.properties",
-			"messagebundle.sports.properties"
+			"messagebundle.sports.properties",
 		]);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc_sports_soccer")
 		.callsArgWith(1, null, [
 			"messagebundle.soccer_de.properties",
 			"messagebundle.soccer_en.properties",
-			"messagebundle.soccer.properties"
+			"messagebundle.soccer.properties",
 		]);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc_sports_soccer_el")
 		.callsArgWith(1, null, [
 			"messagebundle.elsoccer_de.properties",
 			"messagebundle.elsoccer_en.properties",
-			"messagebundle.elsoccer.properties"
+			"messagebundle.elsoccer.properties",
 		]);
 
 	fs.readdir.withArgs("/resources/sap/ui/demo/lib/i18nc")
@@ -2934,12 +2933,12 @@ test("Library: sap.ui5/library: " +
 			"messagebundlec_de.properties",
 			"messagebundlec_en.properties",
 			"messagebundlec_es.properties",
-			"messagebundlec.properties"
+			"messagebundlec.properties",
 		]);
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
@@ -2962,10 +2961,10 @@ test("fs.readdir error handling", async (t) => {
 	const input = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app",
-			"type": "application",
-			"title": "{{title}}"
-		}
+			id: "sap.ui.demo.app",
+			type: "application",
+			title: "{{title}}",
+		},
 	}, null, 2);
 
 	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
@@ -2980,7 +2979,7 @@ test("fs.readdir error handling", async (t) => {
 
 	const processedResources = await manifestEnhancer({
 		resources: [resource],
-		fs
+		fs,
 	});
 
 	t.deepEqual(processedResources, [], "Only enhanced resources are returned");
@@ -3002,8 +3001,8 @@ test("ManifestEnhancer#run: multiple parallel executions are not supported", asy
 	const manifest = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app"
-		}
+			id: "sap.ui.demo.app",
+		},
 	});
 	const filePath = "/manifest.json";
 
@@ -3011,7 +3010,7 @@ test("ManifestEnhancer#run: multiple parallel executions are not supported", asy
 
 	manifestEnhancer.run();
 	await t.throwsAsync(manifestEnhancer.run(), {
-		message: "ManifestEnhancer#run can only be invoked once per instance"
+		message: "ManifestEnhancer#run can only be invoked once per instance",
 	});
 });
 
@@ -3022,8 +3021,8 @@ test("manifestEnhancer#getSupportedLocales", async (t) => {
 	const manifest = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app"
-		}
+			id: "sap.ui.demo.app",
+		},
 	});
 	const filePath = "/manifest.json";
 
@@ -3032,7 +3031,7 @@ test("manifestEnhancer#getSupportedLocales", async (t) => {
 	fs.readdir.withArgs("/i18n")
 		.callsArgWith(1, null, [
 			"i18n.properties",
-			"i18n_en.properties"
+			"i18n_en.properties",
 		]);
 
 	t.deepEqual(await manifestEnhancer.getSupportedLocales("./i18n/i18n.properties"), ["", "en"]);
@@ -3055,8 +3054,8 @@ test("manifestEnhancer#getSupportedLocales (absolute / invalid URLs)", async (t)
 	const manifest = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app"
-		}
+			id: "sap.ui.demo.app",
+		},
 	});
 	const filePath = "/manifest.json";
 
@@ -3092,8 +3091,8 @@ test("manifestEnhancer#getSupportedLocales (error handling)", async (t) => {
 	const manifest = JSON.stringify({
 		"_version": "1.58.0",
 		"sap.app": {
-			"id": "sap.ui.demo.app"
-		}
+			id: "sap.ui.demo.app",
+		},
 	});
 	const filePath = "/manifest.json";
 
@@ -3116,7 +3115,7 @@ test("manifestEnhancer#getSupportedLocales (error handling)", async (t) => {
 
 	// Unexpected errors should be thrown
 	await t.throwsAsync(manifestEnhancer.getSupportedLocales("i18n-unexpected-error/i18n.properties"), {
-		is: unexpectedError
+		is: unexpectedError,
 	});
 
 	t.is(fs.readdir.callCount, 2, "readdir should be called once");

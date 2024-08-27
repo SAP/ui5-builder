@@ -50,10 +50,16 @@ function scanFileOrDir(fileOrDir, name, pool) {
 }
 */
 
+/**
+ *
+ * @param resource
+ * @param rawInfo
+ * @param pool
+ */
 async function determineDependencyInfo(resource, rawInfo, pool) {
 	const info = new ModuleInfo(resource.name);
 	info.size = resource.fileSize;
-	if ( /\.js$/.test(resource.name) ) {
+	if (resource.name.endsWith(".js")) {
 		// console.log("analyzing %s", resource.file);
 		const code = await resource.buffer();
 		info.size = code.length;
@@ -74,28 +80,28 @@ async function determineDependencyInfo(resource, rawInfo, pool) {
 				log.verbose(error.stack);
 			}
 		}
-		if ( rawInfo ) {
+		if (rawInfo) {
 			info.rawModule = true;
 			// console.log("adding preconfigured dependencies for %s:", resource.name, rawInfo.dependencies);
-			if ( rawInfo.dependencies ) {
-				rawInfo.dependencies.forEach( (dep) => info.addDependency(dep) );
+			if (rawInfo.dependencies) {
+				rawInfo.dependencies.forEach((dep) => info.addDependency(dep));
 			}
 
-			if ( rawInfo.requiresTopLevelScope != null ) {
+			if (rawInfo.requiresTopLevelScope != null) {
 				// an explicitly defined value for requiresTopLevelScope from .library overrides analysis result
 				info.requiresTopLevelScope = rawInfo.requiresTopLevelScope;
 			}
 
-			if ( rawInfo.ignoredGlobals ) {
+			if (rawInfo.ignoredGlobals) {
 				info.removeIgnoredGlobalNames(rawInfo.ignoredGlobals);
 			}
 		}
-		if ( /(?:^|\/)Component\.js/.test(resource.name) ) {
+		if (/(?:^|\/)Component\.js/.test(resource.name)) {
 			promises.push(
 				new ComponentAnalyzer(pool).analyze(resource, info),
 				new SmartTemplateAnalyzer(pool).analyze(resource, info)
 			);
-		} else if ( /(?:^|\/)library\.js/.test(resource.name) ) {
+		} else if (/(?:^|\/)library\.js/.test(resource.name)) {
 			promises.push(
 				(async () => {
 					const manifestName = resource.name.replace(/library\.js$/, "manifest.json");
@@ -110,15 +116,15 @@ async function determineDependencyInfo(resource, rawInfo, pool) {
 		await Promise.all(promises);
 
 		// console.log(info);
-	} else if ( /\.view.xml$/.test(resource.name) ) {
+	} else if (/\.view.xml$/.test(resource.name)) {
 		const xmlView = await resource.buffer();
 		info.size = xmlView.length;
 		await new XMLTemplateAnalyzer(pool).analyzeView(xmlView, info);
-	} else if ( /\.control.xml$/.test(resource.name) ) {
+	} else if (/\.control.xml$/.test(resource.name)) {
 		const xmlView = await resource.buffer();
 		info.size = xmlView.length;
 		await new XMLTemplateAnalyzer(pool).analyzeFragment(xmlView, info);
-	} else if ( /\.fragment.xml$/.test(resource.name) ) {
+	} else if (/\.fragment.xml$/.test(resource.name)) {
 		const xmlView = await resource.buffer();
 		info.size = xmlView.length;
 		await new XMLTemplateAnalyzer(pool).analyzeFragment(xmlView, info);
@@ -154,11 +160,11 @@ class ResourcePool {
 	/**
 	 * Adds a resource to the pool
   *
-	 * @param {Resource} resource
-	 * @returns {Promise|undefined} for libraries a Promise is returned undefined otherwise
+	 * @param resource
+	 * @returns for libraries a Promise is returned undefined otherwise
 	 */
-	addResource( resource: Resource ) {
-		if ( this._resourcesByName.has(resource.name) ) {
+	addResource(resource: Resource) {
+		if (this._resourcesByName.has(resource.name)) {
 			log.warn("Duplicate resource " + resource.name);
 			// TODO return and let the first one always win?
 		}
@@ -166,11 +172,11 @@ class ResourcePool {
 		this._resources.push(resource);
 		this._resourcesByName.set(resource.name, resource);
 
-		if ( /\.library$/.test(resource.name) ) {
+		if (resource.name.endsWith(".library")) {
 			// read raw-module info from .library files
-			return resource.buffer().then( (buffer) => {
-				const infos = getDependencyInfos( resource.name, buffer );
-				for ( const name of Object.keys(infos) ) {
+			return resource.buffer().then((buffer) => {
+				const infos = getDependencyInfos(resource.name, buffer);
+				for (const name of Object.keys(infos)) {
 					this._rawModuleInfos.set(name, infos[name]);
 				}
 			});
@@ -180,16 +186,16 @@ class ResourcePool {
 	/**
 	 * Retrieves the module info
 	 *
-	 * @param {string} resourceName resource/module name
-	 * @param {string} [moduleName] module name, in case it differs from the resource name (e.g. for -dbg resources)
-	 * @returns {Promise<ModuleInfo>}
+	 * @param resourceName resource/module name
+	 * @param [moduleName] module name, in case it differs from the resource name (e.g. for -dbg resources)
+	 * @returns
 	 */
 	async getModuleInfo(resourceName: string, moduleName?: string) {
 		let info = this._dependencyInfos.get(resourceName);
-		if ( info == null ) {
+		if (info == null) {
 			info = Promise.resolve().then(async () => {
 				const resource = await this.findResource(resourceName);
-				return determineDependencyInfo( resource, this._rawModuleInfos.get(moduleName || resourceName), this );
+				return determineDependencyInfo(resource, this._rawModuleInfos.get(moduleName || resourceName), this);
 			});
 			this._dependencyInfos.set(resourceName, info);
 		}
@@ -198,7 +204,7 @@ class ResourcePool {
 
 	async findResource(name) {
 		const resource = this._resourcesByName.get(name);
-		if ( resource == null ) {
+		if (resource == null) {
 			// TODO: Remove throw and return null to align with ui5-fs
 			//	This would require changes in most consuming classes
 			throw new Error("resource not found in pool: '" + name + "'");
@@ -207,8 +213,8 @@ class ResourcePool {
 	}
 
 	async findResourceWithInfo(name) {
-		return this.findResource(name).then( (resource) => {
-			return this.getModuleInfo(name).then( (info) => {
+		return this.findResource(name).then((resource) => {
+			return this.getModuleInfo(name).then((info) => {
 				// HACK: attach info to resource
 				resource.info = info;
 				return resource;
@@ -219,14 +225,14 @@ class ResourcePool {
 	/**
 	 * Finds the resources based matching the given pattern
   *
-	 * @param {ResourceFilterList|RegExp} pattern
-	 * @returns {Promise}
+	 * @param pattern
+	 * @returns
 	 */
 	async findResources(pattern: ResourceFilterList | RegExp) {
-		if ( pattern instanceof ResourceFilterList ) {
-			return this._resources.filter( (resource) => pattern.matches(resource.name) );
+		if (pattern instanceof ResourceFilterList) {
+			return this._resources.filter((resource) => pattern.matches(resource.name));
 		}
-		return this._resources.filter( (resource) => pattern.test(resource.name) );
+		return this._resources.filter((resource) => pattern.test(resource.name));
 	}
 
 	get size() {
@@ -243,4 +249,3 @@ class ResourcePool {
 }
 
 export default ResourcePool;
-

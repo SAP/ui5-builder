@@ -25,8 +25,8 @@ test.beforeEach(async (t) => {
 
 	t.context.BuilderWithStub = await esmock("../../../../lib/lbt/bundle/Builder", {
 		"@ui5/logger": {
-			getLogger: () => myLoggerInstance
-		}
+			getLogger: () => myLoggerInstance,
+		},
 	});
 });
 
@@ -46,15 +46,15 @@ test.serial("writePreloadModule: with invalid json content", async (t) => {
 	const builder = new BuilderWithStub({});
 	builder.optimize = true;
 	builder.outW = {
-		write: writeStub
+		write: writeStub,
 	};
 	const invalidJsonResource = {
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
 		buffer: async () => {
 			return invalidJsonContent;
-		}
+		},
 	};
 	const result = await builder.writePreloadModule("invalid.json", undefined, invalidJsonResource);
 
@@ -73,23 +73,23 @@ test("integration: createBundle with exposedGlobals", async (t) => {
 	pool.addResource({
 		name: "a.js",
 		getPath: () => "a.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "function One(){return 1;}"
+		buffer: async () => "function One(){return 1;}",
 	});
 	pool.addResource({
 		name: "ui5loader.js",
 		getPath: () => "ui5loader.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => ""
+		buffer: async () => "",
 	});
 	pool.addResource({
 		name: "a.library",
 		getPath: () => "a.library",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
 		buffer: async () => `<?xml version="1.0" encoding="UTF-8" ?>
@@ -102,7 +102,7 @@ test("integration: createBundle with exposedGlobals", async (t) => {
 			</module-infos>
 		</packaging>
 	</appData>
-</library>`
+</library>`,
 	});
 
 	const bundleDefinition = {
@@ -111,11 +111,11 @@ test("integration: createBundle with exposedGlobals", async (t) => {
 		sections: [{
 			mode: "preload",
 			name: "preload-section",
-			filters: ["a.js"]
+			filters: ["a.js"],
 		}, {
 			mode: "require",
-			filters: ["ui5loader.js"]
-		}]
+			filters: ["ui5loader.js"],
+		}],
 	};
 
 	const builder = new Builder(pool);
@@ -133,9 +133,9 @@ sap.ui.require(["ui5loader"]);
 ${SOURCE_MAPPING_URL}=library-preload.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "Bundle " +
-		"should contain:" +
-		" preload part from a.js" +
-		" require part from ui5loader.js");
+	"should contain:" +
+	" preload part from a.js" +
+	" require part from ui5loader.js");
 	t.is(oResult.bundleInfo.name, "library-preload.js", "bundle info name is correct");
 	t.deepEqual(oResult.bundleInfo.size, expectedContent.length, "bundle info size is correct");
 	t.deepEqual(oResult.bundleInfo.subModules, ["a.js"],
@@ -147,26 +147,26 @@ test("integration: createBundle Bundle (ui5loader.js)", async (t) => {
 	pool.addResource({
 		name: "ui5loader.js",
 		getPath: () => "ui5loader.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "(function(__global) {sap.ui.require = function(){};}(window));"
+		buffer: async () => "(function(__global) {sap.ui.require = function(){};}(window));",
 	});
 	pool.addResource({
 		name: "jquery.sap.global-dbg.js",
 		getPath: () => "jquery.sap.global-dbg.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "sap.ui.define([], function(){return {};});"
+		buffer: async () => "sap.ui.define([], function(){return {};});",
 	});
 	pool.addResource({
 		name: "myModule.js",
 		getPath: () => "myModule.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "(function(){window.mine = {};}());"
+		buffer: async () => "(function(){window.mine = {};}());",
 	});
 
 	const bundleDefinition = {
@@ -175,16 +175,16 @@ test("integration: createBundle Bundle (ui5loader.js)", async (t) => {
 		sections: [{
 			mode: "preload",
 			name: "preload-section",
-			filters: ["jquery.sap.global-dbg.js"]
+			filters: ["jquery.sap.global-dbg.js"],
 		}, {
 			declareRawModules: undefined,
 			mode: "raw",
 			filters: ["myModule.js"],
-			sort: undefined
+			sort: undefined,
 		}, {
 			mode: "require",
-			filters: ["ui5loader.js"]
-		}]
+			filters: ["ui5loader.js"],
+		}],
 	};
 
 	const builder = new Builder(pool);
@@ -199,10 +199,10 @@ sap.ui.require(["ui5loader"]);
 ${SOURCE_MAPPING_URL}=Component-preload.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "Bundle should start with optimization and " +
-		"should contain:" +
-		" preload part from jquery.sap.global-dbg.js" +
-		" raw part from myModule.js" +
-		" require part from ui5loader.js");
+	"should contain:" +
+	" preload part from jquery.sap.global-dbg.js" +
+	" raw part from myModule.js" +
+	" require part from ui5loader.js");
 	t.is(oResult.bundleInfo.name, "Component-preload.js", "bundle info name is correct");
 	t.deepEqual(oResult.bundleInfo.size, expectedContent.length, "bundle info size is correct");
 	t.deepEqual(oResult.bundleInfo.subModules, ["jquery.sap.global-dbg.js", "myModule.js"],
@@ -215,61 +215,61 @@ test("integration: createBundle Bundle, using predefine calls", async (t) => {
 	pool.addResource({
 		name: "ui5loader.js",
 		getPath: () => "ui5loader.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "(function(__global) {sap.ui.require = function(){};}(window));"
+		buffer: async () => "(function(__global) {sap.ui.require = function(){};}(window));",
 	});
 	pool.addResource({
 		name: "myModuleUsingGlobalScope.js",
 		getPath: () => "myModuleUsingGlobalScope.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "var magic = {};"
+		buffer: async () => "var magic = {};",
 	});
 	pool.addResource({ // the pool must contain this to activate optimization markers
 		name: "jquery.sap.global-dbg.js",
 		getPath: () => "jquery.sap.global-dbg.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "sap.ui.define([], function(){return {};});"
+		buffer: async () => "sap.ui.define([], function(){return {};});",
 	});
 	pool.addResource({
 		name: "jquery.sap.global.js",
 		getPath: () => "jquery.sap.global.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "sap.ui.define([], function(){return {};});"
+		buffer: async () => "sap.ui.define([], function(){return {};});",
 	});
 	pool.addResource({
 		name: "jquery.sap.pony1.js",
 		getPath: () => "jquery.sap.pony1.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "sap.ui.define(); // hello"
+		buffer: async () => "sap.ui.define(); // hello",
 	});
 	pool.addResource({
 		name: "jquery.sap.pony2.js",
 		getPath: () => "jquery.sap.pony2.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
 		buffer: async () => `sap.
 		ui.define
 		/*hello*/
-				();`
+				();`,
 	});
 	pool.addResource({
 		name: "myRawModule.js",
 		getPath: () => "myRawModule.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "(function(){window.mine = {};}());"
+		buffer: async () => "(function(){window.mine = {};}());",
 	});
 
 	const bundleDefinition = {
@@ -282,24 +282,24 @@ test("integration: createBundle Bundle, using predefine calls", async (t) => {
 				"jquery.sap.global.js",
 				"jquery.sap.pony1.js",
 				"jquery.sap.pony2.js",
-				"myModuleUsingGlobalScope.js"
-			]
+				"myModuleUsingGlobalScope.js",
+			],
 		}, {
 			declareRawModules: undefined,
 			mode: "raw",
 			filters: ["myRawModule.js"],
-			sort: undefined
+			sort: undefined,
 		}, {
 			mode: "require",
-			filters: ["ui5loader.js"]
-		}]
+			filters: ["ui5loader.js"],
+		}],
 	};
 
 	const builder = new BuilderWithStub(pool);
 	const oResult = await builder.createBundle(bundleDefinition, {
 		numberOfParts: 1,
 		decorateBootstrapModule: true,
-		optimize: true
+		optimize: true,
 	});
 	t.is(oResult.name, "Component-preload.js");
 	const expectedContent = `//@ui5-bundle Component-preload.js
@@ -316,10 +316,10 @@ sap.ui.require(["ui5loader"]);
 ${SOURCE_MAPPING_URL}=Component-preload.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "Bundle should start with optimization and " +
-		"should contain:" +
-		" preload part from jquery.sap.global-dbg.js" +
-		" raw part from myModule.js" +
-		" require part from ui5loader.js");
+	"should contain:" +
+	" preload part from jquery.sap.global-dbg.js" +
+	" raw part from myModule.js" +
+	" require part from ui5loader.js");
 	t.is(oResult.bundleInfo.name, "Component-preload.js", "bundle info name is correct");
 	t.deepEqual(oResult.bundleInfo.size, expectedContent.length, "bundle info size is correct");
 	t.deepEqual(oResult.bundleInfo.subModules,
@@ -327,15 +327,15 @@ ${SOURCE_MAPPING_URL}=Component-preload.js.map
 			"jquery.sap.global.js",
 			"jquery.sap.pony1.js",
 			"jquery.sap.pony2.js",
-			"myRawModule.js"
+			"myRawModule.js",
 		], "bundle info subModules are correct");
 	t.is(errorLogStub.callCount, 1, "Error message was called once");
 	t.is(
 		errorLogStub.getCall(0).args[0],
 		"Module myModuleUsingGlobalScope.js requires top level scope and can only " +
-			"be embedded as a string (requires 'eval'), which is not supported with specVersion 4.0 and higher. " +
-			"For more information, see the UI5 Tooling documentation " +
-			"https://sap.github.io/ui5-tooling/stable/pages/Builder/#javascript-files-requiring-top-level-scope",
+		"be embedded as a string (requires 'eval'), which is not supported with specVersion 4.0 and higher. " +
+		"For more information, see the UI5 Tooling documentation " +
+		"https://sap.github.io/ui5-tooling/stable/pages/Builder/#javascript-files-requiring-top-level-scope",
 		"Error message was called for myModuleUsingGlobalScope.js"
 	);
 });
@@ -347,10 +347,10 @@ test("integration (legacy): createBundle Bundle, using predefine calls with allo
 	pool.addResource({
 		name: "myModuleUsingGlobalScope.js",
 		getPath: () => "myModuleUsingGlobalScope.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "var magic = {};"
+		buffer: async () => "var magic = {};",
 	});
 	const bundleDefinition = {
 		name: `Component-preload.js`,
@@ -359,9 +359,9 @@ test("integration (legacy): createBundle Bundle, using predefine calls with allo
 			mode: "preload",
 			name: "preload-section",
 			filters: [
-				"myModuleUsingGlobalScope.js"
-			]
-		}]
+				"myModuleUsingGlobalScope.js",
+			],
+		}],
 	};
 	const builder = new BuilderWithStub(pool, "1.120.0", true);
 	const oResult = await builder.createBundle(bundleDefinition, {
@@ -375,12 +375,12 @@ sap.ui.require.preload({
 ${SOURCE_MAPPING_URL}=Component-preload.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "Bundle should contain only " +
-		"stringified myModuleUsingGlobalScope.js");
+	"stringified myModuleUsingGlobalScope.js");
 	t.is(oResult.bundleInfo.name, "Component-preload.js", "bundle info name is correct");
 	t.deepEqual(oResult.bundleInfo.size, expectedContent.length, "bundle info size is correct");
 	t.deepEqual(oResult.bundleInfo.subModules,
 		[
-			"myModuleUsingGlobalScope.js"
+			"myModuleUsingGlobalScope.js",
 		], "bundle info subModules are correct");
 	t.is(errorLogStub.callCount, 0, "Error log was not called at all");
 });
@@ -390,53 +390,53 @@ test("integration: createBundle Bundle, using predefine calls, no optimize", asy
 	pool.addResource({
 		name: "ui5loader.js",
 		getPath: () => "ui5loader.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "(function(__global) {sap.ui.require = function(){};}(window));"
+		buffer: async () => "(function(__global) {sap.ui.require = function(){};}(window));",
 	});
 	pool.addResource({ // the pool must contain this to activate optimization markers
 		name: "jquery.sap.global-dbg.js",
 		getPath: () => "jquery.sap.global-dbg.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "sap.ui.define([], function(){return {};});"
+		buffer: async () => "sap.ui.define([], function(){return {};});",
 	});
 	pool.addResource({
 		name: "jquery.sap.global.js",
 		getPath: () => "jquery.sap.global.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "sap.ui.define([], function(){return {};});"
+		buffer: async () => "sap.ui.define([], function(){return {};});",
 	});
 	pool.addResource({
 		name: "jquery.sap.pony1.js",
 		getPath: () => "jquery.sap.pony1.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "sap.ui.define(); // hello"
+		buffer: async () => "sap.ui.define(); // hello",
 	});
 	pool.addResource({
 		name: "jquery.sap.pony2.js",
 		getPath: () => "jquery.sap.pony2.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
 		buffer: async () => `sap.
 		ui.define
 		/*hello*/
-				();`
+				();`,
 	});
 	pool.addResource({
 		name: "myRawModule.js",
 		getPath: () => "myRawModule.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "(function(){window.mine = {};}());"
+		buffer: async () => "(function(){window.mine = {};}());",
 	});
 
 	const bundleDefinition = {
@@ -448,24 +448,24 @@ test("integration: createBundle Bundle, using predefine calls, no optimize", asy
 			filters: [
 				"jquery.sap.global.js",
 				"jquery.sap.pony1.js",
-				"jquery.sap.pony2.js"
-			]
+				"jquery.sap.pony2.js",
+			],
 		}, {
 			declareRawModules: undefined,
 			mode: "raw",
 			filters: ["myRawModule.js"],
-			sort: undefined
+			sort: undefined,
 		}, {
 			mode: "require",
-			filters: ["ui5loader.js"]
-		}]
+			filters: ["ui5loader.js"],
+		}],
 	};
 
 	const builder = new Builder(pool);
 	const oResult = await builder.createBundle(bundleDefinition, {
 		numberOfParts: 1,
 		decorateBootstrapModule: true,
-		optimize: false
+		optimize: false,
 	});
 	t.is(oResult.name, "Component-preload.js");
 	const expectedContent = `//@ui5-bundle Component-preload.js
@@ -482,10 +482,10 @@ sap.ui.require(["ui5loader"]);
 ${SOURCE_MAPPING_URL}=Component-preload.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "Bundle should start with optimization and " +
-		"should contain:" +
-		" preload part from jquery.sap.global-dbg.js" +
-		" raw part from myModule.js" +
-		" require part from ui5loader.js");
+	"should contain:" +
+	" preload part from jquery.sap.global-dbg.js" +
+	" raw part from myModule.js" +
+	" require part from ui5loader.js");
 	t.is(oResult.bundleInfo.name, "Component-preload.js", "bundle info name is correct");
 	t.deepEqual(oResult.bundleInfo.size, expectedContent.length, "bundle info size is correct");
 	t.deepEqual(oResult.bundleInfo.subModules,
@@ -493,7 +493,7 @@ ${SOURCE_MAPPING_URL}=Component-preload.js.map
 			"jquery.sap.global.js",
 			"jquery.sap.pony1.js",
 			"jquery.sap.pony2.js",
-			"myRawModule.js"
+			"myRawModule.js",
 		], "bundle info subModules are correct");
 });
 
@@ -503,18 +503,18 @@ test("integration(legacy): createBundle Bundle with module requiresTopLevelScope
 	pool.addResource({
 		name: "myModule.js",
 		getPath: () => "myModule.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "sap.ui.define(); // hello"
+		buffer: async () => "sap.ui.define(); // hello",
 	});
 	pool.addResource({
 		name: "myModuleUsingGlobalScope.js",
 		getPath: () => "myModuleUsingGlobalScope.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "var magic = {};"
+		buffer: async () => "var magic = {};",
 	});
 
 	const bundleDefinition = {
@@ -525,16 +525,16 @@ test("integration(legacy): createBundle Bundle with module requiresTopLevelScope
 			name: "preload-section",
 			filters: [
 				"myModule.js",
-				"myModuleUsingGlobalScope.js"
-			]
-		}]
+				"myModuleUsingGlobalScope.js",
+			],
+		}],
 	};
 
 	const builder = new Builder(pool);
 	const oResult = await builder.createBundle(bundleDefinition, {
 		numberOfParts: 1,
 		decorateBootstrapModule: true,
-		optimize: false
+		optimize: false,
 	});
 	t.is(oResult.name, "Component-preload.js");
 	const expectedContent = `//@ui5-bundle Component-preload.js
@@ -552,18 +552,18 @@ test("integration: createBundle (bootstrap bundle, UI5 Version 1.X)", async (t) 
 	pool.addResource({
 		name: "ui5loader.js",
 		getPath: () => "ui5loader.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "(function(__global) {sap.ui.require = function(){};}(window));"
+		buffer: async () => "(function(__global) {sap.ui.require = function(){};}(window));",
 	});
 	pool.addResource({
 		name: "sap/ui/core/Core.js",
 		getPath: () => "sap/ui/core/Core.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "sap.ui.define([],function(){return {};});"
+		buffer: async () => "sap.ui.define([],function(){return {};});",
 	});
 
 	const bundleDefinition = {
@@ -573,15 +573,15 @@ test("integration: createBundle (bootstrap bundle, UI5 Version 1.X)", async (t) 
 			mode: "raw",
 			filters: ["ui5loader.js"],
 			declareRawModules: undefined,
-			sort: undefined
+			sort: undefined,
 		}, {
 			mode: "preload",
 			filters: ["sap/ui/core/Core.js"],
-			resolve: true
+			resolve: true,
 		}, {
 			mode: "require",
-			filters: ["sap/ui/core/Core.js"]
-		}]
+			filters: ["sap/ui/core/Core.js"],
+		}],
 	};
 
 	const builder = new Builder(pool);
@@ -589,7 +589,7 @@ test("integration: createBundle (bootstrap bundle, UI5 Version 1.X)", async (t) 
 		numberOfParts: 1,
 		decorateBootstrapModule: true,
 		addTryCatchRestartWrapper: true,
-		optimize: true
+		optimize: true,
 	});
 	t.is(oResult.name, "bootstrap.js");
 	const expectedContent = `//@ui5-bundle bootstrap.js
@@ -605,10 +605,10 @@ if (oError.name != "Restart") { throw oError; }
 ${SOURCE_MAPPING_URL}=bootstrap.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "Bundle should start with optimization and " +
-		"should contain:" +
-		" preload part from jquery.sap.global-dbg.js" +
-		" raw part from myModule.js" +
-		" require part from ui5loader.js");
+	"should contain:" +
+	" preload part from jquery.sap.global-dbg.js" +
+	" raw part from myModule.js" +
+	" require part from ui5loader.js");
 	t.is(oResult.bundleInfo.name, "bootstrap.js", "bundle info name is correct");
 	t.deepEqual(oResult.bundleInfo.size, expectedContent.length, "bundle info size is correct");
 	t.deepEqual(oResult.bundleInfo.subModules, ["ui5loader.js", "sap/ui/core/Core.js"],
@@ -620,18 +620,18 @@ test("integration: createBundle (bootstrap bundle, require section and async tru
 	pool.addResource({
 		name: "ui5loader.js",
 		getPath: () => "ui5loader.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "(function(__global) {sap.ui.require = function(){};}(window));"
+		buffer: async () => "(function(__global) {sap.ui.require = function(){};}(window));",
 	});
 	pool.addResource({
 		name: "sap/ui/core/Core.js",
 		getPath: () => "sap/ui/core/Core.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "sap.ui.define([],function(){return {};});"
+		buffer: async () => "sap.ui.define([],function(){return {};});",
 	});
 
 	const bundleDefinition = {
@@ -641,16 +641,16 @@ test("integration: createBundle (bootstrap bundle, require section and async tru
 			mode: "raw",
 			filters: ["ui5loader.js"],
 			declareRawModules: undefined,
-			sort: undefined
+			sort: undefined,
 		}, {
 			mode: "preload",
 			filters: ["sap/ui/core/Core.js"],
-			resolve: true
+			resolve: true,
 		}, {
 			mode: "require",
 			filters: ["sap/ui/core/Core.js"],
-			async: true
-		}]
+			async: true,
+		}],
 	};
 
 	const builder = new Builder(pool);
@@ -658,7 +658,7 @@ test("integration: createBundle (bootstrap bundle, require section and async tru
 		numberOfParts: 1,
 		decorateBootstrapModule: true,
 		addTryCatchRestartWrapper: true,
-		optimize: true
+		optimize: true,
 	});
 	t.is(oResult.name, "bootstrap.js");
 	const expectedContent = `//@ui5-bundle bootstrap.js
@@ -674,9 +674,9 @@ if (oError.name != "Restart") { throw oError; }
 ${SOURCE_MAPPING_URL}=bootstrap.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "Bundle should start with optimization and " +
-		"should contain:" +
-		" raw part from ui5loader.js" +
-		" require part from sap/ui/core/Core.js");
+	"should contain:" +
+	" raw part from ui5loader.js" +
+	" require part from sap/ui/core/Core.js");
 	t.is(oResult.bundleInfo.name, "bootstrap.js", "bundle info name is correct");
 	t.deepEqual(oResult.bundleInfo.size, expectedContent.length, "bundle info size is correct");
 	t.deepEqual(oResult.bundleInfo.subModules, ["ui5loader.js", "sap/ui/core/Core.js"],
@@ -688,18 +688,18 @@ test("integration: createBundle (bootstrap bundle, require section and async fal
 	pool.addResource({
 		name: "ui5loader.js",
 		getPath: () => "ui5loader.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "(function(__global) {sap.ui.require = function(){};}(window));"
+		buffer: async () => "(function(__global) {sap.ui.require = function(){};}(window));",
 	});
 	pool.addResource({
 		name: "sap/ui/core/Core.js",
 		getPath: () => "sap/ui/core/Core.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "sap.ui.define([],function(){return {};});"
+		buffer: async () => "sap.ui.define([],function(){return {};});",
 	});
 
 	const bundleDefinition = {
@@ -709,16 +709,16 @@ test("integration: createBundle (bootstrap bundle, require section and async fal
 			mode: "raw",
 			filters: ["ui5loader.js"],
 			declareRawModules: undefined,
-			sort: undefined
+			sort: undefined,
 		}, {
 			mode: "preload",
 			filters: ["sap/ui/core/Core.js"],
-			resolve: true
+			resolve: true,
 		}, {
 			mode: "require",
 			filters: ["sap/ui/core/Core.js"],
-			async: false
-		}]
+			async: false,
+		}],
 	};
 
 	const builder = new Builder(pool);
@@ -726,7 +726,7 @@ test("integration: createBundle (bootstrap bundle, require section and async fal
 		numberOfParts: 1,
 		decorateBootstrapModule: true,
 		addTryCatchRestartWrapper: true,
-		optimize: true
+		optimize: true,
 	});
 	t.is(oResult.name, "bootstrap.js");
 	const expectedContent = `//@ui5-bundle bootstrap.js
@@ -744,10 +744,10 @@ if (oError.name != "Restart") { throw oError; }
 ${SOURCE_MAPPING_URL}=bootstrap.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "Bundle should start with optimization and " +
-		"should contain:" +
-		" preload part from jquery.sap.global-dbg.js" +
-		" raw part from myModule.js" +
-		" require part from ui5loader.js");
+	"should contain:" +
+	" preload part from jquery.sap.global-dbg.js" +
+	" raw part from myModule.js" +
+	" require part from ui5loader.js");
 	t.is(oResult.bundleInfo.name, "bootstrap.js", "bundle info name is correct");
 	t.deepEqual(oResult.bundleInfo.size, expectedContent.length, "bundle info size is correct");
 	t.deepEqual(oResult.bundleInfo.subModules, ["ui5loader.js", "sap/ui/core/Core.js"],
@@ -759,18 +759,18 @@ test("integration: createBundle (bootstrap bundle, raw section, UI5 Version 1.X)
 	pool.addResource({
 		name: "ui5loader.js",
 		getPath: () => "ui5loader.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "(function(__global) {sap.ui.require = function(){};}(window));"
+		buffer: async () => "(function(__global) {sap.ui.require = function(){};}(window));",
 	});
 	pool.addResource({
 		name: "sap/ui/core/Core.js",
 		getPath: () => "sap/ui/core/Core.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "sap.ui.define([],function(){return {};});"
+		buffer: async () => "sap.ui.define([],function(){return {};});",
 	});
 
 	const bundleDefinition = {
@@ -780,11 +780,11 @@ test("integration: createBundle (bootstrap bundle, raw section, UI5 Version 1.X)
 			mode: "raw",
 			filters: ["ui5loader.js"],
 			declareRawModules: undefined,
-			sort: undefined
+			sort: undefined,
 		}, {
 			mode: "raw",
-			filters: ["sap/ui/core/Core.js"]
-		}]
+			filters: ["sap/ui/core/Core.js"],
+		}],
 	};
 
 	const builder = new Builder(pool);
@@ -792,7 +792,7 @@ test("integration: createBundle (bootstrap bundle, raw section, UI5 Version 1.X)
 		numberOfParts: 1,
 		decorateBootstrapModule: true,
 		addTryCatchRestartWrapper: true,
-		optimize: true
+		optimize: true,
 	});
 	t.is(oResult.name, "bootstrap.js");
 	const expectedContent = `//@ui5-bundle bootstrap.js
@@ -810,9 +810,9 @@ if (oError.name != "Restart") { throw oError; }
 ${SOURCE_MAPPING_URL}=bootstrap.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "Bundle should start with optimization and " +
-		"should contain:" +
-		" raw part from ui5loader.js" +
-		" raw part from sap/ui/core/Core.js");
+	"should contain:" +
+	" raw part from ui5loader.js" +
+	" raw part from sap/ui/core/Core.js");
 	t.is(oResult.bundleInfo.name, "bootstrap.js", "bundle info name is correct");
 	t.deepEqual(oResult.bundleInfo.size, expectedContent.length, "bundle info size is correct");
 	t.deepEqual(oResult.bundleInfo.subModules, ["ui5loader.js", "sap/ui/core/Core.js"],
@@ -824,18 +824,18 @@ test("integration: createBundle (bootstrap bundle, UI5 Version >= 2)", async (t)
 	pool.addResource({
 		name: "ui5loader.js",
 		getPath: () => "ui5loader.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "(function(__global) {sap.ui.require = function(){};}(window));"
+		buffer: async () => "(function(__global) {sap.ui.require = function(){};}(window));",
 	});
 	pool.addResource({
 		name: "sap/ui/core/Core.js",
 		getPath: () => "sap/ui/core/Core.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "sap.ui.define([],function(){return {};});"
+		buffer: async () => "sap.ui.define([],function(){return {};});",
 	});
 
 	const bundleDefinition = {
@@ -845,15 +845,15 @@ test("integration: createBundle (bootstrap bundle, UI5 Version >= 2)", async (t)
 			mode: "raw",
 			filters: ["ui5loader.js"],
 			declareRawModules: undefined,
-			sort: undefined
+			sort: undefined,
 		}, {
 			mode: "preload",
 			filters: ["sap/ui/core/Core.js"],
-			resolve: true
+			resolve: true,
 		}, {
 			mode: "require",
-			filters: ["sap/ui/core/Core.js"]
-		}]
+			filters: ["sap/ui/core/Core.js"],
+		}],
 	};
 
 	const builder = new Builder(pool, "2.0.0");
@@ -861,7 +861,7 @@ test("integration: createBundle (bootstrap bundle, UI5 Version >= 2)", async (t)
 		numberOfParts: 1,
 		decorateBootstrapModule: true,
 		addTryCatchRestartWrapper: true,
-		optimize: true
+		optimize: true,
 	});
 	t.is(oResult.name, "bootstrap.js");
 	const expectedContent = `//@ui5-bundle bootstrap.js
@@ -877,10 +877,10 @@ if (oError.name != "Restart") { throw oError; }
 ${SOURCE_MAPPING_URL}=bootstrap.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "Bundle should start with optimization and " +
-		"should contain:" +
-		" raw part from ui5loader.js" +
-		" preload part from sap/ui/core/Core.js" +
-		" require part from sap/ui/core/Core.js");
+	"should contain:" +
+	" raw part from ui5loader.js" +
+	" preload part from sap/ui/core/Core.js" +
+	" require part from sap/ui/core/Core.js");
 	t.is(oResult.bundleInfo.name, "bootstrap.js", "bundle info name is correct");
 	t.deepEqual(oResult.bundleInfo.size, expectedContent.length, "bundle info size is correct");
 	t.deepEqual(oResult.bundleInfo.subModules, ["ui5loader.js", "sap/ui/core/Core.js"],
@@ -892,18 +892,18 @@ test("integration: createBundle (bootstrap bundle, UI5 Version = 2.0.0-SNAPSHOT)
 	pool.addResource({
 		name: "ui5loader.js",
 		getPath: () => "ui5loader.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "(function(__global) {sap.ui.require = function(){};}(window));"
+		buffer: async () => "(function(__global) {sap.ui.require = function(){};}(window));",
 	});
 	pool.addResource({
 		name: "sap/ui/core/Core.js",
 		getPath: () => "sap/ui/core/Core.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "sap.ui.define([],function(){return {};});"
+		buffer: async () => "sap.ui.define([],function(){return {};});",
 	});
 
 	const bundleDefinition = {
@@ -913,15 +913,15 @@ test("integration: createBundle (bootstrap bundle, UI5 Version = 2.0.0-SNAPSHOT)
 			mode: "raw",
 			filters: ["ui5loader.js"],
 			declareRawModules: undefined,
-			sort: undefined
+			sort: undefined,
 		}, {
 			mode: "preload",
 			filters: ["sap/ui/core/Core.js"],
-			resolve: true
+			resolve: true,
 		}, {
 			mode: "require",
-			filters: ["sap/ui/core/Core.js"]
-		}]
+			filters: ["sap/ui/core/Core.js"],
+		}],
 	};
 
 	const builder = new Builder(pool, "2.0.0-SNAPSHOT");
@@ -929,7 +929,7 @@ test("integration: createBundle (bootstrap bundle, UI5 Version = 2.0.0-SNAPSHOT)
 		numberOfParts: 1,
 		decorateBootstrapModule: true,
 		addTryCatchRestartWrapper: true,
-		optimize: true
+		optimize: true,
 	});
 	t.is(oResult.name, "bootstrap.js");
 	const expectedContent = `//@ui5-bundle bootstrap.js
@@ -945,10 +945,10 @@ if (oError.name != "Restart") { throw oError; }
 ${SOURCE_MAPPING_URL}=bootstrap.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "Bundle should start with optimization and " +
-		"should contain:" +
-		" raw part from ui5loader.js" +
-		" preload part from sap/ui/core/Core.js" +
-		" require part from sap/ui/core/Core.js");
+	"should contain:" +
+	" raw part from ui5loader.js" +
+	" preload part from sap/ui/core/Core.js" +
+	" require part from sap/ui/core/Core.js");
 	t.is(oResult.bundleInfo.name, "bootstrap.js", "bundle info name is correct");
 	t.deepEqual(oResult.bundleInfo.size, expectedContent.length, "bundle info size is correct");
 	t.deepEqual(oResult.bundleInfo.subModules, ["ui5loader.js", "sap/ui/core/Core.js"],
@@ -960,18 +960,18 @@ test("integration: createBundle (bootstrap bundle, require section and async tru
 	pool.addResource({
 		name: "ui5loader.js",
 		getPath: () => "ui5loader.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "(function(__global) {sap.ui.require = function(){};}(window));"
+		buffer: async () => "(function(__global) {sap.ui.require = function(){};}(window));",
 	});
 	pool.addResource({
 		name: "sap/ui/core/Core.js",
 		getPath: () => "sap/ui/core/Core.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "sap.ui.define([],function(){return {};});"
+		buffer: async () => "sap.ui.define([],function(){return {};});",
 	});
 
 	const bundleDefinition = {
@@ -981,16 +981,16 @@ test("integration: createBundle (bootstrap bundle, require section and async tru
 			mode: "raw",
 			filters: ["ui5loader.js"],
 			declareRawModules: undefined,
-			sort: undefined
+			sort: undefined,
 		}, {
 			mode: "preload",
 			filters: ["sap/ui/core/Core.js"],
-			resolve: true
+			resolve: true,
 		}, {
 			mode: "require",
 			filters: ["sap/ui/core/Core.js"],
-			async: true
-		}]
+			async: true,
+		}],
 	};
 
 	const builder = new Builder(pool, "2.0.0");
@@ -998,7 +998,7 @@ test("integration: createBundle (bootstrap bundle, require section and async tru
 		numberOfParts: 1,
 		decorateBootstrapModule: true,
 		addTryCatchRestartWrapper: true,
-		optimize: true
+		optimize: true,
 	});
 	t.is(oResult.name, "bootstrap.js");
 	const expectedContent = `//@ui5-bundle bootstrap.js
@@ -1014,9 +1014,9 @@ if (oError.name != "Restart") { throw oError; }
 ${SOURCE_MAPPING_URL}=bootstrap.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "Bundle should start with optimization and " +
-		"should contain:" +
-		" raw part from ui5loader.js" +
-		" require part from sap/ui/core/Core.js");
+	"should contain:" +
+	" raw part from ui5loader.js" +
+	" require part from sap/ui/core/Core.js");
 	t.is(oResult.bundleInfo.name, "bootstrap.js", "bundle info name is correct");
 	t.deepEqual(oResult.bundleInfo.size, expectedContent.length, "bundle info size is correct");
 	t.deepEqual(oResult.bundleInfo.subModules, ["ui5loader.js", "sap/ui/core/Core.js"],
@@ -1028,18 +1028,18 @@ test("integration: createBundle (bootstrap bundle, require section and async fal
 	pool.addResource({
 		name: "ui5loader.js",
 		getPath: () => "ui5loader.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "(function(__global) {sap.ui.require = function(){};}(window));"
+		buffer: async () => "(function(__global) {sap.ui.require = function(){};}(window));",
 	});
 	pool.addResource({
 		name: "sap/ui/core/Core.js",
 		getPath: () => "sap/ui/core/Core.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "sap.ui.define([],function(){return {};});"
+		buffer: async () => "sap.ui.define([],function(){return {};});",
 	});
 
 	const bundleDefinition = {
@@ -1049,16 +1049,16 @@ test("integration: createBundle (bootstrap bundle, require section and async fal
 			mode: "raw",
 			filters: ["ui5loader.js"],
 			declareRawModules: undefined,
-			sort: undefined
+			sort: undefined,
 		}, {
 			mode: "preload",
 			filters: ["sap/ui/core/Core.js"],
-			resolve: true
+			resolve: true,
 		}, {
 			mode: "require",
 			filters: ["sap/ui/core/Core.js"],
-			async: false
-		}]
+			async: false,
+		}],
 	};
 
 	const builder = new Builder(pool, "2.0.0");
@@ -1075,26 +1075,26 @@ test("integration: Legacy test: createBundle without ui5loader.js presence also 
 	pool.addResource({
 		name: "sap-ui-core.js",
 		getPath: () => "sap-ui-core.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "(function(__global) {sap.ui.require = function(){};}(window));"
+		buffer: async () => "(function(__global) {sap.ui.require = function(){};}(window));",
 	});
 	pool.addResource({
 		name: "jquery.sap.global-dbg.js",
 		getPath: () => "jquery.sap.global-dbg.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "sap.ui.define([], function(){/* comment */ return {};});"
+		buffer: async () => "sap.ui.define([], function(){/* comment */ return {};});",
 	});
 	pool.addResource({
 		name: "myModule.js",
 		getPath: () => "myModule.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "(function(){window.mine = {};}());"
+		buffer: async () => "(function(){window.mine = {};}());",
 	});
 
 	const bundleDefinition = {
@@ -1103,17 +1103,17 @@ test("integration: Legacy test: createBundle without ui5loader.js presence also 
 		sections: [{
 			mode: "preload",
 			name: "preload-section",
-			filters: ["jquery.sap.global-dbg.js"]
+			filters: ["jquery.sap.global-dbg.js"],
 		}, {
 			declareRawModules: undefined,
 			mode: "raw",
 			filters: ["myModule.js"],
-			sort: undefined
+			sort: undefined,
 		}, {
 			mode: "require",
 			filters: ["sap-ui-core.js"],
-			async: false
-		}]
+			async: false,
+		}],
 	};
 
 	const builder = new Builder(pool);
@@ -1127,10 +1127,10 @@ sap.ui.requireSync("sap-ui-core");
 ${SOURCE_MAPPING_URL}=Component-preload.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "Bundle should start with registerPreloadedModules " +
-		"and should contain:" +
-		" preload part from jquery.sap.global-dbg.js" +
-		" raw part from myModule.js" +
-		" require part from sap-ui-core.js");
+	"and should contain:" +
+	" preload part from jquery.sap.global-dbg.js" +
+	" raw part from myModule.js" +
+	" require part from sap-ui-core.js");
 	t.is(oResult.bundleInfo.name, "Component-preload.js", "bundle info name is correct");
 	t.deepEqual(oResult.bundleInfo.size, expectedContent.length, "bundle info size is correct");
 	t.deepEqual(oResult.bundleInfo.subModules, ["jquery.sap.global-dbg.js", "myModule.js"],
@@ -1142,26 +1142,26 @@ test("integration: createBundle (bootstrap bundle, legacy bundle format)", async
 	pool.addResource({
 		name: "jquery.sap.global.js",
 		getPath: () => "jquery.sap.global.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "(function(__global) {sap.ui.require = function(){};}(window));"
+		buffer: async () => "(function(__global) {sap.ui.require = function(){};}(window));",
 	});
 	pool.addResource({
 		name: "myRawModule.js",
 		getPath: () => "myRawModule.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "(function(){window.mine = {};}());"
+		buffer: async () => "(function(){window.mine = {};}());",
 	});
 	pool.addResource({
 		name: "sap/ui/core/Core.js",
 		getPath: () => "sap/ui/core/Core.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "sap.ui.define([],function(){return {};});"
+		buffer: async () => "sap.ui.define([],function(){return {};});",
 	});
 
 	const bundleDefinition = {
@@ -1171,16 +1171,16 @@ test("integration: createBundle (bootstrap bundle, legacy bundle format)", async
 			mode: "raw",
 			filters: ["jquery.sap.global.js", "myRawModule.js"],
 			sort: false,
-			declareRawModules: true
+			declareRawModules: true,
 		}, {
 			mode: "preload",
 			filters: ["sap/ui/core/Core.js"],
-			resolve: true
+			resolve: true,
 		}, {
 			mode: "require",
 			filters: ["sap/ui/core/Core.js"],
-			async: false
-		}]
+			async: false,
+		}],
 	};
 
 	const builder = new Builder(pool);
@@ -1188,7 +1188,7 @@ test("integration: createBundle (bootstrap bundle, legacy bundle format)", async
 		numberOfParts: 1,
 		decorateBootstrapModule: true,
 		addTryCatchRestartWrapper: true,
-		optimize: true
+		optimize: true,
 	});
 	t.is(oResult.name, "bootstrap.js");
 	const expectedContent = `//@ui5-bundle bootstrap.js
@@ -1210,10 +1210,10 @@ if (oError.name != "Restart") { throw oError; }
 ${SOURCE_MAPPING_URL}=bootstrap.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "Bundle should start with optimization and " +
-		"should contain:" +
-		" preload part from jquery.sap.global-dbg.js" +
-		" raw part from myModule.js" +
-		" require part from ui5loader.js");
+	"should contain:" +
+	" preload part from jquery.sap.global-dbg.js" +
+	" raw part from myModule.js" +
+	" require part from ui5loader.js");
 	t.is(oResult.bundleInfo.name, "bootstrap.js", "bundle info name is correct");
 	t.deepEqual(oResult.bundleInfo.size, expectedContent.length, "bundle info size is correct");
 	t.deepEqual(oResult.bundleInfo.subModules, ["jquery.sap.global.js", "myRawModule.js", "sap/ui/core/Core.js"],
@@ -1229,62 +1229,62 @@ test.serial("integration(legacy): createBundle with bundleInfo with requiresTopL
 		silly: sillyLogStub,
 		verbose: verboseLogStub,
 		warn: warnLogStub,
-		error: errorLogStub
+		error: errorLogStub,
 	};
 	const BuilderWithStub = await esmock("../../../../lib/lbt/bundle/Builder", {
 		"@ui5/logger": {
-			getLogger: () => myLoggerInstance
-		}
+			getLogger: () => myLoggerInstance,
+		},
 	});
 
 	const pool = new ResourcePool();
 	pool.addResource({
 		name: "a.js",
 		getPath: () => "a.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "function One(){return 1;}"
+		buffer: async () => "function One(){return 1;}",
 	});
 	pool.addResource({
 		name: "b.js",
 		getPath: () => "b.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "function Two(){return 2;}"
+		buffer: async () => "function Two(){return 2;}",
 	});
 	pool.addResource({
 		name: "c2.js",
 		getPath: () => "c2.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "function Three(){return 3.2;}"
+		buffer: async () => "function Three(){return 3.2;}",
 	});
 	pool.addResource({
 		name: "c1.js",
 		getPath: () => "c1.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "sap.ui.define(() => 3.1);"
+		buffer: async () => "sap.ui.define(() => 3.1);",
 	});
 	pool.addResource({
 		name: "c3.js",
 		getPath: () => "c3.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "function Three(){return 3.3;}"
+		buffer: async () => "function Three(){return 3.3;}",
 	});
 	pool.addResource({
 		name: "ui5loader.js",
 		getPath: () => "ui5loader.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => ""
+		buffer: async () => "",
 	});
 
 	const bundleDefinition = {
@@ -1293,19 +1293,19 @@ test.serial("integration(legacy): createBundle with bundleInfo with requiresTopL
 		sections: [{
 			mode: "preload",
 			name: "preload-section",
-			filters: ["a.js"]
+			filters: ["a.js"],
 		}, {
 			mode: "require",
-			filters: ["ui5loader.js"]
+			filters: ["ui5loader.js"],
 		}, {
 			mode: "bundleInfo",
 			name: "my-custom-bundle.js",
-			filters: ["b.js"]
+			filters: ["b.js"],
 		}, {
 			mode: "bundleInfo",
 			name: "my-other-custom-bundle.js",
-			filters: ["c1.js", "c2.js", "c3.js"]
-		}]
+			filters: ["c1.js", "c2.js", "c3.js"],
+		}],
 	};
 
 	const builder = new BuilderWithStub(pool);
@@ -1357,67 +1357,67 @@ test.serial("integration: createBundle with bundleInfo", async (t) => {
 		silly: sillyLogStub,
 		verbose: verboseLogStub,
 		warn: warnLogStub,
-		error: errorLogStub
+		error: errorLogStub,
 	};
 	const BuilderWithStub = await esmock("../../../../lib/lbt/bundle/Builder", {
 		"@ui5/logger": {
-			getLogger: () => myLoggerInstance
-		}
+			getLogger: () => myLoggerInstance,
+		},
 	});
 
 	const pool = new ResourcePool();
 	pool.addResource({
 		name: "a.js",
 		getPath: () => "a.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "sap.ui.define([], function(){ return 1;});"
+		buffer: async () => "sap.ui.define([], function(){ return 1;});",
 	});
 	pool.addResource({
 		name: "b.js",
 		getPath: () => "b.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "sap.ui.define([], function(){ return 2;});"
+		buffer: async () => "sap.ui.define([], function(){ return 2;});",
 	});
 	pool.addResource({
 		name: "c2.js",
 		getPath: () => "c2.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "sap.ui.define([], function(){ return 3.2;});"
+		buffer: async () => "sap.ui.define([], function(){ return 3.2;});",
 	});
 	pool.addResource({
 		name: "c1.js",
 		getPath: () => "c1.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "sap.ui.define([], function(){ return 3.1;});"
+		buffer: async () => "sap.ui.define([], function(){ return 3.1;});",
 	});
 	pool.addResource({
 		name: "c3.js",
 		getPath: () => "c3.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "sap.ui.define([], function(){ return 3.3;});"
+		buffer: async () => "sap.ui.define([], function(){ return 3.3;});",
 	});
 	pool.addResource({
 		name: "ui5loader.js",
 		getPath: () => "ui5loader.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => ""
+		buffer: async () => "",
 	});
 	pool.addResource({
 		name: "a.library",
 		getPath: () => "a.library",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
 		buffer: async () => `<?xml version="1.0" encoding="UTF-8" ?>
@@ -1430,7 +1430,7 @@ test.serial("integration: createBundle with bundleInfo", async (t) => {
 			</module-infos>
 		</packaging>
 	</appData>
-</library>`
+</library>`,
 	});
 
 	const bundleDefinition = {
@@ -1439,19 +1439,19 @@ test.serial("integration: createBundle with bundleInfo", async (t) => {
 		sections: [{
 			mode: "preload",
 			name: "preload-section",
-			filters: ["a.js"]
+			filters: ["a.js"],
 		}, {
 			mode: "require",
-			filters: ["ui5loader.js"]
+			filters: ["ui5loader.js"],
 		}, {
 			mode: "bundleInfo",
 			name: "my-custom-bundle", // without .js, should emit a warning
-			filters: ["b.js"]
+			filters: ["b.js"],
 		}, {
 			mode: "bundleInfo",
 			name: "my-other-custom-bundle.js", // with .js
-			filters: ["c1.js", "c2.js", "c3.js"]
-		}]
+			filters: ["c1.js", "c2.js", "c3.js"],
+		}],
 	};
 
 	const builder = new BuilderWithStub(pool);
@@ -1468,9 +1468,9 @@ sap.ui.loader.config({bundlesUI5:{
 ${SOURCE_MAPPING_URL}=library-preload.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "Bundle " +
-		"should contain:" +
-		" preload part from a.js" +
-		" require part from ui5loader.js");
+	"should contain:" +
+	" preload part from a.js" +
+	" require part from ui5loader.js");
 	t.is(oResult.bundleInfo.name, "library-preload.js", "bundle info name is correct");
 	t.deepEqual(oResult.bundleInfo.size, expectedContent.length, "bundle info size is correct");
 	t.deepEqual(oResult.bundleInfo.subModules, ["a.js", "b.js", "c1.js", "c2.js", "c3.js"],
@@ -1480,7 +1480,7 @@ ${SOURCE_MAPPING_URL}=library-preload.js.map
 	t.deepEqual(warnLogStub.getCall(0).args, [
 		`BundleInfo section name 'my-custom-bundle' is missing a file extension. ` +
 		`The info might not work as expected. ` +
-		`The name must match the bundle filename (incl. extension such as '.js')`
+		`The name must match the bundle filename (incl. extension such as '.js')`,
 	]);
 
 	t.is(errorLogStub.callCount, 0);
@@ -1491,47 +1491,47 @@ test.serial("integration: createBundle with depCache", async (t) => {
 	pool.addResource({
 		name: "a.js",
 		getPath: () => "a.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "sap.ui.define([\"./b\", \"./c2\"],function(b, c){return {};});"
+		buffer: async () => "sap.ui.define([\"./b\", \"./c2\"],function(b, c){return {};});",
 	});
 	pool.addResource({
 		name: "b.js",
 		getPath: () => "b.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "function Two(){return 2;}"
+		buffer: async () => "function Two(){return 2;}",
 	});
 	pool.addResource({
 		name: "c2.js",
 		getPath: () => "c2.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "sap.ui.define([\"./c1\", \"./c3\"],function(c1, c3){return {};});"
+		buffer: async () => "sap.ui.define([\"./c1\", \"./c3\"],function(c1, c3){return {};});",
 	});
 	pool.addResource({
 		name: "c1.js",
 		getPath: () => "c1.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "function Three(){return 3.1;}"
+		buffer: async () => "function Three(){return 3.1;}",
 	});
 	pool.addResource({
 		name: "c3.js",
 		getPath: () => "c3.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "function Three(){return 3.3;}"
+		buffer: async () => "function Three(){return 3.3;}",
 	});
 	pool.addResource({
 		name: "a.library",
 		getPath: () => "a.library",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
 		buffer: async () => `<?xml version="1.0" encoding="UTF-8" ?>
@@ -1544,7 +1544,7 @@ test.serial("integration: createBundle with depCache", async (t) => {
 			</module-infos>
 		</packaging>
 	</appData>
-</library>`
+</library>`,
 	});
 
 	const bundleDefinition = {
@@ -1552,11 +1552,11 @@ test.serial("integration: createBundle with depCache", async (t) => {
 		sections: [{
 			mode: "preload",
 			name: "preload-section",
-			filters: ["a.js"]
+			filters: ["a.js"],
 		}, {
 			mode: "depCache",
-			filters: ["*.js"]
-		}]
+			filters: ["*.js"],
+		}],
 	};
 
 	const builder = new Builder(pool);
@@ -1571,9 +1571,9 @@ sap.ui.loader.config({depCacheUI5:{
 ${SOURCE_MAPPING_URL}=library-depCache-preload.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "Bundle " +
-		"should contain:" +
-		" preload part from a.js" +
-		" depCache part from a.js && c2.js");
+	"should contain:" +
+	" preload part from a.js" +
+	" depCache part from a.js && c2.js");
 	t.is(oResult.bundleInfo.name, "library-depCache-preload.js", "bundle info name is correct");
 	t.deepEqual(oResult.bundleInfo.size, expectedContent.length, "bundle info size is correct");
 	t.deepEqual(oResult.bundleInfo.subModules, ["a.js", "c2.js"],
@@ -1586,11 +1586,11 @@ test.serial("integration: createBundle with depCache with splitted modules", asy
 
 	// Builds N resources by adding provided "dependencies" as resource dependencies.
 	// Also adds the remaining I resources into dependency list
-	const buildDependencies = function(count, namespace, dependencies = []) {
+	const buildDependencies = function (count, namespace, dependencies = []) {
 		return new Array(count).fill(null).map((val, index, arr) => {
 			const strDeps = dependencies.map((dep) => "\"" + dep + "\"");
 			const deps = dependencies.map((val, i) => `b${i}`);
-			for (let i = index + 1; i < arr.length; i++ ) {
+			for (let i = index + 1; i < arr.length; i++) {
 				strDeps.push(`"${namespace}${i}"`);
 				deps.push(`a${i}`);
 			}
@@ -1599,10 +1599,10 @@ test.serial("integration: createBundle with depCache with splitted modules", asy
 			pool.addResource({
 				name: `${curResourceName}.js`,
 				getPath: () => `${curResourceName}.js`,
-				string: function() {
+				string: function () {
 					return this.buffer();
 				},
-				buffer: async () => `sap.ui.define([${strDeps.join(", ")}],function(${deps.join(", ")}){return {};});`
+				buffer: async () => `sap.ui.define([${strDeps.join(", ")}],function(${deps.join(", ")}){return {};});`,
 			});
 
 			return curResourceName;
@@ -1616,8 +1616,8 @@ test.serial("integration: createBundle with depCache with splitted modules", asy
 		name: `library-depCache-preload.js`,
 		sections: [{
 			mode: "depCache",
-			filters: ["foo/bar/**"]
-		}]
+			filters: ["foo/bar/**"],
+		}],
 	};
 
 	const builder = new Builder(pool);
@@ -1645,47 +1645,47 @@ test.serial("integration: createBundle with depCache with NO dependencies", asyn
 	pool.addResource({
 		name: "a.js",
 		getPath: () => "a.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "sap.ui.define([],function(){return {};});"
+		buffer: async () => "sap.ui.define([],function(){return {};});",
 	});
 	pool.addResource({
 		name: "b.js",
 		getPath: () => "b.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "function Two(){return 2;}"
+		buffer: async () => "function Two(){return 2;}",
 	});
 	pool.addResource({
 		name: "c2.js",
 		getPath: () => "c2.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "sap.ui.define([],function(){return {};});"
+		buffer: async () => "sap.ui.define([],function(){return {};});",
 	});
 	pool.addResource({
 		name: "c1.js",
 		getPath: () => "c1.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "function Three(){return 3.1;}"
+		buffer: async () => "function Three(){return 3.1;}",
 	});
 	pool.addResource({
 		name: "c3.js",
 		getPath: () => "c3.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "function Three(){return 3.3;}"
+		buffer: async () => "function Three(){return 3.3;}",
 	});
 	pool.addResource({
 		name: "a.library",
 		getPath: () => "a.library",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
 		buffer: async () => `<?xml version="1.0" encoding="UTF-8" ?>
@@ -1698,7 +1698,7 @@ test.serial("integration: createBundle with depCache with NO dependencies", asyn
 			</module-infos>
 		</packaging>
 	</appData>
-</library>`
+</library>`,
 	});
 
 	const bundleDefinition = {
@@ -1706,11 +1706,11 @@ test.serial("integration: createBundle with depCache with NO dependencies", asyn
 		sections: [{
 			mode: "preload",
 			name: "preload-section",
-			filters: ["a.js"]
+			filters: ["a.js"],
 		}, {
 			mode: "depCache",
-			filters: ["*.js"]
-		}]
+			filters: ["*.js"],
+		}],
 	};
 
 	const builder = new Builder(pool);
@@ -1721,9 +1721,9 @@ sap.ui.predefine("a", [],function(){return {};});
 ${SOURCE_MAPPING_URL}=library-depCache-preload.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "Bundle " +
-		"should contain:" +
-		" preload part from a.js" +
-		" depCache part from a.js && c2.js");
+	"should contain:" +
+	" preload part from a.js" +
+	" depCache part from a.js && c2.js");
 	t.is(oResult.bundleInfo.name, "library-depCache-preload.js", "bundle info name is correct");
 	t.deepEqual(oResult.bundleInfo.size, expectedContent.length, "bundle info size is correct");
 	t.deepEqual(oResult.bundleInfo.subModules, ["a.js", "c2.js"],
@@ -1741,32 +1741,32 @@ test("integration: createBundle using predefine calls with source maps and a sin
 	// });
 
 	const originalSourceMap = {
-		"version": 3,
-		"sources":
+		version: 3,
+		sources:
 		[
-			"jquery.sap.global-dbg.js"
+			"jquery.sap.global-dbg.js",
 		],
-		"names":
+		names:
 		[
 			"sap",
 			"ui",
 			"define",
 			"console",
-			"log"
+			"log",
 		],
-		"mappings": "AACAA,IAAIC,GAAGC,OAAO,GAAI,WACjBC,QAAQC,IAAI,oBACZ,MAAO",
-		"file": "jquery.sap.global.js"
+		mappings: "AACAA,IAAIC,GAAGC,OAAO,GAAI,WACjBC,QAAQC,IAAI,oBACZ,MAAO",
+		file: "jquery.sap.global.js",
 	};
 	pool.addResource({
 		name: "jquery.sap.global.js.map",
 		getPath: () => "jquery.sap.global.js.map",
-		buffer: async () => JSON.stringify(originalSourceMap)
+		buffer: async () => JSON.stringify(originalSourceMap),
 	});
 	pool.addResource({
 		name: "jquery.sap.global.js",
 		getPath: () => "jquery.sap.global.js",
 		buffer: async () => `sap.ui.define([],function(){console.log("Put me on a map!");return{}});
-${SOURCE_MAPPING_URL}=jquery.sap.global.js.map`
+${SOURCE_MAPPING_URL}=jquery.sap.global.js.map`,
 	});
 
 	const bundleDefinition = {
@@ -1776,14 +1776,14 @@ ${SOURCE_MAPPING_URL}=jquery.sap.global.js.map`
 			mode: "preload",
 			name: "preload-section",
 			filters: [
-				"jquery.sap.global.js"
-			]
-		}]
+				"jquery.sap.global.js",
+			],
+		}],
 	};
 
 	const builder = new Builder(pool);
 	const oResult = await builder.createBundle(bundleDefinition, {
-		optimize: false
+		optimize: false,
 	});
 	t.is(oResult.name, "Component-preload.js");
 	const expectedContent = `//@ui5-bundle Component-preload.js
@@ -1795,31 +1795,31 @@ ${SOURCE_MAPPING_URL}=Component-preload.js.map
 	t.deepEqual(oResult.bundleInfo.size, expectedContent.length, "bundle info size is correct");
 	t.deepEqual(oResult.bundleInfo.subModules,
 		[
-			"jquery.sap.global.js"
+			"jquery.sap.global.js",
 		], "bundle info subModules are correct");
 	const indexMap = JSON.parse(oResult.sourceMap);
 	t.is(indexMap.sections.length, 1, "Bundle index source map contains one section");
 	t.deepEqual(indexMap.sections[0].offset, {
 		line: 1,
-		column: 0
+		column: 0,
 	}, "Section has correct offset");
 
 	const expectedSourceMap = {
-		"version": 3,
-		"sources":
+		version: 3,
+		sources:
 		[
-			"jquery.sap.global-dbg.js"
+			"jquery.sap.global-dbg.js",
 		],
-		"names":
+		names:
 		[
 			"sap",
 			"ui",
 			"define",
 			"console",
-			"log"
+			"log",
 		],
-		"mappings": "AACAA,IAAIC,GAAGC,+BAAO,GAAI,WACjBC,QAAQC,IAAI,oBACZ,MAAO",
-		"sourceRoot": ""
+		mappings: "AACAA,IAAIC,GAAGC,+BAAO,GAAI,WACjBC,QAAQC,IAAI,oBACZ,MAAO",
+		sourceRoot: "",
 	};
 	t.deepEqual(indexMap.sections[0].map, expectedSourceMap, "Section contains correct map");
 });
@@ -1839,32 +1839,32 @@ test("integration: createBundle using predefine calls with source maps and a sin
 	// });
 
 	const originalSourceMap = {
-		"version": 3,
-		"sources":
+		version: 3,
+		sources:
 		[
-			"jquery.sap.global-dbg.js"
+			"jquery.sap.global-dbg.js",
 		],
-		"names":
+		names:
 		[
 			"sap",
 			"ui",
 			"define",
 			"console",
-			"log"
+			"log",
 		],
-		"mappings": "AACAA,IACAC,GACAC,OACA,GACG,WACFC,QAAQC,IAAI,oBACZ,MAAO",
-		"file": "jquery.sap.global.js"
+		mappings: "AACAA,IACAC,GACAC,OACA,GACG,WACFC,QAAQC,IAAI,oBACZ,MAAO",
+		file: "jquery.sap.global.js",
 	};
 	pool.addResource({
 		name: "jquery.sap.global.js.map",
 		getPath: () => "jquery.sap.global.js.map",
-		buffer: async () => JSON.stringify(originalSourceMap)
+		buffer: async () => JSON.stringify(originalSourceMap),
 	});
 	pool.addResource({
 		name: "jquery.sap.global.js",
 		getPath: () => "jquery.sap.global.js",
 		buffer: async () => `sap.ui.define([],function(){console.log("Put me on a map!");return{}});
-${SOURCE_MAPPING_URL}=jquery.sap.global.js.map`
+${SOURCE_MAPPING_URL}=jquery.sap.global.js.map`,
 	});
 
 	const bundleDefinition = {
@@ -1874,16 +1874,16 @@ ${SOURCE_MAPPING_URL}=jquery.sap.global.js.map`
 			mode: "preload",
 			name: "preload-section",
 			filters: [
-				"jquery.sap.global.js"
-			]
-		}]
+				"jquery.sap.global.js",
+			],
+		}],
 	};
 
 	const builder = new Builder(pool);
 	const oResult = await builder.createBundle(bundleDefinition, {
 		numberOfParts: 1,
 		decorateBootstrapModule: true,
-		optimize: false
+		optimize: false,
 	});
 	t.is(oResult.name, "Component-preload.js");
 	const expectedContent = `//@ui5-bundle Component-preload.js
@@ -1895,31 +1895,31 @@ ${SOURCE_MAPPING_URL}=Component-preload.js.map
 	t.deepEqual(oResult.bundleInfo.size, expectedContent.length, "bundle info size is correct");
 	t.deepEqual(oResult.bundleInfo.subModules,
 		[
-			"jquery.sap.global.js"
+			"jquery.sap.global.js",
 		], "bundle info subModules are correct");
 	const indexMap = JSON.parse(oResult.sourceMap);
 	t.is(indexMap.sections.length, 1, "Bundle index source map contains one section");
 	t.deepEqual(indexMap.sections[0].offset, {
 		line: 1,
-		column: 0
+		column: 0,
 	}, "Section has correct offset");
 
 	const expectedSourceMap = {
-		"version": 3,
-		"sources":
+		version: 3,
+		sources:
 		[
-			"jquery.sap.global-dbg.js"
+			"jquery.sap.global-dbg.js",
 		],
-		"names":
+		names:
 		[
 			"sap",
 			"ui",
 			"define",
 			"console",
-			"log"
+			"log",
 		],
-		"mappings": "AACAA,IACAC,GACAC,+BACA,GACG,WACFC,QAAQC,IAAI,oBACZ,MAAO",
-		"sourceRoot": ""
+		mappings: "AACAA,IACAC,GACAC,+BACA,GACG,WACFC,QAAQC,IAAI,oBACZ,MAAO",
+		sourceRoot: "",
 	};
 	t.deepEqual(indexMap.sections[0].map, expectedSourceMap, "Section contains correct map");
 });
@@ -1946,12 +1946,12 @@ test("integration: createBundle using predefine calls with source maps and a sin
 	// });
 
 	const originalSourceMap = {
-		"version": 3,
-		"sources":
+		version: 3,
+		sources:
 		[
-			"jquery.sap.global-dbg.js"
+			"jquery.sap.global-dbg.js",
 		],
-		"names":
+		names:
 		[
 			"sap",
 			"ui",
@@ -1959,15 +1959,15 @@ test("integration: createBundle using predefine calls with source maps and a sin
 			"now",
 			"Version",
 			"assert",
-			"Log"
+			"Log",
 		],
-		"mappings": ";;;;;AAYAA,IAAIC,GAAGC,OAAO,CAEb,oBAAqB,wBAAyB,kBAAmB,gBAC/D,SAASC,EAAKC,EAASC,EAAQC,GACjC,OAAOH",
-		"file": "jquery.sap.global.js"
+		mappings: ";;;;;AAYAA,IAAIC,GAAGC,OAAO,CAEb,oBAAqB,wBAAyB,kBAAmB,gBAC/D,SAASC,EAAKC,EAASC,EAAQC,GACjC,OAAOH",
+		file: "jquery.sap.global.js",
 	};
 	pool.addResource({
 		name: "jquery.sap.global.js.map",
 		getPath: () => "jquery.sap.global.js.map",
-		buffer: async () => JSON.stringify(originalSourceMap)
+		buffer: async () => JSON.stringify(originalSourceMap),
 	});
 	pool.addResource({
 		name: "jquery.sap.global.js",
@@ -1978,7 +1978,7 @@ test("integration: createBundle using predefine calls with source maps and a sin
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 sap.ui.define(["sap/base/util/now","sap/base/util/Version","sap/base/assert","sap/base/Log"],function(s,a,e,i){return s});
-${SOURCE_MAPPING_URL}=jquery.sap.global.js.map`
+${SOURCE_MAPPING_URL}=jquery.sap.global.js.map`,
 	});
 
 	const bundleDefinition = {
@@ -1988,16 +1988,16 @@ ${SOURCE_MAPPING_URL}=jquery.sap.global.js.map`
 			mode: "preload",
 			name: "preload-section",
 			filters: [
-				"jquery.sap.global.js"
-			]
-		}]
+				"jquery.sap.global.js",
+			],
+		}],
 	};
 
 	const builder = new Builder(pool);
 	const oResult = await builder.createBundle(bundleDefinition, {
 		numberOfParts: 1,
 		decorateBootstrapModule: true,
-		optimize: false
+		optimize: false,
 	});
 	t.is(oResult.name, "Component-preload.js");
 	const expectedContent = `//@ui5-bundle Component-preload.js
@@ -2014,22 +2014,22 @@ ${SOURCE_MAPPING_URL}=Component-preload.js.map
 	t.deepEqual(oResult.bundleInfo.size, expectedContent.length, "bundle info size is correct");
 	t.deepEqual(oResult.bundleInfo.subModules,
 		[
-			"jquery.sap.global.js"
+			"jquery.sap.global.js",
 		], "bundle info subModules are correct");
 	const indexMap = JSON.parse(oResult.sourceMap);
 	t.is(indexMap.sections.length, 1, "Bundle index source map contains one section");
 	t.deepEqual(indexMap.sections[0].offset, {
 		line: 1,
-		column: 0
+		column: 0,
 	}, "Section has correct offset");
 
 	const expectedSourceMap = {
-		"version": 3,
-		"sources":
+		version: 3,
+		sources:
 		[
-			"jquery.sap.global-dbg.js"
+			"jquery.sap.global-dbg.js",
 		],
-		"names":
+		names:
 		[
 			"sap",
 			"ui",
@@ -2037,10 +2037,10 @@ ${SOURCE_MAPPING_URL}=Component-preload.js.map
 			"now",
 			"Version",
 			"assert",
-			"Log"
+			"Log",
 		],
-		"mappings": "AAAA;;;;;AAYAA,IAAIC,GAAGC,+BAAO,CAEb,oBAAqB,wBAAyB,kBAAmB,gBAC/D,SAASC,EAAKC,EAASC,EAAQC,GACjC,OAAOH",
-		"sourceRoot": ""
+		mappings: "AAAA;;;;;AAYAA,IAAIC,GAAGC,+BAAO,CAEb,oBAAqB,wBAAyB,kBAAmB,gBAC/D,SAASC,EAAKC,EAASC,EAAQC,GACjC,OAAOH",
+		sourceRoot: "",
 	};
 	t.deepEqual(indexMap.sections[0].map, expectedSourceMap, "Section contains correct map");
 });
@@ -2067,12 +2067,12 @@ test("integration: createBundle using predefine calls with source maps and multi
 	// });
 
 	const originalGlobalSourceMap = {
-		"version": 3,
-		"sources":
+		version: 3,
+		sources:
 		[
-			"jquery.sap.global-dbg.js"
+			"jquery.sap.global-dbg.js",
 		],
-		"names":
+		names:
 		[
 			"sap",
 			"ui",
@@ -2080,15 +2080,15 @@ test("integration: createBundle using predefine calls with source maps and multi
 			"now",
 			"Version",
 			"assert",
-			"Log"
+			"Log",
 		],
-		"mappings": ";;;;;AAYAA,IAAIC,GAAGC,OAAO,CAEb,oBAAqB,wBAAyB,kBAAmB,gBAC/D,SAASC,EAAKC,EAASC,EAAQC,GACjC,OAAOH",
-		"file": "jquery.sap.global.js"
+		mappings: ";;;;;AAYAA,IAAIC,GAAGC,OAAO,CAEb,oBAAqB,wBAAyB,kBAAmB,gBAC/D,SAASC,EAAKC,EAASC,EAAQC,GACjC,OAAOH",
+		file: "jquery.sap.global.js",
 	};
 	pool.addResource({
 		name: "jquery.sap.global.js.map",
 		getPath: () => "jquery.sap.global.js.map",
-		buffer: async () => JSON.stringify(originalGlobalSourceMap)
+		buffer: async () => JSON.stringify(originalGlobalSourceMap),
 	});
 	pool.addResource({
 		name: "jquery.sap.global.js",
@@ -2099,7 +2099,7 @@ test("integration: createBundle using predefine calls with source maps and multi
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 sap.ui.define(["sap/base/util/now","sap/base/util/Version","sap/base/assert","sap/base/Log"],function(s,a,e,i){return s});
-${SOURCE_MAPPING_URL}=jquery.sap.global.js.map`
+${SOURCE_MAPPING_URL}=jquery.sap.global.js.map`,
 	});
 
 	// jquery.sap.dom-dbg.js:
@@ -2154,12 +2154,12 @@ ${SOURCE_MAPPING_URL}=jquery.sap.global.js.map`
 	// });
 
 	const originalDomSourceMap = {
-		"version": 3,
-		"sources":
+		version: 3,
+		sources:
 		[
-			"jquery.sap.dom-dbg.js"
+			"jquery.sap.dom-dbg.js",
 		],
-		"names":
+		names:
 		[
 			"sap",
 			"ui",
@@ -2177,15 +2177,15 @@ ${SOURCE_MAPPING_URL}=jquery.sap.global.js.map`
 			"oWindow",
 			"window",
 			"document",
-			"getElementById"
+			"getElementById",
 		],
-		"mappings": ";;;;;AAOAA,IAAIC,GAAGC,OAAO,CACb,oBAAqB,8BACrB,6BAA8B,4BAA6B,8BAC3D,sCAAuC,uCACvC,uBAAwB,yBACxB,8BAA+B,2BAA4B,sCAC3D,8BAA+B,+BAAgC,oCAC/D,yBAA0B,iCAAkC,8BAC5D,gCAAiC,kCAAmC,mCAAoC,+BACtG,SAASC,OAAQC,EAAqBC,EAAkBC,EAC1DC,EAAqBC,EAA6BC,EAA8BC,GAiBhF,aAYAP,OAAOH,IAAIW,QAAU,SAASA,EAAQC,EAAKC,GAC1C,OAAOD,GAAOC,GAAWC,QAAQC,SAASC,eAAeJ,GAAO,MAGjE,OAAOT",
-		"file": "jquery.sap.dom.js"
+		mappings: ";;;;;AAOAA,IAAIC,GAAGC,OAAO,CACb,oBAAqB,8BACrB,6BAA8B,4BAA6B,8BAC3D,sCAAuC,uCACvC,uBAAwB,yBACxB,8BAA+B,2BAA4B,sCAC3D,8BAA+B,+BAAgC,oCAC/D,yBAA0B,iCAAkC,8BAC5D,gCAAiC,kCAAmC,mCAAoC,+BACtG,SAASC,OAAQC,EAAqBC,EAAkBC,EAC1DC,EAAqBC,EAA6BC,EAA8BC,GAiBhF,aAYAP,OAAOH,IAAIW,QAAU,SAASA,EAAQC,EAAKC,GAC1C,OAAOD,GAAOC,GAAWC,QAAQC,SAASC,eAAeJ,GAAO,MAGjE,OAAOT",
+		file: "jquery.sap.dom.js",
 	};
 	pool.addResource({
 		name: "jquery.sap.dom.js.map",
 		getPath: () => "jquery.sap.dom.js.map",
-		buffer: async () => JSON.stringify(originalDomSourceMap)
+		buffer: async () => JSON.stringify(originalDomSourceMap),
 	});
 	pool.addResource({
 		name: "jquery.sap.dom.js",
@@ -2196,7 +2196,7 @@ ${SOURCE_MAPPING_URL}=jquery.sap.global.js.map`
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 sap.ui.define(["jquery.sap.global","sap/ui/dom/containsOrEquals","sap/ui/core/syncStyleClass","sap/ui/dom/getOwnerWindow","sap/ui/dom/getScrollbarSize","sap/ui/dom/denormalizeScrollLeftRTL","sap/ui/dom/denormalizeScrollBeginRTL","sap/ui/dom/units/Rem","sap/ui/dom/jquery/Aria","sap/ui/dom/jquery/Selection","sap/ui/dom/jquery/zIndex","sap/ui/dom/jquery/parentByAttribute","sap/ui/dom/jquery/cursorPos","sap/ui/dom/jquery/selectText","sap/ui/dom/jquery/getSelectedText","sap/ui/dom/jquery/rect","sap/ui/dom/jquery/rectContains","sap/ui/dom/jquery/Focusable","sap/ui/dom/jquery/hasTabIndex","sap/ui/dom/jquery/scrollLeftRTL","sap/ui/dom/jquery/scrollRightRTL","sap/ui/dom/jquery/Selectors"],function(jQuery,e,u,o,s,i,r,a){"use strict";jQuery.sap.domById=function e(u,o){return u?(o||window).document.getElementById(u):null};return jQuery});
-${SOURCE_MAPPING_URL}=jquery.sap.dom.js.map`
+${SOURCE_MAPPING_URL}=jquery.sap.dom.js.map`,
 	});
 
 	const bundleDefinition = {
@@ -2207,16 +2207,16 @@ ${SOURCE_MAPPING_URL}=jquery.sap.dom.js.map`
 			name: "preload-section",
 			filters: [
 				"jquery.sap.global.js",
-				"jquery.sap.dom.js"
-			]
-		}]
+				"jquery.sap.dom.js",
+			],
+		}],
 	};
 
 	const builder = new Builder(pool);
 	const oResult = await builder.createBundle(bundleDefinition, {
 		numberOfParts: 1,
 		decorateBootstrapModule: true,
-		optimize: false
+		optimize: false,
 	});
 	t.is(oResult.name, "Component-preload.js");
 	const expectedContent = `//@ui5-bundle Component-preload.js
@@ -2240,22 +2240,22 @@ ${SOURCE_MAPPING_URL}=Component-preload.js.map
 	t.deepEqual(oResult.bundleInfo.subModules,
 		[
 			"jquery.sap.dom.js",
-			"jquery.sap.global.js"
+			"jquery.sap.global.js",
 		], "bundle info subModules are correct");
 	const indexMap = JSON.parse(oResult.sourceMap);
 	t.is(indexMap.sections.length, 2, "Bundle index source map contains two sections");
 	t.deepEqual(indexMap.sections[0].offset, {
 		line: 1,
-		column: 0
+		column: 0,
 	}, "Section one has correct offset");
 
 	const expectedSourceMap1 = {
-		"version": 3,
-		"sources":
+		version: 3,
+		sources:
 		[
-			"jquery.sap.dom-dbg.js"
+			"jquery.sap.dom-dbg.js",
 		],
-		"names":
+		names:
 		[
 			"sap",
 			"ui",
@@ -2273,24 +2273,24 @@ ${SOURCE_MAPPING_URL}=Component-preload.js.map
 			"oWindow",
 			"window",
 			"document",
-			"getElementById"
+			"getElementById",
 		],
-		"mappings": "AAAA;;;;;AAOAA,IAAIC,GAAGC,4BAAO,CACb,oBAAqB,8BACrB,6BAA8B,4BAA6B,8BAC3D,sCAAuC,uCACvC,uBAAwB,yBACxB,8BAA+B,2BAA4B,sCAC3D,8BAA+B,+BAAgC,oCAC/D,yBAA0B,iCAAkC,8BAC5D,gCAAiC,kCAAmC,mCAAoC,+BACtG,SAASC,OAAQC,EAAqBC,EAAkBC,EAC1DC,EAAqBC,EAA6BC,EAA8BC,GAiBhF,aAYAP,OAAOH,IAAIW,QAAU,SAASA,EAAQC,EAAKC,GAC1C,OAAOD,GAAOC,GAAWC,QAAQC,SAASC,eAAeJ,GAAO,MAGjE,OAAOT",
-		"sourceRoot": ""
+		mappings: "AAAA;;;;;AAOAA,IAAIC,GAAGC,4BAAO,CACb,oBAAqB,8BACrB,6BAA8B,4BAA6B,8BAC3D,sCAAuC,uCACvC,uBAAwB,yBACxB,8BAA+B,2BAA4B,sCAC3D,8BAA+B,+BAAgC,oCAC/D,yBAA0B,iCAAkC,8BAC5D,gCAAiC,kCAAmC,mCAAoC,+BACtG,SAASC,OAAQC,EAAqBC,EAAkBC,EAC1DC,EAAqBC,EAA6BC,EAA8BC,GAiBhF,aAYAP,OAAOH,IAAIW,QAAU,SAASA,EAAQC,EAAKC,GAC1C,OAAOD,GAAOC,GAAWC,QAAQC,SAASC,eAAeJ,GAAO,MAGjE,OAAOT",
+		sourceRoot: "",
 	};
 	t.deepEqual(indexMap.sections[0].map, expectedSourceMap1, "Section one contains correct map");
 	t.deepEqual(indexMap.sections[1].offset, {
 		line: 7,
-		column: 0
+		column: 0,
 	}, "Section two has correct offset");
 
 	const expectedSourceMap2 = {
-		"version": 3,
-		"sources":
+		version: 3,
+		sources:
 		[
-			"jquery.sap.global-dbg.js"
+			"jquery.sap.global-dbg.js",
 		],
-		"names":
+		names:
 		[
 			"sap",
 			"ui",
@@ -2298,10 +2298,10 @@ ${SOURCE_MAPPING_URL}=Component-preload.js.map
 			"now",
 			"Version",
 			"assert",
-			"Log"
+			"Log",
 		],
-		"mappings": "AAAA;;;;;AAYAA,IAAIC,GAAGC,+BAAO,CAEb,oBAAqB,wBAAyB,kBAAmB,gBAC/D,SAASC,EAAKC,EAASC,EAAQC,GACjC,OAAOH",
-		"sourceRoot": ""
+		mappings: "AAAA;;;;;AAYAA,IAAIC,GAAGC,+BAAO,CAEb,oBAAqB,wBAAyB,kBAAmB,gBAC/D,SAASC,EAAKC,EAASC,EAAQC,GACjC,OAAOH",
+		sourceRoot: "",
 	};
 	t.deepEqual(indexMap.sections[1].map, expectedSourceMap2, "Section two contains correct map");
 });
@@ -2328,12 +2328,12 @@ test("integration: createBundle using predefine calls with source maps and multi
 	// });
 
 	const originalGlobalSourceMap = {
-		"version": 3,
-		"sources":
+		version: 3,
+		sources:
 		[
-			"jquery.sap.global-dbg.js"
+			"jquery.sap.global-dbg.js",
 		],
-		"names":
+		names:
 		[
 			"sap",
 			"ui",
@@ -2341,15 +2341,15 @@ test("integration: createBundle using predefine calls with source maps and multi
 			"now",
 			"Version",
 			"assert",
-			"Log"
+			"Log",
 		],
-		"mappings": ";;;;;AAYAA,IAAIC,GAAGC,OAAO,CAEb,oBAAqB,wBAAyB,kBAAmB,gBAC/D,SAASC,EAAKC,EAASC,EAAQC,GACjC,OAAOH",
-		"file": "jquery.sap.global.js"
+		mappings: ";;;;;AAYAA,IAAIC,GAAGC,OAAO,CAEb,oBAAqB,wBAAyB,kBAAmB,gBAC/D,SAASC,EAAKC,EAASC,EAAQC,GACjC,OAAOH",
+		file: "jquery.sap.global.js",
 	};
 	pool.addResource({
 		name: "jquery.sap.global.js.map",
 		getPath: () => "jquery.sap.global.js.map",
-		buffer: async () => JSON.stringify(originalGlobalSourceMap)
+		buffer: async () => JSON.stringify(originalGlobalSourceMap),
 	});
 	pool.addResource({
 		name: "jquery.sap.global.js",
@@ -2360,7 +2360,7 @@ test("integration: createBundle using predefine calls with source maps and multi
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 sap.ui.define(["sap/base/util/now","sap/base/util/Version","sap/base/assert","sap/base/Log"],function(s,a,e,i){return s});
-${SOURCE_MAPPING_URL}=jquery.sap.global.js.map`
+${SOURCE_MAPPING_URL}=jquery.sap.global.js.map`,
 	});
 
 	// No source map for "jquery.sap.xom.js" => Transitive source map will be created
@@ -2375,7 +2375,7 @@ ${SOURCE_MAPPING_URL}=jquery.sap.global.js.map`
 sap.ui.define(function() {
 	console.log("Test");
 });
-`
+`,
 	});
 
 	const bundleDefinition = {
@@ -2386,16 +2386,16 @@ sap.ui.define(function() {
 			name: "preload-section",
 			filters: [
 				"jquery.sap.global.js",
-				"jquery.sap.xom.js"
-			]
-		}]
+				"jquery.sap.xom.js",
+			],
+		}],
 	};
 
 	const builder = new Builder(pool);
 	const oResult = await builder.createBundle(bundleDefinition, {
 		numberOfParts: 1,
 		decorateBootstrapModule: true,
-		optimize: false
+		optimize: false,
 	});
 	t.is(oResult.name, "Component-preload.js");
 	const expectedContent = `//@ui5-bundle Component-preload.js
@@ -2427,16 +2427,16 @@ ${SOURCE_MAPPING_URL}=Component-preload.js.map
 	t.is(indexMap.sections.length, 2, "Bundle index source map contains two sections");
 	t.deepEqual(indexMap.sections[0].offset, {
 		line: 1,
-		column: 0
+		column: 0,
 	}, "Section one has correct offset");
 
 	const expectedSourceMap1 = {
-		"version": 3,
-		"sources":
+		version: 3,
+		sources:
 		[
-			"jquery.sap.global-dbg.js"
+			"jquery.sap.global-dbg.js",
 		],
-		"names":
+		names:
 		[
 			"sap",
 			"ui",
@@ -2444,26 +2444,26 @@ ${SOURCE_MAPPING_URL}=Component-preload.js.map
 			"now",
 			"Version",
 			"assert",
-			"Log"
+			"Log",
 		],
-		"mappings": "AAAA;;;;;AAYAA,IAAIC,GAAGC,+BAAO,CAEb,oBAAqB,wBAAyB,kBAAmB,gBAC/D,SAASC,EAAKC,EAASC,EAAQC,GACjC,OAAOH",
-		"sourceRoot": ""
+		mappings: "AAAA;;;;;AAYAA,IAAIC,GAAGC,+BAAO,CAEb,oBAAqB,wBAAyB,kBAAmB,gBAC/D,SAASC,EAAKC,EAASC,EAAQC,GACjC,OAAOH",
+		sourceRoot: "",
 	};
 	t.deepEqual(indexMap.sections[0].map, expectedSourceMap1, "Section one contains correct map");
 	t.deepEqual(indexMap.sections[1].offset, {
 		line: 7,
-		column: 0
+		column: 0,
 	}, "Section two has correct offset");
 
 	const expectedSourceMap2 = { // Transitive source map
-		"version": 3,
-		"names": [],
-		"sources":
+		version: 3,
+		names: [],
+		sources:
 		[
-			"jquery.sap.xom.js"
+			"jquery.sap.xom.js",
 		],
-		"mappings": "AAAA;AACA;AACA;AACA;AACA;AACA;AACA;AACA;AACA",
-		"sourceRoot": ""
+		mappings: "AAAA;AACA;AACA;AACA;AACA;AACA;AACA;AACA;AACA",
+		sourceRoot: "",
 	};
 	t.deepEqual(indexMap.sections[1].map, expectedSourceMap2, "Section two contains correct map");
 });
@@ -2499,7 +2499,7 @@ test("integration: createBundle using predefine calls with inline source maps an
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 sap.ui.define(["sap/base/util/now","sap/base/util/Version","sap/base/assert","sap/base/Log"],function(s,a,e,i){return s});
-${SOURCE_MAPPING_URL}=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImpxdWVyeS5zYXAuZ2xvYmFsLWRiZy5qcyJdLCJuYW1lcyI6WyJzYXAiLCJ1aSIsImRlZmluZSIsIm5vdyIsIlZlcnNpb24iLCJhc3NlcnQiLCJMb2ciXSwibWFwcGluZ3MiOiI7Ozs7O0FBWUFBLElBQUlDLEdBQUdDLE9BQU8sQ0FFYixvQkFBcUIsd0JBQXlCLGtCQUFtQixnQkFDL0QsU0FBU0MsRUFBS0MsRUFBU0MsRUFBUUMsR0FDakMsT0FBT0giLCJmaWxlIjoianF1ZXJ5LnNhcC5nbG9iYWwuanMifQ==`
+${SOURCE_MAPPING_URL}=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImpxdWVyeS5zYXAuZ2xvYmFsLWRiZy5qcyJdLCJuYW1lcyI6WyJzYXAiLCJ1aSIsImRlZmluZSIsIm5vdyIsIlZlcnNpb24iLCJhc3NlcnQiLCJMb2ciXSwibWFwcGluZ3MiOiI7Ozs7O0FBWUFBLElBQUlDLEdBQUdDLE9BQU8sQ0FFYixvQkFBcUIsd0JBQXlCLGtCQUFtQixnQkFDL0QsU0FBU0MsRUFBS0MsRUFBU0MsRUFBUUMsR0FDakMsT0FBT0giLCJmaWxlIjoianF1ZXJ5LnNhcC5nbG9iYWwuanMifQ==`,
 	});
 
 	const bundleDefinition = {
@@ -2509,16 +2509,16 @@ ${SOURCE_MAPPING_URL}=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjo
 			mode: "preload",
 			name: "preload-section",
 			filters: [
-				"jquery.sap.global.js"
-			]
-		}]
+				"jquery.sap.global.js",
+			],
+		}],
 	};
 
 	const builder = new Builder(pool);
 	const oResult = await builder.createBundle(bundleDefinition, {
 		numberOfParts: 1,
 		decorateBootstrapModule: true,
-		optimize: false
+		optimize: false,
 	});
 	t.is(oResult.name, "Component-preload.js");
 	const expectedContent = `//@ui5-bundle Component-preload.js
@@ -2535,22 +2535,22 @@ ${SOURCE_MAPPING_URL}=Component-preload.js.map
 	t.deepEqual(oResult.bundleInfo.size, expectedContent.length, "bundle info size is correct");
 	t.deepEqual(oResult.bundleInfo.subModules,
 		[
-			"jquery.sap.global.js"
+			"jquery.sap.global.js",
 		], "bundle info subModules are correct");
 	const indexMap = JSON.parse(oResult.sourceMap);
 	t.is(indexMap.sections.length, 1, "Bundle index source map contains one section");
 	t.deepEqual(indexMap.sections[0].offset, {
 		line: 1,
-		column: 0
+		column: 0,
 	}, "Section has correct offset");
 
 	const expectedSourceMap = {
-		"version": 3,
-		"sources":
+		version: 3,
+		sources:
 		[
-			"jquery.sap.global-dbg.js"
+			"jquery.sap.global-dbg.js",
 		],
-		"names":
+		names:
 		[
 			"sap",
 			"ui",
@@ -2558,10 +2558,10 @@ ${SOURCE_MAPPING_URL}=Component-preload.js.map
 			"now",
 			"Version",
 			"assert",
-			"Log"
+			"Log",
 		],
-		"mappings": "AAAA;;;;;AAYAA,IAAIC,GAAGC,+BAAO,CAEb,oBAAqB,wBAAyB,kBAAmB,gBAC/D,SAASC,EAAKC,EAASC,EAAQC,GACjC,OAAOH",
-		"sourceRoot": ""
+		mappings: "AAAA;;;;;AAYAA,IAAIC,GAAGC,+BAAO,CAEb,oBAAqB,wBAAyB,kBAAmB,gBAC/D,SAASC,EAAKC,EAASC,EAAQC,GACjC,OAAOH",
+		sourceRoot: "",
 	};
 	t.deepEqual(indexMap.sections[0].map, expectedSourceMap, "Section contains correct map");
 });
@@ -2572,7 +2572,7 @@ test("rewriteDefine (without moduleSourceMap)", async (t) => {
 	const {moduleContent, moduleSourceMap} = await rewriteDefine({
 		moduleName: "my/test/module.js",
 		moduleContent: "sap.ui.define([],(()=>1));",
-		moduleSourceMap: undefined
+		moduleSourceMap: undefined,
 	});
 
 	t.is(moduleContent, `sap.ui.predefine("my/test/module", [],(()=>1));`);
@@ -2586,36 +2586,36 @@ test("rewriteDefine (with moduleSourceMap)", async (t) => {
 	const inputMappings = [
 		[
 			[
-				0, 0, 0, 0, 0
+				0, 0, 0, 0, 0,
 			],
 			[
-				4, 0, 0, 4, 1
+				4, 0, 0, 4, 1,
 			],
 			[
-				7, 0, 0, 7, 2
+				7, 0, 0, 7, 2,
 			],
 			[
-				14, 0, 0, 14
+				14, 0, 0, 14,
 			],
 			[
-				18, 0, 0, 18
+				18, 0, 0, 18,
 			],
 			[
-				22, 0, 1, 8
-			]
-		]
+				22, 0, 1, 8,
+			],
+		],
 	];
 
 	const {moduleContent, moduleSourceMap} = await rewriteDefine({
 		moduleName: "my/test/module.js",
 		moduleContent: "sap.ui.define([],(()=>1));",
 		moduleSourceMap: {
-			"version": 3,
-			"file": "module.js",
-			"sources": ["my/test/module-dbg.js"],
-			"names": ["sap", "ui", "define"],
-			"mappings": encodeMappings(inputMappings)
-		}
+			version: 3,
+			file: "module.js",
+			sources: ["my/test/module-dbg.js"],
+			names: ["sap", "ui", "define"],
+			mappings: encodeMappings(inputMappings),
+		},
 	});
 
 	const expectedMappings = JSON.parse(JSON.stringify(inputMappings));
@@ -2627,10 +2627,10 @@ test("rewriteDefine (with moduleSourceMap)", async (t) => {
 	t.is(moduleContent, `sap.ui.predefine("my/test/module", [],(()=>1));`);
 	t.deepEqual(decodeMappings(moduleSourceMap.mappings), expectedMappings);
 	t.deepEqual(moduleSourceMap, {
-		"version": 3,
-		"sources": ["my/test/module-dbg.js"],
-		"names": ["sap", "ui", "define"],
-		"mappings": encodeMappings(expectedMappings)
+		version: 3,
+		sources: ["my/test/module-dbg.js"],
+		names: ["sap", "ui", "define"],
+		mappings: encodeMappings(expectedMappings),
 	});
 });
 
@@ -2641,9 +2641,9 @@ test("rewriteDefine (with empty moduleSourceMap)", async (t) => {
 	const inputMappings = [
 		[
 			[
-				0, 0, 0, 0
-			]
-		]
+				0, 0, 0, 0,
+			],
+		],
 	];
 
 	const {moduleContent, moduleSourceMap} = await rewriteDefine({
@@ -2653,11 +2653,11 @@ test("rewriteDefine (with empty moduleSourceMap)", async (t) => {
 	return 1;
 });`,
 		moduleSourceMap: {
-			"version": 3,
-			"names": [],
-			"sources": ["my/test/module.js"],
-			"mappings": encodeMappings(inputMappings)
-		}
+			version: 3,
+			names: [],
+			sources: ["my/test/module.js"],
+			mappings: encodeMappings(inputMappings),
+		},
 	});
 
 	const expectedMappings = JSON.parse(JSON.stringify(inputMappings));
@@ -2668,10 +2668,10 @@ test("rewriteDefine (with empty moduleSourceMap)", async (t) => {
 });`);
 	t.deepEqual(decodeMappings(moduleSourceMap.mappings), expectedMappings);
 	t.deepEqual(moduleSourceMap, {
-		"version": 3,
-		"names": [],
-		"sources": ["my/test/module.js"],
-		"mappings": encodeMappings(expectedMappings)
+		version: 3,
+		names: [],
+		sources: ["my/test/module.js"],
+		mappings: encodeMappings(expectedMappings),
 	});
 });
 
@@ -2681,7 +2681,7 @@ test("rewriteDefine (with same module name)", async (t) => {
 	const {moduleContent, moduleSourceMap} = await rewriteDefine({
 		moduleName: "my/test/module.js",
 		moduleContent: "sap.ui.define(\"my/test/module\", [],(()=>1));",
-		moduleSourceMap: undefined
+		moduleSourceMap: undefined,
 	});
 
 	t.is(moduleContent, `sap.ui.predefine("my/test/module", [],(()=>1));`);
@@ -2694,7 +2694,7 @@ test("rewriteDefine (with other module name)", async (t) => {
 	const {moduleContent, moduleSourceMap} = await rewriteDefine({
 		moduleName: "my/test/module1.js",
 		moduleContent: "sap.ui.define(\"my/test/module\", [],(()=>1));",
-		moduleSourceMap: undefined
+		moduleSourceMap: undefined,
 	});
 
 	t.is(moduleContent, `sap.ui.predefine("my/test/module", [],(()=>1));`);
@@ -2707,7 +2707,7 @@ test("rewriteDefine (with same module name as template literal)", async (t) => {
 	const {moduleContent, moduleSourceMap} = await rewriteDefine({
 		moduleName: "my/test/module.js",
 		moduleContent: "sap.ui.define(`my/test/module`, [],(()=>1));",
-		moduleSourceMap: undefined
+		moduleSourceMap: undefined,
 	});
 
 	t.is(moduleContent, "sap.ui.predefine(`my/test/module`, [],(()=>1));");
@@ -2720,7 +2720,7 @@ test("rewriteDefine (with other module name as template literal)", async (t) => 
 	const {moduleContent, moduleSourceMap} = await rewriteDefine({
 		moduleName: "my/test/module1.js",
 		moduleContent: "sap.ui.define(`my/test/module`, [],(()=>1));",
-		moduleSourceMap: undefined
+		moduleSourceMap: undefined,
 	});
 
 	t.is(moduleContent, "sap.ui.predefine(`my/test/module`, [],(()=>1));");
@@ -2729,25 +2729,25 @@ test("rewriteDefine (with other module name as template literal)", async (t) => 
 
 test("getSourceMapForModule: Source map resource named after module resource (no sourceMappingURL)", async (t) => {
 	const originalSourceMap = {
-		"version": 3,
-		"sources":
+		version: 3,
+		sources:
 		[
-			"module-dbg.js"
+			"module-dbg.js",
 		],
-		"names":
+		names:
 		[
 		],
-		"mappings": "XXXX",
-		"file": "module.js"
+		mappings: "XXXX",
+		file: "module.js",
 	};
 	const pool = new ResourcePool();
 	pool.addResource({
 		name: "my/test/module.js.map",
 		getPath: () => "my/test/module.js.map",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => JSON.stringify(originalSourceMap)
+		buffer: async () => JSON.stringify(originalSourceMap),
 	});
 
 	const builder = new Builder(pool);
@@ -2755,7 +2755,7 @@ test("getSourceMapForModule: Source map resource named after module resource (no
 		moduleName: "my/test/module",
 		resourcePath: "/resources/my/test/module.js",
 		moduleContent: `// Some content
-`
+`,
 	});
 
 	t.is(moduleContent, "// Some content\n", "Source map URL has been removed from module content");
@@ -2763,25 +2763,25 @@ test("getSourceMapForModule: Source map resource named after module resource (no
 });
 test("getSourceMapForModule: No source map available for debug variant", async (t) => {
 	const originalSourceMap = {
-		"version": 3,
-		"sources":
+		version: 3,
+		sources:
 		[
-			"module-dbg.js"
+			"module-dbg.js",
 		],
-		"names":
+		names:
 		[
 		],
-		"mappings": "XXXX",
-		"file": "module.js"
+		mappings: "XXXX",
+		file: "module.js",
 	};
 	const pool = new ResourcePool();
 	pool.addResource({
 		name: "my/test/module.js.map",
 		getPath: () => "my/test/module.js.map",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => JSON.stringify(originalSourceMap)
+		buffer: async () => JSON.stringify(originalSourceMap),
 	});
 
 	const builder = new Builder(pool);
@@ -2789,7 +2789,7 @@ test("getSourceMapForModule: No source map available for debug variant", async (
 		moduleName: "my/test/module",
 		resourcePath: "/resources/my/test/module-dbg.js",
 		moduleContent: `// Some content
-`
+`,
 	});
 
 	t.is(moduleContent, "// Some content\n", "Source map URL has been removed from module content");
@@ -2805,25 +2805,25 @@ test("getSourceMapForModule: No source map available for debug variant", async (
 
 test("getSourceMapForModule: Relative URL", async (t) => {
 	const originalSourceMap = {
-		"version": 3,
-		"sources":
+		version: 3,
+		sources:
 		[
-			"module-dbg.js"
+			"module-dbg.js",
 		],
-		"names":
+		names:
 		[
 		],
-		"mappings": "XXXX",
-		"file": "module.js"
+		mappings: "XXXX",
+		file: "module.js",
 	};
 	const pool = new ResourcePool();
 	pool.addResource({
 		name: "my/test/module.js.map",
 		getPath: () => "my/test/module.js.map",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => JSON.stringify(originalSourceMap)
+		buffer: async () => JSON.stringify(originalSourceMap),
 	});
 
 	const builder = new Builder(pool);
@@ -2831,7 +2831,7 @@ test("getSourceMapForModule: Relative URL", async (t) => {
 		moduleName: "my/test/module",
 		resourcePath: "/resources/my/test/module.js",
 		moduleContent: `// Some content
-${SOURCE_MAPPING_URL}=module.js.map`
+${SOURCE_MAPPING_URL}=module.js.map`,
 	});
 
 	t.is(moduleContent, "// Some content\n", "Source map URL has been removed from module content");
@@ -2846,7 +2846,7 @@ test("getSourceMapForModule: Relative URL to resource that cannot be found", asy
 		moduleName: "my/test/module",
 		resourcePath: "/resources/my/test/module.js",
 		moduleContent: `// Some content
-${SOURCE_MAPPING_URL}=module.js.map`
+${SOURCE_MAPPING_URL}=module.js.map`,
 	});
 
 	t.is(moduleContent, "// Some content\n", "Source map URL has been removed from module content");
@@ -2867,7 +2867,7 @@ test("getSourceMapForModule: Full URL (not supported)", async (t) => {
 		moduleName: "my/test/module",
 		resourcePath: "/resources/my/test/module.js",
 		moduleContent: `// Some content
-${SOURCE_MAPPING_URL}=https://ui5.sap.com/resources/my/test/module.js.map`
+${SOURCE_MAPPING_URL}=https://ui5.sap.com/resources/my/test/module.js.map`,
 	});
 
 	t.is(moduleContent, "// Some content\n", "Source map URL has been removed from module content");
@@ -2888,7 +2888,7 @@ test("getSourceMapForModule: Absolute URL (not supported)", async (t) => {
 		moduleName: "my/test/module",
 		resourcePath: "/resources/my/test/module.js",
 		moduleContent: `// Some content
-${SOURCE_MAPPING_URL}=/resources/my/test/module.js.map`
+${SOURCE_MAPPING_URL}=/resources/my/test/module.js.map`,
 	});
 
 	t.is(moduleContent, "// Some content\n", "Source map URL has been removed from module content");
@@ -2906,23 +2906,23 @@ test("getSourceMapForModule: Data URI", async (t) => {
 	const pool = new ResourcePool();
 	const builder = new Builder(pool);
 	const originalSourceMap = {
-		"version": 3,
-		"sources":
+		version: 3,
+		sources:
 		[
-			"module-dbg.js"
+			"module-dbg.js",
 		],
-		"names":
+		names:
 		[
 		],
-		"mappings": "XXXX",
-		"file": "module.js"
+		mappings: "XXXX",
+		file: "module.js",
 	};
 	const encodedSourceMap = Buffer.from(JSON.stringify(originalSourceMap)).toString("base64");
 	const {moduleContent, moduleSourceMap} = await builder.getSourceMapForModule({
 		moduleName: "my/test/module",
 		resourcePath: "/resources/my/test/module.js",
 		moduleContent: `// Some content
-${SOURCE_MAPPING_URL}=data:application/json;charset=utf-8;base64,${encodedSourceMap}`
+${SOURCE_MAPPING_URL}=data:application/json;charset=utf-8;base64,${encodedSourceMap}`,
 	});
 
 	t.is(moduleContent, "// Some content\n", "Source map URL has been removed from module content");
@@ -2936,7 +2936,7 @@ test("getSourceMapForModule: Data URI with incorrect encoding", async (t) => {
 		moduleName: "my/test/module",
 		resourcePath: "/resources/my/test/module.js",
 		moduleContent: `// Some content
-${SOURCE_MAPPING_URL}=data:application/pony;charset=utf-8;base64,AAAA`
+${SOURCE_MAPPING_URL}=data:application/pony;charset=utf-8;base64,AAAA`,
 	});
 
 	t.is(moduleContent, "// Some content\n", "Source map URL has been removed from module content");
@@ -2959,13 +2959,13 @@ test("createTransientSourceMap: includeContent=false", (t) => {
 With
 Multiple
 Lines`,
-		includeContent: false
+		includeContent: false,
 	});
 	t.deepEqual(res, {
-		"version": 3,
-		"names": [],
-		"sources": ["my/test/module.js"],
-		"mappings": "AAAA;AACA;AACA;AACA"
+		version: 3,
+		names: [],
+		sources: ["my/test/module.js"],
+		mappings: "AAAA;AACA;AACA;AACA",
 	}, "Expected source map has been created");
 });
 
@@ -2979,14 +2979,14 @@ Lines`;
 	const res = createTransientSourceMap({
 		moduleName: "my/test/module.js",
 		moduleContent,
-		includeContent: true
+		includeContent: true,
 	});
 	t.deepEqual(res, {
 		version: 3,
 		names: [],
 		sources: ["my/test/module.js"],
 		mappings: "AAAA;AACA;AACA;AACA",
-		sourcesContent: [moduleContent]
+		sourcesContent: [moduleContent],
 	}, "Expected source map has been created");
 });
 
@@ -2995,20 +2995,20 @@ test("integration: ES2023 Support", async (t) => {
 	pool.addResource({
 		name: "myModule.js",
 		getPath: () => "myModule.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
 		buffer: async () => `#!/usr/bin/env node
-sap.ui.define([], function(){return {};});`
+sap.ui.define([], function(){return {};});`,
 	});
 	pool.addResource({
 		name: "myRawModule.js",
 		getPath: () => "myRawModule.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
 		buffer: async () => `#!/usr/bin/env node
-(function(){const mine = {};}());`
+(function(){const mine = {};}());`,
 	});
 
 	const bundleDefinition = {
@@ -3017,13 +3017,13 @@ sap.ui.define([], function(){return {};});`
 		sections: [{
 			mode: "preload",
 			name: "preload-section",
-			filters: ["myModule.js"]
+			filters: ["myModule.js"],
 		}, {
 			declareRawModules: undefined,
 			mode: "raw",
 			filters: ["myRawModule.js"],
-			sort: undefined
-		}]
+			sort: undefined,
+		}],
 	};
 
 	const builder = new Builder(pool);
@@ -3038,8 +3038,8 @@ sap.ui.predefine("myModule", [], function(){return {};});
 ${SOURCE_MAPPING_URL}=Component-preload.js.map
 `;
 	t.deepEqual(oResult.content, expectedContent, "EVOBundleFormat should contain: " +
-		" preload part from myModule.js and" +
-		" raw part from myRawModule.js");
+	" preload part from myModule.js and" +
+	" raw part from myRawModule.js");
 	t.is(oResult.bundleInfo.name, "Component-preload.js", "bundle info name is correct");
 	t.deepEqual(oResult.bundleInfo.size, expectedContent.length, "bundle info size is correct");
 	t.deepEqual(oResult.bundleInfo.subModules, ["myModule.js", "myRawModule.js"],
@@ -3051,18 +3051,18 @@ test.serial("getUi5MajorVersion without cache", async (t) => {
 	pool.addResource({
 		name: "ui5loader.js",
 		getPath: () => "ui5loader.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "(function(__global) {sap.ui.require = function(){};}(window));"
+		buffer: async () => "(function(__global) {sap.ui.require = function(){};}(window));",
 	});
 	pool.addResource({
 		name: "sap/ui/core/Core.js",
 		getPath: () => "sap/ui/core/Core.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "sap.ui.define([],function(){return {};});"
+		buffer: async () => "sap.ui.define([],function(){return {};});",
 	});
 
 	const bundleDefinition = {
@@ -3072,16 +3072,16 @@ test.serial("getUi5MajorVersion without cache", async (t) => {
 			mode: "raw",
 			filters: ["ui5loader.js"],
 			declareRawModules: undefined,
-			sort: undefined
+			sort: undefined,
 		}, {
 			mode: "preload",
 			filters: ["sap/ui/core/Core.js"],
-			resolve: true
+			resolve: true,
 		}, {
 			mode: "require",
 			filters: ["sap/ui/core/Core.js"],
-			async: false
-		}]
+			async: false,
+		}],
 	};
 
 	// UI5 sap.ui.core version not defined
@@ -3093,7 +3093,7 @@ test.serial("getUi5MajorVersion without cache", async (t) => {
 		numberOfParts: 1,
 		decorateBootstrapModule: true,
 		addTryCatchRestartWrapper: true,
-		optimize: true
+		optimize: true,
 	});
 	t.is(getUi5MajorVersionSpy.callCount, 1, "getUi5MajorVersion has been called once");
 	t.is(getUi5MajorVersionSpy.getCall(0).returnValue, null, "UI5 Major Version can not correctly determined");
@@ -3107,7 +3107,7 @@ test.serial("getUi5MajorVersion without cache", async (t) => {
 		numberOfParts: 1,
 		decorateBootstrapModule: true,
 		addTryCatchRestartWrapper: true,
-		optimize: true
+		optimize: true,
 	});
 	t.is(getUi5MajorVersionUI5v1Spy.callCount, 1, "getUi5MajorVersion has been called once");
 	t.is(getUi5MajorVersionUI5v1Spy.getCall(0).returnValue, 1, "UI5 Major Version correctly determined");
@@ -3121,7 +3121,7 @@ test.serial("getUi5MajorVersion without cache", async (t) => {
 		numberOfParts: 1,
 		decorateBootstrapModule: true,
 		addTryCatchRestartWrapper: true,
-		optimize: true
+		optimize: true,
 	}));
 	t.is(getUi5MajorVersionUI5v2Spy.callCount, 1, "getUi5MajorVersion has been called once");
 	t.is(getUi5MajorVersionUI5v2Spy.getCall(0).returnValue, 2, "UI5 Major Version correctly determined");
@@ -3132,25 +3132,25 @@ test.serial("getUi5MajorVersion with cache", async (t) => {
 	pool.addResource({
 		name: "ui5loader.js",
 		getPath: () => "ui5loader.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "(function(__global) {sap.ui.require = function(){};}(window));"
+		buffer: async () => "(function(__global) {sap.ui.require = function(){};}(window));",
 	});
 	pool.addResource({
 		name: "sap/ui/core/Core.js",
 		getPath: () => "sap/ui/core/Core.js",
-		string: function() {
+		string: function () {
 			return this.buffer();
 		},
-		buffer: async () => "sap.ui.define([],function(){return {};});"
+		buffer: async () => "sap.ui.define([],function(){return {};});",
 	});
 
 	const mySemverValidStub = sinon.stub().returns(true);
 	const BuilderWithSemverStub = await esmock("../../../../lib/lbt/bundle/Builder", {
-		"semver": {
+		semver: {
 			valid: mySemverValidStub,
-		}
+		},
 	});
 
 	const bundleDefinitionUsingCache = {
@@ -3160,18 +3160,18 @@ test.serial("getUi5MajorVersion with cache", async (t) => {
 			mode: "raw",
 			filters: ["ui5loader.js"],
 			declareRawModules: undefined,
-			sort: undefined
+			sort: undefined,
 		}, {
 			mode: "preload",
 			filters: ["sap/ui/core/Core.js"],
-			resolve: true
+			resolve: true,
 		}, {
 			mode: "require",
 			filters: ["sap/ui/core/Core.js"],
 		}, {
 			mode: "require",
-			filters: ["sap/ui/core/Core.js"]
-		}]
+			filters: ["sap/ui/core/Core.js"],
+		}],
 	};
 
 	// UI5 sap.ui.core 2.X using cache at the second call
@@ -3183,7 +3183,7 @@ test.serial("getUi5MajorVersion with cache", async (t) => {
 		numberOfParts: 1,
 		decorateBootstrapModule: true,
 		addTryCatchRestartWrapper: true,
-		optimize: true
+		optimize: true,
 	});
 	t.is(getUi5MajorVersionUI5v2WithCacheSpy.callCount, 2, "getUi5MajorVersion has been called twice");
 	t.is(getUi5MajorVersionUI5v2WithCacheSpy.getCall(0).returnValue, 2, "UI5 Major Version correctly determined");

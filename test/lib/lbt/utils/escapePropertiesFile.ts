@@ -2,7 +2,6 @@ import test from "ava";
 import esmock from "esmock";
 import sinon from "sinon";
 
-
 test.beforeEach(async (t) => {
 	// Spying logger of processors/bootstrapHtmlTransformer
 	t.context.getEncodingFromAliasStub = sinon.stub().returns("node encoding name");
@@ -10,7 +9,7 @@ test.beforeEach(async (t) => {
 	t.context.nonAsciiEscaperStub.getEncodingFromAlias = t.context.getEncodingFromAliasStub;
 
 	t.context.escapePropertiesFile = await esmock("../../../../lib/lbt/utils/escapePropertiesFile", {
-		"../../../../lib/processors/nonAsciiEscaper": t.context.nonAsciiEscaperStub
+		"../../../../lib/processors/nonAsciiEscaper": t.context.nonAsciiEscaperStub,
 	});
 });
 
@@ -22,13 +21,13 @@ test.serial("propertiesFileSourceEncoding UTF-8", async (t) => {
 	const lbtResource = {
 		getProject: () => {
 			return {
-				getPropertiesFileSourceEncoding: () => "UTF-8"
+				getPropertiesFileSourceEncoding: () => "UTF-8",
 			};
 		},
 		resource: "actual resource",
 		buffer: async () => {
 			return "resource content";
-		}
+		},
 	};
 	const res = await t.context.escapePropertiesFile(lbtResource);
 	t.is(t.context.getEncodingFromAliasStub.callCount, 1, "getEncodingFromAlias got called once");
@@ -38,24 +37,23 @@ test.serial("propertiesFileSourceEncoding UTF-8", async (t) => {
 	t.deepEqual(t.context.nonAsciiEscaperStub.getCall(0).args[0], {
 		resources: ["actual resource"],
 		options: {
-			encoding: "node encoding name"
-		}
+			encoding: "node encoding name",
+		},
 	}, "getEncodingFromAlias got called with excepted argument");
 	t.is(res, "resource content", "Correct result");
 });
-
 
 test.serial("propertiesFileSourceEncoding ISO-8859-1", async (t) => {
 	const lbtResource = {
 		getProject: () => {
 			return {
-				getPropertiesFileSourceEncoding: () => "ISO-8859-1"
+				getPropertiesFileSourceEncoding: () => "ISO-8859-1",
 			};
 		},
 		resource: "actual resource",
 		buffer: async () => {
 			return "resource content";
-		}
+		},
 	};
 	const res = await t.context.escapePropertiesFile(lbtResource);
 	t.is(t.context.getEncodingFromAliasStub.callCount, 1, "getEncodingFromAlias got called once");
@@ -65,8 +63,8 @@ test.serial("propertiesFileSourceEncoding ISO-8859-1", async (t) => {
 	t.deepEqual(t.context.nonAsciiEscaperStub.getCall(0).args[0], {
 		resources: ["actual resource"],
 		options: {
-			encoding: "node encoding name"
-		}
+			encoding: "node encoding name",
+		},
 	}, "getEncodingFromAlias got called with excepted argument");
 	t.is(res, "resource content", "Correct result");
 });
@@ -79,7 +77,7 @@ test.serial("propertiesFileSourceEncoding not set", async (t) => {
 		resource: "actual resource",
 		buffer: async () => {
 			return "resource content";
-		}
+		},
 	};
 	const res = await t.context.escapePropertiesFile(lbtResource);
 	t.is(t.context.getEncodingFromAliasStub.callCount, 1, "getEncodingFromAlias got called once");
@@ -89,8 +87,8 @@ test.serial("propertiesFileSourceEncoding not set", async (t) => {
 	t.deepEqual(t.context.nonAsciiEscaperStub.getCall(0).args[0], {
 		resources: ["actual resource"],
 		options: {
-			encoding: "node encoding name"
-		}
+			encoding: "node encoding name",
+		},
 	}, "getEncodingFromAlias got called with excepted argument");
 	t.is(res, "resource content", "Correct result");
 });
@@ -105,13 +103,13 @@ test.serial("propertiesFileSourceEncoding not set - specVersion 0.1", async (t) 
 						lte: () => true,
 					};
 				},
-				getPropertiesFileSourceEncoding: () => ""
+				getPropertiesFileSourceEncoding: () => "",
 			};
 		},
 		resource: "actual resource",
 		buffer: async () => {
 			return "resource content";
-		}
+		},
 	};
 	const res = await t.context.escapePropertiesFile(lbtResource);
 	t.is(t.context.getEncodingFromAliasStub.callCount, 1, "getEncodingFromAlias got called once");
@@ -121,8 +119,8 @@ test.serial("propertiesFileSourceEncoding not set - specVersion 0.1", async (t) 
 	t.deepEqual(t.context.nonAsciiEscaperStub.getCall(0).args[0], {
 		resources: ["actual resource"],
 		options: {
-			encoding: "node encoding name"
-		}
+			encoding: "node encoding name",
+		},
 	}, "getEncodingFromAlias got called with excepted argument");
 	t.is(res, "resource content", "Correct result");
 });
@@ -137,13 +135,13 @@ test.serial("propertiesFileSourceEncoding not set - specVersion 1.0", async (t) 
 						lte: () => true,
 					};
 				},
-				getPropertiesFileSourceEncoding: () => ""
+				getPropertiesFileSourceEncoding: () => "",
 			};
 		},
 		resource: "actual resource",
 		buffer: async () => {
 			return "resource content";
-		}
+		},
 	};
 	const res = await t.context.escapePropertiesFile(lbtResource);
 	t.is(t.context.getEncodingFromAliasStub.callCount, 1, "getEncodingFromAlias got called once");
@@ -153,8 +151,8 @@ test.serial("propertiesFileSourceEncoding not set - specVersion 1.0", async (t) 
 	t.deepEqual(t.context.nonAsciiEscaperStub.getCall(0).args[0], {
 		resources: ["actual resource"],
 		options: {
-			encoding: "node encoding name"
-		}
+			encoding: "node encoding name",
+		},
 	}, "getEncodingFromAlias got called with excepted argument");
 	t.is(res, "resource content", "Correct result");
 });
@@ -169,13 +167,13 @@ test.serial("propertiesFileSourceEncoding not set - specVersion 1.1", async (t) 
 						lte: () => true,
 					};
 				},
-				getPropertiesFileSourceEncoding: () => ""
+				getPropertiesFileSourceEncoding: () => "",
 			};
 		},
 		resource: "actual resource",
 		buffer: async () => {
 			return "resource content";
-		}
+		},
 	};
 	const res = await t.context.escapePropertiesFile(lbtResource);
 	t.is(t.context.getEncodingFromAliasStub.callCount, 1, "getEncodingFromAlias got called once");
@@ -185,8 +183,8 @@ test.serial("propertiesFileSourceEncoding not set - specVersion 1.1", async (t) 
 	t.deepEqual(t.context.nonAsciiEscaperStub.getCall(0).args[0], {
 		resources: ["actual resource"],
 		options: {
-			encoding: "node encoding name"
-		}
+			encoding: "node encoding name",
+		},
 	}, "getEncodingFromAlias got called with excepted argument");
 	t.is(res, "resource content", "Correct result");
 });
@@ -201,13 +199,13 @@ test.serial("propertiesFileSourceEncoding not set - specVersion 2.0", async (t) 
 						lte: () => false,
 					};
 				},
-				getPropertiesFileSourceEncoding: () => ""
+				getPropertiesFileSourceEncoding: () => "",
 			};
 		},
 		resource: "actual resource",
 		buffer: async () => {
 			return "resource content";
-		}
+		},
 	};
 	const res = await t.context.escapePropertiesFile(lbtResource);
 	t.is(t.context.getEncodingFromAliasStub.callCount, 1, "getEncodingFromAlias got called once");
@@ -217,8 +215,8 @@ test.serial("propertiesFileSourceEncoding not set - specVersion 2.0", async (t) 
 	t.deepEqual(t.context.nonAsciiEscaperStub.getCall(0).args[0], {
 		resources: ["actual resource"],
 		options: {
-			encoding: "node encoding name"
-		}
+			encoding: "node encoding name",
+		},
 	}, "getEncodingFromAlias got called with excepted argument");
 	t.is(res, "resource content", "Correct result");
 });

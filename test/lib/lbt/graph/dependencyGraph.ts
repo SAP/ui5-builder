@@ -17,7 +17,7 @@ function createMockPool(dependencyMapping) {
 				info.addDependency(dep);
 			});
 			return info;
-		}
+		},
 	};
 }
 
@@ -46,12 +46,12 @@ function getPredecessors(node) {
  */
 test("dependency graph with 1 root", async (t) => {
 	const dependencyMapping = {
-		"myroot": "mydep",
-		"mydep": "superb"
+		myroot: "mydep",
+		mydep: "superb",
 	};
 	const pool = createMockPool(dependencyMapping);
 	const roots = [{
-		name: "myroot"
+		name: "myroot",
 	}];
 	const oResult = await dependencyGraph(pool, roots);
 	checkNZero(t, oResult);
@@ -66,7 +66,6 @@ test("dependency graph with 1 root", async (t) => {
 
 	const mydep = oResult.nodes.get("mydep");
 	t.deepEqual(getPredecessors(mydep), ["myroot"], "mydep holds a dependency to myroot");
-
 
 	const superb = oResult.nodes.get("superb");
 	t.deepEqual(getPredecessors(superb), ["mydep"], "superb holds a dependency to mydep");
@@ -85,14 +84,14 @@ test("dependency graph with 1 root", async (t) => {
  */
 test("dependency with 2 roots", async (t) => {
 	const dependencies = {
-		"myroot": "mydep",
-		"mydep": "superb"
+		myroot: "mydep",
+		mydep: "superb",
 	};
 	const pool = createMockPool(dependencies);
 	const roots = [{
-		name: "myroot"
+		name: "myroot",
 	}, {
-		name: "mydep"
+		name: "mydep",
 	}];
 	const oResult = await dependencyGraph(pool, roots);
 	checkNZero(t, oResult);
@@ -123,10 +122,10 @@ test("dependency graph with rejecting pool", async (t) => {
 	const pool = {
 		async getModuleInfo() {
 			throw new Error("myerror");
-		}
+		},
 	};
 	const roots = [{
-		name: "myroot"
+		name: "myroot",
 	}];
 
 	const oResult = await dependencyGraph(pool, roots);
@@ -155,13 +154,13 @@ test("dependency graph with rejecting pool", async (t) => {
  */
 test("Advanced dependency graph with 1 root", async (t) => {
 	const dependencies = {
-		"myroot": "mydep",
-		"mydep": ["superb", "three"],
-		"superb": ["one", "two", "three"]
+		myroot: "mydep",
+		mydep: ["superb", "three"],
+		superb: ["one", "two", "three"],
 	};
 	const pool = createMockPool(dependencies);
 	const roots = [{
-		name: "myroot"
+		name: "myroot",
 	}];
 	const oResult = await dependencyGraph(pool, roots);
 	checkNZero(t, oResult);
@@ -172,7 +171,7 @@ test("Advanced dependency graph with 1 root", async (t) => {
 		"superb",
 		"three",
 		"one",
-		"two"
+		"two",
 	]);
 
 	const empty = oResult.nodes.get("");
@@ -184,7 +183,6 @@ test("Advanced dependency graph with 1 root", async (t) => {
 
 	const mydep = oResult.nodes.get("mydep");
 	t.deepEqual(getPredecessors(mydep), ["myroot"], "mydep holds a dependency to myroot");
-
 
 	const superb = oResult.nodes.get("superb");
 	t.deepEqual(getPredecessors(superb), ["mydep"], "superb holds a dependency to mydep");

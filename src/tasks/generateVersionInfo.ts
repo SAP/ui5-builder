@@ -3,26 +3,21 @@ import versionInfoGenerator from "../processors/versionInfoGenerator.js";
 const MANIFEST_JSON = "manifest.json";
 
 /**
- * @public
  * @module @ui5/builder/tasks/generateVersionInfo
  */
 
 /**
  * Task to create sap-ui-version.json
  *
- * @public
- * @function default
- * @static
- *
- * @param {object} parameters Parameters
- * @param {@ui5/fs/DuplexCollection} parameters.workspace DuplexCollection to read and write files
- * @param {@ui5/fs/AbstractReader} parameters.dependencies Reader or Collection to read dependency files
- * @param {object} parameters.options Options
- * @param {string} parameters.options.pattern Glob pattern for .library resources
- * @param {object} parameters.options.rootProject DuplexCollection to read and write files
- * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
+ * @param parameters Parameters
+ * @param parameters.workspace DuplexCollection to read and write files
+ * @param parameters.dependencies Reader or Collection to read dependency files
+ * @param parameters.options Options
+ * @param parameters.options.pattern Glob pattern for .library resources
+ * @param parameters.options.rootProject DuplexCollection to read and write files
+ * @returns Promise resolving with <code>undefined</code> once data has been written
  */
-export default async ({ workspace, dependencies, options: { rootProject, pattern } }) => {
+export default async ({workspace, dependencies, options: {rootProject, pattern}}) => {
 	let resources = await dependencies.byGlob(pattern);
 
 	resources = resources.filter((res) => res.getProject()?.getType() === "library");
@@ -41,7 +36,7 @@ export default async ({ workspace, dependencies, options: { rootProject, pattern
 				libraryManifest,
 				embeddedManifests,
 				name: dotLibResource.getProject().getName(),
-				version: dotLibResource.getProject().getVersion()
+				version: dotLibResource.getProject().getVersion(),
 			};
 		});
 	});
@@ -51,8 +46,8 @@ export default async ({ workspace, dependencies, options: { rootProject, pattern
 		options: {
 			rootProjectName: rootProject.getName(),
 			rootProjectVersion: rootProject.getVersion(),
-			libraryInfos
-		}
+			libraryInfos,
+		},
 	});
 	return workspace.write(versionInfoResource);
 };

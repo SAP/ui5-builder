@@ -5,12 +5,12 @@ import esmock from "esmock";
 test.beforeEach(async (t) => {
 	t.context.logWarnSpy = sinon.spy();
 	const loggerStub = {
-		warn: t.context.logWarnSpy
+		warn: t.context.logWarnSpy,
 	};
 	t.context.bootstrapHtmlTransformer = await esmock("../../../lib/processors/bootstrapHtmlTransformer.js", {
 		"@ui5/logger": {
-			getLogger: sinon.stub().withArgs("builder:processors:bootstrapHtmlTransformer").returns(loggerStub)
-		}
+			getLogger: sinon.stub().withArgs("builder:processors:bootstrapHtmlTransformer").returns(loggerStub),
+		},
 	});
 });
 
@@ -43,14 +43,14 @@ test.serial("Replaces relative bootstrap src with bar.js", async (t) => {
 		getString: () => Promise.resolve(input),
 		setString: (actual) => {
 			t.deepEqual(actual, expected, "Correct file content should be set");
-		}
+		},
 	};
 
 	const processedResources = await bootstrapHtmlTransformer({
 		resources: [resource],
 		options: {
-			src: "bar.js"
-		}
+			src: "bar.js",
+		},
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
@@ -83,14 +83,14 @@ test.serial("Replaces absolute bootstrap src with bar.js", async (t) => {
 		getString: () => Promise.resolve(input),
 		setString: (actual) => {
 			t.deepEqual(actual, expected, "Correct file content should be set");
-		}
+		},
 	};
 
 	const processedResources = await bootstrapHtmlTransformer({
 		resources: [resource],
 		options: {
-			src: "bar.js"
-		}
+			src: "bar.js",
+		},
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
@@ -123,14 +123,14 @@ test.serial("Replaces bootstrap src of multiple resources", async (t) => {
 		getString: () => Promise.resolve(input),
 		setString: (actual) => {
 			t.deepEqual(actual, expected, "Correct file content should be set");
-		}
+		},
 	};
 
 	const processedResources = await bootstrapHtmlTransformer({
 		resources: [resource, resource],
 		options: {
-			src: "bar.js"
-		}
+			src: "bar.js",
+		},
 	});
 
 	t.deepEqual(processedResources, [resource, resource], "Input resources are returned");
@@ -157,14 +157,14 @@ test.serial("Logs warning when bootstrap script can't be found due to missing ID
 		getString: () => Promise.resolve(input),
 		setString: (actual) => {
 			t.fail("Resource should not be modified!");
-		}
+		},
 	};
 
 	const processedResources = await bootstrapHtmlTransformer({
 		resources: [resource],
 		options: {
-			src: "bar.js"
-		}
+			src: "bar.js",
+		},
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
@@ -195,14 +195,14 @@ test.serial("Logs warning when bootstrap script can't be found due to wrong tag"
 		getString: () => Promise.resolve(input),
 		setString: (actual) => {
 			t.fail("Resource should not be modified!");
-		}
+		},
 	};
 
 	const processedResources = await bootstrapHtmlTransformer({
 		resources: [resource],
 		options: {
-			src: "bar.js"
-		}
+			src: "bar.js",
+		},
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
@@ -223,14 +223,14 @@ console.log("This is not HTML!")`;
 		getString: () => Promise.resolve(input),
 		setString: (actual) => {
 			t.fail("Resource should not be modified!");
-		}
+		},
 	};
 
 	const processedResources = await bootstrapHtmlTransformer({
 		resources: [resource],
 		options: {
-			src: "bar.js"
-		}
+			src: "bar.js",
+		},
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");
@@ -261,14 +261,14 @@ test.serial("Logs warning when multiple bootstrap scripts are found", async (t) 
 		getString: () => Promise.resolve(input),
 		setString: (actual) => {
 			t.fail("Resource should not be modified!");
-		}
+		},
 	};
 
 	const processedResources = await bootstrapHtmlTransformer({
 		resources: [resource],
 		options: {
-			src: "bar.js"
-		}
+			src: "bar.js",
+		},
 	});
 
 	t.deepEqual(processedResources, [resource], "Input resource is returned");

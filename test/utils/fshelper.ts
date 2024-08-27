@@ -21,4 +21,3 @@ export async function fileEqual(t, destPath, expectedPath) {
 	const expectedContent = await readFileContent(expectedPath);
 	t.is(destContent, expectedContent);
 }
-

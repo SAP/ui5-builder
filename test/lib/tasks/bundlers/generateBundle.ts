@@ -6,16 +6,16 @@ test.beforeEach(async (t) => {
 	t.context.log = {
 		warn: sinon.stub(),
 		verbose: sinon.stub(),
-		error: sinon.stub()
+		error: sinon.stub(),
 	};
 	t.context.workspace = {
 		byGlob: sinon.stub().resolves([]),
-		write: sinon.stub().resolves()
+		write: sinon.stub().resolves(),
 	};
 	t.context.dependencies = {};
 	t.context.combo = {
 		byGlob: sinon.stub().resolves([]),
-		filter: sinon.stub()
+		filter: sinon.stub(),
 	};
 
 	t.context.createFilterReaderStub = sinon.stub().returns(t.context.combo);
@@ -24,9 +24,9 @@ test.beforeEach(async (t) => {
 		getVersion: () => "1.120.0",
 		getSpecVersion() {
 			return {
-				lt: sinon.stub().withArgs("4.0").returns(false)
+				lt: sinon.stub().withArgs("4.0").returns(false),
 			};
-		}
+		},
 	};
 
 	t.context.taskUtil = {
@@ -36,12 +36,12 @@ test.beforeEach(async (t) => {
 		STANDARD_TAGS: {
 			HasDebugVariant: "<HasDebugVariant>",
 			IsDebugVariant: "<IsDebugVariant>",
-			OmitFromBuildResult: "<OmitFromBuildResult>"
+			OmitFromBuildResult: "<OmitFromBuildResult>",
 		},
 		resourceFactory: {
-			createFilterReader: t.context.createFilterReaderStub
+			createFilterReader: t.context.createFilterReaderStub,
 		},
-		getProject: () => project
+		getProject: () => project,
 	};
 
 	t.context.ReaderCollectionPrioritizedStub = sinon.stub().returns(t.context.combo);
@@ -54,11 +54,11 @@ test.beforeEach(async (t) => {
 
 	t.context.generateBundle = await esmock("../../../../lib/tasks/bundlers/generateBundle.js", {
 		"@ui5/fs/ReaderCollectionPrioritized": t.context.ReaderCollectionPrioritizedStub,
-		"../../../../lib/processors/bundlers/moduleBundler": t.context.moduleBundlerStub
+		"../../../../lib/processors/bundlers/moduleBundler": t.context.moduleBundlerStub,
 	}, {
 		"../../../../lib/lbt/utils/ModuleName.js": {
-			getNonDebugName: t.context.getNonDebugName
-		}
+			getNonDebugName: t.context.getNonDebugName,
+		},
 	});
 });
 
@@ -69,20 +69,20 @@ test.afterEach.always(() => {
 test.serial("generateBundle: No taskUtil, no bundleOptions", async (t) => {
 	const {
 		generateBundle, moduleBundlerStub, ReaderCollectionPrioritizedStub,
-		workspace, dependencies, combo, createFilterReaderStub
+		workspace, dependencies, combo, createFilterReaderStub,
 	} = t.context;
 
 	const resources = [
-		{"fake": "resource"}
+		{fake: "resource"},
 	];
 	combo.byGlob.resolves(resources);
 
 	moduleBundlerStub.resolves([
 		{
 			name: "my/app/customBundle.js",
-			bundle: {"fake": "bundle"},
-			sourceMap: {"fake": "sourceMap"}
-		}
+			bundle: {fake: "bundle"},
+			sourceMap: {fake: "sourceMap"},
+		},
 	]);
 
 	// bundleDefinition can be empty here as the moduleBundler is mocked
@@ -93,8 +93,8 @@ test.serial("generateBundle: No taskUtil, no bundleOptions", async (t) => {
 		dependencies,
 		options: {
 			projectName: "Test Application",
-			bundleDefinition
-		}
+			bundleDefinition,
+		},
 	});
 
 	t.is(moduleBundlerStub.callCount, 1, "moduleBundler should have been called once");
@@ -102,9 +102,9 @@ test.serial("generateBundle: No taskUtil, no bundleOptions", async (t) => {
 		options: {
 			allowStringBundling: undefined,
 			bundleDefinition,
-			bundleOptions: undefined
+			bundleOptions: undefined,
 		},
-		resources
+		resources,
 	}]);
 
 	t.is(combo.byGlob.callCount, 1,
@@ -137,24 +137,24 @@ test.serial("generateBundle: No bundleOptions, with taskUtil", async (t) => {
 	const {
 		generateBundle, moduleBundlerStub, ReaderCollectionPrioritizedStub,
 		workspace, dependencies, combo, createFilterReaderStub,
-		taskUtil
+		taskUtil,
 	} = t.context;
 
 	const resources = [
-		{"fake": "resource"}
+		{fake: "resource"},
 	];
 
 	const filteredCombo = {
-		byGlob: sinon.stub().resolves(resources)
+		byGlob: sinon.stub().resolves(resources),
 	};
 	createFilterReaderStub.returns(filteredCombo);
 
 	moduleBundlerStub.resolves([
 		{
 			name: "my/app/customBundle.js",
-			bundle: {"fake": "bundle"},
-			sourceMap: {"fake": "sourceMap"}
-		}
+			bundle: {fake: "bundle"},
+			sourceMap: {fake: "sourceMap"},
+		},
 	]);
 
 	// bundleDefinition can be empty here as the moduleBundler is mocked
@@ -166,8 +166,8 @@ test.serial("generateBundle: No bundleOptions, with taskUtil", async (t) => {
 		taskUtil,
 		options: {
 			projectName: "Test Application",
-			bundleDefinition
-		}
+			bundleDefinition,
+		},
 	});
 
 	t.is(moduleBundlerStub.callCount, 1, "moduleBundler should have been called once");
@@ -178,7 +178,7 @@ test.serial("generateBundle: No bundleOptions, with taskUtil", async (t) => {
 			bundleOptions: undefined,
 			targetUi5CoreVersion: "1.120.0",
 		},
-		resources
+		resources,
 	}]);
 
 	t.is(combo.byGlob.callCount, 0,
@@ -202,7 +202,7 @@ test.serial("generateBundle: No bundleOptions, with taskUtil", async (t) => {
 
 	t.is(taskUtil.clearTag.callCount, 1);
 	t.deepEqual(taskUtil.clearTag.getCall(0).args,
-		[{"fake": "sourceMap"}, taskUtil.STANDARD_TAGS.OmitFromBuildResult],
+		[{fake: "sourceMap"}, taskUtil.STANDARD_TAGS.OmitFromBuildResult],
 		"OmitFromBuildResult tag should be cleared on source map resource");
 
 	t.is(ReaderCollectionPrioritizedStub.callCount, 1,
@@ -245,33 +245,33 @@ test.serial("generateBundle: No bundleOptions, with taskUtil and specVersion < 4
 	const {
 		generateBundle, moduleBundlerStub, ReaderCollectionPrioritizedStub,
 		workspace, dependencies, combo, createFilterReaderStub,
-		taskUtil
+		taskUtil,
 	} = t.context;
 
 	const resources = [
-		{"fake": "resource"}
+		{fake: "resource"},
 	];
 
 	const legacyProject = {
 		getVersion: () => "1.120.0",
 		getSpecVersion() {
 			return {
-				lt: sinon.stub().withArgs("4.0").returns(true)
+				lt: sinon.stub().withArgs("4.0").returns(true),
 			};
-		}
+		},
 	};
 	taskUtil.getProject = () => legacyProject;
 	const filteredCombo = {
-		byGlob: sinon.stub().resolves(resources)
+		byGlob: sinon.stub().resolves(resources),
 	};
 	createFilterReaderStub.returns(filteredCombo);
 
 	moduleBundlerStub.resolves([
 		{
 			name: "my/app/customBundle.js",
-			bundle: {"fake": "bundle"},
-			sourceMap: {"fake": "sourceMap"}
-		}
+			bundle: {fake: "bundle"},
+			sourceMap: {fake: "sourceMap"},
+		},
 	]);
 
 	// bundleDefinition can be empty here as the moduleBundler is mocked
@@ -283,8 +283,8 @@ test.serial("generateBundle: No bundleOptions, with taskUtil and specVersion < 4
 		taskUtil,
 		options: {
 			projectName: "Test Application",
-			bundleDefinition
-		}
+			bundleDefinition,
+		},
 	});
 
 	t.is(moduleBundlerStub.callCount, 1, "moduleBundler should have been called once");
@@ -295,7 +295,7 @@ test.serial("generateBundle: No bundleOptions, with taskUtil and specVersion < 4
 			bundleOptions: undefined,
 			targetUi5CoreVersion: "1.120.0",
 		},
-		resources
+		resources,
 	}]);
 
 	t.is(combo.byGlob.callCount, 0,
@@ -319,7 +319,7 @@ test.serial("generateBundle: No bundleOptions, with taskUtil and specVersion < 4
 
 	t.is(taskUtil.clearTag.callCount, 1);
 	t.deepEqual(taskUtil.clearTag.getCall(0).args,
-		[{"fake": "sourceMap"}, taskUtil.STANDARD_TAGS.OmitFromBuildResult],
+		[{fake: "sourceMap"}, taskUtil.STANDARD_TAGS.OmitFromBuildResult],
 		"OmitFromBuildResult tag should be cleared on source map resource");
 
 	t.is(ReaderCollectionPrioritizedStub.callCount, 1,
@@ -362,20 +362,20 @@ test.serial("generateBundle: bundleOptions: optimize=false, with taskUtil", asyn
 	const {
 		generateBundle, moduleBundlerStub, ReaderCollectionPrioritizedStub,
 		workspace, dependencies, combo, createFilterReaderStub,
-		taskUtil
+		taskUtil,
 	} = t.context;
 
 	const resources = [
 		{
-			getPath: sinon.stub().returns("/resources/my/app/module-dbg.js")
+			getPath: sinon.stub().returns("/resources/my/app/module-dbg.js"),
 		},
 		{
-			getPath: sinon.stub().returns("/resources/my/app/Main.view.xml")
-		}
+			getPath: sinon.stub().returns("/resources/my/app/Main.view.xml"),
+		},
 	];
 
 	const filteredCombo = {
-		byGlob: sinon.stub().resolves(resources)
+		byGlob: sinon.stub().resolves(resources),
 	};
 	createFilterReaderStub.returns(filteredCombo);
 
@@ -386,9 +386,9 @@ test.serial("generateBundle: bundleOptions: optimize=false, with taskUtil", asyn
 	moduleBundlerStub.resolves([
 		{
 			name: "my/app/customBundle.js",
-			bundle: {"fake": "bundle"},
-			sourceMap: {"fake": "sourceMap"}
-		}
+			bundle: {fake: "bundle"},
+			sourceMap: {fake: "sourceMap"},
+		},
 	]);
 
 	// bundleDefinition can be empty here as the moduleBundler is mocked
@@ -402,8 +402,8 @@ test.serial("generateBundle: bundleOptions: optimize=false, with taskUtil", asyn
 		options: {
 			projectName: "Test Application",
 			bundleDefinition,
-			bundleOptions
-		}
+			bundleOptions,
+		},
 	});
 
 	t.is(moduleBundlerStub.callCount, 1, "moduleBundler should have been called once");
@@ -413,11 +413,11 @@ test.serial("generateBundle: bundleOptions: optimize=false, with taskUtil", asyn
 			bundleDefinition,
 			bundleOptions,
 			moduleNameMapping: {
-				"/resources/my/app/module-dbg.js": "my/app/module.js"
+				"/resources/my/app/module-dbg.js": "my/app/module.js",
 			},
 			targetUi5CoreVersion: "1.120.0",
 		},
-		resources
+		resources,
 	}]);
 
 	t.is(combo.byGlob.callCount, 0,
@@ -446,7 +446,7 @@ test.serial("generateBundle: bundleOptions: optimize=false, with taskUtil", asyn
 
 	t.is(taskUtil.clearTag.callCount, 1);
 	t.deepEqual(taskUtil.clearTag.getCall(0).args,
-		[{"fake": "sourceMap"}, taskUtil.STANDARD_TAGS.OmitFromBuildResult],
+		[{fake: "sourceMap"}, taskUtil.STANDARD_TAGS.OmitFromBuildResult],
 		"OmitFromBuildResult tag should be cleared on source map resource");
 
 	t.is(ReaderCollectionPrioritizedStub.callCount, 1,
@@ -490,20 +490,20 @@ test.serial("generateBundle: bundleOptions: sourceMap=false, with taskUtil", asy
 	const {
 		generateBundle, moduleBundlerStub, ReaderCollectionPrioritizedStub,
 		workspace, dependencies, combo, createFilterReaderStub,
-		taskUtil
+		taskUtil,
 	} = t.context;
 
 	const resources = [
 		{
-			getPath: sinon.stub().returns("/resources/my/app/module-dbg.js")
+			getPath: sinon.stub().returns("/resources/my/app/module-dbg.js"),
 		},
 		{
-			getPath: sinon.stub().returns("/resources/my/app/Main.view.xml")
-		}
+			getPath: sinon.stub().returns("/resources/my/app/Main.view.xml"),
+		},
 	];
 
 	const filteredCombo = {
-		byGlob: sinon.stub().resolves(resources)
+		byGlob: sinon.stub().resolves(resources),
 	};
 	createFilterReaderStub.returns(filteredCombo);
 
@@ -514,8 +514,8 @@ test.serial("generateBundle: bundleOptions: sourceMap=false, with taskUtil", asy
 	moduleBundlerStub.resolves([
 		{
 			name: "my/app/customBundle.js",
-			bundle: {"fake": "bundle"}
-		}
+			bundle: {fake: "bundle"},
+		},
 	]);
 
 	// bundleDefinition can be empty here as the moduleBundler is mocked
@@ -529,8 +529,8 @@ test.serial("generateBundle: bundleOptions: sourceMap=false, with taskUtil", asy
 		options: {
 			projectName: "Test Application",
 			bundleDefinition,
-			bundleOptions
-		}
+			bundleOptions,
+		},
 	});
 
 	t.is(moduleBundlerStub.callCount, 1, "moduleBundler should have been called once");
@@ -539,9 +539,9 @@ test.serial("generateBundle: bundleOptions: sourceMap=false, with taskUtil", asy
 			allowStringBundling: false,
 			bundleDefinition,
 			bundleOptions,
-			targetUi5CoreVersion: "1.120.0"
+			targetUi5CoreVersion: "1.120.0",
 		},
-		resources
+		resources,
 	}]);
 
 	t.is(combo.byGlob.callCount, 0,
@@ -605,13 +605,13 @@ test.serial("generateBundle: Empty bundle (skipIfEmpty=true)", async (t) => {
 	const {
 		generateBundle, moduleBundlerStub, ReaderCollectionPrioritizedStub,
 		workspace, dependencies, combo, createFilterReaderStub,
-		taskUtil
+		taskUtil,
 	} = t.context;
 
 	const resources = [];
 
 	const filteredCombo = {
-		byGlob: sinon.stub().resolves(resources)
+		byGlob: sinon.stub().resolves(resources),
 	};
 	createFilterReaderStub.returns(filteredCombo);
 
@@ -628,8 +628,8 @@ test.serial("generateBundle: Empty bundle (skipIfEmpty=true)", async (t) => {
 		options: {
 			projectName: "Test Application",
 			bundleDefinition,
-			bundleOptions
-		}
+			bundleOptions,
+		},
 	});
 
 	t.is(moduleBundlerStub.callCount, 1, "moduleBundler should have been called once");
@@ -638,9 +638,9 @@ test.serial("generateBundle: Empty bundle (skipIfEmpty=true)", async (t) => {
 			allowStringBundling: false,
 			bundleDefinition,
 			bundleOptions,
-			targetUi5CoreVersion: "1.120.0"
+			targetUi5CoreVersion: "1.120.0",
 		},
-		resources
+		resources,
 	}]);
 
 	t.is(combo.byGlob.callCount, 0,
@@ -680,17 +680,17 @@ test.serial("generateBundle: Throws error when non-debug name can't be resolved"
 	const {
 		generateBundle, moduleBundlerStub,
 		workspace, dependencies, createFilterReaderStub,
-		taskUtil, getNonDebugName
+		taskUtil, getNonDebugName,
 	} = t.context;
 
 	const resources = [
 		{
-			getPath: sinon.stub().returns("/resources/my/app/module.js")
-		}
+			getPath: sinon.stub().returns("/resources/my/app/module.js"),
+		},
 	];
 
 	const filteredCombo = {
-		byGlob: sinon.stub().resolves(resources)
+		byGlob: sinon.stub().resolves(resources),
 	};
 	createFilterReaderStub.returns(filteredCombo);
 
@@ -710,10 +710,10 @@ test.serial("generateBundle: Throws error when non-debug name can't be resolved"
 		options: {
 			projectName: "Test Application",
 			bundleDefinition,
-			bundleOptions
-		}
+			bundleOptions,
+		},
 	}), {
-		message: "Failed to resolve non-debug name for /resources/my/app/module.js"
+		message: "Failed to resolve non-debug name for /resources/my/app/module.js",
 	});
 });
 
@@ -721,7 +721,7 @@ test.serial("generateBundle: No bundleOptions, with taskUtil, UI5 Version >= 2",
 	const {
 		generateBundle, moduleBundlerStub, ReaderCollectionPrioritizedStub,
 		workspace, dependencies, combo, createFilterReaderStub,
-		taskUtil
+		taskUtil,
 	} = t.context;
 
 	taskUtil.getProject = () => {
@@ -729,27 +729,27 @@ test.serial("generateBundle: No bundleOptions, with taskUtil, UI5 Version >= 2",
 			getVersion: () => "2.0.0",
 			getSpecVersion() {
 				return {
-					lt: sinon.stub().withArgs("4.0").returns(false)
+					lt: sinon.stub().withArgs("4.0").returns(false),
 				};
-			}
+			},
 		};
 	};
 
 	const resources = [
-		{"fake": "resource"}
+		{fake: "resource"},
 	];
 
 	const filteredCombo = {
-		byGlob: sinon.stub().resolves(resources)
+		byGlob: sinon.stub().resolves(resources),
 	};
 	createFilterReaderStub.returns(filteredCombo);
 
 	moduleBundlerStub.resolves([
 		{
 			name: "my/app/customBundle.js",
-			bundle: {"fake": "bundle"},
-			sourceMap: {"fake": "sourceMap"}
-		}
+			bundle: {fake: "bundle"},
+			sourceMap: {fake: "sourceMap"},
+		},
 	]);
 
 	// bundleDefinition can be empty here as the moduleBundler is mocked
@@ -761,8 +761,8 @@ test.serial("generateBundle: No bundleOptions, with taskUtil, UI5 Version >= 2",
 		taskUtil,
 		options: {
 			projectName: "Test Application",
-			bundleDefinition
-		}
+			bundleDefinition,
+		},
 	});
 
 	t.is(moduleBundlerStub.callCount, 1, "moduleBundler should have been called once");
@@ -773,7 +773,7 @@ test.serial("generateBundle: No bundleOptions, with taskUtil, UI5 Version >= 2",
 			bundleOptions: undefined,
 			targetUi5CoreVersion: "2.0.0",
 		},
-		resources
+		resources,
 	}]);
 
 	t.is(combo.byGlob.callCount, 0,
@@ -797,7 +797,7 @@ test.serial("generateBundle: No bundleOptions, with taskUtil, UI5 Version >= 2",
 
 	t.is(taskUtil.clearTag.callCount, 1);
 	t.deepEqual(taskUtil.clearTag.getCall(0).args,
-		[{"fake": "sourceMap"}, taskUtil.STANDARD_TAGS.OmitFromBuildResult],
+		[{fake: "sourceMap"}, taskUtil.STANDARD_TAGS.OmitFromBuildResult],
 		"OmitFromBuildResult tag should be cleared on source map resource");
 
 	t.is(ReaderCollectionPrioritizedStub.callCount, 1,

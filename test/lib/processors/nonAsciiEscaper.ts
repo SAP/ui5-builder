@@ -10,10 +10,10 @@ import Resource from "@ui5/fs/Resource";
  * @param {string} encoding character encoding used, e.g. utf8, latin1, ..
  * @returns {Promise<string|undefined>} escaped string if non-ascii characters present, <code>undefined</code> otherwise
  */
-const escape = async function(input: string, options: object = {}, encoding: string = "utf8") {
+const escape = async function (input: string, options: object = {}, encoding = "utf8") {
 	const resource = new Resource({
 		path: "/my.properties",
-		buffer: Buffer.from(input, encoding)
+		buffer: Buffer.from(input, encoding),
 	});
 	return nonAsciiEscaper({resources: [resource], options});
 };
@@ -24,7 +24,7 @@ test("Escape characters (ISO-8859-1)", async (t) => {
 	const input = `Viele Grüße`;
 	const expected = `Viele Gr\\u00fc\\u00dfe`;
 	const [resource] = await escape(input, {
-		encoding: "latin1" // escape encoding
+		encoding: "latin1", // escape encoding
 	}, "latin1"); // resource encoding
 	t.deepEqual(await resource.getString(), expected, "Correct file content should be set");
 });
@@ -35,7 +35,7 @@ test("Escape characters (UTF-8, explicit parameter)", async (t) => {
 	const input = `These are 人物 characters`;
 	const expected = "These are \\u4eba\\u7269 characters";
 	const [resource] = await escape(input, {
-		encoding: "utf8" // escape encoding
+		encoding: "utf8", // escape encoding
 	}, "utf8"); // resource encoding
 	t.deepEqual(await resource.getString(), expected, "Correct file content should be set");
 });
@@ -86,7 +86,6 @@ test("Replace constructed characters", async (t) => {
 	t.deepEqual(await resource.getString(), expected, "Correct file content should be set");
 });
 
-
 test("Replace multiple times same character", async (t) => {
 	t.plan(1);
 
@@ -113,13 +112,12 @@ test("Invalid encoding", async (t) => {
 	t.is(error.message, "Unknown encoding: asd");
 });
 
-
 test("getEncodingFromAlias", (t) => {
 	t.is(nonAsciiEscaper.getEncodingFromAlias("UTF-8"), "utf8");
 });
 
 test("getEncodingFromAlias invalid", (t) => {
-	const error = t.throws(function() {
+	const error = t.throws(function () {
 		nonAsciiEscaper.getEncodingFromAlias("asd");
 	});
 	t.is(error.message, `Encoding "asd" is not supported. Only UTF-8, ISO-8859-1 are allowed values`);

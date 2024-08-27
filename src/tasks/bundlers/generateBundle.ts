@@ -4,7 +4,6 @@ import createModuleNameMapping from "./utils/createModuleNameMapping.js";
 import ReaderCollectionPrioritized from "@ui5/fs/ReaderCollectionPrioritized";
 
 /**
- * @public
  * @module @ui5/builder/tasks/bundlers/generateBundle
  */
 
@@ -12,7 +11,6 @@ import ReaderCollectionPrioritized from "@ui5/fs/ReaderCollectionPrioritized";
 /**
  * Generates a bundle based on the given bundle definition
  *
- * @public
  * @function default
  * @static
  *
@@ -29,10 +27,21 @@ import ReaderCollectionPrioritized from "@ui5/fs/ReaderCollectionPrioritized";
  * @returns {Promise} Promise resolving with <code>undefined</code> once data has been written
  */
 /* eslint-enable max-len */
-export default async function({ workspace, dependencies, taskUtil, options: { projectName, bundleDefinition, bundleOptions } }: object) {
+/**
+ *
+ * @param root0
+ * @param root0.workspace
+ * @param root0.dependencies
+ * @param root0.taskUtil
+ * @param root0.options
+ * @param root0.options.projectName
+ * @param root0.options.bundleDefinition
+ * @param root0.options.bundleOptions
+ */
+export default async function ({workspace, dependencies, taskUtil, options: {projectName, bundleDefinition, bundleOptions}}: object) {
 	let combo = new ReaderCollectionPrioritized({
 		name: `generateBundle - prioritize workspace over dependencies: ${projectName}`,
-		readers: [workspace, dependencies]
+		readers: [workspace, dependencies],
 	});
 
 	const optimize = !bundleOptions || bundleOptions.optimize !== false;
@@ -85,12 +94,13 @@ export default async function({ workspace, dependencies, taskUtil, options: { pr
 
 		// Omit -dbg files for optimize bundles and vice versa
 		const filterTag = optimize ?
-			taskUtil.STANDARD_TAGS.IsDebugVariant : taskUtil.STANDARD_TAGS.HasDebugVariant;
+			taskUtil.STANDARD_TAGS.IsDebugVariant :
+			taskUtil.STANDARD_TAGS.HasDebugVariant;
 		combo = taskUtil.resourceFactory.createFilterReader({
 			reader: combo,
-			callback: function(resource) {
+			callback: function (resource) {
 				return !taskUtil.getTag(resource, filterTag);
-			}
+			},
 		});
 	}
 	const coreVersion = taskUtil?.getProject("sap.ui.core")?.getVersion();
@@ -99,7 +109,7 @@ export default async function({ workspace, dependencies, taskUtil, options: { pr
 		const options = {
 			bundleDefinition: applyDefaultsToBundleDefinition(bundleDefinition, taskUtil),
 			bundleOptions,
-			allowStringBundling
+			allowStringBundling,
 		};
 		if (!optimize && taskUtil) {
 			options.moduleNameMapping = createModuleNameMapping({resources, taskUtil});

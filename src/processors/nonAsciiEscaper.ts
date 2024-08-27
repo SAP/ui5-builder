@@ -1,7 +1,6 @@
 import escapeUnicode from "escape-unicode";
 
 /**
- * @public
  * @module @ui5/builder/processors/nonAsciiEscaper
  */
 
@@ -9,13 +8,12 @@ import escapeUnicode from "escape-unicode";
  * @see https://en.wikipedia.org/wiki/ASCII
  * ascii contains 128 characters.
  * its char codes reach from 0 to 127.
- * @type {number}
  */
 const CHAR_CODE_OF_LAST_ASCII_CHARACTER = 127;
 
 // use memoization for escapeUnicode function for performance
 const memoizeEscapeUnicodeMap = Object.create(null);
-const memoizeEscapeUnicode = function(sChar) {
+const memoizeEscapeUnicode = function (sChar) {
 	if (memoizeEscapeUnicodeMap[sChar]) {
 		return memoizeEscapeUnicodeMap[sChar];
 	}
@@ -30,11 +28,11 @@ const memoizeEscapeUnicode = function(sChar) {
  * @see https://tools.ietf.org/html/rfc5137#section-6.1
  *
  *
- * @param {string} string input string with non ascii characters, e.g. L♥VE
- * @returns {{string: (string), modified: boolean}} output string with all non ascii
+ * @param string input string with non ascii characters, e.g. L♥VE
+ * @returns output string with all non ascii
  * characters being escaped by unicode sequence, e.g. L\u2665VE
  */
-const escapeNonAscii = function(string: string) {
+const escapeNonAscii = function (string: string) {
 	let result = "";
 	let modified = false;
 	for (let i = 0; i < string.length; i++) {
@@ -50,7 +48,7 @@ const escapeNonAscii = function(string: string) {
 	}
 	return {
 		modified,
-		string: result
+		string: result,
 	};
 };
 
@@ -62,21 +60,21 @@ const escapeNonAscii = function(string: string) {
  * nonAsciiEscaper({resources, options: {encoding}});
  *
  *
- * @public
- * @function default
- * @static
- *
- * @param {object} parameters Parameters
- * @param {@ui5/fs/Resource[]} parameters.resources List of resources to be processed
- * @param {object} [parameters.options] Options
- * @param {string} [parameters.options.encoding="utf8"] resource file encoding
+ * @param parameters Parameters
+ * @param parameters.resources List of resources to be processed
+ * @param [parameters.options] Options
+ * @param [parameters.options.encoding] resource file encoding
  *   ({@link https://nodejs.org/api/buffer.html#buffer_buffers_and_character_encodings Node.js character encodings}).
  *   Use #getEncodingFromAlias to get the encoding string
- * @returns {Promise<@ui5/fs/Resource[]>} Promise resolving with the processed resources
+ * @returns Promise resolving with the processed resources
  */
-async function nonAsciiEscaper({ resources, options: { encoding } }: object) {
+async function nonAsciiEscaper({resources, options: {encoding}}: object) {
 	encoding = encoding || "utf8";
 
+	/**
+	 *
+	 * @param resource
+	 */
 	async function processResource(resource) {
 		const resourceString = (await resource.getBuffer()).toString(encoding);
 		const escaped = escapeNonAscii(resourceString);
@@ -100,18 +98,14 @@ const encodingMap = {
  * specific encoding name such as "utf8" or "latin1". Simplifies usage of nonAsciiEscaper encoding option
  * such that it can be used standalone without the respective task (e.g. in Splitter, Bundler and related projects).
  *
- * @public
- * @function getEncodingFromAlias
  * @alias @ui5/builder/processors/nonAsciiEscaper․getEncodingFromAlias
- * @static
- *
- * @param {string} encoding encoding labels: "UTF-8" and "ISO-8859-1"
- * @returns {string} node.js character encoding string, e.g. utf8 and latin1
+ * @param encoding encoding labels: "UTF-8" and "ISO-8859-1"
+ * @returns node.js character encoding string, e.g. utf8 and latin1
  */
-nonAsciiEscaper.getEncodingFromAlias = function(encoding: string) {
+nonAsciiEscaper.getEncodingFromAlias = function (encoding: string) {
 	if (!encodingMap[encoding]) {
 		throw new Error(
-			`Encoding "${encoding}" is not supported. Only ${Object.keys(encodingMap).join(", ")} are allowed values` );
+			`Encoding "${encoding}" is not supported. Only ${Object.keys(encodingMap).join(", ")} are allowed values`);
 	}
 	return encodingMap[encoding];
 };

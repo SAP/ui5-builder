@@ -1,4 +1,3 @@
-
 import {promisify} from "node:util";
 import fs from "graceful-fs";
 const readFile = promisify(fs.readFile);
@@ -12,14 +11,14 @@ class Resource {
 	}
 
 	/**
-	 * @returns {Promise<Buffer>} Buffer of file
+	 * @returns Buffer of file
 	 */
 	async buffer() {
 		return readFile(this.file);
 	}
 
 	/**
-	 * @returns {Promise<string>} String of the file content
+	 * @returns String of the file content
 	 */
 	async string() {
 		return (await this.buffer()).toString();

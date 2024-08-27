@@ -57,7 +57,6 @@ test("isIdentifier (identifier)", (t) => {
 
 	t.false(ASTUtils.isIdentifier(literal), "A literal is not an identifier");
 
-
 	const identifier = parseJS("testValue47").body[0].expression;
 
 	t.true(ASTUtils.isIdentifier(identifier, ["*"], "asterisk matches any string"));
@@ -100,14 +99,12 @@ test("isIdentifier (arry pattern)", (t) => {
 	t.false(ASTUtils.isIdentifier(identifier, [], "value does not match"));
 });
 
-
 test("isNamedObject", (t) => {
 	const identifier = parseJS("testValue47").body[0].expression;
 	t.true(ASTUtils.isNamedObject(identifier, ["testValue47"], 1), "object with depths 1 is named testValue47");
 
 	t.false(ASTUtils.isNamedObject(identifier, ["testValue47"], 2), "object with depths 2 is not named testValue47");
 	t.false(ASTUtils.isNamedObject(identifier, ["testValue47"], 0), "object with depths 0 is not named testValue47");
-
 
 	const member = parseJS("x.testValue47").body[0].expression;
 	t.true(ASTUtils.isNamedObject(member, ["x", "testValue47"], 2),
@@ -119,7 +116,6 @@ test("isNamedObject", (t) => {
 test("isMethodCall", (t) => {
 	const identifier = parseJS("testValue47").body[0].expression;
 	t.false(ASTUtils.isMethodCall(identifier), "identifier testValue47 is not a method call");
-
 
 	const methodCall = parseJS("testValue47()").body[0].expression;
 	t.true(ASTUtils.isMethodCall(methodCall, ["testValue47"]), "testValue47 is a method call");
@@ -133,7 +129,7 @@ test("getStringArray", (t) => {
 		ASTUtils.getStringArray(array);
 	}, {
 		instanceOf: TypeError,
-		message: "array element is not a string literal: Literal"
+		message: "array element is not a string literal: Literal",
 	}, "array contains a number");
 
 	const stringArray = parseJS("['a', 'x']").body[0].expression;
@@ -151,7 +147,7 @@ test("getStringArray (template literal)", (t) => {
 		ASTUtils.getStringArray(array);
 	}, {
 		instanceOf: TypeError,
-		message: "array element is a template literal with expressions"
+		message: "array element is a template literal with expressions",
 	});
 
 	const stringArray = parseJS("[`a`, 'x']").body[0].expression;

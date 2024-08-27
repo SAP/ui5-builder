@@ -5,10 +5,10 @@ import DuplexCollection from "@ui5/fs/DuplexCollection";
 
 test("integration: escape non ascii characters (utf8, default)", async (t) => {
 	const reader = createAdapter({
-		virBasePath: "/"
+		virBasePath: "/",
 	});
 	const writer = createAdapter({
-		virBasePath: "/"
+		virBasePath: "/",
 	});
 	const workspace = new DuplexCollection({reader, writer});
 
@@ -28,7 +28,7 @@ city=Ort:`;
 
 	const resource = createResource({
 		path: "/i18n.properties",
-		string: content
+		string: content,
 	});
 
 	await workspace.write(resource);
@@ -36,8 +36,8 @@ city=Ort:`;
 		workspace,
 		options: {
 			encoding: "UTF-8",
-			pattern: "/**/*.properties"
-		}
+			pattern: "/**/*.properties",
+		},
 	});
 
 	const escapedResource = await writer.byPath("/i18n.properties");
@@ -51,10 +51,10 @@ city=Ort:`;
 
 test("integration: escape non ascii characters source encoding being (ISO-8859-1)", async (t) => {
 	const reader = createAdapter({
-		virBasePath: "/"
+		virBasePath: "/",
 	});
 	const writer = createAdapter({
-		virBasePath: "/"
+		virBasePath: "/",
 	});
 	const workspace = new DuplexCollection({reader, writer});
 
@@ -75,7 +75,7 @@ city=Ort:`;
 
 	const resource = createResource({
 		path: "/i18n.properties",
-		buffer: content
+		buffer: content,
 	});
 
 	await workspace.write(resource);
@@ -83,8 +83,8 @@ city=Ort:`;
 		workspace,
 		options: {
 			encoding: "ISO-8859-1",
-			pattern: "/**/*.properties"
-		}
+			pattern: "/**/*.properties",
+		},
 	});
 
 	const escapedResource = await writer.byPath("/i18n.properties");
@@ -98,10 +98,10 @@ city=Ort:`;
 
 test("integration: escape non ascii characters source encoding being empty", async (t) => {
 	const reader = createAdapter({
-		virBasePath: "/"
+		virBasePath: "/",
 	});
 	const writer = createAdapter({
-		virBasePath: "/"
+		virBasePath: "/",
 	});
 	const workspace = new DuplexCollection({reader, writer});
 
@@ -109,18 +109,18 @@ test("integration: escape non ascii characters source encoding being empty", asy
 		workspace,
 		options: {
 			encoding: "",
-			pattern: "/**/*.properties"
-		}
+			pattern: "/**/*.properties",
+		},
 	}));
 	return t.is(error.message, "[escapeNonAsciiCharacters] Mandatory option 'encoding' not provided");
 });
 
 test("integration: escape non ascii characters source encoding being UTF-16", async (t) => {
 	const reader = createAdapter({
-		virBasePath: "/"
+		virBasePath: "/",
 	});
 	const writer = createAdapter({
-		virBasePath: "/"
+		virBasePath: "/",
 	});
 	const workspace = new DuplexCollection({reader, writer});
 
@@ -128,8 +128,8 @@ test("integration: escape non ascii characters source encoding being UTF-16", as
 		workspace,
 		options: {
 			encoding: "utf16le",
-			pattern: "/**/*.properties"
-		}
+			pattern: "/**/*.properties",
+		},
 	}));
 	return t.is(error.message, `Encoding "utf16le" is not supported. Only UTF-8, ISO-8859-1 are allowed values`);
 });

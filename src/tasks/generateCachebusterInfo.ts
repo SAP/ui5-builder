@@ -4,14 +4,21 @@ import {getLogger} from "@ui5/logger";
 const log = getLogger("builder:tasks:generateCachebusterInfo");
 
 /**
- * @public
  * @module @ui5/builder/tasks/generateCachebusterInfo
  */
 
+/**
+ *
+ * @param resource
+ */
 async function signByTime(resource) {
 	return resource.getStatInfo().mtime.getTime();
 }
 
+/**
+ *
+ * @param resource
+ */
 async function signByHash(resource) {
 	const hasher = crypto.createHash("sha1");
 	const buffer = await resource.getBuffer();
@@ -20,17 +27,21 @@ async function signByHash(resource) {
 	return hasher.digest("hex");
 }
 
+/**
+ *
+ * @param type
+ */
 function getSigner(type) {
 	type = type || "time";
 
 	switch (type) {
-	case "time":
-		return signByTime;
-	case "hash":
-		return signByHash;
+		case "time":
+			return signByTime;
+		case "hash":
+			return signByHash;
 
-	default:
-		throw new Error(`Invalid signature type: '${type}'. Valid ones are: 'time' or 'hash'`);
+		default:
+			throw new Error(`Invalid signature type: '${type}'. Valid ones are: 'time' or 'hash'`);
 	}
 }
 
@@ -38,18 +49,14 @@ function getSigner(type) {
 /**
  * Task to generate the application cachebuster info file.
  *
- * @public
- * @function default
- * @static
- *
- * @param {object} parameters Parameters
- * @param {@ui5/fs/DuplexCollection} parameters.workspace DuplexCollection to read and write files
- * @param {object} parameters.options Options
- * @param {string} parameters.options.projectNamespace Namespace of the application
- * @param {string} [parameters.options.signatureType='time'] Type of signature to be used ('time' or 'hash')
- * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
+ * @param parameters Parameters
+ * @param parameters.workspace DuplexCollection to read and write files
+ * @param parameters.options Options
+ * @param parameters.options.projectNamespace Namespace of the application
+ * @param [parameters.options.signatureType] Type of signature to be used ('time' or 'hash')
+ * @returns Promise resolving with <code>undefined</code> once data has been written
  */
-export default function({ workspace, options }: object) {
+export default function ({workspace, options}: object) {
 	const {signatureType} = options;
 	const namespace = options.projectNamespace;
 
@@ -72,7 +79,7 @@ export default function({ workspace, options }: object) {
 			}));
 			const cachebusterInfoResource = createResource({
 				path: `/resources/${namespace}/sap-ui-cachebuster-info.json`,
-				string: JSON.stringify(cachebusterInfo, null, 2)
+				string: JSON.stringify(cachebusterInfo, null, 2),
 			});
 			return workspace.write(cachebusterInfoResource);
 		});

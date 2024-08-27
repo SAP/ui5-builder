@@ -1,4 +1,3 @@
-
 import {Syntax} from "../utils/parseUtils.js";
 import SapUiDefine from "../calls/SapUiDefine.js";
 import {getValue, isMethodCall, getStringValue} from "../utils/ASTUtils.js";
@@ -12,13 +11,13 @@ const CALL_SAP_UI_DEFINE = ["sap", "ui", "define"];
 class XMLCompositeAnalyzer {
 	analyze(ast, moduleName, info) {
 		let fragmentName;
-		if ( ast.body.length > 0 && ast.body[0].type === Syntax.ExpressionStatement &&
-				(isMethodCall(ast.body[0].expression, CALL_SAP_UI_DEFINE) ||
-				isMethodCall(ast.body[0].expression, CALL_DEFINE)) ) {
+		if (ast.body.length > 0 && ast.body[0].type === Syntax.ExpressionStatement &&
+			(isMethodCall(ast.body[0].expression, CALL_SAP_UI_DEFINE) ||
+				isMethodCall(ast.body[0].expression, CALL_DEFINE))) {
 			const defineCall = new SapUiDefine(ast.body[0].expression, moduleName);
 			const XMLC = defineCall.findImportName("sap/ui/core/XMLComposite.js");
 			// console.log("local name for XMLComposite: %s", XMLC);
-			if ( XMLC && defineCall.factory ) {
+			if (XMLC && defineCall.factory) {
 				if (defineCall.factory.type === Syntax.ArrowFunctionExpression &&
 					defineCall.factory.expression === true) {
 					fragmentName = this._checkForXMLCClassDefinition(XMLC, defineCall.factory.body);
@@ -30,7 +29,7 @@ class XMLCompositeAnalyzer {
 							});
 						} else if (
 							stmt.type === Syntax.ReturnStatement &&
-							( stmt?.argument?.type === Syntax.CallExpression && stmt.argument.arguments?.length > 1 &&
+							(stmt?.argument?.type === Syntax.CallExpression && stmt.argument.arguments?.length > 1 &&
 								stmt.argument.arguments[1].type === Syntax.ObjectExpression)) {
 							fragmentName =
 								this._checkForXMLCClassDefinition(XMLC, stmt.argument) || fragmentName;
@@ -52,13 +51,13 @@ class XMLCompositeAnalyzer {
 
 	_checkForXMLCClassDefinition(XMLC, stmt) {
 		let fragmentName;
-		if ( isMethodCall(stmt, [XMLC, "extend"]) ) {
+		if (isMethodCall(stmt, [XMLC, "extend"])) {
 			// log.verbose(stmt);
 			const value = getStringValue(stmt.arguments[0]);
-			if ( stmt.arguments.length > 0 && value ) {
+			if (stmt.arguments.length > 0 && value) {
 				fragmentName = value;
 			}
-			if ( stmt.arguments.length > 1 && stmt.arguments[1].type === Syntax.ObjectExpression ) {
+			if (stmt.arguments.length > 1 && stmt.arguments[1].type === Syntax.ObjectExpression) {
 				fragmentName = this._analyzeXMLCClassDefinition(stmt.arguments[1]) || fragmentName;
 			}
 		}
@@ -70,6 +69,5 @@ class XMLCompositeAnalyzer {
 		return getStringValue(getValue(clazz, ["fragment"]));
 	}
 }
-
 
 export default XMLCompositeAnalyzer;

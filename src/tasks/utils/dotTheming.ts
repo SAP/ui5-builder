@@ -1,3 +1,11 @@
+/**
+ *
+ * @param root0
+ * @param root0.resource
+ * @param root0.namespace
+ * @param root0.version
+ * @param root0.hasThemes
+ */
 export async function updateLibraryDotTheming({resource, namespace, version, hasThemes}) {
 	const dotTheming = JSON.parse(await resource.getString());
 

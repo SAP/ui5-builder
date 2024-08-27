@@ -8,7 +8,7 @@ function createWorkspace() {
 		project: {
 			getName: () => "test.lib",
 			getVersion: () => "2.0.0",
-		}
+		},
 	});
 }
 
@@ -22,13 +22,13 @@ async function assertCreatedManifest(t, oExpectedManifest) {
 		taskUtil: {
 			getProject: () => {
 				return {
-					getVersion: () => "1.0.0"
+					getVersion: () => "1.0.0",
 				};
-			}
+			},
 		},
 		options: {
-			projectName: "Test Lib"
-		}
+			projectName: "Test Lib",
+		},
 	});
 
 	const resource = await workspace.byPath("/resources/test/lib/manifest.json");
@@ -59,7 +59,7 @@ test("integration: Library without i18n bundle file", async (t) => {
 
 			</library>
 		`,
-		project: t.context.workspace._project
+		project: t.context.workspace._project,
 	}));
 
 	await assertCreatedManifest(t, {
@@ -87,7 +87,7 @@ test("integration: Library without i18n bundle file", async (t) => {
 			},
 			library: {
 				i18n: false,
-			}
+			},
 		},
 	});
 });
@@ -99,7 +99,7 @@ test("integration: Library with i18n bundle file (messagebundle.properties)", as
 	t.context.resources.push(createResource({
 		path: "/resources/test/lib/messagebundle.properties",
 		string: "KEY=VALUE",
-		project: t.context.workspace._project
+		project: t.context.workspace._project,
 	}));
 	t.context.resources.push(createResource({
 		path: "/resources/test/lib/.library",
@@ -116,7 +116,7 @@ test("integration: Library with i18n bundle file (messagebundle.properties)", as
 
 			</library>
 		`,
-		project: t.context.workspace._project
+		project: t.context.workspace._project,
 	}));
 
 	await assertCreatedManifest(t, {
@@ -146,9 +146,9 @@ test("integration: Library with i18n bundle file (messagebundle.properties)", as
 				i18n: {
 					bundleUrl: "messagebundle.properties",
 					supportedLocales: [""],
-					fallbackLocale: ""
-				}
-			}
+					fallbackLocale: "",
+				},
+			},
 		},
 	});
 });
@@ -182,11 +182,11 @@ test("integration: Library with i18n=true declared in .library", async (t) => {
 
 			</library>
 		`,
-		project: t.context.workspace._project
+		project: t.context.workspace._project,
 	}));
 	t.context.resources.push(createResource({
 		path: "/resources/test/lib/messagebundle.properties",
-		project: t.context.workspace._project
+		project: t.context.workspace._project,
 	}));
 
 	await assertCreatedManifest(t, {
@@ -216,9 +216,9 @@ test("integration: Library with i18n=true declared in .library", async (t) => {
 				i18n: {
 					bundleUrl: "messagebundle.properties",
 					supportedLocales: [""],
-					fallbackLocale: ""
-				}
-			}
+					fallbackLocale: "",
+				},
+			},
 		},
 	});
 });
@@ -252,17 +252,17 @@ test("integration: Library with i18n=true declared in .library and multiple loca
 
 			</library>
 		`,
-		project: t.context.workspace._project
+		project: t.context.workspace._project,
 	}));
 
 	t.context.resources.push(createResource({
 		path: "/resources/test/lib/messagebundle.properties",
-		project: t.context.workspace._project
+		project: t.context.workspace._project,
 	}));
 
 	t.context.resources.push(createResource({
 		path: "/resources/test/lib/messagebundle_en.properties",
-		project: t.context.workspace._project
+		project: t.context.workspace._project,
 	}));
 
 	await assertCreatedManifest(t, {
@@ -291,9 +291,9 @@ test("integration: Library with i18n=true declared in .library and multiple loca
 			library: {
 				i18n: {
 					bundleUrl: "messagebundle.properties",
-					supportedLocales: ["", "en"]
-				}
-			}
+					supportedLocales: ["", "en"],
+				},
+			},
 		},
 	});
 });
@@ -327,12 +327,12 @@ test("integration: Library with i18n=true declared in .library and single locale
 
 			</library>
 		`,
-		project: t.context.workspace._project
+		project: t.context.workspace._project,
 	}));
 
 	t.context.resources.push(createResource({
 		path: "/resources/test/lib/messagebundle_de.properties",
-		project: t.context.workspace._project
+		project: t.context.workspace._project,
 	}));
 
 	await assertCreatedManifest(t, {
@@ -362,9 +362,9 @@ test("integration: Library with i18n=true declared in .library and single locale
 				i18n: {
 					bundleUrl: "messagebundle.properties",
 					supportedLocales: ["de"],
-					fallbackLocale: "de"
-				}
-			}
+					fallbackLocale: "de",
+				},
+			},
 		},
 	});
 });
@@ -398,7 +398,7 @@ test("integration: Library with i18n=false declared in .library", async (t) => {
 
 			</library>
 		`,
-		project: t.context.workspace._project
+		project: t.context.workspace._project,
 	}));
 
 	await assertCreatedManifest(t, {
@@ -425,8 +425,8 @@ test("integration: Library with i18n=false declared in .library", async (t) => {
 				minUI5Version: "1.0",
 			},
 			library: {
-				i18n: false
-			}
+				i18n: false,
+			},
 		},
 	});
 });
@@ -460,12 +460,12 @@ test("integration: Library with i18n=foo.properties declared in .library", async
 
 			</library>
 		`,
-		project: t.context.workspace._project
+		project: t.context.workspace._project,
 	}));
 
 	t.context.resources.push(createResource({
 		path: "/resources/test/lib/foo.properties",
-		project: t.context.workspace._project
+		project: t.context.workspace._project,
 	}));
 	await assertCreatedManifest(t, {
 		"_version": "1.21.0",
@@ -494,9 +494,9 @@ test("integration: Library with i18n=foo.properties declared in .library", async
 				i18n: {
 					bundleUrl: "foo.properties",
 					supportedLocales: [""],
-					fallbackLocale: ""
-				}
-			}
+					fallbackLocale: "",
+				},
+			},
 		},
 	});
 });
@@ -530,7 +530,7 @@ test("integration: Library with css=true declared in .library", async (t) => {
 
 			</library>
 		`,
-		project: t.context.workspace._project
+		project: t.context.workspace._project,
 	}));
 
 	await assertCreatedManifest(t, {
@@ -557,8 +557,8 @@ test("integration: Library with css=true declared in .library", async (t) => {
 				minUI5Version: "1.0",
 			},
 			library: {
-				i18n: false
-			}
+				i18n: false,
+			},
 		},
 	});
 });
@@ -592,7 +592,7 @@ test("integration: Library with css=false declared in .library", async (t) => {
 
 			</library>
 		`,
-		project: t.context.workspace._project
+		project: t.context.workspace._project,
 	}));
 
 	await assertCreatedManifest(t, {
@@ -620,8 +620,8 @@ test("integration: Library with css=false declared in .library", async (t) => {
 			},
 			library: {
 				i18n: false,
-				css: false
-			}
+				css: false,
+			},
 		},
 	});
 });

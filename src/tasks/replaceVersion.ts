@@ -1,33 +1,28 @@
 import stringReplacer from "../processors/stringReplacer.js";
 
 /**
- * @public
  * @module @ui5/builder/tasks/replaceVersion
  */
 
 /**
  * Task to replace the version <code>${version}</code>.
  *
- * @public
- * @function default
- * @static
- *
- * @param {object} parameters Parameters
- * @param {@ui5/fs/DuplexCollection} parameters.workspace DuplexCollection to read and write files
- * @param {object} parameters.options Options
- * @param {string} parameters.options.pattern Pattern to locate the files to be processed
- * @param {string} parameters.options.version Replacement version
- * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
+ * @param parameters Parameters
+ * @param parameters.workspace DuplexCollection to read and write files
+ * @param parameters.options Options
+ * @param parameters.options.pattern Pattern to locate the files to be processed
+ * @param parameters.options.version Replacement version
+ * @returns Promise resolving with <code>undefined</code> once data has been written
  */
-export default function({ workspace, options: { pattern, version } }: object) {
+export default function ({workspace, options: {pattern, version}}: object) {
 	return workspace.byGlob(pattern)
 		.then((allResources) => {
 			return stringReplacer({
 				resources: allResources,
 				options: {
 					pattern: /\$\{(?:project\.)?version\}/g,
-					replacement: version
-				}
+					replacement: version,
+				},
 			});
 		})
 		.then((processedResources) => {

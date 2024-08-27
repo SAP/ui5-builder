@@ -23,7 +23,7 @@ test.beforeEach(async (t) => {
 	buildThemes = await esmock.p("../../../lib/tasks/buildThemes.js", {
 		"@ui5/fs/fsInterface": t.context.fsInterfaceStub,
 		"@ui5/fs/ReaderCollectionPrioritized": t.context.ReaderCollectionPrioritizedStub,
-		"../../../lib/processors/themeBuilder.js": t.context.themeBuilderStub
+		"../../../lib/processors/themeBuilder.js": t.context.themeBuilderStub,
 	});
 });
 
@@ -45,7 +45,7 @@ test.serial("buildThemes", async (t) => {
 				return [];
 			}
 		},
-		write: sinon.stub()
+		write: sinon.stub(),
 	};
 
 	const cssResource = {};
@@ -55,15 +55,15 @@ test.serial("buildThemes", async (t) => {
 	t.context.themeBuilderStub.returns([
 		cssResource,
 		cssRtlResource,
-		jsonParametersResource
+		jsonParametersResource,
 	]);
 
 	await buildThemes({
 		workspace,
 		options: {
 			projectName: "sap.ui.demo.app",
-			inputPattern: "/resources/test/library.source.less"
-		}
+			inputPattern: "/resources/test/library.source.less",
+		},
 	});
 
 	t.is(t.context.themeBuilderStub.callCount, 1,
@@ -74,8 +74,8 @@ test.serial("buildThemes", async (t) => {
 		fs: {},
 		options: {
 			compress: true, // default
-			cssVariables: false // default
-		}
+			cssVariables: false, // default
+		},
 	}, "Processor should be called with expected arguments");
 
 	t.is(workspace.write.callCount, 3,
@@ -84,7 +84,6 @@ test.serial("buildThemes", async (t) => {
 	t.true(workspace.write.calledWithExactly(cssRtlResource));
 	t.true(workspace.write.calledWithExactly(jsonParametersResource));
 });
-
 
 test.serial("buildThemes (compress = false)", async (t) => {
 	t.plan(6);
@@ -99,7 +98,7 @@ test.serial("buildThemes (compress = false)", async (t) => {
 				return [];
 			}
 		},
-		write: sinon.stub()
+		write: sinon.stub(),
 	};
 
 	const cssResource = {};
@@ -109,7 +108,7 @@ test.serial("buildThemes (compress = false)", async (t) => {
 	t.context.themeBuilderStub.returns([
 		cssResource,
 		cssRtlResource,
-		jsonParametersResource
+		jsonParametersResource,
 	]);
 
 	await buildThemes({
@@ -117,8 +116,8 @@ test.serial("buildThemes (compress = false)", async (t) => {
 		options: {
 			projectName: "sap.ui.demo.app",
 			inputPattern: "/resources/test/library.source.less",
-			compress: false
-		}
+			compress: false,
+		},
 	});
 
 	t.is(t.context.themeBuilderStub.callCount, 1,
@@ -129,8 +128,8 @@ test.serial("buildThemes (compress = false)", async (t) => {
 		fs: {},
 		options: {
 			compress: false,
-			cssVariables: false
-		}
+			cssVariables: false,
+		},
 	}, "Processor should be called with expected arguments");
 
 	t.is(workspace.write.callCount, 3,
@@ -153,7 +152,7 @@ test.serial("buildThemes (cssVariables = true)", async (t) => {
 				return [];
 			}
 		},
-		write: sinon.stub()
+		write: sinon.stub(),
 	};
 
 	const cssResource = {};
@@ -171,7 +170,7 @@ test.serial("buildThemes (cssVariables = true)", async (t) => {
 		cssVariablesSourceResource,
 		cssVariablesResource,
 		cssSkeletonResource,
-		cssSkeletonRtlResource
+		cssSkeletonRtlResource,
 	]);
 
 	await buildThemes({
@@ -179,8 +178,8 @@ test.serial("buildThemes (cssVariables = true)", async (t) => {
 		options: {
 			projectName: "sap.ui.demo.app",
 			inputPattern: "/resources/test/library.source.less",
-			cssVariables: true
-		}
+			cssVariables: true,
+		},
 	});
 
 	t.is(t.context.themeBuilderStub.callCount, 1,
@@ -191,8 +190,8 @@ test.serial("buildThemes (cssVariables = true)", async (t) => {
 		fs: {},
 		options: {
 			compress: true,
-			cssVariables: true
-		}
+			cssVariables: true,
+		},
 	}, "Processor should be called with expected arguments");
 
 	t.is(workspace.write.callCount, 7,
@@ -211,46 +210,46 @@ test.serial("buildThemes (filtering libraries)", async (t) => {
 
 	const lessResources = {
 		"sap/ui/lib1/themes/theme1/library.source.less": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib1/themes/theme1/library.source.less")
+			getPath: sinon.stub().returns("/resources/sap/ui/lib1/themes/theme1/library.source.less"),
 		},
 		"sap/ui/lib2/themes/theme1/library.source.less": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib2/themes/theme1/library.source.less")
+			getPath: sinon.stub().returns("/resources/sap/ui/lib2/themes/theme1/library.source.less"),
 		},
 		"sap/ui/lib3/themes/theme1/library.source.less": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib3/themes/theme1/library.source.less")
-		}
+			getPath: sinon.stub().returns("/resources/sap/ui/lib3/themes/theme1/library.source.less"),
+		},
 	};
 
 	const dotLibraryResources = {
 		"sap/ui/lib1/.library": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib1/.library")
+			getPath: sinon.stub().returns("/resources/sap/ui/lib1/.library"),
 		},
 		"sap/ui/lib1/library.js": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib1/library.js")
+			getPath: sinon.stub().returns("/resources/sap/ui/lib1/library.js"),
 		},
 		"sap/ui/lib3/library.js": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib3/library.js")
-		}
+			getPath: sinon.stub().returns("/resources/sap/ui/lib3/library.js"),
+		},
 	};
 
 	const workspaceByGlob = sinon.stub();
 	const workspace = {
 		byGlob: workspaceByGlob,
-		write: sinon.stub()
+		write: sinon.stub(),
 	};
 
 	workspaceByGlob
 		.withArgs("/resources/**/themes/*/library.source.less").resolves([
 			lessResources["sap/ui/lib1/themes/theme1/library.source.less"],
 			lessResources["sap/ui/lib2/themes/theme1/library.source.less"],
-			lessResources["sap/ui/lib3/themes/theme1/library.source.less"]
+			lessResources["sap/ui/lib3/themes/theme1/library.source.less"],
 		]);
 
 	t.context.comboByGlob
 		.withArgs("/resources/**/(*.library|library.js)").resolves([
 			dotLibraryResources["sap/ui/lib1/.library"],
 			dotLibraryResources["sap/ui/lib1/library.js"],
-			dotLibraryResources["sap/ui/lib3/library.js"]
+			dotLibraryResources["sap/ui/lib3/library.js"],
 		]);
 
 	t.context.themeBuilderStub.returns([{}]);
@@ -260,8 +259,8 @@ test.serial("buildThemes (filtering libraries)", async (t) => {
 		options: {
 			projectName: "sap.ui.test.lib1",
 			inputPattern: "/resources/**/themes/*/library.source.less",
-			librariesPattern: "/resources/**/(*.library|library.js)"
-		}
+			librariesPattern: "/resources/**/(*.library|library.js)",
+		},
 	});
 
 	t.is(t.context.themeBuilderStub.callCount, 1,
@@ -270,13 +269,13 @@ test.serial("buildThemes (filtering libraries)", async (t) => {
 	t.deepEqual(t.context.themeBuilderStub.getCall(0).args[0], {
 		resources: [
 			lessResources["sap/ui/lib1/themes/theme1/library.source.less"],
-			lessResources["sap/ui/lib3/themes/theme1/library.source.less"]
+			lessResources["sap/ui/lib3/themes/theme1/library.source.less"],
 		],
 		fs: {},
 		options: {
 			compress: true,
-			cssVariables: false
-		}
+			cssVariables: false,
+		},
 	}, "Processor should be called with expected arguments");
 
 	t.is(workspace.write.callCount, 1,
@@ -288,14 +287,14 @@ test.serial("buildThemes (filtering themes)", async (t) => {
 
 	const lessResources = {
 		"sap/ui/lib1/themes/theme1/library.source.less": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib1/themes/theme1/library.source.less")
+			getPath: sinon.stub().returns("/resources/sap/ui/lib1/themes/theme1/library.source.less"),
 		},
 		"sap/ui/lib1/themes/theme2/library.source.less": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib1/themes/theme2/library.source.less")
+			getPath: sinon.stub().returns("/resources/sap/ui/lib1/themes/theme2/library.source.less"),
 		},
 		"sap/ui/lib1/themes/theme3/library.source.less": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib1/themes/theme3/library.source.less")
-		}
+			getPath: sinon.stub().returns("/resources/sap/ui/lib1/themes/theme3/library.source.less"),
+		},
 	};
 
 	const baseThemes = {
@@ -303,33 +302,33 @@ test.serial("buildThemes (filtering themes)", async (t) => {
 			getPath: sinon.stub().returns("/resources/sap/ui/core/themes/theme1/"),
 			getStatInfo: () => {
 				return {isDirectory: () => true};
-			}
+			},
 		},
 		"sap/ui/core/themes/theme3/": {
 			getPath: sinon.stub().returns("/resources/sap/ui/core/themes/theme3/"),
 			getStatInfo: () => {
 				return {isDirectory: () => true};
-			}
-		}
+			},
+		},
 	};
 
 	const workspaceByGlob = sinon.stub();
 	const workspace = {
 		byGlob: workspaceByGlob,
-		write: sinon.stub()
+		write: sinon.stub(),
 	};
 
 	workspaceByGlob
 		.withArgs("/resources/**/themes/*/library.source.less").resolves([
 			lessResources["sap/ui/lib1/themes/theme1/library.source.less"],
 			lessResources["sap/ui/lib1/themes/theme2/library.source.less"],
-			lessResources["sap/ui/lib1/themes/theme3/library.source.less"]
+			lessResources["sap/ui/lib1/themes/theme3/library.source.less"],
 		]);
 
 	t.context.comboByGlob
 		.withArgs("/resources/sap/ui/core/themes/*", {nodir: false}).resolves([
 			baseThemes["sap/ui/core/themes/theme1/"],
-			baseThemes["sap/ui/core/themes/theme3/"]
+			baseThemes["sap/ui/core/themes/theme3/"],
 		]);
 
 	t.context.themeBuilderStub.returns([{}]);
@@ -339,8 +338,8 @@ test.serial("buildThemes (filtering themes)", async (t) => {
 		options: {
 			projectName: "sap.ui.test.lib1",
 			inputPattern: "/resources/**/themes/*/library.source.less",
-			themesPattern: "/resources/sap/ui/core/themes/*"
-		}
+			themesPattern: "/resources/sap/ui/core/themes/*",
+		},
 	});
 
 	t.is(t.context.themeBuilderStub.callCount, 1,
@@ -349,13 +348,13 @@ test.serial("buildThemes (filtering themes)", async (t) => {
 	t.deepEqual(t.context.themeBuilderStub.getCall(0).args[0], {
 		resources: [
 			lessResources["sap/ui/lib1/themes/theme1/library.source.less"],
-			lessResources["sap/ui/lib1/themes/theme3/library.source.less"]
+			lessResources["sap/ui/lib1/themes/theme3/library.source.less"],
 		],
 		fs: {},
 		options: {
 			compress: true,
-			cssVariables: false
-		}
+			cssVariables: false,
+		},
 	}, "Processor should be called with expected arguments");
 
 	t.is(workspace.write.callCount, 1,
@@ -367,44 +366,44 @@ test.serial("buildThemes (filtering libraries + themes)", async (t) => {
 
 	const lessResources = {
 		"sap/ui/lib1/themes/theme1/library.source.less": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib1/themes/theme1/library.source.less")
+			getPath: sinon.stub().returns("/resources/sap/ui/lib1/themes/theme1/library.source.less"),
 		},
 		"sap/ui/lib1/themes/theme2/library.source.less": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib1/themes/theme2/library.source.less")
+			getPath: sinon.stub().returns("/resources/sap/ui/lib1/themes/theme2/library.source.less"),
 		},
 		"sap/ui/lib1/themes/theme3/library.source.less": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib1/themes/theme3/library.source.less")
+			getPath: sinon.stub().returns("/resources/sap/ui/lib1/themes/theme3/library.source.less"),
 		},
 		"sap/ui/lib2/themes/theme1/library.source.less": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib2/themes/theme1/library.source.less")
+			getPath: sinon.stub().returns("/resources/sap/ui/lib2/themes/theme1/library.source.less"),
 		},
 		"sap/ui/lib2/themes/theme2/library.source.less": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib2/themes/theme2/library.source.less")
+			getPath: sinon.stub().returns("/resources/sap/ui/lib2/themes/theme2/library.source.less"),
 		},
 		"sap/ui/lib2/themes/theme3/library.source.less": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib2/themes/theme3/library.source.less")
+			getPath: sinon.stub().returns("/resources/sap/ui/lib2/themes/theme3/library.source.less"),
 		},
 		"sap/ui/lib3/themes/theme1/library.source.less": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib3/themes/theme1/library.source.less")
+			getPath: sinon.stub().returns("/resources/sap/ui/lib3/themes/theme1/library.source.less"),
 		},
 		"sap/ui/lib3/themes/theme2/library.source.less": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib3/themes/theme2/library.source.less")
+			getPath: sinon.stub().returns("/resources/sap/ui/lib3/themes/theme2/library.source.less"),
 		},
 		"sap/ui/lib3/themes/theme3/library.source.less": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib3/themes/theme3/library.source.less")
-		}
+			getPath: sinon.stub().returns("/resources/sap/ui/lib3/themes/theme3/library.source.less"),
+		},
 	};
 
 	const dotLibraryResources = {
 		"sap/ui/lib1/.library": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib1/.library")
+			getPath: sinon.stub().returns("/resources/sap/ui/lib1/.library"),
 		},
 		"sap/ui/lib1/library.js": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib1/library.js")
+			getPath: sinon.stub().returns("/resources/sap/ui/lib1/library.js"),
 		},
 		"sap/ui/lib3/library.js": {
-			getPath: sinon.stub().returns("/resources/sap/ui/lib3/library.js")
-		}
+			getPath: sinon.stub().returns("/resources/sap/ui/lib3/library.js"),
+		},
 	};
 
 	const baseThemes = {
@@ -412,20 +411,20 @@ test.serial("buildThemes (filtering libraries + themes)", async (t) => {
 			getPath: sinon.stub().returns("/resources/sap/ui/core/themes/theme1/"),
 			getStatInfo: () => {
 				return {isDirectory: () => true};
-			}
+			},
 		},
 		"sap/ui/core/themes/theme3/": {
 			getPath: sinon.stub().returns("/resources/sap/ui/core/themes/theme3/"),
 			getStatInfo: () => {
 				return {isDirectory: () => true};
-			}
-		}
+			},
+		},
 	};
 
 	const workspaceByGlob = sinon.stub();
 	const workspace = {
 		byGlob: workspaceByGlob,
-		write: sinon.stub()
+		write: sinon.stub(),
 	};
 
 	workspaceByGlob
@@ -438,18 +437,18 @@ test.serial("buildThemes (filtering libraries + themes)", async (t) => {
 			lessResources["sap/ui/lib2/themes/theme3/library.source.less"],
 			lessResources["sap/ui/lib3/themes/theme1/library.source.less"],
 			lessResources["sap/ui/lib3/themes/theme2/library.source.less"],
-			lessResources["sap/ui/lib3/themes/theme3/library.source.less"]
+			lessResources["sap/ui/lib3/themes/theme3/library.source.less"],
 		]);
 
 	t.context.comboByGlob
 		.withArgs("/resources/**/(*.library|library.js)").resolves([
 			dotLibraryResources["sap/ui/lib1/.library"],
 			dotLibraryResources["sap/ui/lib1/library.js"],
-			dotLibraryResources["sap/ui/lib3/library.js"]
+			dotLibraryResources["sap/ui/lib3/library.js"],
 		])
 		.withArgs("/resources/sap/ui/core/themes/*", {nodir: false}).resolves([
 			baseThemes["sap/ui/core/themes/theme1/"],
-			baseThemes["sap/ui/core/themes/theme3/"]
+			baseThemes["sap/ui/core/themes/theme3/"],
 		]);
 
 	t.context.themeBuilderStub.returns([{}]);
@@ -460,8 +459,8 @@ test.serial("buildThemes (filtering libraries + themes)", async (t) => {
 			projectName: "sap.ui.test.lib1",
 			inputPattern: "/resources/**/themes/*/library.source.less",
 			librariesPattern: "/resources/**/(*.library|library.js)",
-			themesPattern: "/resources/sap/ui/core/themes/*"
-		}
+			themesPattern: "/resources/sap/ui/core/themes/*",
+		},
 	});
 
 	t.is(t.context.themeBuilderStub.callCount, 1,
@@ -472,13 +471,13 @@ test.serial("buildThemes (filtering libraries + themes)", async (t) => {
 			lessResources["sap/ui/lib1/themes/theme1/library.source.less"],
 			lessResources["sap/ui/lib1/themes/theme3/library.source.less"],
 			lessResources["sap/ui/lib3/themes/theme1/library.source.less"],
-			lessResources["sap/ui/lib3/themes/theme3/library.source.less"]
+			lessResources["sap/ui/lib3/themes/theme3/library.source.less"],
 		],
 		fs: {},
 		options: {
 			compress: true,
-			cssVariables: false
-		}
+			cssVariables: false,
+		},
 	}, "Processor should be called with expected arguments");
 
 	t.is(workspace.write.callCount, 1,
@@ -489,11 +488,11 @@ test.serial("buildThemes (useWorkers = true)", async (t) => {
 	t.plan(4);
 
 	const taskUtilMock = {
-		registerCleanupTask: sinon.stub()
+		registerCleanupTask: sinon.stub(),
 	};
 	const lessResource = {
 		getPath: () => "/resources/test/library.source.less",
-		getBuffer: () => Buffer.from("/** test comment */")
+		getBuffer: () => Buffer.from("/** test comment */"),
 	};
 
 	const workspace = {
@@ -504,7 +503,7 @@ test.serial("buildThemes (useWorkers = true)", async (t) => {
 				return [];
 			}
 		},
-		write: sinon.stub()
+		write: sinon.stub(),
 	};
 
 	const cssResource = {path: "/cssResource", buffer: new Uint8Array(2)};
@@ -529,7 +528,7 @@ test.serial("buildThemes (useWorkers = true)", async (t) => {
 	t.context.themeBuilderStub.returns([
 		cssResource,
 		cssRtlResource,
-		jsonParametersResource
+		jsonParametersResource,
 	]);
 
 	await buildThemes({
@@ -537,8 +536,8 @@ test.serial("buildThemes (useWorkers = true)", async (t) => {
 		taskUtil: taskUtilMock,
 		options: {
 			projectName: "sap.ui.demo.app",
-			inputPattern: "/resources/test/library.source.less"
-		}
+			inputPattern: "/resources/test/library.source.less",
+		},
 	});
 
 	const transferredResources = deserializeResources([cssResource, cssRtlResource, jsonParametersResource]);
@@ -560,7 +559,7 @@ test.serial("buildThemes with taskUtil and unexpected termination of the workerp
 			// Terminate the workerpool in a timeout, so that
 			// the task is already in the queue, but not yet finished.
 			setTimeout(cb);
-		})
+		}),
 	};
 	const lessResources = [];
 
@@ -580,7 +579,7 @@ test.serial("buildThemes with taskUtil and unexpected termination of the workerp
 				return [];
 			}
 		},
-		write: sinon.stub()
+		write: sinon.stub(),
 	};
 
 	const cssResource = {path: "/cssResource", buffer: new Uint8Array(2)};
@@ -608,8 +607,8 @@ test.serial("buildThemes with taskUtil and unexpected termination of the workerp
 		taskUtil: taskUtilMock,
 		options: {
 			projectName: "sap.ui.demo.app",
-			inputPattern: "/resources/test*/themes/**/library.source.less"
-		}
+			inputPattern: "/resources/test*/themes/**/library.source.less",
+		},
 	});
 
 	t.pass("No exception from an earlier workerpool termination attempt.");

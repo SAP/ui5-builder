@@ -1,4 +1,3 @@
-
 import {getLogger} from "@ui5/logger";
 const log = getLogger("lbt:graph:topologicalSort");
 
@@ -7,14 +6,13 @@ const log = getLogger("lbt:graph:topologicalSort");
  * Manages outgoing references as well as incoming references (if required).
  *
  * @author Frank Weigel
- * @private
  */
 class GraphNode {
 	constructor(name, indegreeOnly) {
 		this.name = name;
 		// for the minSpanningSet, only the indegree is needed
 		this.outgoing = [];
-		if ( !indegreeOnly ) {
+		if (!indegreeOnly) {
 			this.incoming = [];
 		}
 		this.indegree = 0;
@@ -31,36 +29,35 @@ class GraphNode {
  * Creates a dependency graph from the given moduleNames.
  * Ignores modules not in the pool
  *
- * @param {ResourcePool} pool
- * @param {string[]} moduleNames
- * @param {boolean} indegreeOnly
- * @returns {Promise<object>}
- * @private
+ * @param pool
+ * @param moduleNames
+ * @param indegreeOnly
+ * @returns
  */
 function createDependencyGraph(pool: ResourcePool, moduleNames: string[], indegreeOnly: boolean) {
 	const graph = Object.create(null);
 
-	const promises = moduleNames.map( (moduleName) => {
-		return pool.getModuleInfo(moduleName).
-			then( (module) => {
+	const promises = moduleNames.map((moduleName) => {
+		return pool.getModuleInfo(moduleName)
+			.then((module) => {
 				let node = graph[moduleName];
-				if ( node == null ) {
+				if (node == null) {
 					node = new GraphNode(moduleName, indegreeOnly);
 					graph[moduleName] = node;
 				}
-				const p = module.dependencies.map( function(dep) {
-					if ( module.isConditionalDependency(dep) ) {
+				const p = module.dependencies.map(function (dep) {
+					if (module.isConditionalDependency(dep)) {
 						return;
 					}
-					return pool.getModuleInfo(dep).then( (depModule) => {
-						if ( moduleNames.indexOf(dep) >= 0 ) {
+					return pool.getModuleInfo(dep).then((depModule) => {
+						if (moduleNames.includes(dep)) {
 							let depNode = graph[dep];
-							if ( depNode == null ) {
+							if (depNode == null) {
 								depNode = new GraphNode(dep, indegreeOnly);
 								graph[dep] = depNode;
 							}
 							node.outgoing.push(depNode);
-							if ( indegreeOnly ) {
+							if (indegreeOnly) {
 								depNode.indegree++;
 							} else {
 								depNode.incoming.push(node);
@@ -74,21 +71,20 @@ function createDependencyGraph(pool: ResourcePool, moduleNames: string[], indegr
 			});
 	});
 
-	return Promise.all(promises).then(function() {
+	return Promise.all(promises).then(function () {
 		// if ( trace.isTrace() ) trace.trace("initial module dependency graph: %s", dumpGraph(graph, moduleNames));
 		return graph;
 	});
 }
 
 /**
- * @param {ResourcePool} pool Modulepool to retrieve module information from
- * @param {string[]} moduleNames list of modules to be sorted
- * @returns {Promise<Array>} sorted list of modules
- * @private
+ * @param pool Modulepool to retrieve module information from
+ * @param moduleNames list of modules to be sorted
+ * @returns sorted list of modules
  */
 function topologicalSort(pool: ResourcePool, moduleNames: string[]) {
-	return createDependencyGraph(pool, moduleNames, false).
-		then(function(graph) {
+	return createDependencyGraph(pool, moduleNames, false)
+		.then(function (graph) {
 		// now do a topological sort.
 			const sequence = [];
 			let i;
@@ -100,22 +96,22 @@ function topologicalSort(pool: ResourcePool, moduleNames: string[]) {
 				// invariant: the first 'l' items in moduleNames are still to be processed
 
 				// first loop over all remaining modules and emit those that don't have any more dependencies
-				for (i = 0, j = 0; i < l; i++ ) {
+				for (i = 0, j = 0; i < l; i++) {
 					const moduleName = moduleNames[i];
 					const node = graph[moduleName];
 
 					// modules that don't have any unsatisfied dependencies can be emitted
-					if ( node == null || node.outgoing.length === 0 ) {
+					if (node == null || node.outgoing.length === 0) {
 						// console.log("emitting %s", moduleName, node);
 
 						// add module to sequence
 						sequence.push(moduleName);
 
 						// remove outgoing dependency to current module from all modules that depend on it
-						if ( node != null ) {
-							node.incoming.forEach( function(dependent) {
+						if (node != null) {
+							node.incoming.forEach(function (dependent) {
 								const index = dependent.outgoing.indexOf(node);
-								if ( index >= 0 ) {
+								if (index >= 0) {
 									dependent.outgoing.splice(index, 1);
 								// console.log("removing outgoing %s in %s", node.name, dependent.name);
 								} else {
@@ -170,14 +166,14 @@ function topologicalSort(pool: ResourcePool, moduleNames: string[]) {
 				}
 
 			} */
-			} while ( l && l < i ); // continue as long as there are remaining items and as long as we made progress
+			} while (l && l < i); // continue as long as there are remaining items and as long as we made progress
 
-			if ( l > 0 ) {
+			if (l > 0) {
 				log.verbose(
 					Object.keys(graph)
 						.filter((name) => moduleNames.indexOf(name) < l)
 						.map((name) => graph[name].toString()));
-				throw new Error("Failed to resolve cyclic dependencies: " + moduleNames.slice(0, l).join(", ") );
+				throw new Error("Failed to resolve cyclic dependencies: " + moduleNames.slice(0, l).join(", "));
 				// NODE-TODO use new CycleFinder(graph).toString() for easier to understand output
 			}
 

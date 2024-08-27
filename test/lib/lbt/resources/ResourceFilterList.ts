@@ -3,7 +3,7 @@ import ResourceFilterList, {negateFilters} from "../../../../lib/lbt/resources/R
 
 test("single string matcher", (t) => {
 	const filterList = new ResourceFilterList([
-		"foo/bar.js"
+		"foo/bar.js",
 	]);
 
 	t.is(filterList.toString(), "foo/bar.js");
@@ -17,7 +17,7 @@ test("single string matcher", (t) => {
 test("multiple string matchers", (t) => {
 	const filterList = new ResourceFilterList([
 		"foo/bar.js",
-		"foo/baz.js"
+		"foo/baz.js",
 	]);
 
 	t.is(filterList.toString(), "foo/bar.js,foo/baz.js");
@@ -27,7 +27,7 @@ test("multiple string matchers", (t) => {
 });
 
 test("single prefix pattern + shortcuts", (t) => {
-	["foo/**/*", "foo/", "foo/**/"].forEach( (pattern) => {
+	["foo/**/*", "foo/", "foo/**/"].forEach((pattern) => {
 		const filterList = new ResourceFilterList([pattern]);
 
 		t.is(filterList.toString(), pattern);
@@ -46,7 +46,7 @@ test("single prefix pattern + shortcuts", (t) => {
 });
 
 test("'any' pattern + shortcuts", (t) => {
-	["**/*", "**/"].forEach( (pattern) => {
+	["**/*", "**/"].forEach((pattern) => {
 		const filterList = new ResourceFilterList([pattern]);
 
 		t.is(filterList.toString(), pattern);
@@ -67,7 +67,7 @@ test("'any' pattern + shortcuts", (t) => {
 
 test("single infix pattern", (t) => {
 	const filterList = new ResourceFilterList([
-		"foo/**/bar.js"
+		"foo/**/bar.js",
 	]);
 
 	t.is(filterList.toString(), "foo/**/bar.js");
@@ -79,7 +79,7 @@ test("single infix pattern", (t) => {
 
 test("single suffix pattern", (t) => {
 	const filterList = new ResourceFilterList([
-		"**/bar.js"
+		"**/bar.js",
 	]);
 
 	t.is(filterList.toString(), "**/bar.js");
@@ -94,7 +94,7 @@ test("single suffix pattern", (t) => {
 test("include and exclude", (t) => {
 	const filterList = new ResourceFilterList([
 		"foo/",
-		"!foo/bar/*.xml"
+		"!foo/bar/*.xml",
 	]);
 
 	t.is(filterList.toString(), "foo/,!foo/bar/*.xml");
@@ -108,7 +108,7 @@ test("include and exclude", (t) => {
 test("exclude and include", (t) => {
 	const filterList = new ResourceFilterList([
 		"!foo/",
-		"foo/bar/*.xml"
+		"foo/bar/*.xml",
 	]);
 
 	t.is(filterList.toString(), "!foo/,foo/bar/*.xml");
@@ -122,10 +122,10 @@ test("exclude and include", (t) => {
 test("file types", (t) => {
 	const filterList = new ResourceFilterList([
 		"foo/",
-		"bar.txt"
+		"bar.txt",
 	], [
 		".js",
-		"xml"
+		"xml",
 	]);
 
 	t.true(filterList.matches("foo/bar.js"));
@@ -144,7 +144,7 @@ test("file types", (t) => {
 test("patterns with special chars", (t) => {
 	const filterList = new ResourceFilterList([
 		"foo?/",
-		"bar[variant]*"
+		"bar[variant]*",
 	]);
 	t.is(filterList.toString(), "foo?/,bar[variant]*");
 	t.true(filterList.matches("foo?/bar.js"));
@@ -182,7 +182,6 @@ test("fromString: empty", (t) => {
 	t.true(filterList.matches("foobar"));
 });
 
-
 test("negateFilters", (t) => {
 	const res = negateFilters([
 		"pattern",
@@ -198,7 +197,7 @@ test("negateFilters", (t) => {
 		"!+",
 		"+-",
 		"! ",
-		undefined
+		undefined,
 	]);
 
 	t.deepEqual(res, [
@@ -215,7 +214,7 @@ test("negateFilters", (t) => {
 		"++", // "!+"
 		"!-", // "+-"
 		"+ ", // "! "
-		"!undefined"
+		"!undefined",
 	], "Patterns negated as expected");
 });
 
@@ -234,4 +233,3 @@ test("error handling", (t) => {
 		filterList.addFilters({});
 	});
 });
-

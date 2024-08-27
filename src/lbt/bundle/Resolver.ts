@@ -20,7 +20,7 @@ const DEFAULT_FILE_TYPES = [
 	".fragment.xml",
 	".view.html",
 	".view.json",
-	".view.xml"
+	".view.xml",
 ];
 
 /**
@@ -31,7 +31,6 @@ const DEFAULT_FILE_TYPES = [
  *
  * TODO ModuleResolver changes the order of the configured modules even if resolve isn't true
  *
- * @private
  */
 class BundleResolver {
 	// private final Trace trace;
@@ -41,9 +40,9 @@ class BundleResolver {
 	// NODE-TODO private final Map<ModuleName, AbstractModuleDefinition> moduleDefinitions;
 
 	/**
-	 * @param {ModuleDefinition} bundle Bundle definition to resolve
+	 * @param bundle Bundle definition to resolve
 	 			List of default file types to which a prefix pattern shall be expanded.
-	 * @returns {Promise<ResolvedBundleDefinition>}
+	 * @returns
 	 */
 	resolve(bundle: ModuleDefinition) {
 		const fileTypes = bundle.defaultFileTypes || DEFAULT_FILE_TYPES;
@@ -63,16 +62,21 @@ class BundleResolver {
 		const includedModules = new Set();
 
 		/**
-		 * @param {JSModuleSectionDefinition} section
-		 * @returns {Collection<ModuleName>}
+		 * @param section
+		 * @returns
 		 */
 		function collectModulesForSection(section: JSModuleSectionDefinition) {
 			let prevLength;
 			let newKeys;
 
 			// NODE-TODO resolvePlaceholders(section.getFilters());
-			const filters = new ResourceFilterList( section.filters, fileTypes );
+			const filters = new ResourceFilterList(section.filters, fileTypes);
 
+			/**
+			 *
+			 * @param resourceName
+			 * @param required
+			 */
 			function isAccepted(resourceName, required) {
 				let match = required;
 				// evaluate module filters only when global filters match
@@ -80,6 +84,10 @@ class BundleResolver {
 				return match;
 			}
 
+			/**
+			 *
+			 * @param resource
+			 */
 			function checkForDecomposableBundle(resource) {
 				const isBundle =
 					resource?.info?.subModules.length > 0 &&
@@ -89,7 +97,7 @@ class BundleResolver {
 					return {
 						resource,
 						isBundle,
-						decomposable: false
+						decomposable: false,
 					};
 				}
 
@@ -101,19 +109,25 @@ class BundleResolver {
 					return {
 						resource,
 						isBundle,
-						decomposable: modules.some(($) => ($))
+						decomposable: modules.some(($) => ($)),
 					};
 				});
 			}
 
+			/**
+			 *
+			 * @param resourceName
+			 * @param depth
+			 * @param msg
+			 */
 			function checkAndAddResource(resourceName, depth, msg) {
 				// console.log("    checking " + resourceName + " at depth " + depth);
 				let maybeAccepted = true;
 				let done;
 
-				if ( !(resourceName in visitedResources) && (maybeAccepted = isAccepted(resourceName, depth > 0)) ) {
+				if (!(resourceName in visitedResources) && (maybeAccepted = isAccepted(resourceName, depth > 0))) {
 					// console.log("    accepted: " + resourceName );
-					if ( dependencyTracker != null ) {
+					if (dependencyTracker != null) {
 						dependencyTracker.visitDependency(resourceName);
 					}
 
@@ -121,20 +135,20 @@ class BundleResolver {
 					visitedResources[resourceName] = resourceName;
 
 					done = pool.findResourceWithInfo(resourceName)
-						.catch( (err) => {
+						.catch((err) => {
 							// if the caller provided an error message, log it
-							if ( msg ) {
+							if (msg) {
 								missingModules[resourceName] ??= [];
 								missingModules[resourceName].push(msg);
 							}
 							// return undefined
 						})
-						.then( (resource) => checkForDecomposableBundle(resource) )
-						.then( ({resource, isBundle, decomposable}) => {
-							const dependencyInfo = resource && resource.info;
+						.then((resource) => checkForDecomposableBundle(resource))
+						.then(({resource, isBundle, decomposable}) => {
+							const dependencyInfo = resource?.info;
 							let promises = [];
 
-							if ( isBundle && !decomposable ) {
+							if (isBundle && !decomposable) {
 								resource.info.subModules.forEach(
 									(included) => {
 										includedModules.add(included);
@@ -142,13 +156,13 @@ class BundleResolver {
 								);
 							}
 
-							if ( decomposable ) {
+							if (decomposable) {
 								// bundles are not added, only their embedded modules
-								promises = dependencyInfo.subModules.map( (included) => {
+								promises = dependencyInfo.subModules.map((included) => {
 									return checkAndAddResource(included, depth + 1,
 										`**** error: missing submodule ${included}, included by ${resourceName}`);
 								});
-							} else if ( resource != null ) {
+							} else if (resource != null) {
 								// trace.trace("    checking dependencies of " + resource.name );
 								selectedResources[resourceName] = resourceName;
 								selectedResourcesSequence.push(resourceName);
@@ -156,11 +170,11 @@ class BundleResolver {
 								// trace.info("    collecting %s", resource.name);
 
 								// add dependencies, if 'resolve' is configured
-								if ( section.resolve && dependencyInfo ) {
-									promises = dependencyInfo.dependencies.map( function(required) {
+								if (section.resolve && dependencyInfo) {
+									promises = dependencyInfo.dependencies.map(function (required) {
 										// ignore conditional dependencies if not configured
-										if ( !section.resolveConditional &&
-												dependencyInfo.isConditionalDependency(required) ) {
+										if (!section.resolveConditional &&
+											dependencyInfo.isConditionalDependency(required)) {
 											return;
 										}
 
@@ -170,19 +184,19 @@ class BundleResolver {
 								}
 
 								// add renderer, if 'renderer' is configured and if it exists
-								if ( section.renderer ) {
-									const rendererModuleName = getRendererName( resourceName );
-									promises.push( checkAndAddResource( rendererModuleName, depth + 1) );
+								if (section.renderer) {
+									const rendererModuleName = getRendererName(resourceName);
+									promises.push(checkAndAddResource(rendererModuleName, depth + 1));
 								}
 							}
 
-							return Promise.all( promises.filter( ($) => $ ) );
+							return Promise.all(promises.filter(($) => $));
 						});
 
-					if ( dependencyTracker != null ) {
+					if (dependencyTracker != null) {
 						dependencyTracker.endVisitDependency(resourceName);
 					}
-				} else if ( dependencyTracker != null && maybeAccepted && isAccepted(resourceName, depth>0) ) {
+				} else if (dependencyTracker != null && maybeAccepted && isAccepted(resourceName, depth > 0)) {
 					// Note: the additional 'maybeAccepted' condition avoids calling the expensive 'isAccepted'
 					// twice if it already returned false in the 'if' condition
 
@@ -198,7 +212,7 @@ class BundleResolver {
 			let oldIgnoredResources;
 			let oldSelectedResourcesSequence;
 
-			if ( [SectionType.Require, SectionType.DepCache].includes(section.mode) ) {
+			if ([SectionType.Require, SectionType.DepCache].includes(section.mode)) {
 				oldSelectedResources = selectedResources;
 				oldIgnoredResources = visitedResources;
 				oldSelectedResourcesSequence = selectedResourcesSequence;
@@ -249,18 +263,18 @@ class BundleResolver {
 			*/
 
 			// scan all known resources
-			const promises = pool.resources.map( function(resource) {
+			const promises = pool.resources.map(function (resource) {
 				return checkAndAddResource(resource.name, 0);
 			});
 
-			return Promise.all(promises).then( function() {
-				if ( [SectionType.Require, SectionType.DepCache].includes(section.mode) ) {
+			return Promise.all(promises).then(function () {
+				if ([SectionType.Require, SectionType.DepCache].includes(section.mode)) {
 					newKeys = selectedResourcesSequence;
 					selectedResources = oldSelectedResources;
 					visitedResources = oldIgnoredResources;
 					selectedResourcesSequence = oldSelectedResourcesSequence;
 				} else {
-					newKeys = selectedResourcesSequence.slice( prevLength ); // preserve order (for raw sections)
+					newKeys = selectedResourcesSequence.slice(prevLength); // preserve order (for raw sections)
 				}
 
 				// console.log("    resolved module set: %s", newKeys);
@@ -294,7 +308,7 @@ class BundleResolver {
 
 		// NODE-TODO if ( PerfMeasurement.ACTIVE ) PerfMeasurement.start(PerfKeys.RESOLVE_MODULE);
 
-		if ( dependencyTracker != null ) {
+		if (dependencyTracker != null) {
 			dependencyTracker.startResolution(bundle);
 		}
 
@@ -302,33 +316,33 @@ class BundleResolver {
 
 		log.verbose(`  Resolving bundle definition ${bundle.name}`);
 
-		const resolved = new ResolvedBundleDefinition(bundle /* , vars*/);
+		const resolved = new ResolvedBundleDefinition(bundle /* , vars */);
 
 		let previous = Promise.resolve(true);
 
-		bundle.sections.forEach(function(section, index) {
-			previous = previous.then( function() {
+		bundle.sections.forEach(function (section, index) {
+			previous = previous.then(function () {
 				log.verbose(
 					`    Resolving section${section.name ? " '" + section.name + "'" : ""} of type ${section.mode}`);
 
 				// NODE-TODO long t0=System.nanoTime();
 				const resolvedSection = resolved.sections[index];
 
-				return collectModulesForSection(section).
-					then( (modules) => {
-						if ( section.mode == SectionType.Raw && section.sort !== false ) {
+				return collectModulesForSection(section)
+					.then((modules) => {
+						if (section.mode == SectionType.Raw && section.sort !== false) {
 							// sort the modules in topological order
-							return topologicalSort(pool, modules).then( (modules) => {
+							return topologicalSort(pool, modules).then((modules) => {
 								log.silly(`      Resolved modules (sorted): ${modules}`);
 								return modules;
 							});
 						}
-						if ( section.mode === SectionType.BundleInfo ) {
+						if (section.mode === SectionType.BundleInfo) {
 							modules.sort();
 						}
 						log.silly(`      Resolved modules: ${modules}`);
 						return modules;
-					}).then( function(modules) {
+					}).then(function (modules) {
 						resolvedSection.modules = modules;
 					});
 				// NODE-TODO long t1=System.nanoTime();
@@ -338,13 +352,13 @@ class BundleResolver {
 			});
 		});
 
-		if ( dependencyTracker != null ) {
-			dependencyTracker.endResolution(bundle, /* NODE-TODO, vars*/);
+		if (dependencyTracker != null) {
+			dependencyTracker.endResolution(bundle /* NODE-TODO, vars */);
 		}
 
 		// NODE-TODO if ( PerfMeasurement.ACTIVE ) PerfMeasurement.stop(PerfKeys.RESOLVE_MODULE);
 
-		return previous.then( function() {
+		return previous.then(function () {
 			// ignore missing modules that have been found in non-decomposable bundles
 			includedModules.forEach((included) => delete missingModules[included]);
 
@@ -363,6 +377,4 @@ class BundleResolver {
 	}
 }
 
-
 export default BundleResolver;
-

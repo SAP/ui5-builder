@@ -3,10 +3,10 @@ import LocatorResource from "./LocatorResource.js";
 
 class LocatorResourcePool extends ResourcePool {
 	prepare(resources, moduleNameMapping) {
-		resources = resources.filter( (res) => !res.getStatInfo().isDirectory() );
+		resources = resources.filter((res) => !res.getStatInfo().isDirectory());
 		return Promise.all(
 			resources.map((resource) => {
-				let moduleName = moduleNameMapping && moduleNameMapping[resource.getPath()];
+				let moduleName = moduleNameMapping?.[resource.getPath()];
 				if (!moduleName) {
 					moduleName = resource.getPath().slice("/resources/".length);
 				}

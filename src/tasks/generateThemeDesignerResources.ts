@@ -20,8 +20,8 @@ import fsInterface from "@ui5/fs/fsInterface";
  * getPathToRoot("/resources/sap/ui/foo/themes/base")
  * > "../../../../../"
  *
- * @param {string} themeFolder Virtual path including /resources/
- * @returns {string} Relative path to root namespace
+ * @param themeFolder Virtual path including /resources/
+ * @returns Relative path to root namespace
  */
 function getPathToRoot(themeFolder: string) {
 	// -2 for initial "/"" and "resources/"
@@ -31,18 +31,25 @@ function getPathToRoot(themeFolder: string) {
 /**
  * Generates an less import statement for the given <code>filePath</code>
  *
- * @param {string} filePath The path to the desired file
- * @returns {string} The less import statement
+ * @param filePath The path to the desired file
+ * @returns The less import statement
  */
 function lessImport(filePath: string) {
 	return `@import "${filePath}";\n`;
 }
 
+/**
+ *
+ * @param root0
+ * @param root0.namespace
+ * @param root0.version
+ * @param root0.hasThemes
+ */
 function generateLibraryDotTheming({namespace, version, hasThemes}) {
 	const dotTheming = {
 		sEntity: "Library",
 		sId: namespace,
-		sVersion: version
+		sVersion: version,
 	};
 
 	// Note that with sap.ui.core version 1.127.0 the .theming file has been put into
@@ -65,10 +72,17 @@ function generateLibraryDotTheming({namespace, version, hasThemes}) {
 
 	return new Resource({
 		path: `/resources/${namespace}/.theming`,
-		string: JSON.stringify(dotTheming, null, 2)
+		string: JSON.stringify(dotTheming, null, 2),
 	});
 }
 
+/**
+ *
+ * @param root0
+ * @param root0.workspace
+ * @param root0.combo
+ * @param root0.themeFolder
+ */
 async function generateThemeDotTheming({workspace, combo, themeFolder}) {
 	const themeName = posixPath.basename(themeFolder);
 	const libraryMatchPattern = /^\/resources\/(.*)\/themes\/[^/]*$/i;
@@ -104,7 +118,7 @@ async function generateThemeDotTheming({workspace, combo, themeFolder}) {
 		const dotTheming = {
 			sEntity: "Theme",
 			sId: themeName,
-			sVendor: "SAP"
+			sVendor: "SAP",
 		};
 
 		if (themeName !== "base") {
@@ -113,12 +127,19 @@ async function generateThemeDotTheming({workspace, combo, themeFolder}) {
 
 		newDotThemingResource = new Resource({
 			path: dotThemingTargetPath,
-			string: JSON.stringify(dotTheming, null, 2)
+			string: JSON.stringify(dotTheming, null, 2),
 		});
 	}
 	return newDotThemingResource;
 }
 
+/**
+ *
+ * @param root0
+ * @param root0.workspace
+ * @param root0.combo
+ * @param root0.themeFolder
+ */
 async function createCssVariablesLessResource({workspace, combo, themeFolder}) {
 	const pathToRoot = getPathToRoot(themeFolder);
 	const cssVariablesSourceLessFile = "css_variables.source.less";
@@ -163,10 +184,17 @@ ${cssVariablesSourceLess}
 
 	return new Resource({
 		path: posixPath.join(themeFolder, cssVariablesLessFile),
-		string: cssVariablesLess
+		string: cssVariablesLess,
 	});
 }
 
+/**
+ *
+ * @param root0
+ * @param root0.workspace
+ * @param root0.combo
+ * @param root0.namespace
+ */
 async function generateCssVariablesLess({workspace, combo, namespace}) {
 	let cssVariablesSourceLessResourcePattern;
 	if (namespace) {
@@ -187,7 +215,7 @@ async function generateCssVariablesLess({workspace, combo, namespace}) {
 				const themeFolder = posixPath.dirname(cssVariableSourceLess.getPath());
 				log.verbose(`Generating css_variables.less for theme ${themeFolder}`);
 				const r = await createCssVariablesLessResource({
-					workspace, combo, themeFolder
+					workspace, combo, themeFolder,
 				});
 				return await workspace.write(r);
 			})
@@ -196,7 +224,6 @@ async function generateCssVariablesLess({workspace, combo, namespace}) {
 }
 
 /**
- * @public
  * @module @ui5/builder/tasks/generateThemeDesignerResources
  */
 
@@ -204,22 +231,18 @@ async function generateCssVariablesLess({workspace, combo, namespace}) {
 /**
  * Generates resources required for integration with the SAP Theme Designer.
  *
- * @public
- * @function default
- * @static
- *
- * @param {object} parameters Parameters
- * @param {@ui5/fs/DuplexCollection} parameters.workspace DuplexCollection to read and write files
- * @param {@ui5/fs/AbstractReader} parameters.dependencies Reader or Collection to read dependency files
- * @param {object} parameters.options Options
- * @param {string} parameters.options.projectName Project name
- * @param {string} parameters.options.version Project version
- * @param {string} [parameters.options.projectNamespace] If the project is of type <code>library</code>,
+ * @param parameters Parameters
+ * @param parameters.workspace DuplexCollection to read and write files
+ * @param parameters.dependencies Reader or Collection to read dependency files
+ * @param parameters.options Options
+ * @param parameters.options.projectName Project name
+ * @param parameters.options.version Project version
+ * @param [parameters.options.projectNamespace] If the project is of type <code>library</code>,
  * 														 provide its namespace.
  * Omit for type <code>theme-library</code>
- * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
+ * @returns Promise resolving with <code>undefined</code> once data has been written
  */
-export default async function({ workspace, dependencies, options }: object) {
+export default async function ({workspace, dependencies, options}: object) {
 	const {projectName, version} = options;
 	const namespace = options.projectNamespace;
 
@@ -258,7 +281,7 @@ export default async function({ workspace, dependencies, options }: object) {
 					resource: libraryDotThemingResource,
 					namespace,
 					version,
-					hasThemes
+					hasThemes,
 				});
 			}
 		}
@@ -268,7 +291,7 @@ export default async function({ workspace, dependencies, options }: object) {
 			libraryDotThemingResource = generateLibraryDotTheming({
 				namespace,
 				version,
-				hasThemes
+				hasThemes,
 			});
 		}
 
@@ -282,7 +305,7 @@ export default async function({ workspace, dependencies, options }: object) {
 
 	const combo = new ReaderCollectionPrioritized({
 		name: `generateThemeDesignerResources - prioritize workspace over dependencies: ${projectName}`,
-		readers: [workspace, dependencies]
+		readers: [workspace, dependencies],
 	});
 
 	// theme .theming files
@@ -291,7 +314,7 @@ export default async function({ workspace, dependencies, options }: object) {
 			const themeFolder = posixPath.dirname(librarySourceLess.getPath());
 			log.verbose(`Generating .theming for theme ${themeFolder}`);
 			return generateThemeDotTheming({
-				workspace, combo, themeFolder
+				workspace, combo, themeFolder,
 			});
 		})
 	);

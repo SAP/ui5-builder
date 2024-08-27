@@ -96,12 +96,12 @@ test.serial("Build application.a", async (t) => {
 	const expectedPath = path.join("test", "expected", "build", "application.a", "dest");
 
 	const graph = await graphFromPackageDependencies({
-		cwd: applicationAPath
+		cwd: applicationAPath,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
-		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo"]
+		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo"],
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -117,16 +117,16 @@ test.serial("Build application.a with dependencies", async (t) => {
 	const expectedPath = path.join("test", "expected", "build", "application.a", "dest-deps");
 
 	const graph = await graphFromObject({
-		dependencyTree: applicationATree
+		dependencyTree: applicationATree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
 		excludedTasks: [
 			"generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo",
-			"generateLibraryPreload", "escapeNonAsciiCharacters", "generateLibraryManifest"
+			"generateLibraryPreload", "escapeNonAsciiCharacters", "generateLibraryManifest",
 		],
-		includedDependencies: ["*"]
+		includedDependencies: ["*"],
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -142,17 +142,17 @@ test.serial("Build application.a with dependencies exclude", async (t) => {
 	const expectedPath = path.join("test", "expected", "build", "application.a", "dest-deps-excl");
 
 	const graph = await graphFromObject({
-		dependencyTree: applicationATree
+		dependencyTree: applicationATree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
 		excludedTasks: [
 			"generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo",
-			"generateLibraryPreload", "escapeNonAsciiCharacters", "generateLibraryManifest"
+			"generateLibraryPreload", "escapeNonAsciiCharacters", "generateLibraryManifest",
 		],
 		includedDependencies: ["*"],
-		excludedDependencies: ["library.d"]
+		excludedDependencies: ["library.d"],
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -168,13 +168,13 @@ test.serial("Build application.a self-contained", async (t) => {
 	const expectedPath = path.join("test", "expected", "build", "application.a", "dest-self");
 
 	const graph = await graphFromObject({
-		dependencyTree: applicationATree
+		dependencyTree: applicationATree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
 		excludedTasks: ["generateComponentPreload", "generateVersionInfo"],
-		selfContained: true
+		selfContained: true,
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -190,17 +190,17 @@ test.serial("Build application.a with dependencies self-contained", async (t) =>
 	const expectedPath = path.join("test", "expected", "build", "application.a", "dest-depself");
 
 	const graph = await graphFromObject({
-		dependencyTree: applicationATree
+		dependencyTree: applicationATree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
 		excludedTasks: [
 			"generateComponentPreload", "generateVersionInfo", "escapeNonAsciiCharacters",
-			"generateLibraryManifest"
+			"generateLibraryManifest",
 		],
 		includedDependencies: ["*"],
-		selfContained: true
+		selfContained: true,
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -217,23 +217,23 @@ test.serial("Build application.a and clean target path", async (t) => {
 	const expectedPath = path.join("test", "expected", "build", "application.a", "dest-clean");
 
 	const graph1 = await graphFromObject({
-		dependencyTree: applicationATree
+		dependencyTree: applicationATree,
 	});
 	const graph2 = await graphFromObject({
-		dependencyTree: applicationATree
+		dependencyTree: applicationATree,
 	});
 	graph1.setTaskRepository(taskRepository);
 	await graph1.build({
 		graph: graph1,
 		destPath: destPathRubbishSubFolder,
-		excludedTasks: ["*"]
+		excludedTasks: ["*"],
 	});
 	graph2.setTaskRepository(taskRepository);
 	await graph2.build({
 		graph: graph2,
 		destPath,
 		cleanDest: true,
-		excludedTasks: ["*"]
+		excludedTasks: ["*"],
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -249,12 +249,12 @@ test.serial("Build application.g", async (t) => {
 	const expectedPath = path.join("test", "expected", "build", "application.g", "dest");
 
 	const graph = await graphFromObject({
-		dependencyTree: applicationGTree
+		dependencyTree: applicationGTree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
-		excludedTasks: ["generateVersionInfo"]
+		excludedTasks: ["generateVersionInfo"],
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -270,12 +270,12 @@ test.serial("Build application.g with component preload paths", async (t) => {
 	const expectedPath = path.join("test", "expected", "build", "application.g", "dest");
 
 	const graph = await graphFromObject({
-		dependencyTree: applicationGTreeComponentPreloadPaths
+		dependencyTree: applicationGTreeComponentPreloadPaths,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
-		excludedTasks: ["generateVersionInfo"]
+		excludedTasks: ["generateVersionInfo"],
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -291,12 +291,12 @@ test.serial("Build application.g with excludes", async (t) => {
 	const expectedPath = path.join("test", "expected", "build", "application.g", "excludes");
 
 	const graph = await graphFromObject({
-		dependencyTree: applicationGTreeWithExcludes
+		dependencyTree: applicationGTreeWithExcludes,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
-		excludedTasks: ["*"]
+		excludedTasks: ["*"],
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -312,13 +312,13 @@ test.serial("Build application.h", async (t) => {
 	const expectedPath = path.join("test", "expected", "build", "application.h", "dest");
 
 	const graph = await graphFromObject({
-		dependencyTree: applicationHTree
+		dependencyTree: applicationHTree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
 		excludedTasks: ["generateComponentPreload",
-			"generateStandaloneAppBundle", "generateVersionInfo"]
+			"generateStandaloneAppBundle", "generateVersionInfo"],
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -334,13 +334,13 @@ test.serial("Build application.h (no minify)", async (t) => {
 	const expectedPath = path.join("test", "expected", "build", "application.h", "no-minify");
 
 	const graph = await graphFromObject({
-		dependencyTree: applicationHTree
+		dependencyTree: applicationHTree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
 		excludedTasks: ["minify", "generateComponentPreload",
-			"generateStandaloneAppBundle", "generateVersionInfo"]
+			"generateStandaloneAppBundle", "generateVersionInfo"],
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -356,12 +356,12 @@ test.serial("Build application.i", async (t) => {
 	const expectedPath = path.join("test", "expected", "build", "application.i", "dest");
 
 	const graph = await graphFromObject({
-		dependencyTree: applicationITree
+		dependencyTree: applicationITree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
-		excludedTasks: ["generateVersionInfo"]
+		excludedTasks: ["generateVersionInfo"],
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -377,12 +377,12 @@ test.serial("Build application.j", async (t) => {
 	const expectedPath = path.join("test", "expected", "build", "application.j", "dest");
 
 	const graph = await graphFromObject({
-		dependencyTree: applicationJTree
+		dependencyTree: applicationJTree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
-		excludedTasks: ["generateVersionInfo"]
+		excludedTasks: ["generateVersionInfo"],
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -404,12 +404,12 @@ test.serial("Build application.j with resources.json and version info", async (t
 	sinon.stub(Date.prototype, "getMinutes").returns(17);
 
 	const graph = await graphFromObject({
-		dependencyTree: applicationJTree
+		dependencyTree: applicationJTree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
-		includedTasks: ["generateResourcesJson", "generateVersionInfo"]
+		includedTasks: ["generateResourcesJson", "generateVersionInfo"],
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -425,13 +425,13 @@ test.serial("Build application.k (componentPreload excludes)", async (t) => {
 	const expectedPath = path.join("test", "expected", "build", "application.k", "dest");
 
 	const graph = await graphFromObject({
-		dependencyTree: applicationKTree
+		dependencyTree: applicationKTree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
 		includedTasks: ["generateComponentPreload"],
-		excludedTasks: ["*"]
+		excludedTasks: ["*"],
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -447,13 +447,13 @@ test.serial("Build application.k (package sub-components / componentPreload excl
 	const expectedPath = path.join("test", "expected", "build", "application.k", "dest-package-subcomponents");
 
 	const graph = await graphFromObject({
-		dependencyTree: applicationKPackageSubcomponentsTree
+		dependencyTree: applicationKPackageSubcomponentsTree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
 		includedTasks: ["generateComponentPreload"],
-		excludedTasks: ["*"]
+		excludedTasks: ["*"],
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -469,12 +469,12 @@ test.serial("Build application.l: minification excludes, w/ namespace", async (t
 	const expectedPath = path.join("test", "expected", "build", "application.l", "dest");
 
 	const graph = await graphFromObject({
-		dependencyTree: applicationLTree
+		dependencyTree: applicationLTree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
-		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo"]
+		excludedTasks: ["generateComponentPreload", "generateStandaloneAppBundle", "generateVersionInfo"],
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -490,11 +490,11 @@ test.serial("Build application.m: bundle should not contain hashbang but an empt
 	const expectedPath = path.join("test", "expected", "build", "application.m", "dest");
 
 	const graph = await graphFromPackageDependencies({
-		cwd: applicationMPath
+		cwd: applicationMPath,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
-		destPath
+		destPath,
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -510,12 +510,12 @@ test.serial("Build application.ø", async (t) => {
 	const expectedPath = path.join("test", "expected", "build", "application.ø", "dest");
 
 	const graph = await graphFromObject({
-		dependencyTree: applicationØTree
+		dependencyTree: applicationØTree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
-		excludedTasks: ["generateVersionInfo"]
+		excludedTasks: ["generateVersionInfo"],
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -531,12 +531,12 @@ test.serial("Build library.d with copyright from .library file", async (t) => {
 	const expectedPath = path.join("test", "expected", "build", "library.d", "dest");
 
 	const graph = await graphFromObject({
-		dependencyTree: libraryDTree
+		dependencyTree: libraryDTree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
-		excludedTasks: ["generateLibraryPreload"]
+		excludedTasks: ["generateLibraryPreload"],
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -552,12 +552,12 @@ test.serial("Build library.e with copyright from metadata configuration of tree"
 	const expectedPath = path.join("test", "expected", "build", "library.e", "dest");
 
 	const graph = await graphFromObject({
-		dependencyTree: libraryETree
+		dependencyTree: libraryETree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
-		excludedTasks: ["generateLibraryPreload"]
+		excludedTasks: ["generateLibraryPreload"],
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -577,12 +577,12 @@ test.serial("Build library.e with build manifest", async (t) => {
 	// Stub date because of timestamp in build-manifest.json
 	const toISOStringStub = sinon.stub(Date.prototype, "toISOString").returns("2022-07-27T09:00:00.000Z");
 	const graph = await graphFromObject({
-		dependencyTree: libraryETree
+		dependencyTree: libraryETree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
-		createBuildManifest: true
+		createBuildManifest: true,
 	});
 	toISOStringStub.restore();
 
@@ -601,40 +601,40 @@ test.serial("Build library.e with build manifest", async (t) => {
 	const manifest = require(resultBuildManifestPath);
 
 	t.deepEqual(manifest.project, {
-		"metadata": {
-			"name": "library.e"
+		metadata: {
+			name: "library.e",
 		},
-		"resources": {
-			"configuration": {
-				"paths": {
-					"src": "resources",
-					"test": "test-resources"
-				}
-			}
+		resources: {
+			configuration: {
+				paths: {
+					src: "resources",
+					test: "test-resources",
+				},
+			},
 		},
-		"specVersion": "2.6",
-		"type": "library"
+		specVersion: "2.6",
+		type: "library",
 	}, "Build manifest contains expected project configuration");
 
 	t.deepEqual(manifest.buildManifest.tags, {
 		"/resources/library/e/library-dbg.js": {
-			"ui5:IsDebugVariant": true
+			"ui5:IsDebugVariant": true,
 		},
 		"/resources/library/e/library.js": {
-			"ui5:HasDebugVariant": true
+			"ui5:HasDebugVariant": true,
 		},
 		"/resources/library/e/library.js.map": {
-			"ui5:HasDebugVariant": true
+			"ui5:HasDebugVariant": true,
 		},
 		"/resources/library/e/some-dbg.js": {
-			"ui5:IsDebugVariant": true
+			"ui5:IsDebugVariant": true,
 		},
 		"/resources/library/e/some.js": {
-			"ui5:HasDebugVariant": true
+			"ui5:HasDebugVariant": true,
 		},
 		"/resources/library/e/some.js.map": {
-			"ui5:HasDebugVariant": true
-		}
+			"ui5:HasDebugVariant": true,
+		},
 	}, "Build manifest contains expected tags");
 
 	t.is(manifest.buildManifest.namespace, "library/e",
@@ -652,12 +652,12 @@ test.serial("Build library.h with custom bundles and component-preloads", async 
 	const expectedPath = path.join("test", "expected", "build", "library.h", "dest");
 
 	const graph = await graphFromObject({
-		dependencyTree: libraryHTree
+		dependencyTree: libraryHTree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
-		excludedTasks: ["generateLibraryPreload"]
+		excludedTasks: ["generateLibraryPreload"],
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -673,12 +673,12 @@ test.serial("Build library.h with custom bundles and component-preloads (no mini
 	const expectedPath = path.join("test", "expected", "build", "library.h", "no-minify");
 
 	const graph = await graphFromObject({
-		dependencyTree: libraryHTree
+		dependencyTree: libraryHTree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
-		excludedTasks: ["minify", "generateLibraryPreload"]
+		excludedTasks: ["minify", "generateLibraryPreload"],
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -698,14 +698,14 @@ test.serial("Build library.h w/ custom bundles, component-preloads, resources.js
 	// Stub date because of timestamp in build-manifest.json
 	const toISOStringStub = sinon.stub(Date.prototype, "toISOString").returns("2022-07-27T09:00:00.000Z");
 	const graph = await graphFromObject({
-		dependencyTree: libraryHTree
+		dependencyTree: libraryHTree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
 		createBuildManifest: true,
 		includedTasks: ["generateResourcesJson"],
-		excludedTasks: ["generateLibraryPreload"]
+		excludedTasks: ["generateLibraryPreload"],
 	});
 	toISOStringStub.restore();
 
@@ -720,116 +720,115 @@ test.serial("Build library.h w/ custom bundles, component-preloads, resources.js
 	// Check for all file contents
 	await checkFileContentsIgnoreLineFeeds(t, expectedFiles, expectedPath, destPath);
 
-
 	const manifest = require(resultBuildManifestPath);
 
 	t.deepEqual(manifest.project, {
-		"metadata": {
-			"name": "library.h"
+		metadata: {
+			name: "library.h",
 		},
-		"resources": {
-			"configuration": {
-				"paths": {
-					"src": "resources",
-					"test": "test-resources"
-				}
-			}
+		resources: {
+			configuration: {
+				paths: {
+					src: "resources",
+					test: "test-resources",
+				},
+			},
 		},
-		"specVersion": "2.6",
-		"type": "library"
+		specVersion: "2.6",
+		type: "library",
 	}, "Build manifest contains expected project configuration");
 
 	t.deepEqual(manifest.buildManifest.tags, {
 		"/resources/library/h/components/Component-dbg.js": {
-			"ui5:IsDebugVariant": true
+			"ui5:IsDebugVariant": true,
 		},
 		"/resources/library/h/components/Component.js": {
-			"ui5:HasDebugVariant": true
+			"ui5:HasDebugVariant": true,
 		},
 		"/resources/library/h/components/Component.js.map": {
-			"ui5:HasDebugVariant": true
+			"ui5:HasDebugVariant": true,
 		},
 		"/resources/library/h/components/TodoComponent-dbg.js": {
-			"ui5:IsDebugVariant": true
+			"ui5:IsDebugVariant": true,
 		},
 		"/resources/library/h/components/TodoComponent.js": {
-			"ui5:HasDebugVariant": true
+			"ui5:HasDebugVariant": true,
 		},
 		"/resources/library/h/components/TodoComponent.js.map": {
-			"ui5:HasDebugVariant": true
+			"ui5:HasDebugVariant": true,
 		},
 		"/resources/library/h/components/subcomponent1/Component-dbg.js": {
-			"ui5:IsDebugVariant": true
+			"ui5:IsDebugVariant": true,
 		},
 		"/resources/library/h/components/subcomponent1/Component.js": {
-			"ui5:HasDebugVariant": true
+			"ui5:HasDebugVariant": true,
 		},
 		"/resources/library/h/components/subcomponent1/Component.js.map": {
-			"ui5:HasDebugVariant": true
+			"ui5:HasDebugVariant": true,
 		},
 		"/resources/library/h/components/subcomponent2/Component-dbg.js": {
-			"ui5:IsDebugVariant": true
+			"ui5:IsDebugVariant": true,
 		},
 		"/resources/library/h/components/subcomponent2/Component.js": {
-			"ui5:HasDebugVariant": true
+			"ui5:HasDebugVariant": true,
 		},
 		"/resources/library/h/components/subcomponent2/Component.js.map": {
-			"ui5:HasDebugVariant": true
+			"ui5:HasDebugVariant": true,
 		},
 		"/resources/library/h/components/subcomponent3/Component-dbg.js": {
-			"ui5:IsDebugVariant": true
+			"ui5:IsDebugVariant": true,
 		},
 		"/resources/library/h/components/subcomponent3/Component.js": {
-			"ui5:HasDebugVariant": true
+			"ui5:HasDebugVariant": true,
 		},
 		"/resources/library/h/components/subcomponent3/Component.js.map": {
-			"ui5:HasDebugVariant": true
+			"ui5:HasDebugVariant": true,
 		},
 		"/resources/library/h/designtime/library-dbg.designtime.js": {
-			"ui5:IsDebugVariant": true
+			"ui5:IsDebugVariant": true,
 		},
 		"/resources/library/h/designtime/library.designtime.js": {
-			"ui5:HasDebugVariant": true
+			"ui5:HasDebugVariant": true,
 		},
 		"/resources/library/h/designtime/library.designtime.js.map": {
-			"ui5:HasDebugVariant": true
+			"ui5:HasDebugVariant": true,
 		},
 		"/resources/library/h/file-dbg.js": {
-			"ui5:IsDebugVariant": true
+			"ui5:IsDebugVariant": true,
 		},
 		"/resources/library/h/file.js": {
-			"ui5:HasDebugVariant": true
+			"ui5:HasDebugVariant": true,
 		},
 		"/resources/library/h/file.js.map": {
-			"ui5:HasDebugVariant": true
+			"ui5:HasDebugVariant": true,
 		},
 		"/resources/library/h/library-dbg.js": {
-			"ui5:IsDebugVariant": true
+			"ui5:IsDebugVariant": true,
 		},
 		"/resources/library/h/library.js": {
-			"ui5:HasDebugVariant": true
+			"ui5:HasDebugVariant": true,
 		},
 		"/resources/library/h/library.js.map": {
-			"ui5:HasDebugVariant": true
+			"ui5:HasDebugVariant": true,
 		},
 		"/resources/library/h/not-dbg.js": {
-			"ui5:IsDebugVariant": true
+			"ui5:IsDebugVariant": true,
 		},
 		"/resources/library/h/not.js": {
-			"ui5:HasDebugVariant": true
+			"ui5:HasDebugVariant": true,
 		},
 		"/resources/library/h/not.js.map": {
-			"ui5:HasDebugVariant": true
+			"ui5:HasDebugVariant": true,
 		},
 		"/resources/library/h/some-dbg.js": {
-			"ui5:IsDebugVariant": true
+			"ui5:IsDebugVariant": true,
 		},
 		"/resources/library/h/some.js": {
-			"ui5:HasDebugVariant": true
+			"ui5:HasDebugVariant": true,
 		},
 		"/resources/library/h/some.js.map": {
-			"ui5:HasDebugVariant": true
-		}
+			"ui5:HasDebugVariant": true,
+		},
 	}, "Build manifest contains expected tags");
 
 	t.is(manifest.buildManifest.namespace, "library/h",
@@ -847,12 +846,12 @@ test.serial("Build library.i with manifest info taken from .library and library.
 	const expectedPath = path.join("test", "expected", "build", "library.i", "dest");
 
 	const graph = await graphFromObject({
-		dependencyTree: libraryITree
+		dependencyTree: libraryITree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
-		excludedTasks: ["generateLibraryPreload", "minify"]
+		excludedTasks: ["generateLibraryPreload", "minify"],
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -868,13 +867,13 @@ test.serial("Build library.j with JSDoc build only", async (t) => {
 	const expectedPath = path.join("test", "expected", "build", "library.j", "dest");
 
 	const graph = await graphFromObject({
-		dependencyTree: libraryJTree
+		dependencyTree: libraryJTree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
 		includedTasks: ["generateJsdoc"],
-		excludedTasks: ["*"]
+		excludedTasks: ["*"],
 	});
 
 	// // Beautify api.json, so that it can be better read and compared
@@ -894,12 +893,12 @@ test.serial("Build library.i, bundling library.h", async (t) => {
 	const expectedPath = path.join("test", "expected", "build", "library.i", "bundle-library.h");
 
 	const graph = await graphFromObject({
-		dependencyTree: libraryIBundlingHTree
+		dependencyTree: libraryIBundlingHTree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
-		excludedTasks: ["generateLibraryPreload"]
+		excludedTasks: ["generateLibraryPreload"],
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -917,16 +916,15 @@ test.serial("Build library.i, bundling library.h with build manifest", async (t)
 	const resultBuildManifestPath = path.join(__dirname,
 		"..", "..", "tmp", "build", "library.i", "bundle-library.h-build-manifest", ".ui5", "build-manifest.json");
 
-
 	setLogLevel("verbose");
 	const graph1 = await graphFromObject({
-		dependencyTree: libraryHTree
+		dependencyTree: libraryHTree,
 	});
 	graph1.setTaskRepository(taskRepository);
 
 	await graph1.build({
 		destPath: libraryHDestPath,
-		createBuildManifest: true
+		createBuildManifest: true,
 	});
 
 	const projectTree = cloneProjectTree(libraryIBundlingHTree);
@@ -936,12 +934,12 @@ test.serial("Build library.i, bundling library.h with build manifest", async (t)
 	// Stub date because of timestamp in build-manifest.json
 	const toISOStringStub = sinon.stub(Date.prototype, "toISOString").returns("2022-07-27T09:00:00.000Z");
 	const graph2 = await graphFromObject({
-		dependencyTree: projectTree
+		dependencyTree: projectTree,
 	});
 	graph2.setTaskRepository(taskRepository);
 	await graph2.build({
 		destPath,
-		createBuildManifest: true
+		createBuildManifest: true,
 	});
 	setLogLevel("info");
 	toISOStringStub.restore();
@@ -960,31 +958,31 @@ test.serial("Build library.i, bundling library.h with build manifest", async (t)
 	const manifest = require(resultBuildManifestPath);
 
 	t.deepEqual(manifest.project, {
-		"metadata": {
-			"name": "library.i"
+		metadata: {
+			name: "library.i",
 		},
-		"resources": {
-			"configuration": {
-				"paths": {
-					"src": "resources",
-					"test": "test-resources"
-				}
-			}
+		resources: {
+			configuration: {
+				paths: {
+					src: "resources",
+					test: "test-resources",
+				},
+			},
 		},
-		"specVersion": "2.6",
-		"type": "library"
+		specVersion: "2.6",
+		type: "library",
 	}, "Build manifest contains expected project configuration");
 
 	t.deepEqual(manifest.buildManifest.tags, {
 		"/resources/library/i/library-dbg.js": {
-			"ui5:IsDebugVariant": true
+			"ui5:IsDebugVariant": true,
 		},
 		"/resources/library/i/library.js": {
-			"ui5:HasDebugVariant": true
+			"ui5:HasDebugVariant": true,
 		},
 		"/resources/library/i/library.js.map": {
-			"ui5:HasDebugVariant": true
-		}
+			"ui5:HasDebugVariant": true,
+		},
 	}, "Build manifest contains expected tags");
 
 	t.is(manifest.buildManifest.namespace, "library/i",
@@ -1002,12 +1000,12 @@ test.serial("Build library.l", async (t) => {
 	const expectedPath = path.join("test", "expected", "build", "library.l", "dest");
 
 	const graph = await graphFromObject({
-		dependencyTree: libraryLTree
+		dependencyTree: libraryLTree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
-		excludedTasks: ["generateLibraryManifest", "generateLibraryPreload"]
+		excludedTasks: ["generateLibraryManifest", "generateLibraryPreload"],
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -1023,11 +1021,11 @@ test.serial("Build theme.j even without an library", async (t) => {
 	const expectedPath = "./test/expected/build/theme.j/dest";
 
 	const graph = await graphFromObject({
-		dependencyTree: themeJTree
+		dependencyTree: themeJTree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
-		destPath
+		destPath,
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -1043,13 +1041,13 @@ test.serial("Build theme.j even without an library with resources.json", async (
 	const expectedPath = "./test/expected/build/theme.j/dest-resources-json";
 
 	const graph = await graphFromObject({
-		dependencyTree: themeJTree
+		dependencyTree: themeJTree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
 		includedTasks: [
-			"generateResourcesJson"
+			"generateResourcesJson",
 		],
 	});
 
@@ -1070,12 +1068,12 @@ test.serial("Build theme.j with build manifest", async (t) => {
 	// Stub date because of timestamp in build-manifest.json
 	const toISOStringStub = sinon.stub(Date.prototype, "toISOString").returns("2022-07-27T09:00:00.000Z");
 	const graph = await graphFromObject({
-		dependencyTree: themeJTree
+		dependencyTree: themeJTree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
-		createBuildManifest: true
+		createBuildManifest: true,
 	});
 	toISOStringStub.restore();
 
@@ -1094,19 +1092,19 @@ test.serial("Build theme.j with build manifest", async (t) => {
 	const manifest = require(resultBuildManifestPath);
 
 	t.deepEqual(manifest.project, {
-		"metadata": {
-			"name": "theme.j"
+		metadata: {
+			name: "theme.j",
 		},
-		"resources": {
-			"configuration": {
-				"paths": {
-					"src": "resources",
-					"test": "test-resources"
-				}
-			}
+		resources: {
+			configuration: {
+				paths: {
+					src: "resources",
+					test: "test-resources",
+				},
+			},
 		},
-		"specVersion": "2.6",
-		"type": "theme-library"
+		specVersion: "2.6",
+		type: "theme-library",
 	}, "Build manifest contains expected project configuration");
 
 	t.deepEqual(manifest.buildManifest.tags, {}, "Build manifest contains expected tags");
@@ -1126,11 +1124,11 @@ test.serial("Build library.ø", async (t) => {
 	const expectedPath = path.join("test", "expected", "build", "library.ø", "dest");
 
 	const graph = await graphFromObject({
-		dependencyTree: libraryØTree
+		dependencyTree: libraryØTree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
-		destPath
+		destPath,
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -1154,12 +1152,12 @@ test.serial("Build library.coreBuildtime: replaceBuildtime", async (t) => {
 	];
 
 	const graph = await graphFromObject({
-		dependencyTree: libraryCoreBuildtimeTree
+		dependencyTree: libraryCoreBuildtimeTree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
-		excludedTasks: ["generateLibraryManifest", "generateLibraryPreload"]
+		excludedTasks: ["generateLibraryManifest", "generateLibraryPreload"],
 	});
 
 	dateStubs.forEach((stub) => stub.restore());
@@ -1177,7 +1175,7 @@ test.serial("Build library with theme configured for CSS variables", async (t) =
 	const expectedPath = "./test/expected/build/theme.j/dest-css-variables";
 
 	const graph = await graphFromObject({
-		dependencyTree: themeJTree
+		dependencyTree: themeJTree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
@@ -1198,13 +1196,13 @@ test.serial("Build library with theme configured for CSS variables and theme des
 	const expectedPath = "./test/expected/build/theme.j/dest-css-variables-theme-designer-resources";
 
 	const graph = await graphFromObject({
-		dependencyTree: themeJTree
+		dependencyTree: themeJTree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
 		cssVariables: true,
-		includedTasks: ["generateThemeDesignerResources"]
+		includedTasks: ["generateThemeDesignerResources"],
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -1220,12 +1218,12 @@ test.serial("Build theme-library with CSS variables", async (t) => {
 	const expectedPath = "./test/expected/build/theme.library.e/dest-css-variables";
 
 	const graph = await graphFromObject({
-		dependencyTree: themeLibraryETree
+		dependencyTree: themeLibraryETree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
-		cssVariables: true
+		cssVariables: true,
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -1241,13 +1239,13 @@ test.serial("Build theme-library with CSS variables and theme designer resources
 	const expectedPath = "./test/expected/build/theme.library.e/dest-css-variables-theme-designer-resources";
 
 	const graph = await graphFromObject({
-		dependencyTree: themeLibraryETree
+		dependencyTree: themeLibraryETree,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
 		cssVariables: true,
-		includedTasks: ["generateThemeDesignerResources"]
+		includedTasks: ["generateThemeDesignerResources"],
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -1263,11 +1261,11 @@ test.serial("Build library.o with terminologies and supportedLocales", async (t)
 	const expectedPath = path.join("test", "expected", "build", "library.o", "dest");
 
 	const graph = await graphFromPackageDependencies({
-		cwd: libraryOPath
+		cwd: libraryOPath,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
-		destPath
+		destPath,
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -1283,11 +1281,11 @@ test.serial("Build application.o with terminologies and supportedLocales", async
 	const expectedPath = path.join("test", "expected", "build", "application.o", "dest");
 
 	const graph = await graphFromPackageDependencies({
-		cwd: applicationOPath
+		cwd: applicationOPath,
 	});
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
-		destPath
+		destPath,
 	});
 
 	const expectedFiles = await findFiles(expectedPath);
@@ -1299,936 +1297,936 @@ test.serial("Build application.o with terminologies and supportedLocales", async
 });
 
 const libraryDTree = {
-	"id": "library.d",
-	"version": "1.0.0",
-	"path": libraryDPath,
-	"dependencies": [
+	id: "library.d",
+	version: "1.0.0",
+	path: libraryDPath,
+	dependencies: [
 		{
-			"id": "sap.ui.core-evo",
-			"version": "1.0.0",
-			"path": libraryCore,
-			"dependencies": [],
-			"configuration": {
-				"specVersion": "2.6",
-				"type": "library",
-				"metadata": {
-					"name": "sap.ui.core",
-					"copyright": "Some fancy copyright"
+			id: "sap.ui.core-evo",
+			version: "1.0.0",
+			path: libraryCore,
+			dependencies: [],
+			configuration: {
+				specVersion: "2.6",
+				type: "library",
+				metadata: {
+					name: "sap.ui.core",
+					copyright: "Some fancy copyright",
 				},
-				"resources": {
-					"configuration": {
-						"paths": {
-							"src": "main/src"
-						}
-					}
-				}
-			}
-		}
-	],
-	"configuration": {
-		"specVersion": "2.6",
-		"type": "library",
-		"metadata": {
-			"name": "library.d",
-			"copyright": "Some fancy copyright"
+				resources: {
+					configuration: {
+						paths: {
+							src: "main/src",
+						},
+					},
+				},
+			},
 		},
-		"resources": {
-			"configuration": {
-				"paths": {
-					"src": "main/src",
-					"test": "main/test"
+	],
+	configuration: {
+		specVersion: "2.6",
+		type: "library",
+		metadata: {
+			name: "library.d",
+			copyright: "Some fancy copyright",
+		},
+		resources: {
+			configuration: {
+				paths: {
+					src: "main/src",
+					test: "main/test",
 				},
-				"propertiesFileSourceEncoding": "ISO-8859-1"
-			}
-		}
-	}
+				propertiesFileSourceEncoding: "ISO-8859-1",
+			},
+		},
+	},
 };
 
 const applicationATree = {
-	"id": "application.a",
-	"version": "1.0.0",
-	"path": applicationAPath,
-	"dependencies": [
+	id: "application.a",
+	version: "1.0.0",
+	path: applicationAPath,
+	dependencies: [
 		libraryDTree,
 		{
-			"id": "library.a",
-			"version": "1.0.0",
-			"path": path.join(collectionPath, "library.a"),
-			"dependencies": [],
-			"configuration": {
-				"specVersion": "2.6",
-				"type": "library",
-				"metadata": {
-					"name": "library.a",
-					"copyright": "${copyright}"
+			id: "library.a",
+			version: "1.0.0",
+			path: path.join(collectionPath, "library.a"),
+			dependencies: [],
+			configuration: {
+				specVersion: "2.6",
+				type: "library",
+				metadata: {
+					name: "library.a",
+					copyright: "${copyright}",
 				},
-				"resources": {
-					"configuration": {
-						"paths": {
-							"src": "src",
-							"test": "test"
-						}
-					}
-				}
-			}
+				resources: {
+					configuration: {
+						paths: {
+							src: "src",
+							test: "test",
+						},
+					},
+				},
+			},
 		},
 		{
-			"id": "library.b",
-			"version": "1.0.0",
-			"path": path.join(collectionPath, "library.b"),
-			"dependencies": [],
-			"configuration": {
-				"specVersion": "2.6",
-				"type": "library",
-				"metadata": {
-					"name": "library.b",
-					"copyright": "${copyright}"
+			id: "library.b",
+			version: "1.0.0",
+			path: path.join(collectionPath, "library.b"),
+			dependencies: [],
+			configuration: {
+				specVersion: "2.6",
+				type: "library",
+				metadata: {
+					name: "library.b",
+					copyright: "${copyright}",
 				},
-				"resources": {
-					"configuration": {
-						"paths": {
-							"src": "src",
-							"test": "test"
-						}
-					}
-				}
-			}
+				resources: {
+					configuration: {
+						paths: {
+							src: "src",
+							test: "test",
+						},
+					},
+				},
+			},
 		},
 		{
-			"id": "library.c",
-			"version": "1.0.0",
-			"path": path.join(collectionPath, "library.c"),
-			"dependencies": [],
-			"configuration": {
-				"specVersion": "2.6",
-				"type": "library",
-				"metadata": {
-					"name": "library.c",
-					"copyright": "${copyright}"
+			id: "library.c",
+			version: "1.0.0",
+			path: path.join(collectionPath, "library.c"),
+			dependencies: [],
+			configuration: {
+				specVersion: "2.6",
+				type: "library",
+				metadata: {
+					name: "library.c",
+					copyright: "${copyright}",
 				},
-				"resources": {
-					"configuration": {
-						"paths": {
-							"src": "src",
-							"test": "test"
-						}
-					}
-				}
-			}
-		}
+				resources: {
+					configuration: {
+						paths: {
+							src: "src",
+							test: "test",
+						},
+					},
+				},
+			},
+		},
 	],
-	"configuration": {
-		"specVersion": "2.6",
-		"type": "application",
-		"metadata": {
-			"name": "application.a"
+	configuration: {
+		specVersion: "2.6",
+		type: "application",
+		metadata: {
+			name: "application.a",
 		},
-		"resources": {
-			"configuration": {
-				"paths": {
-					"webapp": "webapp"
+		resources: {
+			configuration: {
+				paths: {
+					webapp: "webapp",
 				},
-				"propertiesFileSourceEncoding": "ISO-8859-1"
-			}
-		}
-	}
+				propertiesFileSourceEncoding: "ISO-8859-1",
+			},
+		},
+	},
 };
 
 const applicationGTree = {
-	"id": "application.g",
-	"version": "1.0.0",
-	"path": applicationGPath,
-	"dependencies": [],
-	"configuration": {
-		"specVersion": "2.6",
-		"type": "application",
-		"metadata": {
-			"name": "application.g",
-			"copyright": "Some fancy copyright"
+	id: "application.g",
+	version: "1.0.0",
+	path: applicationGPath,
+	dependencies: [],
+	configuration: {
+		specVersion: "2.6",
+		type: "application",
+		metadata: {
+			name: "application.g",
+			copyright: "Some fancy copyright",
 		},
-		"resources": {
-			"configuration": {
-				"paths": {
-					"webapp": "webapp"
+		resources: {
+			configuration: {
+				paths: {
+					webapp: "webapp",
 				},
-				"propertiesFileSourceEncoding": "ISO-8859-1"
-			}
+				propertiesFileSourceEncoding: "ISO-8859-1",
+			},
 		},
-		"builder": {
-			"componentPreload": {
-				"namespaces": [
+		builder: {
+			componentPreload: {
+				namespaces: [
 					"application/g",
 					"application/g/subcomponentA",
-					"application/g/subcomponentB"
-				]
-			}
-		}
-	}
+					"application/g/subcomponentB",
+				],
+			},
+		},
+	},
 };
 
 const applicationGTreeWithExcludes = {
-	"id": "application.g",
-	"version": "1.0.0",
-	"path": applicationGPath,
-	"dependencies": [],
-	"configuration": {
-		"specVersion": "2.6",
-		"type": "application",
-		"metadata": {
-			"name": "application.g",
-			"copyright": "Some fancy copyright"
+	id: "application.g",
+	version: "1.0.0",
+	path: applicationGPath,
+	dependencies: [],
+	configuration: {
+		specVersion: "2.6",
+		type: "application",
+		metadata: {
+			name: "application.g",
+			copyright: "Some fancy copyright",
 		},
-		"resources": {
-			"configuration": {
-				"paths": {
-					"webapp": "webapp"
+		resources: {
+			configuration: {
+				paths: {
+					webapp: "webapp",
 				},
-				"propertiesFileSourceEncoding": "ISO-8859-1"
-			}
+				propertiesFileSourceEncoding: "ISO-8859-1",
+			},
 		},
-		"builder": {
-			"resources": {
-				"excludes": [
+		builder: {
+			resources: {
+				excludes: [
 					"/subcomponentA/**",
 					"!**/manifest.json",
 					"/subcomponentB/**",
 					"/Component.js",
-				]
-			}
-		}
-	}
+				],
+			},
+		},
+	},
 };
 
 const applicationGTreeComponentPreloadPaths = {
-	"id": "application.g",
-	"version": "1.0.0",
-	"path": applicationGPath,
-	"dependencies": [],
-	"configuration": {
-		"specVersion": "2.6",
-		"type": "application",
-		"metadata": {
-			"name": "application.g",
-			"copyright": "Some fancy copyright"
+	id: "application.g",
+	version: "1.0.0",
+	path: applicationGPath,
+	dependencies: [],
+	configuration: {
+		specVersion: "2.6",
+		type: "application",
+		metadata: {
+			name: "application.g",
+			copyright: "Some fancy copyright",
 		},
-		"resources": {
-			"configuration": {
-				"paths": {
-					"webapp": "webapp"
+		resources: {
+			configuration: {
+				paths: {
+					webapp: "webapp",
 				},
-				"propertiesFileSourceEncoding": "ISO-8859-1"
-			}
+				propertiesFileSourceEncoding: "ISO-8859-1",
+			},
 		},
-		"builder": {
-			"componentPreload": {
-				"paths": [
-					"application/g/**/Component.js"
-				]
-			}
-		}
-	}
+		builder: {
+			componentPreload: {
+				paths: [
+					"application/g/**/Component.js",
+				],
+			},
+		},
+	},
 };
 
 const applicationHTree = {
-	"id": "application.h",
-	"version": "1.0.0",
-	"path": applicationHPath,
-	"dependencies": [],
-	"configuration": {
-		"specVersion": "2.6",
-		"type": "application",
-		"metadata": {
-			"name": "application.h"
+	id: "application.h",
+	version: "1.0.0",
+	path: applicationHPath,
+	dependencies: [],
+	configuration: {
+		specVersion: "2.6",
+		type: "application",
+		metadata: {
+			name: "application.h",
 		},
-		"resources": {
-			"configuration": {
-				"paths": {
-					"webapp": "webapp"
+		resources: {
+			configuration: {
+				paths: {
+					webapp: "webapp",
 				},
-				"propertiesFileSourceEncoding": "ISO-8859-1"
-			}
+				propertiesFileSourceEncoding: "ISO-8859-1",
+			},
 		},
-		"builder": {
-			"bundles": [{
-				"bundleDefinition": {
-					"name": "application/h/sectionsA/customBundle.js",
-					"defaultFileTypes": [".js"],
-					"sections": [{
-						"mode": "preload",
-						"filters": [
+		builder: {
+			bundles: [{
+				bundleDefinition: {
+					name: "application/h/sectionsA/customBundle.js",
+					defaultFileTypes: [".js"],
+					sections: [{
+						mode: "preload",
+						filters: [
 							"application/h/sectionsA/",
 							"!application/h/sectionsA/section2**",
-						]
-					}]
+						],
+					}],
 				},
-				"bundleOptions": {
-					"optimize": true
-				}
+				bundleOptions: {
+					optimize: true,
+				},
 			},
 			{
-				"bundleDefinition": {
-					"name": "application/h/sectionsB/customBundle.js",
-					"defaultFileTypes": [".js"],
-					"sections": [{
-						"mode": "preload",
-						"filters": [
-							"application/h/sectionsB/"
-						]
-					}]
+				bundleDefinition: {
+					name: "application/h/sectionsB/customBundle.js",
+					defaultFileTypes: [".js"],
+					sections: [{
+						mode: "preload",
+						filters: [
+							"application/h/sectionsB/",
+						],
+					}],
 				},
-				"bundleOptions": {
-					"optimize": false
-				}
-			}]
-		}
-	}
+				bundleOptions: {
+					optimize: false,
+				},
+			}],
+		},
+	},
 };
 
 const applicationITree = {
-	"id": "application.i",
-	"version": "1.0.0",
-	"path": applicationIPath,
-	"dependencies": [],
-	"configuration": {
-		"specVersion": "2.6",
-		"type": "application",
-		"metadata": {
-			"name": "application.i"
+	id: "application.i",
+	version: "1.0.0",
+	path: applicationIPath,
+	dependencies: [],
+	configuration: {
+		specVersion: "2.6",
+		type: "application",
+		metadata: {
+			name: "application.i",
 		},
-		"resources": {
-			"configuration": {
-				"paths": {
-					"webapp": "webapp"
+		resources: {
+			configuration: {
+				paths: {
+					webapp: "webapp",
 				},
-				"propertiesFileSourceEncoding": "ISO-8859-1"
-			}
+				propertiesFileSourceEncoding: "ISO-8859-1",
+			},
 		},
-		"builder": {
-			"bundles": []
-		}
+		builder: {
+			bundles: [],
+		},
 	},
 };
 
 const applicationJTree = {
-	"id": "application.j",
-	"version": "1.0.0",
-	"path": applicationJPath,
-	"dependencies": [],
-	"configuration": {
-		"specVersion": "2.6",
-		"type": "application",
-		"metadata": {
-			"name": "application.j"
+	id: "application.j",
+	version: "1.0.0",
+	path: applicationJPath,
+	dependencies: [],
+	configuration: {
+		specVersion: "2.6",
+		type: "application",
+		metadata: {
+			name: "application.j",
 		},
-		"resources": {
-			"configuration": {
-				"paths": {
-					"webapp": "webapp"
+		resources: {
+			configuration: {
+				paths: {
+					webapp: "webapp",
 				},
-				"propertiesFileSourceEncoding": "ISO-8859-1"
-			}
+				propertiesFileSourceEncoding: "ISO-8859-1",
+			},
 		},
-		"builder": {
-			"bundles": []
-		}
-	}
+		builder: {
+			bundles: [],
+		},
+	},
 };
 
 const applicationKTree = {
-	"id": "application.k",
-	"version": "1.0.0",
-	"path": applicationKPath,
-	"dependencies": [],
-	"configuration": {
-		"specVersion": "2.6",
-		"type": "application",
-		"metadata": {
-			"name": "application.k",
-			"copyright": "Some fancy copyright"
+	id: "application.k",
+	version: "1.0.0",
+	path: applicationKPath,
+	dependencies: [],
+	configuration: {
+		specVersion: "2.6",
+		type: "application",
+		metadata: {
+			name: "application.k",
+			copyright: "Some fancy copyright",
 		},
-		"resources": {
-			"configuration": {
-				"paths": {
-					"webapp": "webapp"
+		resources: {
+			configuration: {
+				paths: {
+					webapp: "webapp",
 				},
-				"propertiesFileSourceEncoding": "ISO-8859-1"
-			}
+				propertiesFileSourceEncoding: "ISO-8859-1",
+			},
 		},
-		"builder": {
-			"componentPreload": {
-				"namespaces": [
+		builder: {
+			componentPreload: {
+				namespaces: [
 					"application/k",
 					"application/k/subcomponentA",
-					"application/k/subcomponentB"
+					"application/k/subcomponentB",
 				],
-				"excludes": [
+				excludes: [
 					"application/k/**/thirdparty/",
-					"!application/k/subcomponentB/thirdparty/"
-				]
-			}
-		}
-	}
+					"!application/k/subcomponentB/thirdparty/",
+				],
+			},
+		},
+	},
 };
 
 const applicationKPackageSubcomponentsTree = clone(applicationKTree);
 applicationKPackageSubcomponentsTree.configuration.builder = {
-	"componentPreload": {
-		"excludes": [
+	componentPreload: {
+		excludes: [
 			"application/k/**/thirdparty/",
-			"!application/k/subcomponentB/thirdparty/"
-		]
-	}
+			"!application/k/subcomponentB/thirdparty/",
+		],
+	},
 };
 
 const applicationLTree = {
-	"id": "application.l",
-	"version": "1.0.0",
-	"path": applicationLPath,
-	"dependencies": [],
-	"configuration": {
-		"specVersion": "2.6",
-		"type": "application",
-		"metadata": {
-			"name": "application.l"
+	id: "application.l",
+	version: "1.0.0",
+	path: applicationLPath,
+	dependencies: [],
+	configuration: {
+		specVersion: "2.6",
+		type: "application",
+		metadata: {
+			name: "application.l",
 		},
-		"resources": {
-			"configuration": {
-				"paths": {
-					"webapp": "webapp"
+		resources: {
+			configuration: {
+				paths: {
+					webapp: "webapp",
 				},
-				"propertiesFileSourceEncoding": "ISO-8859-1"
-			}
+				propertiesFileSourceEncoding: "ISO-8859-1",
+			},
 		},
-		"builder": {
-			"minification": {
-				"excludes": [
+		builder: {
+			minification: {
+				excludes: [
 					"application/l/**/thirdparty/**",
-					"!application/l/subdir/thirdparty/File1.js"
-				]
-			}
-		}
-	}
+					"!application/l/subdir/thirdparty/File1.js",
+				],
+			},
+		},
+	},
 };
 
 const applicationØTree = {
-	"id": "application.ø",
-	"version": "1.0.0",
-	"path": applicationØPath,
-	"dependencies": [
+	id: "application.ø",
+	version: "1.0.0",
+	path: applicationØPath,
+	dependencies: [
 		{
-			"id": "sap.ui.core-evo",
-			"version": "1.0.0",
-			"path": libraryCore,
-			"dependencies": [],
-			"configuration": {
-				"specVersion": "2.6",
-				"type": "library",
-				"metadata": {
-					"name": "sap.ui.core",
-					"copyright": "Some fancy copyright"
+			id: "sap.ui.core-evo",
+			version: "1.0.0",
+			path: libraryCore,
+			dependencies: [],
+			configuration: {
+				specVersion: "2.6",
+				type: "library",
+				metadata: {
+					name: "sap.ui.core",
+					copyright: "Some fancy copyright",
 				},
-				"resources": {
-					"configuration": {
-						"paths": {
-							"src": "main/src"
-						}
-					}
-				}
-			}
-		}
-	],
-	"configuration": {
-		"specVersion": "2.0",
-		"type": "application",
-		"metadata": {
-			"name": "application.ø"
+				resources: {
+					configuration: {
+						paths: {
+							src: "main/src",
+						},
+					},
+				},
+			},
 		},
-		"resources": {
-			"configuration": {
-				"paths": {
-					"webapp": "wêbäpp"
+	],
+	configuration: {
+		specVersion: "2.0",
+		type: "application",
+		metadata: {
+			name: "application.ø",
+		},
+		resources: {
+			configuration: {
+				paths: {
+					webapp: "wêbäpp",
 				},
-				"propertiesFileSourceEncoding": "UTF-8",
-			}
-		}
-	}
+				propertiesFileSourceEncoding: "UTF-8",
+			},
+		},
+	},
 };
 
 const libraryETree = {
-	"id": "library.e",
-	"version": "1.0.0",
-	"path": libraryEPath,
-	"dependencies": [
+	id: "library.e",
+	version: "1.0.0",
+	path: libraryEPath,
+	dependencies: [
 		{
-			"id": "sap.ui.core-evo",
-			"version": "1.0.0",
-			"path": libraryCore,
-			"dependencies": [],
-			"configuration": {
-				"specVersion": "2.6",
-				"type": "library",
-				"metadata": {
-					"name": "sap.ui.core",
-					"copyright": "Some fancy copyright"
+			id: "sap.ui.core-evo",
+			version: "1.0.0",
+			path: libraryCore,
+			dependencies: [],
+			configuration: {
+				specVersion: "2.6",
+				type: "library",
+				metadata: {
+					name: "sap.ui.core",
+					copyright: "Some fancy copyright",
 				},
-				"resources": {
-					"configuration": {
-						"paths": {
-							"src": "main/src"
-						}
-					}
-				}
-			}
-		}
-	],
-	"configuration": {
-		"specVersion": "2.6",
-		"type": "library",
-		"metadata": {
-			"name": "library.e",
-			"copyright": "UI development toolkit for HTML5 (OpenUI5)\n * (c) Copyright 2009-xxx SAP SE or an " +
-				"SAP affiliate company.\n * Licensed under the Apache License, Version 2.0 - see LICENSE.txt."
+				resources: {
+					configuration: {
+						paths: {
+							src: "main/src",
+						},
+					},
+				},
+			},
 		},
-		"resources": {
-			"configuration": {
-				"paths": {
-					"src": "src",
-					"test": "test"
+	],
+	configuration: {
+		specVersion: "2.6",
+		type: "library",
+		metadata: {
+			name: "library.e",
+			copyright: "UI development toolkit for HTML5 (OpenUI5)\n * (c) Copyright 2009-xxx SAP SE or an " +
+			"SAP affiliate company.\n * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
+		},
+		resources: {
+			configuration: {
+				paths: {
+					src: "src",
+					test: "test",
 				},
-				"propertiesFileSourceEncoding": "ISO-8859-1"
-			}
-		}
-	}
+				propertiesFileSourceEncoding: "ISO-8859-1",
+			},
+		},
+	},
 };
 
 const libraryHTree = {
-	"id": "library.h",
-	"version": "1.0.0",
-	"path": libraryHPath,
-	"dependencies": [
+	id: "library.h",
+	version: "1.0.0",
+	path: libraryHPath,
+	dependencies: [
 		{
-			"id": "sap.ui.core-evo",
-			"version": "1.0.0",
-			"path": libraryCore,
-			"dependencies": [],
-			"configuration": {
-				"specVersion": "2.6",
-				"type": "library",
-				"metadata": {
-					"name": "sap.ui.core",
-					"copyright": "Some fancy copyright"
+			id: "sap.ui.core-evo",
+			version: "1.0.0",
+			path: libraryCore,
+			dependencies: [],
+			configuration: {
+				specVersion: "2.6",
+				type: "library",
+				metadata: {
+					name: "sap.ui.core",
+					copyright: "Some fancy copyright",
 				},
-				"resources": {
-					"configuration": {
-						"paths": {
-							"src": "main/src"
-						}
-					}
-				}
-			}
-		}
+				resources: {
+					configuration: {
+						paths: {
+							src: "main/src",
+						},
+					},
+				},
+			},
+		},
 	],
-	"configuration": {
-		"specVersion": "2.6",
-		"type": "library",
-		"metadata": {
-			"name": "library.h",
-			"copyright": "Some fancy copyright"
+	configuration: {
+		specVersion: "2.6",
+		type: "library",
+		metadata: {
+			name: "library.h",
+			copyright: "Some fancy copyright",
 		},
-		"resources": {
-			"configuration": {
-				"paths": {
-					"src": "main/src",
-					"test": "main/test"
+		resources: {
+			configuration: {
+				paths: {
+					src: "main/src",
+					test: "main/test",
 				},
-				"propertiesFileSourceEncoding": "ISO-8859-1"
-			}
+				propertiesFileSourceEncoding: "ISO-8859-1",
+			},
 		},
-		"builder": {
-			"bundles": [{
-				"bundleDefinition": {
-					"name": "library/h/customBundle.js",
-					"defaultFileTypes": [".js"],
-					"sections": [{
-						"mode": "preload",
-						"filters": [
+		builder: {
+			bundles: [{
+				bundleDefinition: {
+					name: "library/h/customBundle.js",
+					defaultFileTypes: [".js"],
+					sections: [{
+						mode: "preload",
+						filters: [
 							"library/h/some.js",
 							"library/h/library.js",
 							"library/h/fi*.js",
-							"!library/h/components/"
+							"!library/h/components/",
 						],
-						"resolve": false,
-						"renderer": false
+						resolve: false,
+						renderer: false,
 					}, {
-						"mode": "raw",
-						"filters": [
-							"library/h/not.js"
+						mode: "raw",
+						filters: [
+							"library/h/not.js",
 						],
-						"resolve": true,
-						"sort": true,
-						"renderer": false
-					}]
+						resolve: true,
+						sort: true,
+						renderer: false,
+					}],
 				},
-				"bundleOptions": {
-					"optimize": true
-				}
+				bundleOptions: {
+					optimize: true,
+				},
 			}, {
-				"bundleDefinition": {
-					"name": "library/h/customBundle-dbg.js",
-					"defaultFileTypes": [".js"],
-					"sections": [{
-						"mode": "preload",
-						"filters": [
+				bundleDefinition: {
+					name: "library/h/customBundle-dbg.js",
+					defaultFileTypes: [".js"],
+					sections: [{
+						mode: "preload",
+						filters: [
 							"library/h/some.js",
 							"library/h/library.js",
 							"library/h/fi*.js",
-							"!library/h/components/"
+							"!library/h/components/",
 						],
-						"resolve": false,
-						"renderer": false
+						resolve: false,
+						renderer: false,
 					}, {
-						"mode": "raw",
-						"filters": [
-							"library/h/not.js"
+						mode: "raw",
+						filters: [
+							"library/h/not.js",
 						],
-						"resolve": true,
-						"sort": true,
-						"renderer": false
-					}]
+						resolve: true,
+						sort: true,
+						renderer: false,
+					}],
 				},
-				"bundleOptions": {
-					"optimize": false
-				}
+				bundleOptions: {
+					optimize: false,
+				},
 			}],
-			"componentPreload": {
-				"namespaces": [
+			componentPreload: {
+				namespaces: [
 					"library/h/components",
 					"library/h/components/subcomponent1",
 					"library/h/components/subcomponent2",
-					"library/h/components/subcomponent3"
-				]
-			}
-		}
-	}
+					"library/h/components/subcomponent3",
+				],
+			},
+		},
+	},
 };
 
 const libraryITree = {
-	"id": "library.i",
-	"version": "1.0.0",
-	"path": libraryIPath,
-	"dependencies": [
+	id: "library.i",
+	version: "1.0.0",
+	path: libraryIPath,
+	dependencies: [
 		{
-			"id": "sap.ui.core-evo",
-			"version": "1.0.0",
-			"path": libraryCore,
-			"dependencies": [],
-			"configuration": {
-				"specVersion": "2.6",
-				"type": "library",
-				"metadata": {
-					"name": "sap.ui.core",
-					"copyright": "Some fancy copyright"
+			id: "sap.ui.core-evo",
+			version: "1.0.0",
+			path: libraryCore,
+			dependencies: [],
+			configuration: {
+				specVersion: "2.6",
+				type: "library",
+				metadata: {
+					name: "sap.ui.core",
+					copyright: "Some fancy copyright",
 				},
-				"resources": {
-					"configuration": {
-						"paths": {
-							"src": "main/src"
-						}
-					}
-				}
-			}
+				resources: {
+					configuration: {
+						paths: {
+							src: "main/src",
+						},
+					},
+				},
+			},
 		},
-		cloneProjectTree(libraryDTree)
+		cloneProjectTree(libraryDTree),
 	],
-	"configuration": {
-		"specVersion": "2.6",
-		"type": "library",
-		"metadata": {
-			"name": "library.i",
-			"copyright": "Some fancy copyright"
+	configuration: {
+		specVersion: "2.6",
+		type: "library",
+		metadata: {
+			name: "library.i",
+			copyright: "Some fancy copyright",
 		},
-		"resources": {
-			"configuration": {
-				"paths": {
-					"src": "main/src",
-					"test": "main/test"
+		resources: {
+			configuration: {
+				paths: {
+					src: "main/src",
+					test: "main/test",
 				},
-				"propertiesFileSourceEncoding": "ISO-8859-1"
-			}
-		}
-	}
+				propertiesFileSourceEncoding: "ISO-8859-1",
+			},
+		},
+	},
 };
 const libraryIBundlingHTree = {
-	"id": "library.i",
-	"version": "1.0.0",
-	"path": libraryIPath,
-	"dependencies": [
+	id: "library.i",
+	version: "1.0.0",
+	path: libraryIPath,
+	dependencies: [
 		{
-			"id": "sap.ui.core-evo",
-			"version": "1.0.0",
-			"path": libraryCore,
-			"dependencies": [],
-			"configuration": {
-				"specVersion": "2.6",
-				"type": "library",
-				"metadata": {
-					"name": "sap.ui.core",
-					"copyright": "Some fancy copyright"
+			id: "sap.ui.core-evo",
+			version: "1.0.0",
+			path: libraryCore,
+			dependencies: [],
+			configuration: {
+				specVersion: "2.6",
+				type: "library",
+				metadata: {
+					name: "sap.ui.core",
+					copyright: "Some fancy copyright",
 				},
-				"resources": {
-					"configuration": {
-						"paths": {
-							"src": "main/src"
-						}
-					}
-				}
-			}
+				resources: {
+					configuration: {
+						paths: {
+							src: "main/src",
+						},
+					},
+				},
+			},
 		},
-		cloneProjectTree(libraryHTree)
+		cloneProjectTree(libraryHTree),
 	],
-	"configuration": {
-		"specVersion": "2.6",
-		"type": "library",
-		"metadata": {
-			"name": "library.i",
-			"copyright": "Some fancy copyright"
+	configuration: {
+		specVersion: "2.6",
+		type: "library",
+		metadata: {
+			name: "library.i",
+			copyright: "Some fancy copyright",
 		},
-		"resources": {
-			"configuration": {
-				"paths": {
-					"src": "main/src",
-					"test": "main/test"
+		resources: {
+			configuration: {
+				paths: {
+					src: "main/src",
+					test: "main/test",
 				},
-				"propertiesFileSourceEncoding": "ISO-8859-1"
-			}
+				propertiesFileSourceEncoding: "ISO-8859-1",
+			},
 		},
-		"builder": {
-			"bundles": [{
-				"bundleDefinition": {
-					"name": "library/i/customLibraryHBundle.js",
-					"defaultFileTypes": [".js"],
-					"sections": [{
-						"mode": "preload",
-						"filters": [
+		builder: {
+			bundles: [{
+				bundleDefinition: {
+					name: "library/i/customLibraryHBundle.js",
+					defaultFileTypes: [".js"],
+					sections: [{
+						mode: "preload",
+						filters: [
 							"library/h/some.js",
 							"library/h/library.js",
 							"library/h/fi*.js",
-							"!library/h/components/"
+							"!library/h/components/",
 						],
-						"resolve": false,
-						"renderer": false
+						resolve: false,
+						renderer: false,
 					}, {
-						"mode": "raw",
-						"filters": [
-							"library/h/not.js"
+						mode: "raw",
+						filters: [
+							"library/h/not.js",
 						],
-						"resolve": true,
-						"sort": true,
-						"renderer": false
-					}]
+						resolve: true,
+						sort: true,
+						renderer: false,
+					}],
 				},
-				"bundleOptions": {
-					"optimize": true
-				}
+				bundleOptions: {
+					optimize: true,
+				},
 			}, {
-				"bundleDefinition": {
-					"name": "library/i/customLibraryHBundle-dbg.js",
-					"defaultFileTypes": [".js"],
-					"sections": [{
-						"mode": "preload",
-						"filters": [
+				bundleDefinition: {
+					name: "library/i/customLibraryHBundle-dbg.js",
+					defaultFileTypes: [".js"],
+					sections: [{
+						mode: "preload",
+						filters: [
 							"library/h/some.js",
 							"library/h/library.js",
 							"library/h/fi*.js",
-							"!library/h/components/"
+							"!library/h/components/",
 						],
-						"resolve": false,
-						"renderer": false
+						resolve: false,
+						renderer: false,
 					}, {
-						"mode": "raw",
-						"filters": [
-							"library/h/not.js"
+						mode: "raw",
+						filters: [
+							"library/h/not.js",
 						],
-						"resolve": true,
-						"sort": true,
-						"renderer": false
-					}]
+						resolve: true,
+						sort: true,
+						renderer: false,
+					}],
 				},
-				"bundleOptions": {
-					"optimize": false
-				}
-			}]
-		}
-	}
+				bundleOptions: {
+					optimize: false,
+				},
+			}],
+		},
+	},
 };
 
 const libraryJTree = {
-	"id": "library.j",
-	"version": "1.0.0",
-	"path": libraryJPath,
-	"dependencies": [],
-	"configuration": {
-		"specVersion": "2.6",
-		"type": "library",
-		"metadata": {
-			"name": "library.j",
-			"copyright": "Some fancy copyright"
+	id: "library.j",
+	version: "1.0.0",
+	path: libraryJPath,
+	dependencies: [],
+	configuration: {
+		specVersion: "2.6",
+		type: "library",
+		metadata: {
+			name: "library.j",
+			copyright: "Some fancy copyright",
 		},
-		"resources": {
-			"configuration": {
-				"paths": {
-					"src": "main/src"
-				}
-			}
-		}
+		resources: {
+			configuration: {
+				paths: {
+					src: "main/src",
+				},
+			},
+		},
 	},
 };
 
 const libraryLTree = {
-	"id": "library.l",
-	"version": "1.0.0",
-	"path": libraryLPath,
-	"dependencies": [],
-	"configuration": {
-		"specVersion": "2.6",
-		"type": "library",
-		"metadata": {
-			"name": "library.l",
-			"copyright": "Some fancy copyright"
+	id: "library.l",
+	version: "1.0.0",
+	path: libraryLPath,
+	dependencies: [],
+	configuration: {
+		specVersion: "2.6",
+		type: "library",
+		metadata: {
+			name: "library.l",
+			copyright: "Some fancy copyright",
 		},
-		"resources": {
-			"configuration": {
-				"paths": {
-					"src": "main/src"
+		resources: {
+			configuration: {
+				paths: {
+					src: "main/src",
 				},
-				"propertiesFileSourceEncoding": "ISO-8859-1"
-			}
+				propertiesFileSourceEncoding: "ISO-8859-1",
+			},
 		},
-		"builder": {
-			"minification": {
-				"excludes": [
+		builder: {
+			minification: {
+				excludes: [
 					"**/thirdparty/**",
-					"!**/subdir/thirdparty/File1.js"
-				]
-			}
-		}
-	}
+					"!**/subdir/thirdparty/File1.js",
+				],
+			},
+		},
+	},
 };
 
 const libraryØTree = {
-	"id": "library.ø",
-	"version": "1.0.0",
-	"path": libraryØPath,
-	"dependencies": [
+	id: "library.ø",
+	version: "1.0.0",
+	path: libraryØPath,
+	dependencies: [
 		{
-			"id": "sap.ui.core-evo",
-			"version": "1.0.0",
-			"path": libraryCore,
-			"dependencies": [],
-			"configuration": {
-				"specVersion": "2.6",
-				"type": "library",
-				"metadata": {
-					"name": "sap.ui.core",
-					"copyright": "Some fancy copyright"
+			id: "sap.ui.core-evo",
+			version: "1.0.0",
+			path: libraryCore,
+			dependencies: [],
+			configuration: {
+				specVersion: "2.6",
+				type: "library",
+				metadata: {
+					name: "sap.ui.core",
+					copyright: "Some fancy copyright",
 				},
-				"resources": {
-					"configuration": {
-						"paths": {
-							"src": "main/src"
-						}
-					}
-				}
-			}
-		}
-	],
-	"configuration": {
-		"specVersion": "2.0",
-		"type": "library",
-		"metadata": {
-			"name": "library.ø",
-			"copyright": "Some fancy copyright"
+				resources: {
+					configuration: {
+						paths: {
+							src: "main/src",
+						},
+					},
+				},
+			},
 		},
-		"resources": {
-			"configuration": {
-				"paths": {
-					"src": "máin/ßrc",
-					"test": "máin/吉"
+	],
+	configuration: {
+		specVersion: "2.0",
+		type: "library",
+		metadata: {
+			name: "library.ø",
+			copyright: "Some fancy copyright",
+		},
+		resources: {
+			configuration: {
+				paths: {
+					src: "máin/ßrc",
+					test: "máin/吉",
 				},
-				"propertiesFileSourceEncoding": "UTF-8"
-			}
-		}
-	}
+				propertiesFileSourceEncoding: "UTF-8",
+			},
+		},
+	},
 };
 
 const libraryCoreBuildtimeTree = {
-	"id": "library.coreBuildtime",
-	"version": "1.0.0",
-	"path": libraryCoreBuildtime,
-	"dependencies": [],
-	"configuration": {
-		"specVersion": "2.6",
-		"type": "library",
-		"metadata": {
-			"name": "library.coreBuildtime",
-			"copyright": "Some fancy copyright"
+	id: "library.coreBuildtime",
+	version: "1.0.0",
+	path: libraryCoreBuildtime,
+	dependencies: [],
+	configuration: {
+		specVersion: "2.6",
+		type: "library",
+		metadata: {
+			name: "library.coreBuildtime",
+			copyright: "Some fancy copyright",
 		},
-		"resources": {
-			"configuration": {
-				"paths": {
-					"src": "main/src"
+		resources: {
+			configuration: {
+				paths: {
+					src: "main/src",
 				},
-				"propertiesFileSourceEncoding": "ISO-8859-1"
-			}
-		}
-	}
+				propertiesFileSourceEncoding: "ISO-8859-1",
+			},
+		},
+	},
 };
 
 const themeJTree = {
 	// Using @openui5/ prefix to enable execution of generateThemeDesignerResources task
-	"id": "@openui5/theme.j",
-	"version": "1.0.0",
-	"path": themeJPath,
-	"dependencies": [],
-	"configuration": {
-		"specVersion": "2.6",
-		"type": "theme-library",
-		"metadata": {
-			"name": "theme.j",
-			"copyright": "Some fancy copyright"
+	id: "@openui5/theme.j",
+	version: "1.0.0",
+	path: themeJPath,
+	dependencies: [],
+	configuration: {
+		specVersion: "2.6",
+		type: "theme-library",
+		metadata: {
+			name: "theme.j",
+			copyright: "Some fancy copyright",
 		},
-		"resources": {
-			"configuration": {
-				"paths": {
-					"src": "main/src",
-					"test": "main/test"
+		resources: {
+			configuration: {
+				paths: {
+					src: "main/src",
+					test: "main/test",
 				},
-				"propertiesFileSourceEncoding": "ISO-8859-1"
-			}
-		}
-	}
+				propertiesFileSourceEncoding: "ISO-8859-1",
+			},
+		},
+	},
 };
 
 const themeLibraryETree = {
 	// Using @openui5/ prefix to enable execution of generateThemeDesignerResources task
-	"id": "@openui5/theme.library.e.id",
-	"version": "1.0.0",
-	"path": themeLibraryEPath,
-	"dependencies": [],
-	"configuration": {
-		"specVersion": "2.0",
-		"type": "theme-library",
-		"metadata": {
-			"name": "theme.library.e",
-			"copyright": "Some fancy copyright"
+	id: "@openui5/theme.library.e.id",
+	version: "1.0.0",
+	path: themeLibraryEPath,
+	dependencies: [],
+	configuration: {
+		specVersion: "2.0",
+		type: "theme-library",
+		metadata: {
+			name: "theme.library.e",
+			copyright: "Some fancy copyright",
 		},
-		"resources": {
-			"configuration": {
-				"paths": {
-					"src": "src",
-					"test": "test"
-				}
-			}
-		}
-	}
+		resources: {
+			configuration: {
+				paths: {
+					src: "src",
+					test: "test",
+				},
+			},
+		},
+	},
 };

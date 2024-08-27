@@ -10,19 +10,18 @@ const log = getLogger("lbt:graph:dominatorTree");
  * described in https://en.wikipedia.org/wiki/Dominator_(graph_theory) .
  * It has runtime O(n^2) and could be replaced by a more sophisticated one (e.g. Lengauer and Tarjan).
  *
- * @param {object} graph Graph to calculate the DOM tree for
- * @param {Map.<string,Node>} graph.nodes Nodes of the dependency graph
- * @param {Node} graph.n0 Artificial root node
- * @returns {Node} Root node of the dominator tree.
- * @private
+ * @param graph Graph to calculate the DOM tree for
+ * @param graph.nodes Nodes of the dependency graph
+ * @param graph.n0 Artificial root node
+ * @returns Root node of the dominator tree.
  */
-function calculateDominatorTree({ n0, nodes }: {
-    nodes: Map<string, Node>;
-    n0: Node;
+function calculateDominatorTree({n0, nodes}: {
+	nodes: Map<string, Node>;
+	n0: Node;
 }) {
 	// initialize set of dominators for each node
-	for ( const n of nodes.values() ) {
-		if ( n === n0 ) {
+	for (const n of nodes.values()) {
+		if (n === n0) {
 			// dominator of the start node is the start node itself
 			n.dominators = new Set().add(n);
 		} else {
@@ -33,9 +32,13 @@ function calculateDominatorTree({ n0, nodes }: {
 
 	log.verbose(`${nodes.size - 1} modules found, starting dominator tree calculation`);
 
+	/**
+	 *
+	 * @param nodes
+	 */
 	function countEdges(nodes) {
 		let count = 0;
-		for ( const n of nodes.values() ) {
+		for (const n of nodes.values()) {
 			count += n.dominators.size;
 		}
 		return count;
@@ -51,13 +54,13 @@ function calculateDominatorTree({ n0, nodes }: {
 		}
 
 		modified = false;
-		for ( const n of nodes.values() ) {
-			if ( n === n0 ) {
+		for (const n of nodes.values()) {
+			if (n === n0) {
 				continue; // no processing for the root node
 			}
 			// Dom(n) = {n} union with intersection over Dom(p) for all p in pred(n) */
-			for ( const d of n.dominators ) {
-				if ( d === n ) {
+			for (const d of n.dominators) {
+				if (d === n) {
 					continue; // by definition, n is always a dominator of its own
 				}
 				// Note: the intersection can only remove items that are currently in the set of
@@ -65,8 +68,8 @@ function calculateDominatorTree({ n0, nodes }: {
 				// is implemented by checking each current dominator of n whether it is contained
 				// in the dominator sets of all predecessors. If not, it is removed from the
 				// set of dominotors of n.
-				for ( const p of n.pred ) {
-					if ( !p.dominators.has(d) ) {
+				for (const p of n.pred) {
+					if (!p.dominators.has(d)) {
 						n.dominators.delete(d);
 						modified = true;
 						break;
@@ -77,9 +80,9 @@ function calculateDominatorTree({ n0, nodes }: {
 	} while (modified);
 
 	// build the inverse of the 'strictly-dominated-by' graph ('strictly-dominates' graph)
-	for ( const n of nodes.values() ) {
-		for ( const d of n.dominators ) {
-			if ( d !== n ) { // ignore edge to self ('strict')
+	for (const n of nodes.values()) {
+		for (const d of n.dominators) {
+			if (d !== n) { // ignore edge to self ('strict')
 				d.succ.add(n);
 			}
 		}
@@ -94,16 +97,20 @@ function calculateDominatorTree({ n0, nodes }: {
 	// marked as immediately dominated (=== 'visited'), then the current node is the
 	// immediate dominator, the corresponding edge is kept (otherwise removed) and the child
 	// is marked as 'immediately dominated'
+	/**
+	 *
+	 * @param node
+	 */
 	function dfs(node) {
 		// visit children, thereby identifying non-immediately dominated nodes
-		for ( const child of node.succ ) {
-			if ( !child.visited ) {
+		for (const child of node.succ) {
+			if (!child.visited) {
 				// console.log("visit %s->%s (visited:%s)", node.name, child.name, child.visited);
 				dfs(child);
 			}
 		}
-		for ( const child of node.succ ) {
-			if ( child.visited ) {
+		for (const child of node.succ) {
+			if (child.visited) {
 				// console.log("delete %s -> %s", node.name, child.name)
 				node.succ.delete(child);
 			} else {

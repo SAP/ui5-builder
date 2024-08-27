@@ -1,29 +1,37 @@
-
 import {getLogger} from "@ui5/logger";
 const log = getLogger("lbt:resources:ResourceFilterList");
 
 const FILTER_PREFIXES = /^[-!+]/;
 
+/**
+ *
+ * @param fileTypes
+ */
 function makeFileTypePattern(fileTypes) {
-	if ( fileTypes == null ) {
+	if (fileTypes == null) {
 		return undefined;
 	}
 	return "(?:" + fileTypes.map((type) => {
-		if ( !type.startsWith(".") ) {
+		if (!type.startsWith(".")) {
 			type = "." + type;
 		}
 		return type.replace(/[*+?.()|^$\\]/g, "\\$&");
 	}).join("|") + ")";
 }
 
+/**
+ *
+ * @param globPattern
+ * @param fileTypesPattern
+ */
 function makeMatcher(globPattern, fileTypesPattern) {
 	const result = {
 		pattern: globPattern,
-		include: true
+		include: true,
 	};
 
 	// cut off leading '!', '-' or '+'
-	if ( FILTER_PREFIXES.test(globPattern) ) {
+	if (FILTER_PREFIXES.test(globPattern)) {
 		result.include = globPattern[0] === "+";
 		globPattern = globPattern.slice(1);
 	}
@@ -35,8 +43,8 @@ function makeMatcher(globPattern, fileTypesPattern) {
 	//      ".../foo/**/" --> "../foo/**/*"
 	// - any other trailing slash matches any files in any sub-folder:
 	//      ".../foo/" --> ".../foo/**/*"
-	if ( globPattern.endsWith("/") ) {
-		if ( globPattern === "**/" || globPattern.endsWith("/**/") ) {
+	if (globPattern.endsWith("/")) {
+		if (globPattern === "**/" || globPattern.endsWith("/**/")) {
 			globPattern = globPattern + "*";
 		} else {
 			globPattern = globPattern + "**/*";
@@ -44,42 +52,46 @@ function makeMatcher(globPattern, fileTypesPattern) {
 	}
 
 	// check for wildcards
-	if ( /\*/.test(globPattern) ) {
+	if (/\*/.test(globPattern)) {
 		// Transform the globPattern into a regular expression pattern by converting
 		// the "all sub-directories" pattern "/**/" and the "any file name" pattern "*"
 		// to their respective regexp counterparts and escape all other regexp special
 		// characters.
 		let regexp = globPattern.replace(/^\*\*\/|\/\*\*\/|\*|[[\]{}()+?.\\^$|]/g, (match) => {
 			switch (match) {
-			case "**/": return "(?:[^/]+/)*";
-			case "/**/": return "/(?:[^/]+/)*";
-			case "*": return "[^/]*";
-			default: return "\\" + match;
+				case "**/": return "(?:[^/]+/)*";
+				case "/**/": return "/(?:[^/]+/)*";
+				case "*": return "[^/]*";
+				default: return "\\" + match;
 			}
 		});
 
 		// if the pattern ended with an asterisk and if a default file type pattern is defined,
 		// add that pattern. This limits the matches to the specified set of file types
-		if ( fileTypesPattern != null && regexp.endsWith("[^/]*") ) {
+		if (fileTypesPattern != null && regexp.endsWith("[^/]*")) {
 			regexp = regexp + fileTypesPattern;
 		}
 
 		result.regexp = new RegExp("^" + regexp + "$");
-		result.calcMatch = result.include ? function(candidate, matchSoFar) {
-			return matchSoFar || this.regexp.test(candidate);
-		} : function(candidate, matchSoFar) {
-			return matchSoFar && !this.regexp.test(candidate);
-		};
+		result.calcMatch = result.include ?
+			function (candidate, matchSoFar) {
+				return matchSoFar || this.regexp.test(candidate);
+			} :
+			function (candidate, matchSoFar) {
+				return matchSoFar && !this.regexp.test(candidate);
+			};
 
 		log.verbose(`  ${result.pattern} --> ${result.include ? "include" : "exclude"}: /${result.regexp.source}/`);
 	} else {
 		result.value = globPattern;
 		log.verbose(`  ${result.pattern} --> ${result.include ? "include" : "exclude"}: "${globPattern}"`);
-		result.calcMatch = result.include ? function(candidate, matchSoFar) {
-			return matchSoFar || candidate === this.value;
-		} : function(candidate, matchSoFar) {
-			return matchSoFar && candidate !== this.value;
-		};
+		result.calcMatch = result.include ?
+			function (candidate, matchSoFar) {
+				return matchSoFar || candidate === this.value;
+			} :
+			function (candidate, matchSoFar) {
+				return matchSoFar && candidate !== this.value;
+			};
 	}
 
 	return result;
@@ -93,7 +105,6 @@ function makeMatcher(globPattern, fileTypesPattern) {
  *
  * @author Frank Weigel
  * @since 1.16.2
- * @private
  */
 export default class ResourceFilterList {
 	constructor(filters, fileTypes) {
@@ -105,13 +116,13 @@ export default class ResourceFilterList {
 	}
 
 	addFilters(filters) {
-		if ( Array.isArray(filters) ) {
-			filters.forEach( (filter) => {
+		if (Array.isArray(filters)) {
+			filters.forEach((filter) => {
 				const matcher = makeMatcher(filter, this.fileTypes);
-				this.matchers.push( matcher );
+				this.matchers.push(matcher);
 				this.matchByDefault = this.matchByDefault && !matcher.include;
 			});
-		} else if ( filters != null ) {
+		} else if (filters != null) {
 			throw new Error("unsupported filter " + filters);
 		}
 		return this;
@@ -143,26 +154,30 @@ export default class ResourceFilterList {
 	 * Example:
 	 * <pre>
 	 *	 !sap/ui/core/
-	*	 +sap/ui/core/utils/
-	* </pre>
-	* excludes everything from sap/ui/core, but includes everything from the subpackage sap/ui/core/utils/.
-	*
-	* Note that the filter operates on the full name of each resource. If a resource name
-	* <code>prefix</code> is configured for a resource set, the filter will be applied
-	* to the combination of prefix and local file path and not only to the local file path.
-	*
-	* @param {string} filterStr comma separated list of simple filters
-	* @returns {ResourceFilterList}
-	*/
+	 *	 +sap/ui/core/utils/
+	 * </pre>
+	 * excludes everything from sap/ui/core, but includes everything from the subpackage sap/ui/core/utils/.
+	 *
+	 * Note that the filter operates on the full name of each resource. If a resource name
+	 * <code>prefix</code> is configured for a resource set, the filter will be applied
+	 * to the combination of prefix and local file path and not only to the local file path.
+	 *
+	 * @param filterStr comma separated list of simple filters
+	 * @returns
+	 */
 	static fromString(filterStr: string) {
 		const result = new ResourceFilterList();
-		if ( filterStr != null ) {
-			result.addFilters( filterStr.trim().split(/\s*,\s*/).filter(Boolean) );
+		if (filterStr != null) {
+			result.addFilters(filterStr.trim().split(/\s*,\s*/).filter(Boolean));
 		}
 		return result;
 	}
 }
 
+/**
+ *
+ * @param patterns
+ */
 export function negateFilters(patterns) {
 	return patterns.map((pattern) => {
 		let include = true;

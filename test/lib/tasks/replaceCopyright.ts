@@ -5,10 +5,10 @@ import DuplexCollection from "@ui5/fs/DuplexCollection";
 
 test("integration: replace copyright", async (t) => {
 	const reader = createAdapter({
-		virBasePath: "/"
+		virBasePath: "/",
 	});
 	const writer = createAdapter({
-		virBasePath: "/"
+		virBasePath: "/",
 	});
 	const workspace = new DuplexCollection({reader, writer});
 
@@ -33,7 +33,7 @@ console.log('HelloWorld');`;
 
 	const resource = createResource({
 		path: "/test.js",
-		string: content
+		string: content,
 	});
 
 	await workspace.write(resource);
@@ -42,8 +42,8 @@ console.log('HelloWorld');`;
 		workspace,
 		options: {
 			copyright: copyright,
-			pattern: "/**/*.js"
-		}
+			pattern: "/**/*.js",
+		},
 	});
 
 	const transformedResource = await writer.byPath("/test.js");
@@ -55,13 +55,12 @@ console.log('HelloWorld');`;
 	}
 });
 
-
 test("test.xml: replace @copyright@", async (t) => {
 	const reader = createAdapter({
-		virBasePath: "/"
+		virBasePath: "/",
 	});
 	const writer = createAdapter({
-		virBasePath: "/"
+		virBasePath: "/",
 	});
 	const workspace = new DuplexCollection({reader, writer});
 	const content = `<!--
@@ -83,7 +82,7 @@ test("test.xml: replace @copyright@", async (t) => {
 
 	const resource = createResource({
 		path: "/test.xml",
-		string: content
+		string: content,
 	});
 
 	await reader.write(resource);
@@ -91,8 +90,8 @@ test("test.xml: replace @copyright@", async (t) => {
 		workspace,
 		options: {
 			pattern: "/**/*.xml",
-			copyright: copyright
-		}
+			copyright: copyright,
+		},
 	});
 	const transformedResource = await writer.byPath("/test.xml");
 

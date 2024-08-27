@@ -1,7 +1,6 @@
 import stringReplacer from "../processors/stringReplacer.js";
 
 /**
- * @public
  * @module @ui5/builder/tasks/replaceCopyright
  */
 
@@ -18,18 +17,14 @@ import stringReplacer from "../processors/stringReplacer.js";
  * it will be replaced with the current year.
  * If no copyright string is given, no replacement is being done.
  *
- * @public
- * @function default
- * @static
- *
- * @param {object} parameters Parameters
- * @param {@ui5/fs/DuplexCollection} parameters.workspace DuplexCollection to read and write files
- * @param {object} parameters.options Options
- * @param {string} parameters.options.copyright Replacement copyright
- * @param {string} parameters.options.pattern Pattern to locate the files to be processed
- * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
+ * @param parameters Parameters
+ * @param parameters.workspace DuplexCollection to read and write files
+ * @param parameters.options Options
+ * @param parameters.options.copyright Replacement copyright
+ * @param parameters.options.pattern Pattern to locate the files to be processed
+ * @returns Promise resolving with <code>undefined</code> once data has been written
  */
-export default function({ workspace, options: { copyright, pattern } }: object) {
+export default function ({workspace, options: {copyright, pattern}}: object) {
 	if (!copyright) {
 		return Promise.resolve();
 	}
@@ -43,8 +38,8 @@ export default function({ workspace, options: { copyright, pattern } }: object) 
 				resources: processedResources,
 				options: {
 					pattern: /(?:\$\{copyright\}|@copyright@)/g,
-					replacement: copyright
-				}
+					replacement: copyright,
+				},
 			});
 		})
 		.then((processedResources) => {

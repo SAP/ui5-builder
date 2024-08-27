@@ -1,11 +1,11 @@
 /**
  * Applies default values to bundleDefinitions
  *
- * @param {module:@ui5/builder/processors/bundlers/moduleBundler~ModuleBundleDefinition} bundleDefinition Module
+ * @param bundleDefinition Module
  *		bundle definition
- * @param {@ui5/project/build/helpers/TaskUtil|object} [taskUtil] TaskUtil
+ * @param [taskUtil] TaskUtil
  *
- * @returns {module:@ui5/builder/processors/bundlers/moduleBundler~ModuleBundleDefinition}
+ * @returns
  */
 export function applyDefaultsToBundleDefinition(bundleDefinition: object, taskUtil) {
 	bundleDefinition.sections = bundleDefinition?.sections?.map((section) => {
@@ -23,7 +23,7 @@ export function applyDefaultsToBundleDefinition(bundleDefinition: object, taskUt
 		if (section.mode === "require") {
 			// Builder.js already treats missing async flag as truthy value and builds asynchronously by default
 
-			if (taskUtil && taskUtil.getProject().getSpecVersion().lt("4.0")) {
+			if (taskUtil?.getProject().getSpecVersion().lt("4.0")) {
 				defaultValues.async = false;
 			}
 		}

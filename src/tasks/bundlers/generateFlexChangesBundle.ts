@@ -4,7 +4,6 @@ import flexChangesBundler from "../../processors/bundlers/flexChangesBundler.js"
 import semver from "semver";
 
 /**
- * @public
  * @module @ui5/builder/tasks/bundlers/generateFlexChangesBundle
  */
 
@@ -17,18 +16,14 @@ import semver from "semver";
  * If minUI5Version >= 1.73 flexibility-bundle.json will be create.
  * If there are control variants and minUI5Version < 1.73 build will break and throw an error.
  *
- * @public
- * @function default
- * @static
- *
- * @param {object} parameters Parameters
- * @param {@ui5/fs/DuplexCollection} parameters.workspace DuplexCollection to read and write files
- * @param {@ui5/project/build/helpers/TaskUtil|object} [parameters.taskUtil] TaskUtil
- * @param {object} [parameters.options] Options
- * @param {string} [parameters.options.projectNamespace] Project Namespace
- * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
+ * @param parameters Parameters
+ * @param parameters.workspace DuplexCollection to read and write files
+ * @param [parameters.taskUtil] TaskUtil
+ * @param [parameters.options] Options
+ * @param [parameters.options.projectNamespace] Project Namespace
+ * @returns Promise resolving with <code>undefined</code> once data has been written
  */
-export default async function({ workspace, taskUtil, options = {} }: object) {
+export default async function ({workspace, taskUtil, options = {}}: object) {
 	const namespace = options.projectNamespace;
 
 	// Use the given namespace if available, otherwise use no namespace
@@ -38,6 +33,10 @@ export default async function({ workspace, taskUtil, options = {} }: object) {
 		pathPrefix = `/resources/${namespace}`;
 	}
 
+	/**
+	 *
+	 * @param data
+	 */
 	function updateJson(data) {
 		// ensure the existence of the libs section in the dependencies
 		data["sap.ui5"] = data["sap.ui5"] || {};
@@ -56,6 +55,9 @@ export default async function({ workspace, taskUtil, options = {} }: object) {
 		}
 	}
 
+	/**
+	 *
+	 */
 	async function updateFLdependency() {
 		const manifestResource = await workspace.byPath(`${pathPrefix}/manifest.json`);
 		const manifestContent = JSON.parse(await manifestResource.getString());
@@ -66,6 +68,9 @@ export default async function({ workspace, taskUtil, options = {} }: object) {
 		await workspace.write(manifestResource);
 	}
 
+	/**
+	 *
+	 */
 	async function readManifestMinUI5Version() {
 		const manifestResource = await workspace.byPath(`${pathPrefix}/manifest.json`);
 		const manifestContent = JSON.parse(await manifestResource.getString());
@@ -100,9 +105,9 @@ export default async function({ workspace, taskUtil, options = {} }: object) {
 			resources: allResources,
 			options: {
 				pathPrefix,
-				hasFlexBundleVersion
+				hasFlexBundleVersion,
 			},
-			existingFlexBundle: flexBundle
+			existingFlexBundle: flexBundle,
 		});
 		await Promise.all(processedResources.map((resource) => {
 			log.verbose("Writing flexibility changes bundle");

@@ -7,40 +7,35 @@ import {createAdapter} from "@ui5/fs/resourceFactory";
 import {fileURLToPath} from "node:url";
 
 /**
- * @public
  * @module @ui5/builder/processors/jsdoc/jsdocGenerator
  */
 
 /**
  * JSDoc generator
  *
- * @public
- * @function default
- * @static
- *
- * @param {object} parameters Parameters
- * @param {string} parameters.sourcePath Path of the source files to be processed
- * @param {string} parameters.targetPath Path to write any output files
- * @param {string} parameters.tmpPath Path to write temporary and debug files
- * @param {object} parameters.options Options
- * @param {string} parameters.options.projectName Project name
- * @param {string} parameters.options.namespace Namespace to build (e.g. <code>some/project/name</code>)
- * @param {string} parameters.options.version Project version
- * @param {Array} [parameters.options.variants=["apijson"]] JSDoc variants to be built
- * @returns {Promise<@ui5/fs/Resource[]>} Promise resolving with newly created resources
+ * @param parameters Parameters
+ * @param parameters.sourcePath Path of the source files to be processed
+ * @param parameters.targetPath Path to write any output files
+ * @param parameters.tmpPath Path to write temporary and debug files
+ * @param parameters.options Options
+ * @param parameters.options.projectName Project name
+ * @param parameters.options.namespace Namespace to build (e.g. <code>some/project/name</code>)
+ * @param parameters.options.version Project version
+ * @param [parameters.options.variants] JSDoc variants to be built
+ * @returns Promise resolving with newly created resources
  */
 export default async function jsdocGenerator(
-	{ sourcePath, targetPath, tmpPath, options: { projectName, namespace, version, variants } }: {
-    sourcePath: string;
-    targetPath: string;
-    tmpPath: string;
-    options: {
-        projectName: string;
-        namespace: string;
-        version: string;
-        variants?: Array<any>;
-    };
-} = {}
+	{sourcePath, targetPath, tmpPath, options: {projectName, namespace, version, variants}}: {
+		sourcePath: string;
+		targetPath: string;
+		tmpPath: string;
+		options: {
+			projectName: string;
+			namespace: string;
+			version: string;
+			variants?: any[];
+		};
+	} = {}
 ) {
 	if (!sourcePath || !targetPath || !tmpPath || !projectName || !namespace || !version) {
 		throw new Error("[jsdocGenerator]: One or more mandatory parameters not provided");
@@ -56,49 +51,47 @@ export default async function jsdocGenerator(
 		namespace,
 		projectName,
 		version,
-		variants
+		variants,
 	});
 
 	const configPath = await jsdocGenerator._writeJsdocConfig(tmpPath, config);
 
 	await jsdocGenerator._buildJsdoc({
 		sourcePath,
-		configPath
+		configPath,
 	});
 
 	const fsTarget = createAdapter({
 		fsBasePath: targetPath,
-		virBasePath: "/"
+		virBasePath: "/",
 	});
 
 	// create resources from the output files
 	return Promise.all([
-		fsTarget.byPath(`/test-resources/${namespace}/designtime/api.json`)
+		fsTarget.byPath(`/test-resources/${namespace}/designtime/api.json`),
 		// fsTarget.byPath(`/libraries/${options.projectName}.js`)
-	]).then((res) => res.filter(($)=>$));
+	]).then((res) => res.filter(($) => $));
 }
-
 
 /**
  * Generate jsdoc-config.json content
  *
- * @private
- * @param {object} parameters Parameters
- * @param {string} parameters.targetPath Path to write any output files
- * @param {string} parameters.tmpPath Path to write temporary and debug files
- * @param {string} parameters.projectName Project name
- * @param {string} parameters.version Project version
- * @param {string} parameters.namespace Namespace to use (e.g. <code>some/project/name</code>)
- * @param {Array} parameters.variants JSDoc variants to be built
- * @returns {string} jsdoc-config.json content string
+ * @param parameters Parameters
+ * @param parameters.targetPath Path to write any output files
+ * @param parameters.tmpPath Path to write temporary and debug files
+ * @param parameters.projectName Project name
+ * @param parameters.version Project version
+ * @param parameters.namespace Namespace to use (e.g. <code>some/project/name</code>)
+ * @param parameters.variants JSDoc variants to be built
+ * @returns jsdoc-config.json content string
  */
-async function generateJsdocConfig({ targetPath, tmpPath, namespace, projectName, version, variants }: {
-    targetPath: string;
-    tmpPath: string;
-    projectName: string;
-    version: string;
-    namespace: string;
-    variants: Array<any>;
+async function generateJsdocConfig({targetPath, tmpPath, namespace, projectName, version, variants}: {
+	targetPath: string;
+	tmpPath: string;
+	projectName: string;
+	version: string;
+	namespace: string;
+	variants: any[];
 }) {
 	// Backlash needs to be escaped as double-backslash
 	// This is not only relevant for win32 paths but also for
@@ -151,10 +144,9 @@ async function generateJsdocConfig({ targetPath, tmpPath, namespace, projectName
 /**
  * Write jsdoc-config.json to file system
  *
- * @private
- * @param {string} targetDirPath Directory Path to write the jsdoc-config.json file to
- * @param {string} config jsdoc-config.json content
- * @returns {string} Full path to the written jsdoc-config.json file
+ * @param targetDirPath Directory Path to write the jsdoc-config.json file to
+ * @param config jsdoc-config.json content
+ * @returns Full path to the written jsdoc-config.json file
  */
 async function writeJsdocConfig(targetDirPath: string, config: string) {
 	const configPath = path.join(targetDirPath, "jsdoc-config.json");
@@ -162,30 +154,28 @@ async function writeJsdocConfig(targetDirPath: string, config: string) {
 	return configPath;
 }
 
-
 /**
  * Execute JSDoc build by spawning JSDoc as an external process
  *
- * @private
- * @param {object} parameters Parameters
- * @param {string} parameters.sourcePath Project resources (input for JSDoc generation)
- * @param {string} parameters.configPath Full path to jsdoc-config.json file
- * @returns {Promise<undefined>}
+ * @param parameters Parameters
+ * @param parameters.sourcePath Project resources (input for JSDoc generation)
+ * @param parameters.configPath Full path to jsdoc-config.json file
+ * @returns
  */
-async function buildJsdoc({ sourcePath, configPath }: {
-    sourcePath: string;
-    configPath: string;
+async function buildJsdoc({sourcePath, configPath}: {
+	sourcePath: string;
+	configPath: string;
 }) {
 	const args = [
 		fileURLToPath(import.meta.resolve("jsdoc/jsdoc.js")),
 		"-c",
 		configPath,
 		"--verbose",
-		sourcePath
+		sourcePath,
 	];
 	const exitCode = await new Promise((resolve /* , reject */) => {
 		const child = spawn("node", args, {
-			stdio: ["ignore", "ignore", "inherit"]
+			stdio: ["ignore", "ignore", "inherit"],
 		});
 		child.on("close", resolve);
 	});

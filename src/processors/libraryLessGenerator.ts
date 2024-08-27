@@ -14,17 +14,20 @@ class LibraryLessGenerator {
 		const readFile = promisify(fs.readFile);
 		this.readFile = async (filePath) => readFile(filePath, {encoding: "utf8"});
 	}
+
 	async generate({filePath, fileContent}) {
 		return `/* NOTE: This file was generated as an optimized version of ` +
 			`"library.source.less" for the Theme Designer. */\n\n` +
 			(await this.resolveLessImports({
 				filePath,
-				fileContent
+				fileContent,
 			}));
 	}
+
 	static getPathToRoot(baseDir) {
 		return posixPath.relative(baseDir, "/") + "/";
 	}
+
 	async resolveLessImports({filePath, fileContent}) {
 		const imports = this.findLessImports(fileContent);
 		if (!imports.length) {
@@ -53,6 +56,7 @@ class LibraryLessGenerator {
 		}
 		return array.join("");
 	}
+
 	async resolveLessImport(originalFilePath, resolvedFilePath, baseDir) {
 		// Rewrite base.less imports
 		const baseLessMatch = BASE_LESS_PATTERN.exec(resolvedFilePath);
@@ -110,10 +114,11 @@ class LibraryLessGenerator {
 		return `/* START "${originalFilePath}" */\n` +
 			(await this.resolveLessImports({
 				filePath: resolvedFilePath,
-				fileContent: importedFileContent
+				fileContent: importedFileContent,
 			})) +
 			`\n/* END "${originalFilePath}" */\n`;
 	}
+
 	findLessImports(fileContent) {
 		const imports = [];
 		let match;
@@ -121,7 +126,7 @@ class LibraryLessGenerator {
 			imports.push({
 				path: match[1],
 				matchStart: match.index,
-				matchLength: match[0].length
+				matchLength: match[0].length,
 			});
 		}
 		return imports;
@@ -129,7 +134,6 @@ class LibraryLessGenerator {
 }
 
 /**
- * @public
  * @module @ui5/builder/processors/libraryLessGenerator
  */
 
@@ -144,18 +148,14 @@ class LibraryLessGenerator {
  * <li>Imports to "library.source.less" are adopted to "library.less"</li>
  * </ul>
  *
- * @public
- * @function default
- * @static
- *
- * @param {object} parameters Parameters
- * @param {@ui5/fs/Resource[]} parameters.resources List of <code>library.source.less</code>
+ * @param parameters Parameters
+ * @param parameters.resources List of <code>library.source.less</code>
  * resources
- * @param {fs|module:@ui5/fs/fsInterface} parameters.fs Node fs or custom
+ * @param parameters.fs Node fs or custom
  * [fs interface]{@link module:@ui5/fs/fsInterface}
- * @returns {Promise<@ui5/fs/Resource[]>} Promise resolving with library.less resources
+ * @returns Promise resolving with library.less resources
  */
-async function createLibraryLess({ resources, fs }: object) {
+async function createLibraryLess({resources, fs}: object) {
 	const generator = new LibraryLessGenerator({fs});
 	return Promise.all(resources.map(async (librarySourceLessResource) => {
 		const filePath = librarySourceLessResource.getPath();
@@ -168,7 +168,7 @@ async function createLibraryLess({ resources, fs }: object) {
 
 		return new Resource({
 			path: libraryLessFilePath,
-			string: libraryLessFileContent
+			string: libraryLessFileContent,
 		});
 	}));
 }

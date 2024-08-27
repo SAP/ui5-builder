@@ -29,23 +29,23 @@ test("extract packaging info from .library file", (t) => {
 		{
 			name: "vendor/blanket.js",
 			dependencies: [],
-			ignoredGlobals: undefined
+			ignoredGlobals: undefined,
 		},
 		{
 			name: "vendor/crossroads.js",
 			dependencies: ["vendor/signals.js"],
-			ignoredGlobals: ["foo", "bar"]
+			ignoredGlobals: ["foo", "bar"],
 		},
 		{
 			name: "vendor/hasher.js",
 			dependencies: ["vendor/signals.js"],
-			ignoredGlobals: undefined
+			ignoredGlobals: undefined,
 		},
 		{
 			name: "vendor/require.js",
 			dependencies: [],
-			ignoredGlobals: undefined
-		}
+			ignoredGlobals: undefined,
+		},
 	];
 
 	const actual = getDependencyInfos("a.library", libraryFile);
