@@ -28,6 +28,6 @@ Files: *
 Copyright: 2018-2024 SAP SE or an SAP affiliate company and UI5 Tooling contributors
 License: Apache-2.0
 
-Files: lib/processors/jsdoc/lib/*
+Files: src/processors/jsdoc/lib/*
 Copyright: 2009-2024 SAP SE or an SAP affiliate company and OpenUI5 contributors
 License: Apache-2.0
