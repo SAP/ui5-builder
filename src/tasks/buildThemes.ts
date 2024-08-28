@@ -23,10 +23,22 @@ function getPool(taskUtil) {
 		const maxWorkers = Math.max(Math.min(osCpus - 1, MAX_WORKERS), MIN_WORKERS);
 
 		log.verbose(`Creating workerpool with up to ${maxWorkers} workers (available CPU cores: ${osCpus})`);
-		const workerPath = fileURLToPath(new URL("../processors/themeBuilderWorker.js", import.meta.url));
+		const suffix = new URL(import.meta.url).pathname.endsWith(".ts") ? ".ts" : ".js";
+		let workerThreadOpts;
+		if (suffix === ".ts") {
+			workerThreadOpts = {
+				execArgv: [
+					"--experimental-strip-types",
+					"--no-warnings=ExperimentalWarning",
+				],
+			};
+		}
+		console.log(suffix);
+		const workerPath = fileURLToPath(new URL(`../processors/themeBuilderWorker${suffix}`, import.meta.url));
 		pool = workerpool.pool(workerPath, {
 			workerType: "thread",
 			maxWorkers,
+			workerThreadOpts,
 		});
 		taskUtil.registerCleanupTask((force) => {
 			const attemptPoolTermination = async () => {

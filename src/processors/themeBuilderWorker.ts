@@ -1,5 +1,4 @@
 import workerpool from "workerpool";
-import themeBuilder from "./themeBuilder.js";
 import {createResource} from "@ui5/fs/resourceFactory";
 import {Buffer} from "node:buffer";
 
@@ -20,6 +19,8 @@ export default async function execThemeBuild({fsInterfacePort, themeResources = 
 	const fsThemeResources = deserializeResources(themeResources);
 	const fsReader = new FsWorkerThreadInterface(fsInterfacePort);
 
+	const suffix = import.meta.url.endsWith(".ts") ? ".ts" : ".js";
+	const {default: themeBuilder} = await import(`./themeBuilder${suffix}`);
 	const result = await themeBuilder({
 		resources: fsThemeResources,
 		fs: fsReader,
