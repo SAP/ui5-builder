@@ -1,5 +1,9 @@
 import {createRequire} from "node:module";
 
+// TODO TS: this is a copy from @ui5/project TaskRunner.ts
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type TaskFunction = ({dependencies, options, taskUtil, workspace}: any) => Promise<void>;
+
 /**
  * Repository providing access to all UI5 Builder tasks and various metadata required by the build process.
  * This module is designed to be imported by @ui5/project or to be passed as a private parameter
@@ -12,7 +16,9 @@ import {createRequire} from "node:module";
  * @module @ui5/builder/tasks/taskRepository
  */
 
-const taskInfos = {
+type TaskInfo = Record<string, {path: string}>;
+
+const taskInfos: TaskInfo = {
 	replaceCopyright: {path: "./replaceCopyright.js"},
 	replaceVersion: {path: "./replaceVersion.js"},
 	replaceBuildtime: {path: "./replaceBuildtime.js"},
@@ -37,19 +43,13 @@ const taskInfos = {
 };
 
 /**
- * TaskInfo object returned by the getTask function
- *
- * task Task function
- */
-
-/**
  * Returns the module for a given task name
  *
  * @param taskName Name of the task to retrieve
  * @throws {Error} In case the specified task does not exist
  * @returns Object containing the task module
  */
-export async function getTask(taskName: string) {
+export async function getTask(taskName: string): Promise<{task: TaskFunction}> {
 	const taskInfo = taskInfos[taskName];
 
 	if (!taskInfo) {
@@ -61,12 +61,15 @@ export async function getTask(taskName: string) {
 		throw new Error(`taskRepository: Unknown Task ${taskName}`);
 	}
 	try {
-		const {default: task} = await import(taskInfo.path);
+		const {default: task} = await import(taskInfo.path) as {default: TaskFunction};
 		return {
 			task,
 		};
 	} catch (err) {
-		throw new Error(`taskRepository: Failed to require task module for ${taskName}: ${err.message}`);
+		if (err instanceof Error) {
+			throw new Error(`taskRepository: Failed to require task module for ${taskName}: ${err.message}`);
+		}
+		throw err;
 	}
 }
 
