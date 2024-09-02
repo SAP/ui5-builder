@@ -1,0 +1,32 @@
+import nonAsciiEscaper from "../processors/nonAsciiEscaper.js";
+
+/**
+ * @module @ui5/builder/tasks/escapeNonAsciiCharacters
+ */
+
+/**
+ * Task to escape non ascii characters in properties files resources.
+ *
+ * @param parameters Parameters
+ * @param parameters.workspace DuplexCollection to read and write files
+ * @param parameters.options Options
+ * @param parameters.options.pattern Glob pattern to locate the files to be processed
+ * @param parameters.options.encoding source file encoding either "UTF-8" or "ISO-8859-1"
+ * @returns Promise resolving with <code>undefined</code> once data has been written
+ */
+export default async function ({workspace, options: {pattern, encoding}}: object) {
+	if (!encoding) {
+		throw new Error("[escapeNonAsciiCharacters] Mandatory option 'encoding' not provided");
+	}
+
+	const allResources = await workspace.byGlob(pattern);
+
+	const processedResources = await nonAsciiEscaper({
+		resources: allResources,
+		options: {
+			encoding: nonAsciiEscaper.getEncodingFromAlias(encoding),
+		},
+	});
+
+	await Promise.all(processedResources.map((resource) => workspace.write(resource)));
+}
