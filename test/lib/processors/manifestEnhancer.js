@@ -3032,13 +3032,22 @@ test("manifestEnhancer#getSupportedLocales", async (t) => {
 	fs.readdir.withArgs("/i18n")
 		.callsArgWith(1, null, [
 			"i18n.properties",
+			"i18n_ar_001.properties",
+			"i18n_crn.properties",
 			"i18n_en.properties",
 			"i18n_en_US.properties",
-			"i18n_en_US_sapprc.properties",
+			"i18n_en_US_saptrc.properties",
+			"i18n_sr_Latn_RS.properties"
 		]);
 
 	const expectedLocales = [
-		"", "en", "en_US", "en_US_sapprc"
+		"",
+		"ar-001",
+		"crn",
+		"en",
+		"en-US",
+		"en-US-x-saptrc",
+		"sr-Latn-RS"
 	];
 
 	t.deepEqual(await manifestEnhancer.getSupportedLocales("./i18n/i18n.properties"), expectedLocales);
@@ -3059,7 +3068,7 @@ test("manifestEnhancer#getSupportedLocales", async (t) => {
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
 
-test("manifestEnhancer#getSupportedLocales (invalid locales)", async (t) => {
+test("manifestEnhancer#getSupportedLocales (invalid file names)", async (t) => {
 	const {fs} = t.context;
 	const {ManifestEnhancer} = t.context.__internals__;
 
@@ -3083,35 +3092,43 @@ test("manifestEnhancer#getSupportedLocales (invalid locales)", async (t) => {
 		// Invalid: Should be "zh_CN"
 		"i18n_zh_CN_.properties",
 
-		// Invalid: Runtime does not include "extension" in file request
+		// Invalid: Script section is only supported for "sr_Latn"
+		"i18n_en_Latn_US.properties",
+
+		// Invalid: Legacy Java locale format does have a BCP47 "extension" section
 		"i18n_sr_Latn_RS_variant_f_11.properties",
 
-		// Invalid: Runtime does not include "privateuse" in file request
+		// Invalid: Legacy Java locale format does have a BCP47 "private use" section
 		"i18n_sr_Latn_RS_variant_x_private.properties",
 
-		// Invalid: Runtime does not include "extension" / "privateuse" in file request
+		// Invalid: Legacy Java locale format does have BCP47 "extension" / "private use" sections
 		"i18n_sr_Latn_RS_variant_f_11_x_private.properties"
 	];
 
 	fs.readdir.withArgs("/i18n")
 		.callsArgWith(1, null, fileNames);
 
-	const expectedLocales = ["", "en"];
+	const expectedLocales = [
+		"",
+		"en"
+	];
 
 	t.deepEqual(await manifestEnhancer.getSupportedLocales("./i18n/i18n.properties"), expectedLocales);
 
 	t.is(fs.readdir.callCount, 1);
 
-	t.is(t.context.logWarnSpy.callCount, 5);
+	t.is(t.context.logWarnSpy.callCount, 6);
 	t.is(t.context.logWarnSpy.getCall(0).args[0],
 		"Skipping invalid file 'i18n_en-US.properties' for bundle 'i18n/i18n.properties'");
 	t.is(t.context.logWarnSpy.getCall(1).args[0],
 		"Skipping invalid file 'i18n_zh_CN_.properties' for bundle 'i18n/i18n.properties'");
 	t.is(t.context.logWarnSpy.getCall(2).args[0],
-		"Skipping invalid file 'i18n_sr_Latn_RS_variant_f_11.properties' for bundle 'i18n/i18n.properties'");
+		"Skipping invalid file 'i18n_en_Latn_US.properties' for bundle 'i18n/i18n.properties'");
 	t.is(t.context.logWarnSpy.getCall(3).args[0],
-		"Skipping invalid file 'i18n_sr_Latn_RS_variant_x_private.properties' for bundle 'i18n/i18n.properties'");
+		"Skipping invalid file 'i18n_sr_Latn_RS_variant_f_11.properties' for bundle 'i18n/i18n.properties'");
 	t.is(t.context.logWarnSpy.getCall(4).args[0],
+		"Skipping invalid file 'i18n_sr_Latn_RS_variant_x_private.properties' for bundle 'i18n/i18n.properties'");
+	t.is(t.context.logWarnSpy.getCall(5).args[0],
 		"Skipping invalid file 'i18n_sr_Latn_RS_variant_f_11_x_private.properties' for bundle 'i18n/i18n.properties'");
 	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
