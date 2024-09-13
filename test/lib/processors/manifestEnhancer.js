@@ -2,6 +2,34 @@ import test from "ava";
 import sinonGlobal from "sinon";
 import esmock from "esmock";
 
+function isValidBCP47Locale(locale) {
+	if (locale === "") {
+		// Special handling of empty string, as this marks the developer locale (without locale information)
+		return true;
+	}
+
+	// See https://github.com/SAP/openui5/blob/a8f36e430f1fac172eb705811da4a2af25483408/src/sap.ui.core/src/sap/base/i18n/ResourceBundle.js#L30
+	/**
+	 * A regular expression that describes language tags according to BCP-47.
+	 *
+	 * @see BCP47 "Tags for Identifying Languages" (http://www.ietf.org/rfc/bcp/bcp47.txt)
+	 *
+	 * The matching groups are
+	 *  0=all
+	 *  1=language (shortest ISO639 code + ext. language sub tags | 4digits (reserved) | registered language sub tags)
+	 *  2=script (4 letters)
+	 *  3=region (2letter language or 3 digits)
+	 *  4=variants (separated by '-', Note: capturing group contains leading '-' to shorten the regex!)
+	 *  5=extensions (including leading singleton, multiple extensions separated by '-')
+	 *  6=private use section (including leading 'x', multiple sections separated by '-')
+	 */
+
+	// eslint-disable-next-line max-len
+	//                [-------------------- language ----------------------][--- script ---][------- region --------][------------- variants --------------][----------- extensions ------------][------ private use -------]
+	const rLocale = /^((?:[A-Z]{2,3}(?:-[A-Z]{3}){0,3})|[A-Z]{4}|[A-Z]{5,8})(?:-([A-Z]{4}))?(?:-([A-Z]{2}|[0-9]{3}))?((?:-[0-9A-Z]{5,8}|-[0-9][0-9A-Z]{3})*)((?:-[0-9A-WYZ](?:-[0-9A-Z]{2,8})+)*)(?:-(X(?:-[0-9A-Z]{1,8})+))?$/i;
+	return rLocale.test(locale);
+}
+
 test.beforeEach(async (t) => {
 	const sinon = t.context.sinon = sinonGlobal.createSandbox();
 	t.context.logWarnSpy = sinon.spy();
@@ -3033,24 +3061,32 @@ test("manifestEnhancer#getSupportedLocales", async (t) => {
 		.callsArgWith(1, null, [
 			"i18n.properties",
 			"i18n_ar_001.properties",
+			"i18n_ar_001_variant.properties",
 			"i18n_crn.properties",
 			"i18n_en.properties",
 			"i18n_en_US.properties",
 			"i18n_en_US_saptrc.properties",
-			"i18n_sr_Latn_RS.properties"
+			"i18n_en_US_saprigi.properties",
+			"i18n_sr_Latn_RS.properties",
+			"i18n_sr_Latn_RS_variant.properties"
 		]);
 
 	const expectedLocales = [
 		"",
 		"ar-001",
+		"ar-001-variant",
 		"crn",
 		"en",
 		"en-US",
+		"en-US-x-saprigi",
 		"en-US-x-saptrc",
-		"sr-Latn-RS"
+		"sr-Latn-RS",
+		"sr-Latn-RS-variant",
 	];
 
-	t.deepEqual(await manifestEnhancer.getSupportedLocales("./i18n/i18n.properties"), expectedLocales);
+	const generatedLocales = await manifestEnhancer.getSupportedLocales("./i18n/i18n.properties");
+
+	t.deepEqual(generatedLocales, expectedLocales);
 	t.deepEqual(await manifestEnhancer.getSupportedLocales("i18n/../i18n/i18n.properties"), expectedLocales);
 	t.deepEqual(await manifestEnhancer.getSupportedLocales("ui5://sap/ui/demo/app/i18n/i18n.properties"), expectedLocales);
 
@@ -3066,6 +3102,12 @@ test("manifestEnhancer#getSupportedLocales", async (t) => {
 	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
 	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
+
+	// Check whether generated locales are valid BCP47 locales, as the UI5 runtime
+	// fails if a locale is not a valid
+	generatedLocales.forEach((locale) => {
+		t.true(isValidBCP47Locale(locale), `Generated locale '${locale}' should be a valid BCP47 locale`);
+	});
 });
 
 test("manifestEnhancer#getSupportedLocales (invalid file names)", async (t) => {
@@ -3102,7 +3144,19 @@ test("manifestEnhancer#getSupportedLocales (invalid file names)", async (t) => {
 		"i18n_sr_Latn_RS_variant_x_private.properties",
 
 		// Invalid: Legacy Java locale format does have BCP47 "extension" / "private use" sections
-		"i18n_sr_Latn_RS_variant_f_11_x_private.properties"
+		"i18n_sr_Latn_RS_variant_f_11_x_private.properties",
+
+		// Invalid: Invalid variant length (too short)
+		"i18n_de_CH_var.properties",
+
+		// Invalid: Invalid variant length (too long)
+		"i18n_de_CH_variant11.properties",
+
+		// Invalid: Invalid variant length (too long)
+		"i18n_de_CH_001FOOBAR.properties",
+
+		// Invalid: Should be "en_US_saprigi"
+		"i18n_en_US_x_saprigi.properties"
 	];
 
 	fs.readdir.withArgs("/i18n")
@@ -3117,7 +3171,7 @@ test("manifestEnhancer#getSupportedLocales (invalid file names)", async (t) => {
 
 	t.is(fs.readdir.callCount, 1);
 
-	t.is(t.context.logWarnSpy.callCount, 6);
+	t.is(t.context.logWarnSpy.callCount, 10);
 	t.is(t.context.logWarnSpy.getCall(0).args[0],
 		"Skipping invalid file 'i18n_en-US.properties' for bundle 'i18n/i18n.properties'");
 	t.is(t.context.logWarnSpy.getCall(1).args[0],
@@ -3130,6 +3184,14 @@ test("manifestEnhancer#getSupportedLocales (invalid file names)", async (t) => {
 		"Skipping invalid file 'i18n_sr_Latn_RS_variant_x_private.properties' for bundle 'i18n/i18n.properties'");
 	t.is(t.context.logWarnSpy.getCall(5).args[0],
 		"Skipping invalid file 'i18n_sr_Latn_RS_variant_f_11_x_private.properties' for bundle 'i18n/i18n.properties'");
+	t.is(t.context.logWarnSpy.getCall(6).args[0],
+		"Skipping invalid file 'i18n_de_CH_var.properties' for bundle 'i18n/i18n.properties'");
+	t.is(t.context.logWarnSpy.getCall(7).args[0],
+		"Skipping invalid file 'i18n_de_CH_variant11.properties' for bundle 'i18n/i18n.properties'");
+	t.is(t.context.logWarnSpy.getCall(8).args[0],
+		"Skipping invalid file 'i18n_de_CH_001FOOBAR.properties' for bundle 'i18n/i18n.properties'");
+	t.is(t.context.logWarnSpy.getCall(9).args[0],
+		"Skipping invalid file 'i18n_en_US_x_saprigi.properties' for bundle 'i18n/i18n.properties'");
 	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
