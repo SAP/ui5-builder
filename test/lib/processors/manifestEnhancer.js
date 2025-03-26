@@ -1704,6 +1704,252 @@ test("Application: supportedLocales are not added for bundles with absolute url"
 	t.is(fs.readdir.callCount, 0, "readdir should not be called for absolute bundle urls");
 });
 
+test("Application: sap.app/dataSources: " +
+	"When sap.cloud is configured leading uri slash is removed",
+async (t) => {
+	const {manifestEnhancer, fs, createResource} = t.context;
+	const input = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.app",
+			"type": "application",
+			"dataSources": {
+				"mainService": {
+					"uri": "/path/to/service/",
+					"type": "OData",
+					"settings": {
+						"odataVersion": "4.0"
+					}
+				}
+			}
+		},
+		"sap.cloud": {
+			"public": true,
+			"service": "demo"
+		}
+	}, null, 2);
+
+	const expected = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.app",
+			"type": "application",
+			"dataSources": {
+				"mainService": {
+					"uri": "path/to/service/",
+					"type": "OData",
+					"settings": {
+						"odataVersion": "4.0"
+					}
+				}
+			}
+		},
+		"sap.cloud": {
+			"public": true,
+			"service": "demo"
+		}
+	}, null, 2);
+
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
+
+	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
+		.callsArgWith(1, null, ["i18n.properties"]);
+
+	const processedResources = await manifestEnhancer({
+		resources: [resource],
+		fs
+	});
+
+	t.deepEqual(processedResources, [resource], "Input resource is returned");
+
+	t.is(resource.setString.callCount, 1, "setString should be called once");
+	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
+
+	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
+	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
+	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
+});
+
+test("Application: sap.app/dataSources: " +
+	"When sap.cloud is not configured leading uri slash is not removed",
+async (t) => {
+	const {manifestEnhancer, fs, createResource} = t.context;
+	const input = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.app",
+			"type": "application",
+			"dataSources": {
+				"mainService": {
+					"uri": "/path/to/service/",
+					"type": "OData",
+					"settings": {
+						"odataVersion": "4.0"
+					}
+				}
+			}
+		}
+	}, null, 2);
+
+	const expected = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.app",
+			"type": "application",
+			"dataSources": {
+				"mainService": {
+					"uri": "/path/to/service/",
+					"type": "OData",
+					"settings": {
+						"odataVersion": "4.0"
+					}
+				}
+			}
+		}
+	}, null, 2);
+
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
+
+	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
+		.callsArgWith(1, null, ["i18n.properties"]);
+
+	await manifestEnhancer({
+		resources: [resource],
+		fs
+	});
+
+	t.is(resource.setString.callCount, 1, "setString should be called once");
+	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
+
+	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
+	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
+	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
+});
+
+test("Application: sap.app/dataSources: " +
+	"When sap.cloud is configured and uri does not start with a slash nothing is changed",
+async (t) => {
+	const {manifestEnhancer, fs, createResource} = t.context;
+	const input = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.app",
+			"type": "application",
+			"dataSources": {
+				"mainService": {
+					"uri": "path/to/service/",
+					"type": "OData",
+					"settings": {
+						"odataVersion": "4.0"
+					}
+				}
+			}
+		},
+		"sap.cloud": {
+			"public": true,
+			"service": "demo"
+		}
+	}, null, 2);
+
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
+
+	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
+		.callsArgWith(1, null, ["i18n.properties"]);
+
+	const processedResources = await manifestEnhancer({
+		resources: [resource],
+		fs
+	});
+
+	t.deepEqual(processedResources, [resource], "Input resource is returned");
+
+	t.is(resource.setString.callCount, 0, "setString was not called due to no modification");
+
+	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
+	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
+	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
+});
+
+test("Application: sap.app/dataSources: " +
+	"When sap.cloud is configured and uri in multiple dataSources start with a slash they are removed",
+async (t) => {
+	const {manifestEnhancer, fs, createResource} = t.context;
+	const input = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.app",
+			"type": "application",
+			"dataSources": {
+				"mainService": {
+					"uri": "/path/to/service/",
+					"type": "OData",
+					"settings": {
+						"odataVersion": "4.0"
+					}
+				},
+				"secondaryService": {
+					"uri": "/path2/to/service/",
+					"type": "OData",
+					"settings": {
+						"odataVersion": "4.0"
+					}
+				}
+			}
+		},
+		"sap.cloud": {
+			"public": true,
+			"service": "demo"
+		}
+	}, null, 2);
+
+	const expected = JSON.stringify({
+		"_version": "1.58.0",
+		"sap.app": {
+			"id": "sap.ui.demo.app",
+			"type": "application",
+			"dataSources": {
+				"mainService": {
+					"uri": "path/to/service/",
+					"type": "OData",
+					"settings": {
+						"odataVersion": "4.0"
+					}
+				},
+				"secondaryService": {
+					"uri": "path2/to/service/",
+					"type": "OData",
+					"settings": {
+						"odataVersion": "4.0"
+					}
+				}
+			}
+		},
+		"sap.cloud": {
+			"public": true,
+			"service": "demo"
+		}
+	}, null, 2);
+
+	const resource = createResource("/resources/sap/ui/demo/app/manifest.json", true, input);
+
+	fs.readdir.withArgs("/resources/sap/ui/demo/app/i18nModel")
+		.callsArgWith(1, null, ["i18n.properties"]);
+
+	const processedResources = await manifestEnhancer({
+		resources: [resource],
+		fs
+	});
+
+	t.deepEqual(processedResources, [resource], "Input resource is returned");
+
+	t.is(resource.setString.callCount, 1, "setString should be called once");
+	t.deepEqual(resource.setString.getCall(0).args, [expected], "Correct file content should be set");
+
+	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
+	t.true(t.context.logWarnSpy.notCalled, "No warnings should be logged");
+	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
+});
+
 // #######################################################
 // Type: Component
 // #######################################################
