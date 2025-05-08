@@ -3173,25 +3173,28 @@ test("manifestEnhancer#getSupportedLocales (invalid file names)", async (t) => {
 
 	t.is(t.context.logWarnSpy.callCount, 10);
 	t.is(t.context.logWarnSpy.getCall(0).args[0],
-		"Skipping invalid file 'i18n_en-US.properties' for bundle 'i18n/i18n.properties'");
+		"Ignoring unexpected locale in filename 'i18n_en-US.properties' for bundle 'i18n/i18n.properties'");
 	t.is(t.context.logWarnSpy.getCall(1).args[0],
-		"Skipping invalid file 'i18n_zh_CN_.properties' for bundle 'i18n/i18n.properties'");
+		"Ignoring unexpected locale in filename 'i18n_zh_CN_.properties' for bundle 'i18n/i18n.properties'");
 	t.is(t.context.logWarnSpy.getCall(2).args[0],
-		"Skipping invalid file 'i18n_en_Latn_US.properties' for bundle 'i18n/i18n.properties'");
+		"Ignoring unexpected locale in filename 'i18n_en_Latn_US.properties' for bundle 'i18n/i18n.properties'");
 	t.is(t.context.logWarnSpy.getCall(3).args[0],
-		"Skipping invalid file 'i18n_sr_Latn_RS_variant_f_11.properties' for bundle 'i18n/i18n.properties'");
+		"Ignoring unexpected locale in filename 'i18n_sr_Latn_RS_variant_f_11.properties' " +
+		"for bundle 'i18n/i18n.properties'");
 	t.is(t.context.logWarnSpy.getCall(4).args[0],
-		"Skipping invalid file 'i18n_sr_Latn_RS_variant_x_private.properties' for bundle 'i18n/i18n.properties'");
+		"Ignoring unexpected locale in filename 'i18n_sr_Latn_RS_variant_x_private.properties' " +
+		"for bundle 'i18n/i18n.properties'");
 	t.is(t.context.logWarnSpy.getCall(5).args[0],
-		"Skipping invalid file 'i18n_sr_Latn_RS_variant_f_11_x_private.properties' for bundle 'i18n/i18n.properties'");
+		"Ignoring unexpected locale in filename 'i18n_sr_Latn_RS_variant_f_11_x_private.properties' " +
+		"for bundle 'i18n/i18n.properties'");
 	t.is(t.context.logWarnSpy.getCall(6).args[0],
-		"Skipping invalid file 'i18n_de_CH_var.properties' for bundle 'i18n/i18n.properties'");
+		"Ignoring unexpected locale in filename 'i18n_de_CH_var.properties' for bundle 'i18n/i18n.properties'");
 	t.is(t.context.logWarnSpy.getCall(7).args[0],
-		"Skipping invalid file 'i18n_de_CH_variant11.properties' for bundle 'i18n/i18n.properties'");
+		"Ignoring unexpected locale in filename 'i18n_de_CH_variant11.properties' for bundle 'i18n/i18n.properties'");
 	t.is(t.context.logWarnSpy.getCall(8).args[0],
-		"Skipping invalid file 'i18n_de_CH_001FOOBAR.properties' for bundle 'i18n/i18n.properties'");
+		"Ignoring unexpected locale in filename 'i18n_de_CH_001FOOBAR.properties' for bundle 'i18n/i18n.properties'");
 	t.is(t.context.logWarnSpy.getCall(9).args[0],
-		"Skipping invalid file 'i18n_en_US_x_saprigi.properties' for bundle 'i18n/i18n.properties'");
+		"Ignoring unexpected locale in filename 'i18n_en_US_x_saprigi.properties' for bundle 'i18n/i18n.properties'");
 	t.true(t.context.logVerboseSpy.notCalled, "No verbose messages should be logged");
 	t.true(t.context.logErrorSpy.notCalled, "No errors should be logged");
 });
