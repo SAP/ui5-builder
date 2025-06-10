@@ -132,14 +132,14 @@
 		"pretty-data": "^0.40.0",
 		"rimraf": "^5.0.10",
 		"semver": "^7.7.2",
-		"terser": "^5.41.0",
+		"terser": "^5.42.0",
 		"workerpool": "^6.5.1",
 		"xml2js": "^0.6.2"
 	},
 	"devDependencies": {
 		"@istanbuljs/esm-loader-hook": "^0.2.0",
 		"@jridgewell/trace-mapping": "^0.3.25",
-		"@ui5/project": "^3.9.3",
+		"@ui5/project": "^3.9.4",
 		"ava": "^5.3.1",
 		"chai": "^4.5.0",
 		"chai-fs": "^2.0.0",
