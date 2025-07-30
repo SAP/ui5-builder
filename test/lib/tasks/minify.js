@@ -1,6 +1,7 @@
 import test from "ava";
 import sinonGlobal from "sinon";
 import esmock from "esmock";
+import {createTaskUtil} from "../../utils/taskUtilHelper.js";
 
 test.beforeEach(async (t) => {
 	const sinon = t.context.sinon = sinonGlobal.createSandbox();
@@ -8,15 +9,16 @@ test.beforeEach(async (t) => {
 		byGlob: sinon.stub().resolves(["resource A", "resource B"]),
 		write: sinon.stub().resolves()
 	};
-	t.context.taskUtil = {
+	t.context.taskUtil = createTaskUtil(t, {
 		setTag: sinon.stub(),
 		STANDARD_TAGS: {
 			HasDebugVariant: "has debug variant",
 			IsDebugVariant: "is debug variant",
 			OmitFromBuildResult: "omit from build result"
 		},
+		createFilterReader: sinon.stub().returns(t.context.workspace),
 		registerCleanupTask: sinon.stub()
-	};
+	});
 
 	t.context.fsInterfaceStub = sinon.stub().returns("fs interface");
 	t.context.minifierStub = sinon.stub();
