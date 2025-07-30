@@ -3,6 +3,7 @@ import sinonGlobal from "sinon";
 import minify from "../../../lib/tasks/minify.js";
 import * as resourceFactory from "@ui5/fs/resourceFactory";
 import DuplexCollection from "@ui5/fs/DuplexCollection";
+import {createTaskUtil} from "../../utils/taskUtilHelper.js";
 
 // Node.js itself tries to parse sourceMappingURLs in all JavaScript files. This is unwanted and might even lead to
 // obscure errors when dynamically generating Data-URI soruceMappingURL values.
@@ -28,16 +29,16 @@ test.afterEach.always((t) => {
 	t.context.sinon.restore();
 });
 
+
 test.serial("integration: minify omitSourceMapResources=true", async (t) => {
-	const taskUtil = {
+	const taskUtil = createTaskUtil(t, {
 		setTag: t.context.sinon.stub(),
 		STANDARD_TAGS: {
 			HasDebugVariant: "1️⃣",
 			IsDebugVariant: "2️⃣",
 			OmitFromBuildResult: "3️⃣"
 		},
-		registerCleanupTask: t.context.sinon.stub()
-	};
+	});
 	const {reader, writer, workspace} = createWorkspace();
 	const content = `
 function test(paramA) {
@@ -107,15 +108,14 @@ test();`;
 });
 
 test.serial("integration: minify omitSourceMapResources=false", async (t) => {
-	const taskUtil = {
+	const taskUtil = createTaskUtil(t, {
 		setTag: t.context.sinon.stub(),
 		STANDARD_TAGS: {
 			HasDebugVariant: "1️⃣",
 			IsDebugVariant: "2️⃣",
 			OmitFromBuildResult: "3️⃣"
-		},
-		registerCleanupTask: t.context.sinon.stub()
-	};
+		}
+	});
 	const {reader, writer, workspace} = createWorkspace();
 	const content = `
 function test(paramA) {
@@ -276,15 +276,14 @@ ${SOURCE_MAPPING_URL}=test.js.map`;
 });
 
 test.serial("integration: minify error", async (t) => {
-	const taskUtil = {
+	const taskUtil = createTaskUtil(t, {
 		setTag: t.context.sinon.stub(),
 		STANDARD_TAGS: {
 			HasDebugVariant: "1️⃣",
 			IsDebugVariant: "2️⃣",
 			OmitFromBuildResult: "3️⃣"
-		},
-		registerCleanupTask: t.context.sinon.stub()
-	};
+		}
+	});
 	const {reader, workspace} = createWorkspace();
 	const content = `
 // Top level return will cause a parsing error
@@ -340,4 +339,52 @@ return;`;
 			`Minification failed with error: 'return' outside of function in file ` +
 			`/resources/my/namespace/test.js (line 3, col 0, pos 48)`
 	}, `Threw with expected error message`);
+});
+
+test.serial("integration: minify with taskUtil and resources tagged with OmitFromBuildResult", async (t) => {
+	const {reader, writer, workspace} = createWorkspace();
+
+	const testFilePath1 = "/resources/my/namespace/test1.js";
+	const testFilePath2 = "/resources/my/namespace/test2.js";
+	const testFileContent1 = "function test(param1) { var variableA = param1; console.log(variableA); } test();";
+	const testFileContent2 = "function test(param2) { var variableB = param2; console.log(variableB); } test();";
+
+	const testResource1 = resourceFactory.createResource({
+		path: testFilePath1,
+		string: testFileContent1
+	});
+	const testResource2 = resourceFactory.createResource({
+		path: testFilePath2,
+		string: testFileContent2
+	});
+
+	await reader.write(testResource1);
+	await reader.write(testResource2);
+
+	const taskUtil = createTaskUtil(t);
+	taskUtil.setTag(testResource1, taskUtil.STANDARD_TAGS.OmitFromBuildResult);
+
+	await minify({
+		workspace,
+		taskUtil,
+		options: {
+			pattern: "/**/*.js",
+			omitSourceMapResources: false
+		}
+	});
+
+	let res = await writer.byPath(testFilePath1);
+	if (res) {
+		t.fail(`Found ${testFilePath1} in target locator although set to OmitFromBuildResult`);
+	}
+
+	res = await writer.byPath(testFilePath2);
+	if (!res) {
+		t.fail(`Did not find ${testFilePath2} in target locator although it should be present`);
+	}
+	const expected = `function test(t){var o=t;console.log(o)}test();\n${SOURCE_MAPPING_URL}=test2.js.map`;
+	t.deepEqual(await res.getString(), expected, "Correct file content");
+	// Ensure to call cleanup task so that workerpool is terminated - otherwise the test will time out!
+	const cleanupTask = taskUtil.registerCleanupTask.getCall(0).args[0];
+	await cleanupTask();
 });
