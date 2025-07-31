@@ -5,10 +5,16 @@ export function createTaskUtil(t, {setTag, getTag, STANDARD_TAGS, createFilterRe
 			taskUtil.resources.set(resource.getPath(), value);
 		},
 		getTag: getTag ? getTag : (resource, tag) => {
-			return taskUtil.resources.get(resource.getPath()) === tag;
+			if (taskUtil.resources.size !== 0) {
+				return taskUtil.resources.get(resource.getPath()) === tag;
+			}
+			return false;
 		},
 		STANDARD_TAGS: STANDARD_TAGS ? STANDARD_TAGS : {
-			OmitFromBuildResult: "OmitFromBuildResult"
+			IsDebugVariant: "IsDebugVariant",
+			HasDebugVariant: "HasDebugVariant",
+			OmitFromBuildResult: "OmitFromBuildResult",
+			IsBundle: "IsBundle"
 		},
 		resourceFactory: {
 			createFilterReader: createFilterReader ?
