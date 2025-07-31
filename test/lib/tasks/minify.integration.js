@@ -369,21 +369,37 @@ test.serial("integration: minify with taskUtil and resources tagged with OmitFro
 		taskUtil,
 		options: {
 			pattern: "/**/*.js",
-			omitSourceMapResources: false
 		}
 	});
 
-	let res = await writer.byPath(testFilePath1);
-	if (res) {
-		t.fail(`Found ${testFilePath1} in target locator although set to OmitFromBuildResult`);
-	}
+	for (const {filePath, expectToBeOmitted} of [
+		{filePath: testFilePath1, expectToBeOmitted: true},
+		{filePath: testFilePath2, expectToBeOmitted: false}
+	]) {
+		let res = await writer.byPath(filePath);
+		if (!res) {
+			t.fail(`Did not find ${filePath} in target locator although it should be present`);
+		}
+		const fileName = filePath.split("/").pop();
+		const expected = `function test(t){var o=t;console.log(o)}test();\n${SOURCE_MAPPING_URL}=${fileName}.map`;
+		const content = await res.getString();
+		t.deepEqual(content, expected, "Correct file content");
 
-	res = await writer.byPath(testFilePath2);
-	if (!res) {
-		t.fail(`Did not find ${testFilePath2} in target locator although it should be present`);
+		let isOmitted = taskUtil.getTag(res, taskUtil.STANDARD_TAGS.OmitFromBuildResult);
+		if (isOmitted !== expectToBeOmitted) {
+			t.fail(`Expected ${filePath} to be tagged ${expectToBeOmitted ? "" : "not "} with OmitFromBuildResult`);
+		}
+		for (const dbgFilePath of [filePath.replace(".js", "-dbg.js"), filePath.replace(".js", ".js.map")]) {
+			res = await writer.byPath(dbgFilePath);
+			if (!res) {
+				t.fail(`Did not find ${dbgFilePath} in target locator although it should be present`);
+			}
+			isOmitted = taskUtil.getTag(res, taskUtil.STANDARD_TAGS.OmitFromBuildResult);
+			if (isOmitted !== expectToBeOmitted) {
+				t.fail(`Expected ${filePath} to be tagged ${expectToBeOmitted ? "" : "not "} with OmitFromBuildResult`);
+			}
+		}
 	}
-	const expected = `function test(t){var o=t;console.log(o)}test();\n${SOURCE_MAPPING_URL}=test2.js.map`;
-	t.deepEqual(await res.getString(), expected, "Correct file content");
 	// Ensure to call cleanup task so that workerpool is terminated - otherwise the test will time out!
 	const cleanupTask = taskUtil.registerCleanupTask.getCall(0).args[0];
 	await cleanupTask();
