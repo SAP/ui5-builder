@@ -2,32 +2,19 @@ export function createTaskUtil(t, {setTag, getTag, STANDARD_TAGS, createFilterRe
 	const taskUtil = {
 		resources: new Map(),
 		setTag: setTag ? setTag : (resource, value) => {
-			taskUtil.resources.set(resource.getPath(), value);
+			const path = resource.getPath();
+			const tags = taskUtil.resources.get(path) || new Set();
+			tags.add(value);
+			taskUtil.resources.set(path, tags);
 		},
 		getTag: getTag ? getTag : (resource, tag) => {
-			if (taskUtil.resources.size !== 0) {
-				return taskUtil.resources.get(resource.getPath()) === tag;
-			}
-			return false;
+			return taskUtil.resources.get(resource.getPath())?.has(tag) || false;
 		},
 		STANDARD_TAGS: STANDARD_TAGS ? STANDARD_TAGS : {
 			IsDebugVariant: "IsDebugVariant",
 			HasDebugVariant: "HasDebugVariant",
 			OmitFromBuildResult: "OmitFromBuildResult",
 			IsBundle: "IsBundle"
-		},
-		resourceFactory: {
-			createFilterReader: createFilterReader ?
-				createFilterReader : t.context.sinon.stub().callsFake(
-					({reader, callback}) => {
-						return {
-							byGlob: async (pattern) => {
-								const resources = await reader.byGlob(pattern);
-								return resources.filter(callback);
-							}
-						};
-					}
-				)
 		},
 		registerCleanupTask: t.context.sinon.stub(),
 	};
