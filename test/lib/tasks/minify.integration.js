@@ -3,7 +3,6 @@ import sinonGlobal from "sinon";
 import minify from "../../../lib/tasks/minify.js";
 import * as resourceFactory from "@ui5/fs/resourceFactory";
 import DuplexCollection from "@ui5/fs/DuplexCollection";
-import {createTaskUtil} from "../../utils/taskUtilHelper.js";
 
 // Node.js itself tries to parse sourceMappingURLs in all JavaScript files. This is unwanted and might even lead to
 // obscure errors when dynamically generating Data-URI soruceMappingURL values.
@@ -31,14 +30,16 @@ test.afterEach.always((t) => {
 
 
 test.serial("integration: minify omitSourceMapResources=true", async (t) => {
-	const taskUtil = createTaskUtil(t, {
+	const taskUtil = {
 		setTag: t.context.sinon.stub(),
+		getTag: t.context.sinon.stub().returns(false),
 		STANDARD_TAGS: {
 			HasDebugVariant: "1️⃣",
 			IsDebugVariant: "2️⃣",
 			OmitFromBuildResult: "3️⃣"
 		},
-	});
+		registerCleanupTask: t.context.sinon.stub()
+	};
 	const {reader, writer, workspace} = createWorkspace();
 	const content = `
 function test(paramA) {
@@ -108,14 +109,16 @@ test();`;
 });
 
 test.serial("integration: minify omitSourceMapResources=false", async (t) => {
-	const taskUtil = createTaskUtil(t, {
+	const taskUtil = {
 		setTag: t.context.sinon.stub(),
+		getTag: t.context.sinon.stub().returns(false),
 		STANDARD_TAGS: {
 			HasDebugVariant: "1️⃣",
 			IsDebugVariant: "2️⃣",
 			OmitFromBuildResult: "3️⃣"
-		}
-	});
+		},
+		registerCleanupTask: t.context.sinon.stub()
+	};
 	const {reader, writer, workspace} = createWorkspace();
 	const content = `
 function test(paramA) {
@@ -276,14 +279,16 @@ ${SOURCE_MAPPING_URL}=test.js.map`;
 });
 
 test.serial("integration: minify error", async (t) => {
-	const taskUtil = createTaskUtil(t, {
+	const taskUtil = {
 		setTag: t.context.sinon.stub(),
+		getTag: t.context.sinon.stub().returns(false),
 		STANDARD_TAGS: {
 			HasDebugVariant: "1️⃣",
 			IsDebugVariant: "2️⃣",
 			OmitFromBuildResult: "3️⃣"
-		}
-	});
+		},
+		registerCleanupTask: t.context.sinon.stub()
+	};
 	const {reader, workspace} = createWorkspace();
 	const content = `
 // Top level return will cause a parsing error
@@ -361,8 +366,22 @@ test.serial("integration: minify with taskUtil and resources tagged with OmitFro
 	await reader.write(testResource1);
 	await reader.write(testResource2);
 
-	const taskUtil = createTaskUtil(t);
-	taskUtil.setTag(testResource1, taskUtil.STANDARD_TAGS.OmitFromBuildResult);
+	const taskUtil = {
+		STANDARD_TAGS: {
+			HasDebugVariant: "1️⃣",
+			IsDebugVariant: "2️⃣",
+			OmitFromBuildResult: "3️⃣"
+		},
+		setTag: t.context.sinon.stub(),
+		getTag: t.context.sinon.stub().callsFake((...args) => {
+			if (args[0].getPath().includes(testFilePath1.split(".js").shift()) &&
+				args[1] === taskUtil.STANDARD_TAGS.OmitFromBuildResult) {
+				return true; // OmitFromBuildResult for testFilePath1
+			}
+			return false; // No OmitFromBuildResult for testFilePath2
+		}),
+		registerCleanupTask: t.context.sinon.stub()
+	};
 
 	await minify({
 		workspace,
@@ -387,7 +406,7 @@ test.serial("integration: minify with taskUtil and resources tagged with OmitFro
 
 		let isOmitted = taskUtil.getTag(res, taskUtil.STANDARD_TAGS.OmitFromBuildResult);
 		if (isOmitted !== expectToBeOmitted) {
-			t.fail(`Expected ${filePath} to be tagged ${expectToBeOmitted ? "" : "not "} with OmitFromBuildResult`);
+			t.fail(`Expected ${filePath} to be tagged ${expectToBeOmitted ? "" : "not"} with OmitFromBuildResult`);
 		}
 		for (const dbgFilePath of [filePath.replace(".js", "-dbg.js"), filePath.replace(".js", ".js.map")]) {
 			res = await writer.byPath(dbgFilePath);
