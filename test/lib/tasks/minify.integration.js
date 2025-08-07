@@ -347,7 +347,7 @@ return;`;
 });
 
 test.serial("integration: minify with taskUtil and resources tagged with OmitFromBuildResult", async (t) => {
-	const {reader, writer, workspace} = createWorkspace();
+	const {reader, workspace} = createWorkspace();
 
 	const testFilePath1 = "/resources/my/namespace/test1.js";
 	const testFilePath2 = "/resources/my/namespace/test2.js";
@@ -373,9 +373,9 @@ test.serial("integration: minify with taskUtil and resources tagged with OmitFro
 			OmitFromBuildResult: "3️⃣"
 		},
 		setTag: t.context.sinon.stub(),
-		getTag: t.context.sinon.stub().callsFake((...args) => {
-			if (args[0].getPath().includes(testFilePath1.split(".js").shift()) &&
-				args[1] === taskUtil.STANDARD_TAGS.OmitFromBuildResult) {
+		getTag: t.context.sinon.stub().callsFake((resource, tag) => {
+			if (resource.getPath() === testFilePath1 &&
+				tag === taskUtil.STANDARD_TAGS.OmitFromBuildResult) {
 				return true; // OmitFromBuildResult for testFilePath1
 			}
 			return false; // No OmitFromBuildResult for testFilePath2
@@ -391,34 +391,43 @@ test.serial("integration: minify with taskUtil and resources tagged with OmitFro
 		}
 	});
 
-	for (const {filePath, expectToBeOmitted} of [
-		{filePath: testFilePath1, expectToBeOmitted: true},
-		{filePath: testFilePath2, expectToBeOmitted: false}
-	]) {
-		let res = await writer.byPath(filePath);
-		if (!res) {
-			t.fail(`Did not find ${filePath} in target locator although it should be present`);
-		}
-		const fileName = filePath.split("/").pop();
-		const expected = `function test(t){var o=t;console.log(o)}test();\n${SOURCE_MAPPING_URL}=${fileName}.map`;
-		const content = await res.getString();
-		t.deepEqual(content, expected, "Correct file content");
+	t.is(taskUtil.setTag.callCount, 8, "taskUtil.setTag was called 8 times");
 
-		let isOmitted = taskUtil.getTag(res, taskUtil.STANDARD_TAGS.OmitFromBuildResult);
-		if (isOmitted !== expectToBeOmitted) {
-			t.fail(`Expected ${filePath} to be tagged ${expectToBeOmitted ? "" : "not"} with OmitFromBuildResult`);
-		}
-		for (const dbgFilePath of [filePath.replace(".js", "-dbg.js"), filePath.replace(".js", ".js.map")]) {
-			res = await writer.byPath(dbgFilePath);
-			if (!res) {
-				t.fail(`Did not find ${dbgFilePath} in target locator although it should be present`);
-			}
-			isOmitted = taskUtil.getTag(res, taskUtil.STANDARD_TAGS.OmitFromBuildResult);
-			if (isOmitted !== expectToBeOmitted) {
-				t.fail(`Expected ${filePath} to be tagged ${expectToBeOmitted ? "" : "not "} with OmitFromBuildResult`);
-			}
-		}
+	const taggedResources = [];
+	for (const call of taskUtil.setTag.getCalls()) {
+		const resourcePath = call.args[0].getPath();
+		const tag = call.args[1];
+		taggedResources.push({resourcePath, tag});
 	}
+
+	taggedResources.sort((a, b) => a.resourcePath.localeCompare(b.resourcePath));
+
+	t.deepEqual(taggedResources, [{
+		resourcePath: "/resources/my/namespace/test1-dbg.js",
+		tag: taskUtil.STANDARD_TAGS.OmitFromBuildResult,
+	}, {
+		resourcePath: "/resources/my/namespace/test1-dbg.js",
+		tag: taskUtil.STANDARD_TAGS.IsDebugVariant,
+	}, {
+		resourcePath: "/resources/my/namespace/test1.js",
+		tag: taskUtil.STANDARD_TAGS.HasDebugVariant,
+	}, {
+		resourcePath: "/resources/my/namespace/test1.js.map",
+		tag: taskUtil.STANDARD_TAGS.OmitFromBuildResult,
+	}, {
+		resourcePath: "/resources/my/namespace/test1.js.map",
+		tag: taskUtil.STANDARD_TAGS.HasDebugVariant,
+	}, {
+		resourcePath: "/resources/my/namespace/test2-dbg.js",
+		tag: taskUtil.STANDARD_TAGS.IsDebugVariant,
+	}, {
+		resourcePath: "/resources/my/namespace/test2.js",
+		tag: taskUtil.STANDARD_TAGS.HasDebugVariant,
+	}, {
+		resourcePath: "/resources/my/namespace/test2.js.map",
+		tag: taskUtil.STANDARD_TAGS.HasDebugVariant,
+	}], "Correct tags set on resources");
+
 	// Ensure to call cleanup task so that workerpool is terminated - otherwise the test will time out!
 	const cleanupTask = taskUtil.registerCleanupTask.getCall(0).args[0];
 	await cleanupTask();
