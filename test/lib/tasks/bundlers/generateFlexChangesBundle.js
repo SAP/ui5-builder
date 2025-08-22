@@ -8,13 +8,13 @@ function createPlaceholderResource(content) {
 		name: "file",
 		getBuffer: async () => JSON.stringify(content),
 		getString: () => JSON.stringify(content),
-		setString: (string) => undefined
+		setString: () => undefined
 	};
 }
 
 function createPlaceholderWorkspace(changes, manifest, flexBundle) {
 	return {
-		byGlob: async (path) => changes.map(createPlaceholderResource),
+		byGlob: async () => changes.map(createPlaceholderResource),
 		byPath: async (path) => {
 			if ( path.includes("manifest.json") ) {
 				return createPlaceholderResource(manifest);
@@ -151,6 +151,17 @@ function createPlaceholderWorkspace(changes, manifest, flexBundle) {
 
 		const path = await stub.getCall(0).args[0].getPath();
 		t.is(path, "/resources/mypath/changes/flexibility-bundle.json");
+
+		const writtenManifest = JSON.parse(await stub.getCall(1).args[0].getString());
+		t.deepEqual(writtenManifest, {
+			"sap.ui5": {
+				dependencies: {
+					minUI5Version: minVersion
+				},
+				flexBundle: true
+			}
+		}, "Result must contain the same content");
+
 	});
 });
 
