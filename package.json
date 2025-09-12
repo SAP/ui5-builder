@@ -121,7 +121,7 @@
 	"dependencies": {
 		"@jridgewell/sourcemap-codec": "^1.5.5",
 		"@ui5/fs": "^3.0.5",
-		"@ui5/logger": "^3.0.0",
+		"@ui5/logger": "^3.0.1",
 		"cheerio": "1.0.0-rc.12",
 		"escape-unicode": "^0.2.0",
 		"escope": "^4.0.0",
@@ -138,7 +138,7 @@
 	},
 	"devDependencies": {
 		"@istanbuljs/esm-loader-hook": "^0.2.0",
-		"@jridgewell/trace-mapping": "^0.3.30",
+		"@jridgewell/trace-mapping": "^0.3.31",
 		"@ui5/project": "^3.9.4",
 		"ava": "^5.3.1",
 		"chai": "^4.5.0",
@@ -151,7 +151,7 @@
 		"eslint-config-google": "^0.14.0",
 		"eslint-plugin-ava": "^14.0.0",
 		"eslint-plugin-jsdoc": "^46.10.1",
-		"esmock": "^2.7.2",
+		"esmock": "^2.7.3",
 		"line-column": "^1.0.2",
 		"nyc": "^15.1.0",
 		"open-cli": "^7.2.0",
