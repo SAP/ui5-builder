@@ -1,7 +1,7 @@
 {
 	"name": "@ui5/builder",
 	"version": "3.7.0",
-	"description": "UI5 Tooling - Builder",
+	"description": "UI5 CLI - Builder",
 	"author": {
 		"name": "SAP SE",
 		"email": "openui5@sap.com",
