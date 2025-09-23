@@ -1,6 +1,15 @@
 ![UI5 icon](https://raw.githubusercontent.com/UI5/cli/main/docs/images/UI5_logo_wide.png)
 
 # ui5-builder
+
+> ⚠️ **REPOSITORY MOVED**
+> 
+> The `@ui5/builder` package is now maintained in the [UI5 CLI monorepo](https://github.com/UI5/cli).
+> 
+> - **New location**: https://github.com/UI5/cli/tree/main/packages/builder
+> - **Issues & PRs**: Please submit to the [monorepo](https://github.com/UI5/cli/issues)
+> - **Latest releases**: Available from the monorepo
+
 > Modules for building UI5 projects  
 > Part of the [UI5 CLI](https://github.com/UI5/cli)
 
