@@ -4,7 +4,7 @@
 
 > ⚠️ **REPOSITORY MOVED**
 > 
-> The `@ui5/builder` package is now maintained in the [UI5 CLI monorepo](https://github.com/UI5/cli).
+> The `@ui5/builder` package is now maintained in the [UI5 CLI monorepo](https://github.com/UI5/cli). This repository contains the code up to and including CLI version 4, with further development continuing in the monorepo.
 > 
 > - **New location**: https://github.com/UI5/cli/tree/main/packages/builder
 > - **Issues & PRs**: Please submit to the [monorepo](https://github.com/UI5/cli/issues)
