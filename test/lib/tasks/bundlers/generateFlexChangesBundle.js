@@ -165,7 +165,6 @@ function createPlaceholderWorkspace(changes, manifest, flexBundle) {
 				flexBundle: true
 			}
 		}, "Result must contain the same content");
-
 	});
 });
 
