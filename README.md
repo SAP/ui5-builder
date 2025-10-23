@@ -24,10 +24,10 @@ UI5 Builder documentation can be found here: [ui5.github.io/cli](https://ui5.git
 The UI5 Builder API Reference can be found here: [`@ui5/builder`](https://ui5.github.io/cli/v4/api/)
 
 ## Contributing
-Please check our [Contribution Guidelines](https://github.com/UI5/cli/blob/main/CONTRIBUTING.md).
+Please check our [Contribution Guidelines](https://github.com/UI5/cli/blob/v4/CONTRIBUTING.md).
 
 ## Support
-Please follow our [Contribution Guidelines](https://github.com/UI5/cli/blob/main/CONTRIBUTING.md#report-an-issue) on how to report an issue.
+Please follow our [Contribution Guidelines](https://github.com/UI5/cli/blob/v4/CONTRIBUTING.md#report-an-issue) on how to report an issue.
 
 Please report issues in the main [UI5 CLI](https://github.com/UI5/cli) repository.
 
