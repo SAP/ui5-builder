@@ -2,7 +2,10 @@
 All notable changes to this project will be documented in this file.  
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-A list of unreleased changes can be found [here](https://github.com/SAP/ui5-builder/compare/v4.1.1...HEAD).
+A list of unreleased changes can be found [here](https://github.com/SAP/ui5-builder/compare/v4.1.2...HEAD).
+
+<a name="v4.1.2"></a>
+## [v4.1.2] - 2025-11-13
 
 <a name="v4.1.1"></a>
 ## [v4.1.1] - 2025-10-30
@@ -1001,6 +1004,7 @@ to load the custom bundle file instead.
 
 ### Features
 - Add ability to configure component preloads and custom bundles [`2241e5f`](https://github.com/SAP/ui5-builder/commit/2241e5ff98fd95f1f80cc74959655ae7a9c660e7)
+[v4.1.2]: https://github.com/SAP/ui5-builder/compare/v4.1.1...v4.1.2
 [v4.1.1]: https://github.com/SAP/ui5-builder/compare/v4.1.0...v4.1.1
 [v4.1.0]: https://github.com/SAP/ui5-builder/compare/v4.0.13...v4.1.0
 [v4.0.13]: https://github.com/SAP/ui5-builder/compare/v4.0.11...v4.0.13
