@@ -636,7 +636,7 @@ test("task does not fail when manifest.json is missing but changes exist", async
 		});
 	}, "Task should not fail when manifest.json is missing even with changes");
 
-	// Verify it's not trying to write to manifest.json
+	// Verify the task created the flexibility-bundle.json
 	const writeCalls = [];
 	for (let i = 0; i < placeholderWorkspace.write.callCount; i++) {
 		const call = placeholderWorkspace.write.getCall(i);
@@ -644,6 +644,9 @@ test("task does not fail when manifest.json is missing but changes exist", async
 		writeCalls.push(path);
 	}
 
+	// Should have written flexibility-bundle.json but NOT manifest.json
+	t.true(writeCalls.some((path) => path.includes("flexibility-bundle.json")),
+		"flexibility-bundle.json should be created");
 	t.false(writeCalls.some((path) => path.includes("manifest.json")),
 		"No manifest.json write should occur when manifest is missing");
 });
