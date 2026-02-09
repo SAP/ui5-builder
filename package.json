@@ -33,7 +33,7 @@
 		"npm": ">= 8"
 	},
 	"scripts": {
-		"test": "npm run lint && npm run jsdoc-generate && npm run coverage && npm run depcheck",
+		"test": "npm run lint && npm run jsdoc-generate && npm run coverage && npm run knip",
 		"test-azure": "npm run coverage-xunit",
 		"lint": "eslint ./",
 		"unit": "rimraf test/tmp && ava",
@@ -50,7 +50,7 @@
 		"version": "git-chglog --sort semver --next-tag v$npm_package_version -o CHANGELOG.md v4.0.0.. && git add CHANGELOG.md",
 		"prepublishOnly": "git push --follow-tags",
 		"release-note": "git-chglog --sort semver -c .chglog/release-config.yml v$npm_package_version",
-		"depcheck": "depcheck --ignores @ui5/builder,docdash,@istanbuljs/esm-loader-hook,catharsis,rimraf,cross-env --parsers='**/*.js:es6,**/*.cjs:es6'"
+		"knip": "knip --config knip.config.js"
 	},
 	"files": [
 		"CHANGELOG.md",
@@ -88,7 +88,8 @@
 			"coverage/**",
 			"test/**",
 			".eslintrc.cjs",
-			"jsdoc-plugin.cjs"
+			"jsdoc-plugin.cjs",
+			"knip.config.js"
 		],
 		"check-coverage": true,
 		"statements": 85,
@@ -145,7 +146,6 @@
 		"ava": "^6.4.1",
 		"chokidar-cli": "^3.0.0",
 		"cross-env": "^10.1.0",
-		"depcheck": "^1.4.7",
 		"docdash": "^2.0.2",
 		"eslint": "^9.39.2",
 		"eslint-config-google": "^0.14.0",
@@ -153,6 +153,7 @@
 		"eslint-plugin-jsdoc": "61.5.0",
 		"esmock": "^2.7.3",
 		"globals": "^16.5.0",
+		"knip": "^5.83.1",
 		"line-column": "^1.0.2",
 		"nyc": "^17.1.0",
 		"open-cli": "^8.0.0",
