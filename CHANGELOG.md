@@ -2,10 +2,18 @@
 All notable changes to this project will be documented in this file.  
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-A list of unreleased changes can be found [here](https://github.com/SAP/ui5-builder/compare/v4.1.5...HEAD).
+A list of unreleased changes can be found [here](https://github.com/SAP/ui5-builder/compare/v4.1.6...HEAD).
+
+<a name="v4.1.6"></a>
+## [v4.1.6] - 2026-04-08
+### Bug Fixes
+- **Bundler:** Also detect import.meta as ESM indicator [`58013d5`](https://github.com/SAP/ui5-builder/commit/58013d5a75e3fbf245b0042fb0b81f4e729a7a55)
+- **Bundler:** Skip ESM modules during bundling and log errors [`d28f63a`](https://github.com/SAP/ui5-builder/commit/d28f63a6ace823d9fcfac23312c09e66be6fb7d4)
+- **Bundler:** Reduce noise from ESM parse errors [`bd574bb`](https://github.com/SAP/ui5-builder/commit/bd574bb231cc4e5f1af0b12c12c3365dee5eb80d)
+
 
 <a name="v4.1.5"></a>
-## [v4.1.5] - 2026-03-23
+## [v4.1.5] - 2026-03-25
 
 <a name="v4.1.4"></a>
 ## [v4.1.4] - 2026-02-16
@@ -1019,6 +1027,7 @@ to load the custom bundle file instead.
 
 ### Features
 - Add ability to configure component preloads and custom bundles [`2241e5f`](https://github.com/SAP/ui5-builder/commit/2241e5ff98fd95f1f80cc74959655ae7a9c660e7)
+[v4.1.6]: https://github.com/SAP/ui5-builder/compare/v4.1.5...v4.1.6
 [v4.1.5]: https://github.com/SAP/ui5-builder/compare/v4.1.4...v4.1.5
 [v4.1.4]: https://github.com/SAP/ui5-builder/compare/v4.1.3...v4.1.4
 [v4.1.3]: https://github.com/SAP/ui5-builder/compare/v4.1.2...v4.1.3
