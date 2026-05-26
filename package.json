@@ -47,7 +47,8 @@
 		"version": "git-chglog --sort semver --next-tag v$npm_package_version -o CHANGELOG.md v4.0.0.. && git add CHANGELOG.md",
 		"prepublishOnly": "git push --follow-tags",
 		"release-note": "git-chglog --sort semver -c .chglog/release-config.yml v$npm_package_version",
-		"knip": "knip --config knip.config.js"
+		"knip": "knip --config knip.config.js",
+		"check-engine": "check-engine-light ."
 	},
 	"files": [
 		"CHANGELOG.md",
@@ -141,6 +142,7 @@
 		"@jridgewell/trace-mapping": "^0.3.31",
 		"@ui5/project": "^4.0.16",
 		"ava": "^6.4.1",
+		"check-engine-light": "0.4.0",
 		"chokidar-cli": "^3.0.0",
 		"cross-env": "^10.1.0",
 		"docdash": "^2.0.2",
