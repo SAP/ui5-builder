@@ -123,7 +123,7 @@
 	},
 	"dependencies": {
 		"@jridgewell/sourcemap-codec": "^1.5.5",
-		"@ui5/fs": "^4.0.5",
+		"@ui5/fs": "^4.0.6",
 		"@ui5/logger": "^4.0.2",
 		"cheerio": "1.0.0",
 		"escape-unicode": "^0.3.0",
