@@ -2,7 +2,13 @@
 All notable changes to this project will be documented in this file.  
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-A list of unreleased changes can be found [here](https://github.com/SAP/ui5-builder/compare/v4.2.0...HEAD).
+A list of unreleased changes can be found [here](https://github.com/SAP/ui5-builder/compare/v4.3.0...HEAD).
+
+<a name="v4.3.0"></a>
+## [v4.3.0] - 2026-07-29
+### Features
+- **libraryLessGenerator:** Rewrite svg.less imports ([#1223](https://github.com/SAP/ui5-builder/issues/1223)) [`f5459f1`](https://github.com/SAP/ui5-builder/commit/f5459f1b430a5b3d0e25a80f3c7bef57b155a838)
+
 
 <a name="v4.2.0"></a>
 ## [v4.2.0] - 2026-06-15
@@ -1039,6 +1045,7 @@ to load the custom bundle file instead.
 
 ### Features
 - Add ability to configure component preloads and custom bundles [`2241e5f`](https://github.com/SAP/ui5-builder/commit/2241e5ff98fd95f1f80cc74959655ae7a9c660e7)
+[v4.3.0]: https://github.com/SAP/ui5-builder/compare/v4.2.0...v4.3.0
 [v4.2.0]: https://github.com/SAP/ui5-builder/compare/v4.1.6...v4.2.0
 [v4.1.6]: https://github.com/SAP/ui5-builder/compare/v4.1.5...v4.1.6
 [v4.1.5]: https://github.com/SAP/ui5-builder/compare/v4.1.4...v4.1.5
