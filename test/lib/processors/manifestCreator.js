@@ -600,6 +600,83 @@ test.serial("manifest creation with themes", async (t) => {
 		"  sap.ui/supportedThemes determined from resources: 'base, sap_foo'");
 });
 
+test.serial("manifest creation with themes omits supportedThemes for manifest version 2.0.0", async (t) => {
+	const {manifestCreator, errorLogStub, verboseLogStub, getProjectVersion} = t.context;
+
+	const prefix = "/resources/sap/ui/test/";
+
+	const expectedManifestContent = JSON.stringify({
+		"_version": "2.0.0",
+		"sap.app": {
+			"id": "sap.ui.test",
+			"type": "library",
+			"embeds": [],
+			"applicationVersion": {
+				"version": "1.0.0"
+			},
+			"title": "sap.ui.test",
+			"resources": "resources.json",
+			"offline": true
+		},
+		"sap.ui": {
+			"technology": "UI5"
+		},
+		"sap.ui5": {
+			"dependencies": {
+				"libs": {}
+			},
+			"library": {
+				"i18n": false
+			}
+		}
+	}, null, 2);
+
+	const libraryResource = {
+		getPath: () => {
+			return prefix + ".library";
+		},
+		getString: async () => {
+			return `<?xml version="1.0" encoding="UTF-8" ?>
+			<library xmlns="http://www.sap.com/sap.ui.library.xsd" >
+				<name>sap.ui.test</name>
+				<version>1.0.0</version>
+			</library>`;
+		}
+	};
+
+	const resources = [];
+	["base", "sap_foo"].forEach((name) => {
+		resources.push({
+			getPath: () => {
+				return `${prefix}themes/${name}/some.less`;
+			}
+		});
+		resources.push({
+			getPath: () => {
+				return `${prefix}themes/${name}/library.source.less`;
+			}
+		});
+	});
+	resources.push({
+		getPath: () => {
+			return `${prefix}js/lib/themes/invalid/some.css`;
+		}
+	});
+
+	const result = await manifestCreator({
+		libraryResource,
+		resources,
+		getProjectVersion,
+		options: {descriptorVersion: "2.0.0"}
+	});
+	t.is(await result.getString(), expectedManifestContent, "Correct result returned");
+
+	t.is(errorLogStub.callCount, 0);
+	t.false(verboseLogStub.getCalls().some((call) => {
+		return typeof call.args[0] === "string" && call.args[0].includes("sap.ui/supportedThemes");
+	}), "No supportedThemes verbose log entry");
+});
+
 test.serial("manifest creation for sap/apf", async (t) => {
 	const {manifestCreator, errorLogStub, verboseLogStub, getProjectVersion} = t.context;
 
