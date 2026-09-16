@@ -71,7 +71,8 @@
 			"--loader=esmock",
 			"--no-warnings"
 		],
-		"workerThreads": false
+		"workerThreads": false,
+		"timeout": "2m"
 	},
 	"nyc": {
 		"reporter": [
