@@ -2,10 +2,16 @@
 All notable changes to this project will be documented in this file.  
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-A list of unreleased changes can be found [here](https://github.com/SAP/ui5-builder/compare/v4.3.1...HEAD).
+A list of unreleased changes can be found [here](https://github.com/SAP/ui5-builder/compare/v4.3.2...HEAD).
+
+<a name="v4.3.2"></a>
+## [v4.3.2] - 2026-09-16
+### Bug Fixes
+- **generateFlexBundle:** Improve flexBundle flagging ([#1233](https://github.com/SAP/ui5-builder/issues/1233)) [`c363ec7`](https://github.com/SAP/ui5-builder/commit/c363ec7e7e66dd67b1f73ee01d9dfeff9fc24ce3)
+
 
 <a name="v4.3.1"></a>
-## [v4.3.1] - 2026-08-09
+## [v4.3.1] - 2026-08-14
 ### Bug Fixes
 - **manifestCreator:** Omit supportedThemes for manifest version 2.0.0 [`b2b9eee`](https://github.com/SAP/ui5-builder/commit/b2b9eeeb9c91eb408a6fa5124ffb8786d517eb8c)
 
@@ -1054,6 +1060,7 @@ to load the custom bundle file instead.
 
 ### Features
 - Add ability to configure component preloads and custom bundles [`2241e5f`](https://github.com/SAP/ui5-builder/commit/2241e5ff98fd95f1f80cc74959655ae7a9c660e7)
+[v4.3.2]: https://github.com/SAP/ui5-builder/compare/v4.3.1...v4.3.2
 [v4.3.1]: https://github.com/SAP/ui5-builder/compare/v4.3.0...v4.3.1
 [v4.3.0]: https://github.com/SAP/ui5-builder/compare/v4.2.0...v4.3.0
 [v4.2.0]: https://github.com/SAP/ui5-builder/compare/v4.1.6...v4.2.0
