@@ -133,3 +133,35 @@ test("integration: escape non ascii characters source encoding being UTF-16", as
 	}));
 	return t.is(error.message, `Encoding "utf16le" is not supported. Only UTF-8, ISO-8859-1 are allowed values`);
 });
+
+test("integration: properties file without non-ascii characters is left unchanged", async (t) => {
+	const reader = createAdapter({
+		virBasePath: "/"
+	});
+	const writer = createAdapter({
+		virBasePath: "/"
+	});
+	const workspace = new DuplexCollection({reader, writer});
+
+	// A pure-ASCII properties file is not modified by nonAsciiEscaper, which therefore returns
+	// no resource for it. The task must skip writing such entries instead of calling
+	// workspace.write(undefined).
+	const content = `TITLE=Hello\nKEY=Value\n`;
+
+	const resource = createResource({
+		path: "/i18n.properties",
+		string: content
+	});
+
+	await workspace.write(resource);
+	await t.notThrowsAsync(escapeNonAsciiCharacters({
+		workspace,
+		options: {
+			encoding: "UTF-8",
+			pattern: "/**/*.properties"
+		}
+	}), "task completes without trying to write an undefined resource");
+
+	const escapedResource = await writer.byPath("/i18n.properties");
+	t.is(await escapedResource.getString(), content, "pure-ASCII content is left unchanged");
+});
