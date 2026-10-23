@@ -873,8 +873,7 @@ test.serial("Build library.j with JSDoc build only", async (t) => {
 	graph.setTaskRepository(taskRepository);
 	await graph.build({
 		destPath,
-		includedTasks: ["generateJsdoc"],
-		excludedTasks: ["*"]
+		jsdoc: true
 	});
 
 	// // Beautify api.json, so that it can be better read and compared
