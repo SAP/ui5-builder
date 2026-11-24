@@ -153,7 +153,7 @@
 		"eslint-plugin-jsdoc": "^65.4.12",
 		"esmock": "^2.8.0",
 		"globals": "^17.14.0",
-		"knip": "^6.45.1",
+		"knip": "^6.46.1",
 		"line-column": "^1.0.2",
 		"nyc": "^18.0.0",
 		"open-cli": "^9.0.0",
